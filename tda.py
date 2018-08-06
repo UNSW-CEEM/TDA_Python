@@ -39,23 +39,40 @@ class Tda(QMainWindow):
         self.gridlayout.addWidget(self.unsw_logo2, 0,2)
 
     def init_select_load(self):
+
         self.select_load = QGroupBox('Select Load')
+        self.select_load.setFixedHeight(500)
 
         load_list = QComboBox()
         load_list.addItem('test')
         load_list.addItem('test2')
+        load_list.setFixedWidth(150)
 
         set_button = QPushButton('Set')
+        set_button.setFixedWidth(50)
 
-        vbox1 = QGridLayout()
-        vbox1.addWidget(load_list, 0, 0)
-        vbox1.addWidget(set_button, 0, 1)
+        top_bar = QHBoxLayout()
+        top_bar.addWidget(load_list, alignment=QtCore.Qt.AlignLeft)
+        top_bar.addWidget(set_button)
+        top_bar.setAlignment(QtCore.Qt.AlignTop)
 
-        layout = QHBoxLayout()
-        layout.addLayout(vbox1)
+        self.demographics = QGroupBox()
+        self.demographics.setFlat(True)
+        self.demographics.setFixedHeight(300)
+
+        self.plot = QGroupBox()
+        self.plot.setFlat(True)
+        self.plot.setFixedHeight(200)
+
+        layout = QVBoxLayout()
+        layout.addLayout(top_bar)
+        layout.addWidget(self.demographics)
+        layout.addWidget(self.plot)
+        layout.setAlignment(QtCore.Qt.AlignTop)
 
         self.select_load.setLayout(layout)
         self.gridlayout.addWidget(self.select_load, 1, 0, 1, 3)
+
 
 app = QApplication(sys.argv)
 writer = Tda()
