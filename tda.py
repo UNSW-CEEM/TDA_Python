@@ -1,7 +1,7 @@
 import os
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QWidget, QLabel, QGridLayout, QGroupBox
-from PyQt5.QtWidgets import QComboBox
+from PyQt5.QtWidgets import QComboBox, QTableWidget
 from PyQt5.QtWidgets import QTextEdit, QPushButton, QVBoxLayout, QHBoxLayout, QAction, qApp, QSizePolicy
 from PyQt5 import QtGui, QtCore
 import images
@@ -85,7 +85,12 @@ class Tda(QMainWindow):
 
     def init_select_tariffs(self):
         self.select_tariffs = QGroupBox('Select Tarifffs')
+        table = QTableWidget( 3, 5)
+        gridlayout = QGridLayout()
+        gridlayout.addWidget(table)
+        self.select_tariffs.setLayout(gridlayout)
         self.gridlayout.addWidget(self.select_tariffs, 2, 2, 1, 1)
+
 
 
 app = QApplication(sys.argv)
