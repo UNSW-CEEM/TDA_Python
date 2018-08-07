@@ -1,0 +1,6 @@
+<RCC>
+  <qresource prefix="/" >
+    <file>CEEMLogo.png</file>
+    <file>UNSWLogo.png</file>
+  </qresource>
+</RCC>

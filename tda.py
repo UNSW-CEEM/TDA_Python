@@ -2,8 +2,9 @@ import os
 import sys
 from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QWidget, QLabel, QGridLayout, QGroupBox
 from PyQt5.QtWidgets import QComboBox
-from PyQt5.QtWidgets import QTextEdit, QPushButton, QVBoxLayout, QHBoxLayout, QAction, qApp
+from PyQt5.QtWidgets import QTextEdit, QPushButton, QVBoxLayout, QHBoxLayout, QAction, qApp, QSizePolicy
 from PyQt5 import QtGui, QtCore
+import images
 
 
 class Tda(QMainWindow):
@@ -16,6 +17,9 @@ class Tda(QMainWindow):
         self.init_menu()
         self.init_logos()
         self.init_select_load()
+        self.init_results_window()
+        self.init_select_tariffs()
+        self.centralWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding, )
         self.show()
 
     def init_menu(self):
@@ -27,26 +31,29 @@ class Tda(QMainWindow):
 
     def init_logos(self):
         self.ceem_logo = QLabel(self)
-        image = QtGui.QPixmap('CEEMLogo.png')
-        image = image.scaledToWidth(250)
+        image = QtGui.QPixmap(':/CEEMLogo.png')
         self.ceem_logo.setPixmap(image)
-        self.gridlayout.addWidget(self.ceem_logo, 0,0)
+        self.ceem_logo.setMinimumSize(50, 50)
+        self.ceem_logo.setMaximumSize(250, 100)
+        self.ceem_logo.setScaledContents(True)
+        self.gridlayout.addWidget(self.ceem_logo, 0, 0, 1, 1)
 
         self.unsw_logo2 = QLabel(self)
-        image = QtGui.QPixmap('UNSWLogo.png')
-        image = image.scaledToWidth(250)
+        image = QtGui.QPixmap(':/UNSWLogo.png')
+        #image = image.scaledToWidth(250)
         self.unsw_logo2.setPixmap(image)
-        self.gridlayout.addWidget(self.unsw_logo2, 0,2)
+        self.unsw_logo2.setScaledContents(True)
+        self.unsw_logo2.setMinimumSize(50, 50)
+        self.unsw_logo2.setMaximumSize(200, 100)
+        self.gridlayout.addWidget(self.unsw_logo2, 0, 1 , 1, 1)
 
     def init_select_load(self):
 
         self.select_load = QGroupBox('Select Load')
-        self.select_load.setFixedHeight(500)
 
         load_list = QComboBox()
         load_list.addItem('test')
         load_list.addItem('test2')
-        load_list.setFixedWidth(150)
 
         set_button = QPushButton('Set')
         set_button.setFixedWidth(50)
@@ -58,20 +65,27 @@ class Tda(QMainWindow):
 
         self.demographics = QGroupBox()
         self.demographics.setFlat(True)
-        self.demographics.setFixedHeight(300)
 
         self.plot = QGroupBox()
         self.plot.setFlat(True)
-        self.plot.setFixedHeight(200)
 
         layout = QVBoxLayout()
-        layout.addLayout(top_bar)
-        layout.addWidget(self.demographics)
-        layout.addWidget(self.plot)
+        layout.addLayout(top_bar, 0)
+        layout.addWidget(self.demographics, 1)
+        layout.addWidget(self.plot, 1)
         layout.setAlignment(QtCore.Qt.AlignTop)
 
         self.select_load.setLayout(layout)
-        self.gridlayout.addWidget(self.select_load, 1, 0, 1, 3)
+        self.select_load.setMaximumWidth(500)
+        self.gridlayout.addWidget(self.select_load, 1, 0, 2, 2)
+
+    def init_results_window(self):
+        self.results_window = QGroupBox('Results')
+        self.gridlayout.addWidget(self.results_window, 0, 2, 2, 1)
+
+    def init_select_tariffs(self):
+        self.select_tariffs = QGroupBox('Select Tarifffs')
+        self.gridlayout.addWidget(self.select_tariffs, 2, 2, 1, 1)
 
 
 app = QApplication(sys.argv)
