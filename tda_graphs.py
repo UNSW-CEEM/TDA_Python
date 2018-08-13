@@ -1,7 +1,6 @@
 from matplotlib.figure import Figure
 from matplotlib.backends.backend_qt5agg import FigureCanvasQTAgg as FigureCanvas
-from PyQt5.QtWidgets import QTextEdit, QPushButton, QVBoxLayout, QHBoxLayout, QAction, qApp, QSizePolicy
-import matplotlib.pyplot as plt
+from PyQt5.QtWidgets import QSizePolicy
 from numpy import arange, sin, pi
 
 class StandardCanvas(FigureCanvas):

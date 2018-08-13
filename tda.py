@@ -1,18 +1,16 @@
-import os
+
 import sys
-from PyQt5.QtWidgets import QApplication, QMainWindow, QFileDialog, QWidget, QLabel, QGridLayout, QGroupBox
+from PyQt5.QtWidgets import QApplication, QMainWindow, QWidget, QLabel, QGridLayout, QGroupBox
 from PyQt5.QtWidgets import QComboBox, QTableWidget
-from PyQt5.QtWidgets import QTextEdit, QPushButton, QVBoxLayout, QHBoxLayout, QAction, qApp, QSizePolicy
+from PyQt5.QtWidgets import QPushButton, QVBoxLayout, QHBoxLayout, QAction, qApp, QSizePolicy
 from PyQt5 import QtGui, QtCore
-from matplotlib.figure import Figure
-import images
 import tda_graphs
+import images
 
 
 class Tda(QMainWindow):
     def __init__(self):
         # Load in info needed at start to create gui, e.g Tariff types
-
 
         # Create widget to conatain all the subwidgets and give it a grid layout.
         super().__init__()
@@ -28,7 +26,7 @@ class Tda(QMainWindow):
         self.init_menu()
         self.gridlayout.addWidget(Logo('CEEMLogo.png'), 0, 0, 1, 1)
         self.gridlayout.addWidget(Logo('UNSWLogo.png'), 0, 1, 1, 1)
-        self.load_selection = LoadSelectionPanel('Select Load', self.set_load_data)
+        self.load_selection = LoadSelectionPanel('Select Load', 'dummy_path', self.set_load_data)
         self.gridlayout.addWidget(self.load_selection, 1, 0, 2, 2)
         self.tariff_select_panel = TariffSelectionPanel('Select Tariff')
         self.gridlayout.addWidget(self.tariff_select_panel, 2, 2, 1, 1)
@@ -47,12 +45,13 @@ class Tda(QMainWindow):
         save_project.setShortcut('Ctrl+S')
         project.addAction(save_project)
 
-    def set_load_data(self):
+    def set_load_data(self, arg1, arg2, arg3):
         # load the data
         self.load_data += 1
         # Update demographics options
         self.demographic_options = None
         print(self.load_data)
+        print(arg1 + arg2 + arg3)
 
     def give_load(self):
         return self.load_data
@@ -68,18 +67,26 @@ class Logo(QLabel):
 
 
 class LoadSelectionPanel(QGroupBox):
-    def __init__(self, name, update_load_function):
+    def __init__(self, name, load_folder_path, update_load_function):
         super().__init__(name)
+
+        select_label = QLabel('Select:')
+
         load_list = QComboBox()
+        load_list.setMinimumWidth(100)
         load_list.addItem('test')
         load_list.addItem('test2')
 
+        self.update_load_funtion = update_load_function
+
         set_button = QPushButton('Set')
-        set_button.clicked.connect(update_load_function)
+        set_button.clicked.connect(lambda: update_load_function('data_name', 'filters', 'any_other_info'))
         set_button.setFixedWidth(50)
 
         self.top_bar = QHBoxLayout()
+        self.top_bar.addWidget(select_label,  alignment=QtCore.Qt.AlignLeft)
         self.top_bar.addWidget(load_list, alignment=QtCore.Qt.AlignLeft)
+        self.top_bar.addStretch(1)
         self.top_bar.addWidget(set_button)
         self.top_bar.setAlignment(QtCore.Qt.AlignTop)
 
@@ -97,6 +104,9 @@ class LoadSelectionPanel(QGroupBox):
 
         self.setLayout(layout)
         self.setMaximumWidth(500)
+
+    def list_load_options(self, folder_path):
+        return
 
 
 class ResultsPanel(QGroupBox):
