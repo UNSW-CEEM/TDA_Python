@@ -1,13 +1,13 @@
 Skip to content
 
-Search…
+Searchï¿½
 All gists
 GitHub
 New gist
 @nick-gorman 
 2
 0@MOOOWOOOMOOOWOOO/py-gitignore
-Created 2 years ago • 
+Created 2 years ago ï¿½ 
  
 <script src="https://gist.github.com/MOOOWOOO/3cf91616c9f3bbc3d1339adfc707b08a.js"></script>
   
@@ -38,6 +38,7 @@ lib64/
 parts/
 sdist/
 var/
+dats/
 *.egg-info/
 .installed.cfg
 *.egg
@@ -172,7 +173,7 @@ fabric.properties
 
 Leave a comment
 Attach files by dragging & dropping, , or pasting from the clipboard.  Styling with Markdown is supported
-© 2018 GitHub, Inc.
+ï¿½ 2018 GitHub, Inc.
 Terms
 Privacy
 Security
@@ -185,3 +186,6 @@ Shop
 Blog
 About
 Press h to open a hovercard with more details.
+data/load_AG300_2010_11_Gross.csv
+data/demographics_load_lookup_table.csv
+data/AG300_Demographics.csv
