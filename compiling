@@ -1,0 +1,1 @@
+PyInstaller --onefile tda.py --hidden-import PyQt5.sip
