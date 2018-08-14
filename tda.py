@@ -13,10 +13,10 @@ import pandas as pd
 class Tda(QMainWindow):
     def __init__(self):
         # Provide default values.
-        self.data_folder = os.getcwd() + '/data'
+        self.data_folder = os.getcwd() + '\data'
         self.mapping_file = 'demographics_load_lookup_table.csv'
 
-        # Create widget to conatain all the subwidgets and give it a grid layout.
+        # Create widget to contain all the subwidgets and give it a grid layout.
         super().__init__()
         self.centralWidget = QWidget(self)
         self.setCentralWidget(self.centralWidget)
@@ -42,7 +42,7 @@ class Tda(QMainWindow):
         self.gridlayout.addWidget(self.results_panel, 0, 2, 2, 1)
 
         # Finalise the Gui settings
-        self.setGeometry(300, 300, 1000, 600)
+        self.setGeometry(200, 200, 1200, 700)
         self.centralWidget.setSizePolicy(QSizePolicy.Expanding, QSizePolicy.Expanding)
         self.show()
 
@@ -147,12 +147,12 @@ class LoadSelectionPanel(QGroupBox):
         self.plot_group.header_layout = QHBoxLayout()
         self.plot_group.user_selected_label = QLabel('Number of users: N/A')
         self.plot_group.show_label = QLabel('Show')
-        self.plot_group.plot_slection = QComboBox()
+        self.plot_group.plot_selection = QComboBox()
         for plot_type in self.plot.types.keys():
-            self.plot_group.plot_slection.addItem(plot_type)
+            self.plot_group.plot_selection.addItem(plot_type)
         self.plot_group.header_layout.addWidget(self.plot_group.user_selected_label)
         self.plot_group.header_layout.addWidget(self.plot_group.show_label)
-        self.plot_group.header_layout.addWidget(self.plot_group.plot_slection)
+        self.plot_group.header_layout.addWidget(self.plot_group.plot_selection)
         # Create a vertical layout in group box and place the header layout at the top and the plot below.
         self.plot_group.plot_group_layout = QVBoxLayout()
         self.plot_group.plot_group_layout.addLayout(self.plot_group.header_layout)
@@ -215,7 +215,7 @@ class LoadSelectionPanel(QGroupBox):
         update_load_function(self.load_list.currentText(), selection_criteria)
         # Delete the current plot.
         self.plot.deleteLater()
-        self.plot = tda_graphs.LoadPlot(self.plot_group.plot_slection.currentText(), get_load_function)
+        self.plot = tda_graphs.LoadPlot(self.plot_group.plot_selection.currentText(), get_load_function)
         self.plot_group.plot_group_layout.addWidget(self.plot)
 
     def clearLayout(self, layout):
