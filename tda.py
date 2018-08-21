@@ -120,10 +120,10 @@ class LoadSelectionPanel(QGroupBox):
         set_button.setFixedWidth(50)
 
         # Place the load selection widgets in a horizontal bar layout.
-        self.top_bar = QHBoxLayout()
+        self.top_bar = QHBoxLayout() # layout container for widgets we want aligned horizontally.
         self.top_bar.addWidget(select_label,  alignment=QtCore.Qt.AlignLeft)
         self.top_bar.addWidget(self.load_list, alignment=QtCore.Qt.AlignLeft)
-        self.top_bar.addStretch(1)
+        self.top_bar.addStretch(1) # Spacer between selection list and button.
         self.top_bar.addWidget(set_button)
         self.top_bar.setAlignment(QtCore.Qt.AlignTop)
 
