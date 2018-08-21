@@ -127,7 +127,7 @@ class LoadSelectionPanel(QGroupBox):
         self.top_bar.addWidget(set_button)
         self.top_bar.setAlignment(QtCore.Qt.AlignTop)
 
-        # Visual separate the load selection bar and the demographic selections with a line.
+        # Visually separate the load selection bar and the demographic selections with a line.
         separating_bar = QFrame()
         separating_bar.setFrameShape(QFrame.HLine)
         separating_bar.setSizePolicy(QSizePolicy.Minimum, QSizePolicy.Expanding)
@@ -251,10 +251,13 @@ class ResultsPanel(QGroupBox):
 class TariffSelectionPanel(QGroupBox):
     def __init__(self, name):
         super().__init__(name)
-        table = QTableWidget(3, 5)
-        gridlayout = QGridLayout()
-        gridlayout.addWidget(table)
-        self.setLayout(gridlayout)
+
+        self.selection_column = QVBoxLayout()
+        self.view_and_edit_column = QVBoxLayout()
+        self.gridlayout = QGridLayout()
+        self.gridlayout.addLayout(self.selection_column, 0, 0)
+        self.gridlayout.addLayout(self.view_and_edit_column, 0, 1)
+        self.setLayout(self.gridlayout)
         self.cases = None
 
 
