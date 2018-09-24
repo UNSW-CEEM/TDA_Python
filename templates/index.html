@@ -1,0 +1,56 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title>The HTML5 Herald</title>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+
+
+  <!-- This is the 'importing' of external libraries. -->
+      <link rel="stylesheet" type="text/css" href="/static/styles.css">
+  <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
+  <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
+  <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="crossorigin="anonymous"></script>
+		
+
+
+    <!--<style>-->
+
+        <!--.header {-->
+    <!--background-color: blue;-->
+<!--}-->
+
+    <!--</style>-->
+</head>
+
+<body>
+<div id="container">
+
+  <div class="header"> This is where the menu will. </div>
+
+  <div id="main">
+
+    <div id="left_column">
+        Sup Luke and Navid!
+
+        {{my_name}}
+    </div>
+
+    <div id="right_column">
+
+        <!-- Chart goes here in this div -->
+        <div class="ct-chart ct-perfect-fourth"></div>
+
+        <!-- This is the script.js that's in 'static' folder - it loads the chart data and draws the chart. -->
+        <script src="static/script.js"></script>
+    </div>
+
+
+  </div>
+
+</div>
+</body>
+</html>
