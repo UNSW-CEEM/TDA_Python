@@ -33,6 +33,6 @@ def data():
 
 
 if __name__ == '__main__':
-    # app.run(debug=True)
+    #app.run(debug=True)
 
-    init_gui(app, width=500, height=400, window_title='TDA')  # This one runs it as a standalone app
+    init_gui(app, width=1200, height=800, window_title='TDA')  # This one runs it as a standalone app

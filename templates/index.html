@@ -17,35 +17,67 @@
 		
 
 
-    <!--<style>-->
+  <style>
+      html, body {height:100vh; margin: 0;}
+      #container {min-width: 1000px; height:100vh; margin: 0;}
+      .main {height:100vh;}
+      #logos{height:4vh; padding-left:5px;}
+      #left_column { width:34%; float:left; height:95vh;}
+      #right_column { float:right; width:66%; height:100vh;}
+      #load_panel{ width:92%; height:92.5vh;}
+      #load_selection { height:40vh;}
+      #load_inspection { height:50vh;}
+      #tariff_selection_panel { height:40vh; }
+      #results_panel { height:55vh; }
+      #result_chart  { height:40vh; width: 50%}
 
-        <!--.header {-->
-    <!--background-color: blue;-->
-<!--}-->
+  </style>
 
-    <!--</style>-->
 </head>
 
 <body>
 <div id="container">
 
-  <div class="header"> This is where the menu will. </div>
-
-  <div id="main">
+  <div class="main">
 
     <div id="left_column">
-        Sup Luke and Navid!
 
-        {{my_name}}
+        <div id="logos">
+            <img src="static/CEEMLogo.png" alt="UNSW Logo" width="205", style="float:left">
+            <img src="static/UNSWLogo.png" alt="UNSW Logo" width="90">
+        </div>
+
+        <fieldset id="load_panel">
+            <legend>Select Load:</legend>
+            <div id="load_selection">Load selection options go here</div>
+            <hr>
+            <div id="load_inspection">
+                View the load here
+                <!-- Chart goes here in this div -->
+                <div class="ct-chart2 ct-perfect-fourth"></div>
+                <!-- This is the script.js that's in 'static' folder - it loads the chart data and draws the chart. -->
+                <script src="static/load_chart.js"></script>
+            </div>
+        </fieldset>
+
     </div>
 
     <div id="right_column">
 
-        <!-- Chart goes here in this div -->
-        <div class="ct-chart ct-perfect-fourth"></div>
+        <fieldset id="results_panel">
+            <!-- Chart goes here in this div -->
+            <div id="result_chart">
+            <div class="ct-chart ct-perfect-fourth"></div>
+            <!-- This is the script.js that's in 'static' folder - it loads the chart data and draws the chart. -->
+            <script src="static/script.js"></script>
+            </div>
+        </fieldset>
 
-        <!-- This is the script.js that's in 'static' folder - it loads the chart data and draws the chart. -->
-        <script src="static/script.js"></script>
+        <fieldset id="tariff_selection_panel">
+            <legend>Select Tariff:</legend>
+
+        </fieldset>
+
     </div>
 
 
