@@ -31,8 +31,15 @@ def data():
         {'data': [1, 2, 3, 4, 5]}
     )
 
+@app.route('/load_names')
+def load_names():
+    load_names = []
+    for file_name in os.listdir('data/'):
+        load_names.append(file_name[5:-4])
+    print(load_names)
+    return jsonify(load_names)
 
 if __name__ == '__main__':
-    #app.run(debug=True)
+    app.run(debug=True)
 
-    init_gui(app, width=1200, height=800, window_title='TDA')  # This one runs it as a standalone app
+    #init_gui(app, width=1200, height=800, window_title='TDA')  # This one runs it as a standalone app

@@ -19,7 +19,7 @@
 
   <style>
       html, body {height:100vh; margin: 0;}
-      #container {min-width: 1000px; height:100vh; margin: 0;}
+      #container {min-width: 1000px; height:100vh; margin: 0; background-color: #EEEEEE;}
       .main {height:100vh;}
       #logos{height:4vh; padding-left:5px;}
       #left_column { width:34%; float:left; height:95vh;}
@@ -49,7 +49,14 @@
 
         <fieldset id="load_panel">
             <legend>Select Load:</legend>
-            <div id="load_selection">Load selection options go here</div>
+            <script src="static/load_options.js"></script>
+            <div id="load_selecion">
+                <span>Selected:</span>
+                <select :items="static/load_options.js" v-model="selected"></select>
+                <div class="names"></div>
+                <script src="static/load_options.js"></script>
+
+            </div>
             <hr>
             <div id="load_inspection">
                 View the load here
