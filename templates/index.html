@@ -14,7 +14,7 @@
   <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
   <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
   <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="crossorigin="anonymous"></script>
-		
+
 
 
   <style>
@@ -49,13 +49,10 @@
 
         <fieldset id="load_panel">
             <legend>Select Load:</legend>
-            <script src="static/load_options.js"></script>
             <div id="load_selecion">
                 <span>Selected:</span>
-                <select :items="static/load_options.js" v-model="selected"></select>
-                <div class="names"></div>
-                <script src="static/load_options.js"></script>
-
+                <select id="select" name="select" ><option selected="selected">blank</option></select>
+                <script src="static/script_a.js"></script>
             </div>
             <hr>
             <div id="load_inspection">
@@ -63,7 +60,7 @@
                 <!-- Chart goes here in this div -->
                 <div class="ct-chart2 ct-perfect-fourth"></div>
                 <!-- This is the script.js that's in 'static' folder - it loads the chart data and draws the chart. -->
-                <script src="static/load_chart.js"></script>
+                <script src="static/plot_load.js"></script>
             </div>
         </fieldset>
 

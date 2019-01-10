@@ -1,4 +1,3 @@
-
 // THis is javascript's 'print' function - you can open up your js console in your browser and see them.
 console.log('Hi im javascript bye');
 
