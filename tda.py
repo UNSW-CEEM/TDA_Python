@@ -45,8 +45,8 @@ def load_names():
 def load_load(name):
     load = pd.read_csv('data/'+name)
     load['mean'] = load.mean(axis=1)
-    load = load.loc[:, ("Time", 'mean')]
-    return jsonify({'Time': list(load.Time), "Mean": list(load['mean'])})
+    load = load.loc[:, ("READING_DATETIME", 'mean')]
+    return jsonify({'Time': list(load.READING_DATETIME), "Mean": list(load['mean'])})
 
 
 if __name__ == '__main__':
