@@ -15,6 +15,8 @@
     <link rel="stylesheet" type="text/css" href="/static/styles.css">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="crossorigin="anonymous"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/css/select2.min.css" rel="stylesheet" />
+   <script src="https://cdnjs.cloudflare.com/ajax/libs/select2/4.0.6-rc.0/js/select2.min.js"></script>
 
   <style>
       html, body {height:100vh; margin: 0;}
@@ -29,7 +31,6 @@
       #tariff_selection_panel { height:40vh; }
       #results_panel { height:55vh; }
       #result_chart  { height:40vh; width: 50%}
-
   </style>
 
 </head>
@@ -51,7 +52,60 @@
             <div id="load_selecion">
                 <span>Selected:</span>
                 <select id="select" name="select" ><option selected="selected">blank</option></select>
-                <script src="static/script_a.js"></script>
+                <script src="static/build_load_selector.js"></script>
+            </div>
+            <hr>
+            <div id="demograhphic_selection">
+                <div id="demo_0" >
+                    <span id="demo_label_0"></span>
+                    <select class="js-example-basic-multiple" id="demo_select_0" multiple="multiple" ></select>
+                </div>
+                <script> $('#demo_0').hide() </script>
+                <div id="demo_1" >
+                    <span id="demo_label_1"></span>
+                    <select class="js-example-basic-multiple" id="demo_select_1" multiple="multiple" ></select>
+                </div>
+                <script> $('#demo_1').hide() </script>
+                <div id="demo_2" >
+                    <span id="demo_label_2"></span>
+                    <select class="js-example-basic-multiple" id="demo_select_2" multiple="multiple" ></select>
+                </div>
+                <script> $('#demo_2').hide() </script>
+                <div id="demo_3" >
+                    <span id="demo_label_3"></span>
+                    <select class="js-example-basic-multiple" id="demo_select_3" multiple="multiple" ></select>
+                </div>
+                <script> $('#demo_3').hide() </script>
+                <div id="demo_4" >
+                    <span id="demo_label_4"></span>
+                    <select class="js-example-basic-multiple" id="demo_select_4" multiple="multiple" ></select>
+                </div>
+                <script> $('#demo_4').hide() </script>
+                <div id="demo_5" >
+                    <span id="demo_label_5"></span>
+                    <select class="js-example-basic-multiple" id="demo_select_5" multiple="multiple" ></select>
+                </div>
+                <script> $('#demo_5').hide() </script>
+                <div id="demo_6" >
+                    <span id="demo_label_6"></span>
+                    <select class="js-example-basic-multiple" id="demo_select_6" multiple="multiple" ></select>
+                </div>
+                <script> $('#demo_6').hide() </script>
+                <div id="demo_7" >
+                    <span id="demo_label_7"></span>
+                    <select class="js-example-basic-multiple" id="demo_select_7" multiple="multiple" ></select>
+                </div>
+                <script> $('#demo_7').hide() </script>
+                <div id="demo_8" >
+                    <span id="demo_label_8"></span>
+                    <select class="js-example-basic-multiple" id="demo_select_8" multiple="multiple" ></select>
+                </div>
+                <script> $('#demo_8').hide() </script>
+                <div id="demo_9" >
+                    <span id="demo_label_9"></span>
+                    <select class="js-example-basic-multiple" id="demo_select_9" multiple="multiple" ></select>
+                </div>
+                <script> $('#demo_9').hide() </script>
             </div>
             <hr>
             <div id="load_inspection">

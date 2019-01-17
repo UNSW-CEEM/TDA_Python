@@ -1,1 +1,1 @@
-PyInstaller --onefile tda.py --hidden-import PyQt5.sip
+TDA_Python>pyinstaller -F --add-data "templates;templates" --add-data "static;static" tda.py
