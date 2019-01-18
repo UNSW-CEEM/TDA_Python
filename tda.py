@@ -5,8 +5,7 @@ import sys
 import pandas as pd
 import feather
 import time
-import numpy as np
-from datetime import timedelta
+import helper_functions
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -46,23 +45,35 @@ def load_names():
 
 @app.route('/load_load/<name>')
 def load_load(name):
+    t0 = time.time()
     load = feather.read_dataframe('data/'+name)
-    load['READING_DATETIME'] = pd.to_datetime(load['READING_DATETIME'])
-    load['READING_DATETIME'] = load['READING_DATETIME'] - timedelta(seconds=1)
-    load['READING_DATETIME'] = load['READING_DATETIME'].astype(str)
-    load = load.groupby([load['READING_DATETIME'].str[:10]]).sum()
-    load.index.name = 'READING_DATETIME'
-    load = load.reset_index()
-    load['mean'] = [np.nanmean(row[1:], dtype=float) for row in load.values]
-    load = load.loc[:, ("READING_DATETIME", 'mean')]
+    load = helper_functions.calc_mean_daily_load(load)
     return jsonify({'Time': list(load.READING_DATETIME), "Mean": list(load['mean'])})
+
+
+@app.route('/filtered_load_data', methods=['POST'])
+def filtered_load_data():
+    load_request = request.get_json()
+    demo_info_file_name = helper_functions.find_loads_demographic_file(load_request['file_name'])
+    demo_info = pd.read_csv('data/' + demo_info_file_name, dtype=str)
+    load = feather.read_dataframe('data/' + load_request['file_name'])
+    for column_name, selected_options in load_request['filter_options'].items():
+        if 'All' not in selected_options:
+            demo_info = demo_info[demo_info[column_name].isin(selected_options)]
+    load = load.loc[:, ['READING_DATETIME'] + list(demo_info['CUSTOMER_KEY'])]
+    if len(load.columns) > 1:
+        load = helper_functions.calc_mean_daily_load(load)
+        load_as_json = jsonify({'Time': list(load.READING_DATETIME), "Mean": list(load['mean'])})
+    else:
+        load_as_json = jsonify({'Time': [], "Mean": []})
+    return load_as_json
+
 
 
 @app.route('/demo_options/<name>')
 def demo_options(name):
-    load_2_demo_map = pd.read_csv('data/load_2_demo_map.csv')
-    demo_file_name = load_2_demo_map[load_2_demo_map['load'] == name]['demo'].iloc[0]
-    demo_config_file_name = load_2_demo_map[load_2_demo_map['load'] == name]['demo_config'].iloc[0]
+    demo_config_file_name = helper_functions.find_loads_demographic_config_file(name)
+    demo_file_name = helper_functions.find_loads_demographic_file(name)
     if demo_config_file_name != '' and demo_config_file_name in os.listdir('data/'):
         demo_config = pd.read_csv('data/'+demo_config_file_name)
         columns_to_use = demo_config[demo_config['use'] == 1]
@@ -84,7 +95,6 @@ def demo_options(name):
         options[name] = ['All'] + list([str(val) for val in demo[name].unique()])
         display_names_dict[name] = display_name
 
-    x=1
     return jsonify({'actual_names': actual_names, "display_names": display_names_dict, "options": options})
 
 

@@ -55,15 +55,50 @@ var add_demo_selectors = function(response){
         var label = document.getElementById(label_id);
         $('#'+selector_id).val('All')
         $('#'+div_id).show()
-        var name = response.display_names[response.actual_names[i]] + '\n'
+        var name = response.display_names[response.actual_names[i]]
         label.innerHTML = name
-
-
     }
 }
 
+var plot_filtered_load = function(){
+
+    var filter_options = {}
+
+    for (var i = 0; i < 10; i++){
+        selector_id = "demo_select_" + i.toString()
+        label_id = "demo_label_" + i.toString()
+        var label = document.getElementById(label_id);
+        var values = $('#' + selector_id).val();
+        filter_options[label.innerHTML] = values;
+        console.log(values)
+    }
+
+    var file_name = $('#select').children("option:selected").val();
+
+    var load_request = {'file_name': file_name, 'filter_options': filter_options}
+
+    $.ajax({
+    url: '/filtered_load_data',
+    data: JSON.stringify(load_request),
+    contentType: 'application/json; charset=utf-8',
+    type : 'POST',
+    async: 'false',
+    success: plot_load
+    });
+
+    console.log("I sent the post")
+
+}
+
+
 $('#select').on('change', function() {
   var file_name = $('#select').children("option:selected").val();
-  $.getJSON('/load_load/' + file_name, plot_load)
-  $.getJSON('/demo_options/' + file_name, add_demo_selectors)
+  $.getJSON('/load_load/' + file_name, plot_load);
+  $.getJSON('/demo_options/' + file_name, add_demo_selectors);
+});
+
+
+$('.get_filtered_load').on('click', function() {
+    console.log("I saw the change")
+    plot_filtered_load();
 });
