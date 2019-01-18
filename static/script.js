@@ -23,6 +23,10 @@ $.getJSON('/data',function(response){
     // that is resolving to our chart container element. The Second parameter
     // is the actual data object.
     new Chartist.Line('.ct-chart', data);
+
+    new ResizeSensor($('#load_inspection'), function(){
+      chart.update();
+    });
 })
 
 

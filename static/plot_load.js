@@ -23,7 +23,7 @@ var plot_load = function(response){
     var t1 = d.getTime();
     var t01 = t1 - t0
     console.log(t01)
-    var chart = new Chartist.Line('.ct-chart2', {series: [{name: 'series1',data: series_to_plot}]},
+    var chart = new Chartist.Line('.ct-chart', {series: [{name: 'series1',data: series_to_plot}]},
       {axisX: { type: Chartist.FixedScaleAxis, divisor: 5, labelInterpolationFnc: function(value) {
           return moment(value).format('YYYY MMM D '); }}, showPoint: false, lineSmoothed: false}
       );
@@ -40,7 +40,6 @@ var add_demo_selectors = function(response){
         selector_id = "demo_select_" + i.toString()
         div_id = "demo_" + i.toString()
         label_id = "demo_label_" + i.toString()
-        $('#' + selector_id).select2();
         var label = document.getElementById(label_id);
         $('#'+div_id).hide()
         label.innerHTML = ''
@@ -56,7 +55,10 @@ var add_demo_selectors = function(response){
         var label = document.getElementById(label_id);
         $('#'+selector_id).val('All')
         $('#'+div_id).show()
-        label.innerHTML = response.display_names[response.actual_names[i]]
+        var name = response.display_names[response.actual_names[i]] + '\n'
+        label.innerHTML = name
+
+
     }
 }
 
