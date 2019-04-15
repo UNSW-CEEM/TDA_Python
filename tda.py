@@ -6,6 +6,10 @@ import pandas as pd
 import feather
 import time
 import helper_functions
+import plotly
+import plotly.graph_objs as go
+import json
+
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -48,7 +52,10 @@ def load_load(name):
     t0 = time.time()
     load = feather.read_dataframe('data/'+name)
     load = helper_functions.calc_mean_daily_load(load)
-    return jsonify({'Time': list(load.READING_DATETIME), "Mean": list(load['mean'])})
+    data = [go.Scatter(x=load['READING_DATETIME'], y=load['mean'])]
+    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+    print('I tried to load')
+    return graphJSON
 
 
 @app.route('/filtered_load_data', methods=['POST'])
@@ -61,12 +68,17 @@ def filtered_load_data():
         if 'All' not in selected_options:
             demo_info = demo_info[demo_info[column_name].isin(selected_options)]
     load = load.loc[:, ['READING_DATETIME'] + list(demo_info['CUSTOMER_KEY'])]
-    if len(load.columns) > 1:
-        load = helper_functions.calc_mean_daily_load(load)
-        load_as_json = jsonify({'Time': list(load.READING_DATETIME), "Mean": list(load['mean'])})
-    else:
-        load_as_json = jsonify({'Time': [], "Mean": []})
-    return load_as_json
+   # if len(load.columns) > 1:
+  #      load = helper_functions.calc_mean_daily_load(load)
+  #      load_as_json = jsonify({'Time': list(load.READING_DATETIME), "Mean": list(load['mean'])})
+ #   else:
+#        load_as_json = jsonify({'Time': [], "Mean": []})
+
+    load = helper_functions.calc_mean_daily_load(load)
+    data = [go.Scatter(x=load['READING_DATETIME'], y=load['mean'])]
+    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
+    return graphJSON
+    #return load_as_json
 
 
 

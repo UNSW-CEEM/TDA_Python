@@ -12,9 +12,10 @@
   <!-- This is the 'importing' of external libraries. -->
     <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
     <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
-    <link rel="stylesheet" type="text/css" href="/static/styles.css">
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="crossorigin="anonymous"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
 
   <style>
       html, body {height:100%; margin: 0;}
@@ -27,12 +28,11 @@
       #load_selection { height: 10%; min-height: 10%; }
       #select { width: 10vw; height: 2.2vh; font-size: 1.5vh}
       #demograhphic_selection {height: 50%; min-height: 50%; }
-      #load_inspection { height: 40%; min-height: 40%; }
+      #load_inspection { height: 35vh; min-height: 35vh;}
+      #load_chart { height: 32vh; min-height: 32vh ;}
       #tariff_selection_panel { height:40%; }
       #results_panel { height:55 %; }
       #result_chart  { height:40 %; width: 50%}
-      .ct-chart  .ct-line {stroke: blue; stroke-width: 1px}
-      .load-chart { height: 100%; min-height: 100%; }
       .demo_select_container { float: right; width: 40% !important; height: 2.5vh; clear: right}
       .select_demo{width: 10vw; height: 2.2vh; font-size: 1.5vh; position:relative}
       .select_demo:focus{height:auto; z-index:1}
@@ -116,10 +116,18 @@
             <button type="button" class="get_filtered_load">Click Me!</button>
             <hr>
             <div id="load_inspection">
+                <span id="sample_size_info">No. of users N/A</span>
+                <div id="graph_select_con" style="float: right; width: 50% !important; height: 2.5vh;">
+                    <span>Show:</span>
+                    <select  id="select graph" name="Show:">
+                        <option value="Annual Average Profile"> Annual Average Profile</option>
+                        <option value="Daily kWh Histogram">Daily kWh Histogram</option>
+                    </select>
+                </div>
                 <!-- Chart goes here in this div -->
-                <div class="ct-chart ct-perfect-fourth load-chart"></div>
-                <!-- This is the script.js that's in 'static' folder - it loads the chart data and draws the chart. -->
+                <div class="chart" id="load_chart"></div>
                 <script src="static/plot_load.js"></script>
+                <!-- This is the script.js that's in 'static' folder - it loads the chart data and draws the chart. -->
             </div>
         </fieldset>
 

@@ -77,24 +77,38 @@ var plot_filtered_load = function(){
 
     var load_request = {'file_name': file_name, 'filter_options': filter_options}
 
+    var layout = {autosize: true, margin: { l: 50, r: 20, b: 30, t: 20, pad: 10 },
+                  paper_bgcolor: '#EEEEEE',
+                  plot_bgcolor: '#c7c7c7'};
+
     $.ajax({
     url: '/filtered_load_data',
     data: JSON.stringify(load_request),
-    contentType: 'application/json; charset=utf-8',
+    contentType: 'application/json;charset=UTF-8',
     type : 'POST',
     async: 'false',
-    success: plot_load
+    success: function (data) {Plotly.newPlot('load_chart', data, layout);}
     });
 
     console.log("I sent the post")
 
 }
 
+var plot_unfiltered_load = function(response){
+    var layout = {autosize: true, margin: { l: 50, r: 20, b: 30, t: 20, pad: 10 },
+                  paper_bgcolor: '#EEEEEE',
+                  plot_bgcolor: '#c7c7c7'};
+    Plotly.newPlot('load_chart', response, layout);
+    console.log("I sent the post")
+}
+
 
 $('#select').on('change', function() {
   var file_name = $('#select').children("option:selected").val();
-  $.getJSON('/load_load/' + file_name, plot_load);
   $.getJSON('/demo_options/' + file_name, add_demo_selectors);
+  console.log("I saw the change 2")
+  console.log("I saw the change 2")
+  $.getJSON('/load_load/' + file_name, plot_unfiltered_load);
 });
 
 
@@ -102,3 +116,7 @@ $('.get_filtered_load').on('click', function() {
     console.log("I saw the change")
     plot_filtered_load();
 });
+
+window.onresize = function() {
+    Plotly.Plots.resize('load_chart');
+};
