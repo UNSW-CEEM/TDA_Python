@@ -9,7 +9,9 @@ import helper_functions
 import plotly
 import plotly.graph_objs as go
 import json
+import make_load_charts
 
+data_dict = {}
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -46,40 +48,30 @@ def load_names():
         load_names.append(file_name)
     return jsonify(load_names)
 
-
-@app.route('/load_load/<name>')
-def load_load(name):
-    t0 = time.time()
-    load = feather.read_dataframe('data/'+name)
-    load = helper_functions.calc_mean_daily_load(load)
-    data = [go.Scatter(x=load['READING_DATETIME'], y=load['mean'])]
-    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
-    print('I tried to load')
-    return graphJSON
-
+@app.route('/n_users/<name>')
+def n_users(name):
+    if 'filtered' in data_dict[name]:
+        n_users = len(data_dict[name]['filtered'].columns) - 1
+    else:
+        n_users = len(data_dict[name]['raw'].columns) - 1
+    return str(n_users)
 
 @app.route('/filtered_load_data', methods=['POST'])
 def filtered_load_data():
     load_request = request.get_json()
+    if load_request['file_name'] not in data_dict:
+        data_dict[load_request['file_name']] = {}
+        data_dict[load_request['file_name']]['raw'] = feather.read_dataframe('data/'+load_request['file_name'])
     demo_info_file_name = helper_functions.find_loads_demographic_file(load_request['file_name'])
     demo_info = pd.read_csv('data/' + demo_info_file_name, dtype=str)
-    load = feather.read_dataframe('data/' + load_request['file_name'])
     for column_name, selected_options in load_request['filter_options'].items():
         if 'All' not in selected_options:
             demo_info = demo_info[demo_info[column_name].isin(selected_options)]
-    load = load.loc[:, ['READING_DATETIME'] + list(demo_info['CUSTOMER_KEY'])]
-   # if len(load.columns) > 1:
-  #      load = helper_functions.calc_mean_daily_load(load)
-  #      load_as_json = jsonify({'Time': list(load.READING_DATETIME), "Mean": list(load['mean'])})
- #   else:
-#        load_as_json = jsonify({'Time': [], "Mean": []})
-
-    load = helper_functions.calc_mean_daily_load(load)
-    data = [go.Scatter(x=load['READING_DATETIME'], y=load['mean'])]
-    graphJSON = json.dumps(data, cls=plotly.utils.PlotlyJSONEncoder)
-    return graphJSON
-    #return load_as_json
-
+    data_dict[load_request['file_name']]['filtered'] = \
+        data_dict[load_request['file_name']]['raw'].loc[:, ['READING_DATETIME'] + list(demo_info['CUSTOMER_KEY'])]
+    chart_data = make_load_charts.get_chart(data_dict[load_request['file_name']]['filtered'],
+                                            data_dict[load_request['file_name']]['raw'], load_request['chart_type'])
+    return chart_data
 
 
 @app.route('/demo_options/<name>')

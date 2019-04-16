@@ -58,6 +58,8 @@
                 <span>Selected:</span>
                 <select id="select" name="select" ><option selected="selected">blank</option></select>
                 <script src="static/build_load_selector.js"></script>
+                <button type="button" class="get_load" style="float: right; width: 15% !important;
+                height: 2.5vh;" >Set</button>
             </div>
             <hr>
             <div id="demograhphic_selection">
@@ -111,15 +113,13 @@
                     <select  id="demo_select_9" class="select_demo" multiple ></select>
                 </div>
                 <script> $('#demo_9').hide() </script>
-
             </div>
-            <button type="button" class="get_filtered_load">Click Me!</button>
             <hr>
             <div id="load_inspection">
-                <span id="sample_size_info">No. of users N/A</span>
-                <div id="graph_select_con" style="float: right; width: 50% !important; height: 2.5vh;">
+                <span id="sample_size_info">No. of users: N/A</span>
+                <div id="graph_select_con" style="float: right; width: 65% !important; height: 2.5vh;">
                     <span>Show:</span>
-                    <select  id="select graph" name="Show:">
+                    <select  id="select_graph" name="Show:" style=" width: 65%">
                         <option value="Annual Average Profile"> Annual Average Profile</option>
                         <option value="Daily kWh Histogram">Daily kWh Histogram</option>
                     </select>
