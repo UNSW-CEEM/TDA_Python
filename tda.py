@@ -4,12 +4,12 @@ from pyfladesk import init_gui
 import sys
 import pandas as pd
 import feather
-import time
+from time import time
 import helper_functions
 import plotly
 import plotly.graph_objs as go
 import json
-import make_load_charts
+from make_load_charts import chart_methods
 
 data_dict = {}
 
@@ -51,27 +51,68 @@ def load_names():
 @app.route('/n_users/<name>')
 def n_users(name):
     if 'filtered' in data_dict[name]:
-        n_users = len(data_dict[name]['filtered'].columns) - 1
+        n_users = len(set(data_dict[name]['filtered']['CUSTOMER_KEY']))
     else:
-        n_users = len(data_dict[name]['raw'].columns) - 1
+        n_users = len(set(data_dict[name]['raw']['CUSTOMER_KEY']))
     return str(n_users)
 
 @app.route('/filtered_load_data', methods=['POST'])
 def filtered_load_data():
+    t0 = time()
     load_request = request.get_json()
     if load_request['file_name'] not in data_dict:
+        temp_load = pd.read_csv('data/' + load_request['file_name'])
+        t0 = time()
+        temp_load['READING_DATETIME'] = pd.to_datetime(temp_load['READING_DATETIME'])
+        print('time format datetime {}'.format(time() - t0))
+        temp_load = pd.melt(temp_load, id_vars=['READING_DATETIME'],
+                            value_vars=[x for x in temp_load.columns if x != 'READING_DATETIME'],
+                            var_name='CUSTOMER_KEY', value_name='Energy_kWh')
         data_dict[load_request['file_name']] = {}
-        data_dict[load_request['file_name']]['raw'] = feather.read_dataframe('data/'+load_request['file_name'])
+        data_dict[load_request['file_name']]['raw'] = temp_load
+    else:
+        temp_load = data_dict[load_request['file_name']]['raw']
+
+    print('time get load {}'.format(time()-t0))
+    t0 = time()
+
+    # Create filter set of customer keys
     demo_info_file_name = helper_functions.find_loads_demographic_file(load_request['file_name'])
     demo_info = pd.read_csv('data/' + demo_info_file_name, dtype=str)
+    filter = False
     for column_name, selected_options in load_request['filter_options'].items():
         if 'All' not in selected_options:
             demo_info = demo_info[demo_info[column_name].isin(selected_options)]
-    data_dict[load_request['file_name']]['filtered'] = \
-        data_dict[load_request['file_name']]['raw'].loc[:, ['READING_DATETIME'] + list(demo_info['CUSTOMER_KEY'])]
-    chart_data = make_load_charts.get_chart(data_dict[load_request['file_name']]['filtered'],
-                                            data_dict[load_request['file_name']]['raw'], load_request['chart_type'])
-    return chart_data
+            filter = True
+    print('time to find cus keys {}'.format(time() - t0))
+    # Create the requested chart data if it does not already exist.
+    if 'charts' not in data_dict[load_request['file_name']]:
+        data_dict[load_request['file_name']]['charts'] = {}
+    if 'raw' not in data_dict[load_request['file_name']]['charts']:
+        data_dict[load_request['file_name']]['charts']['raw'] = {}
+    if load_request['chart_type'] not in data_dict[load_request['file_name']]['charts']['raw']:
+        data_dict[load_request['file_name']]['charts']['raw'][load_request['chart_type']] = \
+            chart_methods[load_request['chart_type']](data_dict[load_request['file_name']]['raw'],
+                                                      series_name='All users')
+
+    # If filtering has been applied also create the filtered chart data,
+    if filter:
+        t1 = time()
+        data_dict[load_request['file_name']]['filtered'] = \
+            temp_load[temp_load['CUSTOMER_KEY'].isin(demo_info['CUSTOMER_KEY'])]
+        print('time to find cus keys {}'.format(time() - t1))
+        if 'filtered' not in data_dict[load_request['file_name']]['charts']:
+            data_dict[load_request['file_name']]['charts']['filtered'] = {}
+        data_dict[load_request['file_name']]['charts']['filtered'][load_request['chart_type']] = \
+            chart_methods[load_request['chart_type']](data_dict[load_request['file_name']]['filtered'],
+                                                      series_name='Selected Users')
+        chart_data = [data_dict[load_request['file_name']]['charts']['raw'][load_request['chart_type']],
+                      data_dict[load_request['file_name']]['charts']['filtered'][load_request['chart_type']]]
+    else:
+        chart_data = [data_dict[load_request['file_name']]['charts']['raw'][load_request['chart_type']]]
+    graph_json = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
+    print('time to filter and make graph {}'.format(time() - t0))
+    return graph_json
 
 
 @app.route('/demo_options/<name>')
