@@ -22,7 +22,11 @@ def extract_demographics_options(demographic_table):
 
 
 def get_load_table(folder_path, load_file):
-    load_data = pd.read_csv(folder_path + '/' + load_file + '.csv')
+    load_data = pd.read_csv(folder_path + load_file)
+    load_data['READING_DATETIME'] = pd.to_datetime(load_data['READING_DATETIME'])
+    load_data = pd.melt(load_data, id_vars=['READING_DATETIME'],
+                        value_vars=[x for x in load_data.columns if x != 'READING_DATETIME'],
+                        var_name='CUSTOMER_KEY', value_name='Energy_kWh')
     return load_data
 
 

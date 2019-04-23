@@ -10,8 +10,13 @@ import plotly
 import plotly.graph_objs as go
 import json
 from make_load_charts import chart_methods
+import data_interface
+import easygui
 
-data_dict = {}
+raw_data = {}
+filtered_data = {}
+raw_charts = {}
+filtered_charts = {}
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -30,16 +35,7 @@ else:
 # Here you go to http://127.0.0.1:5000/
 @app.route('/')
 def index():
-    return render_template('index.html', my_name="Nick")
-
-
-# Here you go to http://127.0.0.1:5000/data
-@app.route('/data')
-def data():
-    return jsonify(
-        {'data': [1, 2, 3, 4, 5]}
-    )
-
+    return render_template('index.html')
 
 @app.route('/load_names')
 def load_names():
@@ -48,70 +44,53 @@ def load_names():
         load_names.append(file_name)
     return jsonify(load_names)
 
+
 @app.route('/n_users/<name>')
 def n_users(name):
-    if 'filtered' in data_dict[name]:
-        n_users = len(set(data_dict[name]['filtered']['CUSTOMER_KEY']))
+    if name in filtered_data and filtered_data[name] is not None:
+        n = len(set(filtered_data[name]['CUSTOMER_KEY']))
     else:
-        n_users = len(set(data_dict[name]['raw']['CUSTOMER_KEY']))
-    return str(n_users)
+        n = len(set(raw_data[name]['CUSTOMER_KEY']))
+    return str(n)
+
 
 @app.route('/filtered_load_data', methods=['POST'])
 def filtered_load_data():
-    t0 = time()
     load_request = request.get_json()
-    if load_request['file_name'] not in data_dict:
-        temp_load = pd.read_csv('data/' + load_request['file_name'])
-        t0 = time()
-        temp_load['READING_DATETIME'] = pd.to_datetime(temp_load['READING_DATETIME'])
-        print('time format datetime {}'.format(time() - t0))
-        temp_load = pd.melt(temp_load, id_vars=['READING_DATETIME'],
-                            value_vars=[x for x in temp_load.columns if x != 'READING_DATETIME'],
-                            var_name='CUSTOMER_KEY', value_name='Energy_kWh')
-        data_dict[load_request['file_name']] = {}
-        data_dict[load_request['file_name']]['raw'] = temp_load
-    else:
-        temp_load = data_dict[load_request['file_name']]['raw']
+    # Get raw load data.
+    if load_request['file_name'] not in raw_data:
+        raw_data[load_request['file_name']] = data_interface.get_load_table('data/', load_request['file_name'])
 
-    print('time get load {}'.format(time()-t0))
-    t0 = time()
-
-    # Create filter set of customer keys
+    # Create filtered set of customer keys.
     demo_info_file_name = helper_functions.find_loads_demographic_file(load_request['file_name'])
     demo_info = pd.read_csv('data/' + demo_info_file_name, dtype=str)
-    filter = False
+    filtered = False
     for column_name, selected_options in load_request['filter_options'].items():
         if 'All' not in selected_options:
             demo_info = demo_info[demo_info[column_name].isin(selected_options)]
-            filter = True
-    print('time to find cus keys {}'.format(time() - t0))
+            filtered = True
+
     # Create the requested chart data if it does not already exist.
-    if 'charts' not in data_dict[load_request['file_name']]:
-        data_dict[load_request['file_name']]['charts'] = {}
-    if 'raw' not in data_dict[load_request['file_name']]['charts']:
-        data_dict[load_request['file_name']]['charts']['raw'] = {}
-    if load_request['chart_type'] not in data_dict[load_request['file_name']]['charts']['raw']:
-        data_dict[load_request['file_name']]['charts']['raw'][load_request['chart_type']] = \
-            chart_methods[load_request['chart_type']](data_dict[load_request['file_name']]['raw'],
-                                                      series_name='All users')
+    if load_request['file_name'] not in raw_charts:
+        raw_charts[load_request['file_name']] = {}
+    if load_request['chart_type'] not in raw_charts[load_request['file_name']]:
+        raw_charts[load_request['file_name']][load_request['chart_type']] = \
+            chart_methods[load_request['chart_type']](raw_data[load_request['file_name']], series_name='All')
 
     # If filtering has been applied also create the filtered chart data,
-    if filter:
-        t1 = time()
-        data_dict[load_request['file_name']]['filtered'] = \
-            temp_load[temp_load['CUSTOMER_KEY'].isin(demo_info['CUSTOMER_KEY'])]
-        print('time to find cus keys {}'.format(time() - t1))
-        if 'filtered' not in data_dict[load_request['file_name']]['charts']:
-            data_dict[load_request['file_name']]['charts']['filtered'] = {}
-        data_dict[load_request['file_name']]['charts']['filtered'][load_request['chart_type']] = \
-            chart_methods[load_request['chart_type']](data_dict[load_request['file_name']]['filtered'],
-                                                      series_name='Selected Users')
-        chart_data = [data_dict[load_request['file_name']]['charts']['raw'][load_request['chart_type']],
-                      data_dict[load_request['file_name']]['charts']['filtered'][load_request['chart_type']]]
+    if filtered:
+        filtered_data[load_request['file_name']] = \
+            raw_data[load_request['file_name']][raw_data[load_request['file_name']]['CUSTOMER_KEY'].
+                isin(demo_info['CUSTOMER_KEY'])]
+        filtered_chart = chart_methods[load_request['chart_type']](filtered_data[load_request['file_name']],
+                                                                   series_name='Selected')
+        chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']], filtered_chart]
     else:
-        chart_data = [data_dict[load_request['file_name']]['charts']['raw'][load_request['chart_type']]]
+        filtered_data[load_request['file_name']] = None
+        chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']]]
+
+    # Format as json.
     graph_json = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
-    print('time to filter and make graph {}'.format(time() - t0))
     return graph_json
 
 
@@ -120,7 +99,7 @@ def demo_options(name):
     demo_config_file_name = helper_functions.find_loads_demographic_config_file(name)
     demo_file_name = helper_functions.find_loads_demographic_file(name)
     if demo_config_file_name != '' and demo_config_file_name in os.listdir('data/'):
-        demo_config = pd.read_csv('data/'+demo_config_file_name)
+        demo_config = pd.read_csv('data/' + demo_config_file_name)
         columns_to_use = demo_config[demo_config['use'] == 1]
         n = len(columns_to_use['actual_names']) if len(columns_to_use['actual_names']) < 10 else 10
         actual_names = list(columns_to_use['actual_names'].iloc[:n])
@@ -144,6 +123,6 @@ def demo_options(name):
 
 
 if __name__ == '__main__':
-    app.run(debug=True)
+    app.run()
 
     #init_gui(app, width=1200, height=800, window_title='TDA')  # This one runs it as a standalone app

@@ -16,50 +16,65 @@
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
 
   <style>
       html, body {height:100%; margin: 0;}
-      #container {min-width: 100%; height:100vh; margin: 0; background-color: #EEEEEE;}
-      .main {height:100%;}
-      #logos{height:4%; padding-left:5px;}
-      #left_column { width:34%; float:left; height:95%;}
-      #right_column { float:right; width:66%; height:100%;}
-      #load_panel{ width: 92%; height: 98%;}
-      #load_selection { height: 10%; min-height: 10%; }
-      #select { width: 10vw; height: 2.2vh; font-size: 1.5vh}
-      #demograhphic_selection {height: 50%; min-height: 50%; }
-      #load_inspection { height: 35vh; min-height: 35vh;}
-      #load_chart { height: 32vh; min-height: 32vh ;}
-      #tariff_selection_panel { height:40%; }
-      #results_panel { height:55 %; }
-      #result_chart  { height:40 %; width: 50%}
+      #container {width: 100vw; height:100vh; margin: 0; background-color: #EEEEEE;}
+      .main {height:98%; width:98%; padding: 0.5%}
+      #logos{height: 10%;}
+      #left_column {width:35%; float:left; height:100%; clear: left;}
+      #right_column { float: right; width:65%; height:100%; clear: right;}
+      #load_panel{height: 89.6%; width: 98%; border-style: groove; border-width: 0.4vh;}
+      #load_selection {height: 10%; min-height: 10%; width: 35vw}
+      #select {width: 30%; height: 2.2%; font-size: 1.5vh}
+      #demograhphic_selection {height: 30%; min-height: 50%; }
+      #load_inspection {height: 30vh;}
+      #load_chart {height: 80%;}
+      #tariff_selection_panel { height:44%; border-style: groove; border-width: 0.4vh;}
+      #results_panel { height:55%; border-style: groove; border-width: 0.4vh;}
+      #result_chart  { height:40%; width: 50%}
+      #sample_size_info{font-size: 1.5vh;}
+      #select_graph{font-size: 1.5vh;}
       .demo_select_container { float: right; width: 40% !important; height: 2.5vh; clear: right}
       .select_demo{width: 10vw; height: 2.2vh; font-size: 1.5vh; position:relative}
       .select_demo:focus{height:auto; z-index:1}
       .demo_label { height: 2.5vh; font-size: 1.5vh; float: left; clear: left}
+      .loader {position: relative;}
+
+                .loader div{
+                    border: 16px solid #f3f3f3; /* Light grey */
+                    border-top: 16px solid #3498db; /* Blue */
+                    border-radius: 50%;
+                    width: 120px;
+                    height: 120px;
+                    animation: spin 2s linear infinite;
+                }
+
+                @keyframes spin {
+                    0% { transform: rotate(0deg); }
+                    100% { transform: rotate(360deg); }
+                }
   </style>
 
 </head>
 
 <body>
 <div id="container">
-
   <div class="main">
-
     <div id="left_column">
-
         <div id="logos">
-            <img src="static/CEEMLogo.png" alt="UNSW Logo" width="205", style="float:left">
-            <img src="static/UNSWLogo.png" alt="UNSW Logo" width="90">
+            <img src="static/CEEMLogo.png" alt="UNSW Logo", style="float:left; max-width: 60%; max-height:100%">
+            <img src="static/UNSWLogo.png" alt="UNSW Logo", style="max-width: 30%; max-height:100%">
         </div>
-        <fieldset id="load_panel">
-            <legend>Select Load:</legend>
+        <div id="load_panel">
+            <h3 style="font-size: 1.5vh">Select Load:</h3>
             <div id="load_selecion">
-                <span>Selected:</span>
+                <span style="font-size: 1.5vh">Selected:</span>
                 <select id="select" name="select" ><option selected="selected">blank</option></select>
                 <script src="static/build_load_selector.js"></script>
                 <button type="button" class="get_load" style="float: right; width: 15% !important;
-                height: 2.5vh;" >Set</button>
+                height: 2.5vh; font-size: 1.5vh;" >Set</button>
             </div>
             <hr>
             <div id="demograhphic_selection">
@@ -118,34 +133,39 @@
             <div id="load_inspection">
                 <span id="sample_size_info">No. of users: N/A</span>
                 <div id="graph_select_con" style="float: right; width: 65% !important; height: 2.5vh;">
-                    <span>Show:</span>
+                    <span style="font-size: 1.5vh">Show:</span>
                     <select  id="select_graph" name="Show:" style=" width: 65%">
                         <option value="Annual Average Profile"> Annual Average Profile</option>
                         <option value="Daily kWh Histogram">Daily kWh Histogram</option>
                     </select>
                 </div>
                 <!-- Chart goes here in this div -->
-                <div class="chart" id="load_chart"></div>
+                <div class="chart" id="load_chart">
+                    <div id="loader">
+                        <div>
+
+                        </div>
+                    </div>
+                </div>
+
                 <script src="static/plot_load.js"></script>
                 <!-- This is the script.js that's in 'static' folder - it loads the chart data and draws the chart. -->
             </div>
-        </fieldset>
+        </div>
 
     </div>
 
     <div id="right_column">
 
-        <fieldset id="results_panel">
+        <div id="results_panel">
             <!-- Chart goes here in this div -->
             <div id="result_chart">
-
             </div>
-        </fieldset>
+        </div>
 
-        <fieldset id="tariff_selection_panel">
-            <legend>Select Tariff:</legend>
-
-        </fieldset>
+        <div id="tariff_selection_panel">
+            <h4 style="font-size: 1.5vh">Select Tariff:</h4>
+        </div>
 
     </div>
 
