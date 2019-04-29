@@ -12,6 +12,7 @@ import json
 from make_load_charts import chart_methods
 import data_interface
 import easygui
+from selenium import webdriver
 
 raw_data = {}
 filtered_data = {}
@@ -124,5 +125,8 @@ def demo_options(name):
 
 if __name__ == '__main__':
     app.run()
+    print('hi')
+    driver = webdriver.Chrome("GoogleChromePortable\GoogleChromePortable.exe")
+    driver.get("http://127.0.0.1:5000/")
 
     #init_gui(app, width=1200, height=800, window_title='TDA')  # This one runs it as a standalone app

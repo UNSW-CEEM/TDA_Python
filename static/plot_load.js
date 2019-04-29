@@ -27,7 +27,7 @@ var add_demo_selectors = function(response){
     }
 }
 
-var plot_filtered_load =  function(){
+var plot_filtered_load =  function(newWindow){
 
     var filter_options = {}
 
@@ -69,7 +69,8 @@ var plot_load = function(response){
     Plotly.newPlot('load_chart', response, layout);
     var file_name = $('#select').children("option:selected").val();
     $.getJSON('/n_users/' + file_name, print_n_users);
-    setTimeout(hide_loader, 1000);
+    swal.close();
+
 }
 
 var print_n_users = function(n_users){
@@ -81,7 +82,7 @@ var print_n_users = function(n_users){
 var make_loading_popup = function(){
   let params = `scrollbars=no, resizable=no, status=no, location=no, toolbar=no, menubar=no,
   width=300,height=50,left=500,top=500`;
-  let newWindow = open('/', 'example', params)
+  let newWindow = open(',', 'example', params)
   newWindow.focus();
 
   newWindow.onload = function() {
@@ -92,7 +93,7 @@ var make_loading_popup = function(){
 }
 
 $('.get_load').on('click', function() {
-  show_loader();
+  swal('Hi');
   var file_name = $('#select').children("option:selected").val();
   $.getJSON('/demo_options/' + file_name, add_demo_selectors);
   plot_filtered_load();
