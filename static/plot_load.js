@@ -27,7 +27,7 @@ var add_demo_selectors = function(response){
     }
 }
 
-var plot_filtered_load =  function(newWindow){
+var plot_filtered_load =  function(){
 
     var filter_options = {}
 
@@ -69,8 +69,9 @@ var plot_load = function(response){
     Plotly.newPlot('load_chart', response, layout);
     var file_name = $('#select').children("option:selected").val();
     $.getJSON('/n_users/' + file_name, print_n_users);
-    swal.close();
-
+    var label = document.getElementById('chart_loading_message');
+    label.innerHTML = '' ;
+    $('#get_load').contextMenu('close');
 }
 
 var print_n_users = function(n_users){
@@ -92,8 +93,9 @@ var make_loading_popup = function(){
   return newWindow
 }
 
-$('.get_load').on('click', function() {
-  swal('Hi');
+$('#get_load').click(function() {
+  var label = document.getElementById('chart_loading_message');
+  label.innerHTML = 'Loading . . .' ;
   var file_name = $('#select').children("option:selected").val();
   $.getJSON('/demo_options/' + file_name, add_demo_selectors);
   plot_filtered_load();
@@ -111,13 +113,6 @@ window.onresize = function() {
     Plotly.Plots.resize('load_chart');
 };
 
-function show_loader(){
-	$("#loader").addClass("loader");
-  //event.preventDefault();
-}
+$('#get_load').contextMenu('#popupMenu');
 
-function hide_loader(){
-	$("#loader").removeClass("loader");
-  //event.preventDefault();
-}
-
+$('.popupClose').on('click', function(e){$('#get_load').contextMenu('close');});
