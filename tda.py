@@ -1,18 +1,13 @@
 from flask import Flask, render_template, request, jsonify
 import os
-from pyfladesk import init_gui
 import sys
 import pandas as pd
-import feather
-from time import time
 import helper_functions
 import plotly
-import plotly.graph_objs as go
 import json
 from make_load_charts import chart_methods
 import data_interface
-import easygui
-from selenium import webdriver
+
 
 raw_data = {}
 filtered_data = {}

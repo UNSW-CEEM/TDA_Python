@@ -4,7 +4,7 @@
 <head>
   <meta charset="utf-8">
 
-  <title>The HTML5 Herald</title>
+  <title style="background-color: #FFF;">TDA (CEEM, UNSW)</title>
   <meta name="description" content="The HTML5 Herald">
   <meta name="author" content="SitePoint">
 
@@ -23,20 +23,25 @@
 
   <style>
       html, body {height:100%; margin: 0;}
-      #container {width: 99.7vw; height:99.6vh; margin: 0; background-color: #EEEEEE;}
-      .main {height:98%; width:98%; padding: 0.5%}
-      #logos{height: 10%;}
-      #left_column {width:35%; float:left; height:100%; clear: left;}
-      #right_column { float: right; width:65%; height:100%; clear: right;}
-      #load_panel{height: 89.6%; width: 98%; border-style: groove; border-width: 0.4vh;}
+      #container {width: calc(100vw - (100vw - 100%)); height: calc(100vh - (100vh - 100%)); background-color: #EEEEEE;
+                  margin: 0; box-sizing: border-box;}
+      #menu_bar {height:2.5%; box-sizing: border-box; background: #FFF;}
+      .main {height:95.0%; width:100%; padding: 0.5%; box-sizing: border-box; margin: 0;}
+      #left_column {width:34.5%; float:left; height:100%; clear: left;}
+      #logos{height: 10%; box-sizing: border-box;}
+      #right_column {float: right; width:65%; height:100%; clear: right;}
+      #load_panel{height: 90%; width: 100%; border-style: groove; border-width: 0.5%; padding: 0.5%;
+                  box-sizing: border-box;}
       #load_selection {height: 10%; min-height: 10%; width: 35vw}
       #select {width: 30%; height: 2.2%; font-size: 1.5vh}
       #demograhphic_selection {height: 30%; min-height: 50%; }
-      #load_inspection {height: 30vh;}
+      #load_inspection {height: 30%;}
       #load_chart {position: relative; height: 80%;}
-      #tariff_selection_panel { height:44%; border-style: groove; border-width: 0.4vh;}
-      #results_panel { height:55%; border-style: groove; border-width: 0.4vh;}
-      #result_chart  { height:40%; width: 50%}
+      #tariff_selection_panel {height:44.5%; border-style: groove; border-width: 0.5%; padding: 0.5%;
+                               box-sizing: border-box;}
+      #results_panel {height:55%; border-style: groove; border-width: 0.5%; padding: 0.5%; box-sizing: border-box;
+                      margin-bottom: 0.5%}
+      #result_chart  {height:40%; width: 50%}
       #sample_size_info{font-size: 1.5vh;}
       #select_graph{font-size: 1.5vh;}
       .demo_select_container { float: right; width: 40% !important; height: 2.5vh; clear: right}
@@ -44,22 +49,29 @@
       .select_demo:focus{height:auto; z-index:1}
       .demo_label { height: 2.5vh; font-size: 1.5vh; float: left; clear: left}
       #chart_loading_message {position: absolute; top: 50%; left: 50%; height: 30%; width: 50%; margin: -15% 0 0 -25%;}
+      .menu_button{background: #FFF; border: solid; border-color: #FFF; border-width: 1px; height: 100%;
+                   box-sizing: border-box; margin: 0;}
+      .menu_button:hover{background: #ADDFFF; border-color: #5D8FAF;}
+
 
   </style>
 
-</head>
-
-<div id="popupMenu">Please wait. Loading . . .
+  <div id="popupMenu">Please wait. Loading . . .
 <br><br>
 <span class="popupClose">OK</span>
 </div>
 
+</head>
+
+
+
 <body>
 <div id="container">
-  <div class="menu_bar">
-      <button type="button" class="project_menu" id="projectmenu">Project</button>
+  <div id="menu_bar">
+      <button type="button" class="menu_button" id="projectmenu">Project</button>
        <script src="static/menu.js"></script>
   </div>
+    <hr style="height:1px;padding-top:0;margin-top:0;" />
   <div class="main">
     <div id="left_column">
         <div id="logos">

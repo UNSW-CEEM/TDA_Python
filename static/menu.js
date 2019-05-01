@@ -21,4 +21,4 @@ var menu = [{
     }];
 
 //Calling context menu
-$('#projectmenu').contextMenu(menu);
+$('#projectmenu').contextMenu(menu, {displayAround: 'trigger', verAdjust:24, horAdjust:-55});
