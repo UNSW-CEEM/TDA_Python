@@ -8,7 +8,6 @@
   <meta name="description" content="The HTML5 Herald">
   <meta name="author" content="SitePoint">
 
-
   <!-- This is the 'importing' of external libraries. -->
     <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
     <link href="static/contextMenu/contextMenu.css"  rel="stylesheet" type="text/css" />
@@ -20,43 +19,44 @@
     <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
     <script src="static/contextMenu/contextMenu.js"></script>
 
-
   <style>
       html, body {height:100%; margin: 0;}
       #container {width: calc(100vw - (100vw - 100%)); height: calc(100vh - (100vh - 100%)); background-color: #EEEEEE;
                   margin: 0; box-sizing: border-box;}
-      #menu_bar {height:2.5%; box-sizing: border-box; background: #FFF;}
-      .main {height:95.0%; width:100%; padding: 0.5%; box-sizing: border-box; margin: 0;}
+      #menu_bar {height: 20px%; box-sizing: border-box; background: #FFF; margin: 0;}
+      .main {height: calc((100vh - (100vh - 100%)) - 21px); width:100%; padding: 0.5%; box-sizing: border-box; margin: 0;}
       #left_column {width:34.5%; float:left; height:100%; clear: left;}
-      #logos{height: 10%; box-sizing: border-box;}
+      #logos{height: 10%; box-sizing: border-box; margin: 0}
       #right_column {float: right; width:65%; height:100%; clear: right;}
-      #load_panel{height: 90%; width: 100%; border-style: groove; border-width: 0.5%; padding: 2%;
-                  box-sizing: border-box; position: relative;}
+      #load_panel{height: 88%; width: 100%; border-style: groove; border-width: 0.5%; padding: 2%;
+                  box-sizing: border-box; position: relative; top: 2%;}
       #load_selection {height: 10%; min-height: 10%; width: 35vw}
       #select {width: 30%; height: 2.2%; font-size: 1.5vh}
       #demograhphic_selection {height: 30%; min-height: 50%; }
       #load_inspection {height: 37%;}
       #load_chart {position: relative; height: 90%;}
-      #tariff_selection_panel {height:44.5%; border-style: groove; border-width: 0.5%; padding: 2%;
-                               box-sizing: border-box; position: relative;}
-      #results_panel {height:55%; border-style: groove; border-width: 0.5%; padding: 0.5%; box-sizing: border-box;
-                      margin-bottom: 0.5%}
+      #tariff_selection_panel {height:37%; border-style: groove; border-width: 0.5%; padding: 2%;
+                               box-sizing: border-box; position: relative; top: 2%;}
+      .tariff_panel_cols {float: left;}
+      #left_tariff_col {width: 20 %}
+      #right_tariff_col { width: 80 %}
+      #results_panel {height:61%; border-style: groove; border-width: 0.5%; padding: 0.5%; box-sizing: border-box;}
       #result_chart  {height:40%; width: 50%}
-      #sample_size_info{font-size: 1.5vh;}
-      #select_graph{font-size: 1.5vh;}
+      #sample_size_info{font-size: 2vh;}
+      #select_graph{font-size: 2vh;}
       .demo_select_container { float: right; width: 40% !important; height: 2.5vh; clear: right}
-      .select_demo{width: 10vw; height: 2.2vh; font-size: 1.5vh; position:relative}
+      .select_demo{width: 10vw; height: 2.2vh; font-size: 2vh; position:relative}
       .select_demo:focus{height:auto; z-index:1}
-      .demo_label { height: 2.5vh; font-size: 1.5vh; float: left; clear: left}
+      .demo_label { height: 2.5vh; font-size: 2vh; float: left; clear: left}
       #chart_loading_message {position: absolute; top: 50%; left: 50%; height: 30%; width: 50%; margin: -15% 0 0 -25%;}
       .menu_button{background: #FFF; border: solid; border-color: #FFF; border-width: 1px; height: 100%;
                    box-sizing: border-box; margin: 0;}
       .menu_button:hover{background: #ADDFFF; border-color: #5D8FAF;}
       #load_panel h3 { position: absolute; top: 0; font-size: 18px; line-height: 1;
                        margin: -9px 0 0; /* half of font-size */ background: #EEEEEE; padding: 0 3px;}
-      #tariff_selection_panel h3 { position: absolute; top: 0; font-size: 18px; line-height: 1;
+      #tariff_selection_panel h3 { position: absolute; top: 0; font-size: 2hv; line-height: 1;
                        margin: -9px 0 0; /* half of font-size */ background: #EEEEEE; padding: 0 3px;}
-
+      .standard_label {height: 5vh; font-size: 2vh; display: block;}
 
   </style>
 
@@ -64,10 +64,7 @@
 <br><br>
 <span class="popupClose">OK</span>
 </div>
-
 </head>
-
-
 
 <body>
 <div id="container">
@@ -76,8 +73,9 @@
       <script src="static/menu.js"></script>
       <script src="static/shut_down.js"></script>
   </div>
-    <hr style="height:1px;padding-top:0;margin-top:0;" />
+    <hr style="height:1px ;padding-top:0;margin-top:0;margin-bottom:0;box-sizing: border-box;" />
   <div class="main">
+
     <div id="left_column">
         <div id="logos">
             <img src="static/CEEMLogo.png" alt="UNSW Logo", style="float:left; max-width: 60%; max-height:100%">
@@ -176,6 +174,14 @@
 
         <div id="tariff_selection_panel">
             <h3 style="font-size: 1.5vh">Select Tariff:</h3>
+            <div id="left_tariff_col">
+                <span class="standard_label">Type:</span>
+                <span class="standard_label">State:</span>
+                <span class="standard_label">Provider:</span>
+                <span class="standard_label">Year:</span>
+                <span class="standard_label">Tariff:</span>
+            </div>
+            <div id="right_tariff_col"></div>
         </div>
 
     </div>
