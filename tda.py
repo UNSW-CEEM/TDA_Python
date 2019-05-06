@@ -7,6 +7,7 @@ import plotly
 import json
 from make_load_charts import chart_methods
 import data_interface
+from time import time
 
 
 raw_data = {}
@@ -52,11 +53,13 @@ def n_users(name):
 
 @app.route('/filtered_load_data', methods=['POST'])
 def filtered_load_data():
+    t0 = time()
     load_request = request.get_json()
     # Get raw load data.
+    t1 = time()
     if load_request['file_name'] not in raw_data:
-        raw_data[load_request['file_name']] = data_interface.get_load_table('data/', load_request['file_name'])
-
+        raw_data[load_request['file_name']] = data_interface.get_load_table_alt('data/', load_request['file_name'])
+    print('Time get load data {}'.format(time() - t1))
     # Create filtered set of customer keys.
     demo_info_file_name = helper_functions.find_loads_demographic_file(load_request['file_name'])
     demo_info = pd.read_csv('data/' + demo_info_file_name, dtype=str)
@@ -87,6 +90,7 @@ def filtered_load_data():
 
     # Format as json.
     graph_json = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
+    print('Total time in plot filtered load {}'.format(time()-t0))
     return graph_json
 
 
@@ -116,6 +120,20 @@ def demo_options(name):
         display_names_dict[name] = display_name
 
     return jsonify({'actual_names': actual_names, "display_names": display_names_dict, "options": options})
+
+
+def shutdown_server():
+    print('called shutdown')
+    func = request.environ.get('werkzeug.server.shutdown')
+    if func is None:
+        raise RuntimeError('Not running with the Werkzeug Server')
+    func()
+
+
+@app.route('/shutdown', methods=['POST'])
+def shutdown():
+    shutdown_server()
+    return 'Server shutting down...'
 
 
 if __name__ == '__main__':

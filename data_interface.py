@@ -1,5 +1,6 @@
 import os
 import pandas as pd
+import feather
 
 
 def extract_load_options(folder_path):
@@ -27,6 +28,12 @@ def get_load_table(folder_path, load_file):
     load_data = pd.melt(load_data, id_vars=['READING_DATETIME'],
                         value_vars=[x for x in load_data.columns if x != 'READING_DATETIME'],
                         var_name='CUSTOMER_KEY', value_name='Energy_kWh')
+    x=1
+    return load_data
+
+
+def get_load_table_alt(folder_path, load_file):
+    load_data = feather.read_dataframe(folder_path + load_file)
     return load_data
 
 

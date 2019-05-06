@@ -30,15 +30,15 @@
       #left_column {width:34.5%; float:left; height:100%; clear: left;}
       #logos{height: 10%; box-sizing: border-box;}
       #right_column {float: right; width:65%; height:100%; clear: right;}
-      #load_panel{height: 90%; width: 100%; border-style: groove; border-width: 0.5%; padding: 0.5%;
-                  box-sizing: border-box;}
+      #load_panel{height: 90%; width: 100%; border-style: groove; border-width: 0.5%; padding: 2%;
+                  box-sizing: border-box; position: relative;}
       #load_selection {height: 10%; min-height: 10%; width: 35vw}
       #select {width: 30%; height: 2.2%; font-size: 1.5vh}
       #demograhphic_selection {height: 30%; min-height: 50%; }
-      #load_inspection {height: 30%;}
-      #load_chart {position: relative; height: 80%;}
-      #tariff_selection_panel {height:44.5%; border-style: groove; border-width: 0.5%; padding: 0.5%;
-                               box-sizing: border-box;}
+      #load_inspection {height: 37%;}
+      #load_chart {position: relative; height: 90%;}
+      #tariff_selection_panel {height:44.5%; border-style: groove; border-width: 0.5%; padding: 2%;
+                               box-sizing: border-box; position: relative;}
       #results_panel {height:55%; border-style: groove; border-width: 0.5%; padding: 0.5%; box-sizing: border-box;
                       margin-bottom: 0.5%}
       #result_chart  {height:40%; width: 50%}
@@ -52,6 +52,10 @@
       .menu_button{background: #FFF; border: solid; border-color: #FFF; border-width: 1px; height: 100%;
                    box-sizing: border-box; margin: 0;}
       .menu_button:hover{background: #ADDFFF; border-color: #5D8FAF;}
+      #load_panel h3 { position: absolute; top: 0; font-size: 18px; line-height: 1;
+                       margin: -9px 0 0; /* half of font-size */ background: #EEEEEE; padding: 0 3px;}
+      #tariff_selection_panel h3 { position: absolute; top: 0; font-size: 18px; line-height: 1;
+                       margin: -9px 0 0; /* half of font-size */ background: #EEEEEE; padding: 0 3px;}
 
 
   </style>
@@ -69,7 +73,8 @@
 <div id="container">
   <div id="menu_bar">
       <button type="button" class="menu_button" id="projectmenu">Project</button>
-       <script src="static/menu.js"></script>
+      <script src="static/menu.js"></script>
+      <script src="static/shut_down.js"></script>
   </div>
     <hr style="height:1px;padding-top:0;margin-top:0;" />
   <div class="main">
@@ -170,7 +175,7 @@
         </div>
 
         <div id="tariff_selection_panel">
-            <h4 style="font-size: 1.5vh">Select Tariff:</h4>
+            <h3 style="font-size: 1.5vh">Select Tariff:</h3>
         </div>
 
     </div>
