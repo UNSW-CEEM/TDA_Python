@@ -113,6 +113,6 @@ window.onresize = function() {
     Plotly.Plots.resize('load_chart');
 };
 
-$('#get_load').contextMenu('#popupMenu');
+$('#get_load').contextMenu('popup', '#popupMenu2');
 
 $('.popupClose').on('click', function(e){$('#get_load').contextMenu('close');});
