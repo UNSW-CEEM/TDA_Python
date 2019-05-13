@@ -1,7 +1,4 @@
-// THis is javascript's 'print' function - you can open up your js console in your browser and see them.
-console.log('Hi im javascript options');
-
-// This is a jquery function that visits the '/data' endpoint. See run.py  (or try in your browser)
+// This script gets the different load options and puts them in the load selector
 $.getJSON("/load_names", function(json){
         $('#select').empty();
         $('#select').append($('<option>').text("Select1"));

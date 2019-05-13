@@ -122,6 +122,20 @@ def demo_options(name):
     return jsonify({'actual_names': actual_names, "display_names": display_names_dict, "options": options})
 
 
+@app.route('/tariff_options')
+def tariff_options():
+    with open('data/NetworkTariffs.json') as json_file:
+        network_tariffs = json.load(json_file)
+    option_types = {'#select_tariff_state': 'State',
+                    '#select_tariff_Provider': 'Provider'}
+    options = {'#select_tariff_state': [], '#select_tariff_Provider': []}
+    for tariff in network_tariffs:
+        for option_type, option_name in option_types.items():
+            if tariff[option_name] not in options[option_type]:
+                options[option_type].append(tariff[option_name])
+    return jsonify(options)
+
+
 def shutdown_server():
     print('called shutdown')
     func = request.environ.get('werkzeug.server.shutdown')
