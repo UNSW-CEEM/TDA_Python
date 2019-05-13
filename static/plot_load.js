@@ -69,8 +69,6 @@ var plot_load = function(response){
     Plotly.newPlot('load_chart', response, layout);
     var file_name = $('#select').children("option:selected").val();
     $.getJSON('/n_users/' + file_name, print_n_users);
-    var label = document.getElementById('chart_loading_message');
-    label.innerHTML = '' ;
     $('#get_load').contextMenu('close');
 }
 
@@ -94,8 +92,6 @@ var make_loading_popup = function(){
 }
 
 $('#get_load').click(function() {
-  var label = document.getElementById('chart_loading_message');
-  label.innerHTML = 'Loading . . .' ;
   var file_name = $('#select').children("option:selected").val();
   $.getJSON('/demo_options/' + file_name, add_demo_selectors);
   plot_filtered_load();

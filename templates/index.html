@@ -20,80 +20,116 @@
     <script src="static/contextMenu/contextMenu.js"></script>
 
   <style>
-      html, body {height:100%; margin: 0;}
-      #container {width: calc(100vw - (100vw - 100%)); height: calc(100vh - (100vh - 100%)); background-color: #EEEEEE;
-                  margin: 0; box-sizing: border-box;}
-      #menu_bar {height: 20px%; box-sizing: border-box; background: #FFF; margin: 0;}
-      .main {height: calc((100vh - (100vh - 100%)) - 21px); width:100%; padding: 0.5%; box-sizing: border-box; margin: 0;}
-      #left_column {width:34.5%; float:left; height:100%; clear: left;}
-      #logos{height: 10%; box-sizing: border-box; margin: 0}
-      #right_column {float: right; width:65%; height:100%; clear: right;}
-      #load_panel{height: 88%; width: 100%; border-style: groove; border-width: 0.5%; padding: 2%;
-                  box-sizing: border-box; position: relative; top: 2%;}
-      #load_selection {height: 10%; min-height: 10%; width: 35vw}
-      #select {width: 30%; height: 2.2%; font-size: 1.5vh}
-      #demograhphic_selection {height: 30%; min-height: 50%;}
-      #load_inspection {height: 37%;}
-      #load_chart {position: relative; height: 90%;}
-      #tariff_selection_panel {height:37%; border-style: groove; border-width: 0.5%; padding: 2%;
-                               box-sizing: border-box; position: relative; top: 2%; width: 100%}
-      #tariff_selection_panel:after { content: ""; display: table; clear: both; }
-      .tariff_panel_cols {float: left;}
-      #left_tariff_col {width: 13%; height: 100%;}
-      #middle_tariff_col { width: 20%; height: 100%;}
-      #right_tariff_col { width: 67%; height: 100%;}
-      #results_panel {height:61%; border-style: groove; border-width: 0.5%; padding: 0.5%; box-sizing: border-box;}
-      #result_chart  {height:40%; width: 50%}
-      #sample_size_info{font-size: 2vh;}
-      #select_graph{font-size: 2vh;}
-      .demo_select_container { float: right; width: 25% !important; height: 2.5vh; clear: right;}
-      .select_demo{width: 100% !important; height: 2.2vh; font-size: 2vh;}
-      .select_demo:focus{height:auto; z-index:1}
-      .demo_label { height: 2.5vh; font-size: 2vh; float: left; clear: left}
-      #chart_loading_message {position: absolute; top: 50%; left: 50%; height: 30%; width: 50%; margin: -15% 0 0 -25%;}
-      .menu_button{background: #FFF; border: solid; border-color: #FFF; border-width: 1px; height: 100%;
-                   box-sizing: border-box; margin: 0;}
-      .menu_button:hover{background: #ADDFFF; border-color: #5D8FAF;}
-      #load_panel h3 { position: absolute; top: 0; font-size: 18px; line-height: 1;
-                       margin: -9px 0 0; /* half of font-size */ background: #EEEEEE; padding: 0 3px;}
-      #tariff_selection_panel h3 { position: absolute; top: 0; font-size: 2hv; line-height: 1;
-                       margin: -9px 0 0; /* half of font-size */ background: #EEEEEE; padding: 0 3px;}
-      .standard_label {height: 5vh; font-size: 2vh; display: block;}
-      .tariff_selectors {height: 3vh; font-size: 2vh; display: block; width: 80%;}
-      .inter_selector_padder{height: 2vh;}
-      #popupMenu2 { width: 150px; height: 80px; background: #EEEEEE; font-size: 16px; display: none; font-size: 12px;
-                   border-color: #5D8FAF; text-align: center; }
-      #close_button:hover {background: #FF0000; color: #EEEEEE}
-      #tariff_panel_header {height: 10%}
-      /* Style the tab */
-       .tab {
+      html, body {
+        height:100%; margin: 0;
+      }
+      #container {
+        width: calc(100vw - (100vw - 100%));
+        height: calc(100vh - (100vh - 100%));
+        background-color: #EEEEEE;
+        margin: 0; box-sizing: border-box;
+      }
+      #menu_bar {
+        height: 20px%;
+        box-sizing: border-box;
+        background: #FFF;
+        margin: 0;
+      }
+      .main {
+        height: calc((100vh - (100vh - 100%)) - 21px);
+        width:100%; padding: 0.5%;
+        box-sizing: border-box;
+        margin: 0;
+      }
+      #left_column {
+        width:34.5%;
+        float:left;
+        height:100%;
+        clear: left;
+      }
+      #logos{
+        height: 10%;
+        box-sizing:
+        border-box;
+        margin: 0
+      }
+      #right_column {
+        float: right;
+        width:65%;
+        height:100%;
+        clear: right;
+      }
+      /* ---------- Tariff Selection Panel ---------- */
+      #tariff_selection_panel {
+        height:37%;
+        border-style: groove;
+        border-width: 0.5%;
+        padding: 2%;
+        box-sizing: border-box;
+        position: relative;
+        top: 2%;
+        width: 100%
+      }
+      /* --- Put label in border ---*/
+      #tariff_selection_panel h3 {
+        position: absolute;
+        top: 0;
+        font-size: 2hv;
+        line-height: 1;
+        margin: -9px 0 0; /* half of font-size */
+        background: #EEEEEE;
+        padding: 0 3px;
+      }
+      .tariff_panel_cols {
+        float: left;
+      }
+      #left_tariff_col {
+        width: 13%;
+        height: 100%;
+      }
+      #middle_tariff_col {
+        width: 20%;
+        height: 100%;
+      }
+      .tariff_selectors {
+        height: 3vh;
+        font-size: 2vh;
+        display: block;
+        width: 80%;
+      }
+      .inter_selector_padder{
+        height: 2vh;
+      }
+      #right_tariff_col {
+        width: 67%;
+        height: 100%;
+      }
+      #tariff_panel_header {
+        height: 10%;
+        font-size: 2vh;
+        overflow: hidden;
+      }
+      /* --- Create tabbed tariff area --- */
+      .tab {
         overflow: hidden;
         background-color: #f1f1f1;
         height: 10%;
-        }
-
-        /* Style the buttons that are used to open the tab content */
-        .tab button {
+      }
+      .tab button {
         background-color: inherit;
         float: left;
         border-style: solid;
         border-width: 1px;
         height: 100%;
         font-size: 2vh;
-        }
-
-        /* Change background color of buttons on hover */
-        .tab button:hover {
+      }
+      .tab button:hover {
         background-color: #ddd;
-        }
-
-        /* Create an active/current tablink class */
-        .tab button.active {
+      }
+      .tab button.active {
         background-color: #ccc;
-        }
-
-        /* Style the tab content */
-        .tabcontent {
+      }
+      .tabcontent {
         display: none;
         border-style: groove;
         border-width: 0.25%;
@@ -101,9 +137,134 @@
         box-sizing: border-box;
         padding: 1%;
         width: 100%;
-        }
+      }
+      #duos_header {
+        width: 100%;
+        height:10%;
+        overflow: hidden;
+      }
 
-        #duos_header {width: 100%; height:20%;}
+      #load_panel{
+        height: 88%;
+        width: 100%;
+        border-style: groove;
+        border-width: 0.5%;
+        padding: 2%;
+        box-sizing: border-box;
+        position: relative;
+        top: 2%;
+      }
+      #load_selection {
+        height: 10%;
+        min-height: 10%;
+        width: 35vw
+      }
+      #select {
+        width: 30%;
+        height: 2.2%;
+        font-size: 1.5vh
+      }
+      #demograhphic_selection {
+        height: 30%;
+        min-height: 50%;
+      }
+      #load_inspection {
+        height: 37%;
+        padding: 2%;
+      }
+      #load_chart {
+        position: relative;
+        height: 85%;
+      }
+
+      #results_panel {
+        height:61%;
+        border-style: groove;
+        border-width: 0.5%;
+        padding: 0.5%;
+        box-sizing: border-box;
+      }
+      #result_chart  {
+        height:40%;
+        width: 50%
+      }
+      #sample_size_info {
+        font-size: 2vh;
+      }
+      #select_graph{
+        font-size: 2vh;
+      }
+      .demo_select_container {
+        float: right;
+        width: 25% !important;
+        height: 2.5vh;
+        clear: right;
+      }
+      .select_demo {
+        width: 100% !important;
+        height: 2.2vh;
+        font-size: 2vh;
+      }
+      .select_demo:focus{
+        height:auto;
+        z-index:1;
+      }
+      .demo_label {
+        height: 2.5vh;
+        font-size: 2vh;
+        float: left;
+        clear: left;
+      }
+      #chart_loading_message {
+        position: absolute;
+        top: 50%; left: 50%;
+        height: 30%;
+        width: 50%;
+        margin: -15% 0 0 -25%;
+      }
+      .menu_button{
+        background: #FFF;
+        border: solid;
+        border-color: #FFF;
+        border-width: 1px;
+        height: 100%;
+        box-sizing: border-box;
+        margin: 0;
+      }
+      .menu_button:hover{
+        background: #ADDFFF;
+        border-color: #5D8FAF;
+      }
+      #load_panel h3 {
+        position: absolute;
+        top: 0; font-size: 18px;
+        line-height: 1;
+        margin: -9px 0 0; /* half of font-size */
+        background: #EEEEEE;
+        padding: 0 3px;
+      }
+
+      .standard_label {
+        height: 5vh;
+        font-size: 2vh;
+        display: block;
+      }
+
+      #popupMenu2 {
+        width: 150px;
+        height: 80px;
+        background: #EEEEEE;
+        font-size: 16px;
+        display: none;
+        font-size: 12px;
+        border-color: #5D8FAF;
+        text-align: center;
+      }
+      #close_button:hover {
+        background: #FF0000;
+        color: #EEEEEE
+      }
+
 
   </style>
 
@@ -199,17 +360,23 @@
             </div>
             <hr>
             <div id="load_inspection">
-                <span id="sample_size_info">No. of users: N/A</span>
-                <div id="graph_select_con" style="float: right; width: 65% !important; height: 2.5vh;">
-                    <span style="font-size: 1.5vh">Show:</span>
-                    <select  id="select_graph" name="Show:" style=" width: 65%">
+                <div style="height: 10%;  font-size:2vh; overflow: hidden;">
+                <div style="float: left; width: 40%; height: 100%;" >
+                    <span id="sample_size_info">No. of users: N/A</span>
+                </div>
+                <div  style="float: right; width: 45%; height: 100%; ">
+                    <select  id="select_graph" style="width:100%">
                         <option value="Annual Average Profile"> Annual Average Profile</option>
                         <option value="Daily kWh Histogram">Daily kWh Histogram</option>
                     </select>
                 </div>
+                <div style="float: right; width: 10%; height: 100%;">
+                    <span style="float:right;">Show:</span>
+                </div>
+                </div>
+
                 <!-- Chart goes here in this div -->
                 <div class="chart" id="load_chart">
-                    <div id="chart_loading_message"></div>
                 </div>
                 <script src="static/plot_load.js"></script>
                 <!-- This is the script.js that's in 'static' folder - it loads the chart data and draws the chart. -->
