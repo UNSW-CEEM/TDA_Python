@@ -20,6 +20,41 @@
     <script src="static/contextMenu/contextMenu.js"></script>
 
   <style>
+      /* ---------- Project level settings ---------- */
+      :root {
+        --main-font-size: 1.75vh;
+        --main-selector-height: 2.25vh;
+      }
+      /* ---------- Popups ---------- */
+      #popupMenu2 {
+        width: 150px;
+        height: 80px;
+        background: #EEEEEE;
+        font-size: 16px;
+        display: none;
+        font-size: 12px;
+        border-color: #5D8FAF;
+        text-align: center;
+      }
+      .popup_header{
+        height: 20px;
+        background: #dde0e5;
+      }
+      .popupClose{
+        font-size: 20px;
+        float: right;
+        text-align: center;
+        width: 20px;
+        height:20px;
+      }
+      .header_border{
+        height:1px;
+        padding-top:0;
+        margin-top:0;
+        margin-bottom:0;
+        box-sizing: border-box;
+      }
+
       html, body {
         height:100%; margin: 0;
       }
@@ -35,6 +70,7 @@
         background: #FFF;
         margin: 0;
       }
+
       .main {
         height: calc((100vh - (100vh - 100%)) - 21px);
         width:100%; padding: 0.5%;
@@ -52,6 +88,66 @@
         box-sizing:
         border-box;
         margin: 0
+      }
+      /* ---------- Load Selection Panel ---------- */
+      #load_panel{
+        height: 88%;
+        width: 100%;
+        border-style: groove;
+        border-width: 0.5%;
+        padding: 2%;
+        box-sizing: border-box;
+        position: relative;
+        top: 2%;
+        font-size: var(--main-font-size);
+      }
+      #load_selection {
+        height: 10%;
+        min-height: 10%;
+        width: 35vw
+      }
+      #select {
+        width: 40%;
+        height: var(--main-selector-height);
+      }
+      #demograhphic_selection {
+        height: 30%;
+        min-height: 50%;
+        overflow: hidden;
+      }
+      #load_inspection {
+        height: 37%;
+        padding: 2%;
+      }
+      #load_chart {
+        position: relative;
+        height: 85%;
+      }
+      #sample_size_info {
+        font-size: var(--main-font-size);
+      }
+      #select_graph{
+        font-size: var(--main-font-size);
+      }
+      .demo_select_container {
+        width: 100%;
+        height: var(--main-selector-height);
+      }
+      .select_demo {
+        width: 100% !important;
+        height: 90%;
+        font-size: var(--main-font-size);
+      }
+      .select_demo:focus{
+        height:auto;
+        z-index:1;
+      }
+      .demo_label {
+        height: var(--main-selector-height);
+        font-size: var(--main-font-size);
+      }
+      .demo_select_padder {
+        height: 2%
       }
       #right_column {
         float: right;
@@ -92,8 +188,8 @@
         height: 100%;
       }
       .tariff_selectors {
-        height: 3vh;
-        font-size: 2vh;
+        height: var(--main-selector-height);
+        font-size: var(--main-font-size);
         display: block;
         width: 80%;
       }
@@ -106,7 +202,7 @@
       }
       #tariff_panel_header {
         height: 10%;
-        font-size: 2vh;
+        font-size: var(--main-font-size);
         overflow: hidden;
       }
       /* --- Create tabbed tariff area --- */
@@ -121,7 +217,7 @@
         border-style: solid;
         border-width: 1px;
         height: 100%;
-        font-size: 2vh;
+        font-size: var(--main-font-size);
       }
       .tab button:hover {
         background-color: #ddd;
@@ -144,39 +240,6 @@
         overflow: hidden;
       }
 
-      #load_panel{
-        height: 88%;
-        width: 100%;
-        border-style: groove;
-        border-width: 0.5%;
-        padding: 2%;
-        box-sizing: border-box;
-        position: relative;
-        top: 2%;
-      }
-      #load_selection {
-        height: 10%;
-        min-height: 10%;
-        width: 35vw
-      }
-      #select {
-        width: 30%;
-        height: 2.2%;
-        font-size: 1.5vh
-      }
-      #demograhphic_selection {
-        height: 30%;
-        min-height: 50%;
-      }
-      #load_inspection {
-        height: 37%;
-        padding: 2%;
-      }
-      #load_chart {
-        position: relative;
-        height: 85%;
-      }
-
       #results_panel {
         height:61%;
         border-style: groove;
@@ -188,40 +251,7 @@
         height:40%;
         width: 50%
       }
-      #sample_size_info {
-        font-size: 2vh;
-      }
-      #select_graph{
-        font-size: 2vh;
-      }
-      .demo_select_container {
-        float: right;
-        width: 25% !important;
-        height: 2.5vh;
-        clear: right;
-      }
-      .select_demo {
-        width: 100% !important;
-        height: 2.2vh;
-        font-size: 2vh;
-      }
-      .select_demo:focus{
-        height:auto;
-        z-index:1;
-      }
-      .demo_label {
-        height: 2.5vh;
-        font-size: 2vh;
-        float: left;
-        clear: left;
-      }
-      #chart_loading_message {
-        position: absolute;
-        top: 50%; left: 50%;
-        height: 30%;
-        width: 50%;
-        margin: -15% 0 0 -25%;
-      }
+
       .menu_button{
         background: #FFF;
         border: solid;
@@ -243,40 +273,25 @@
         background: #EEEEEE;
         padding: 0 3px;
       }
-
       .standard_label {
-        height: 5vh;
-        font-size: 2vh;
+        height: 4.25vh;
+        font-size: var(--main-font-size);
         display: block;
-      }
-
-      #popupMenu2 {
-        width: 150px;
-        height: 80px;
-        background: #EEEEEE;
-        font-size: 16px;
-        display: none;
-        font-size: 12px;
-        border-color: #5D8FAF;
-        text-align: center;
       }
       #close_button:hover {
         background: #FF0000;
         color: #EEEEEE
       }
 
-
   </style>
 
   <div id="popupMenu2">
-    <div style="height: 20px; background: #dde0e5;">
-        <span id="close_button" class="popupClose"
-              style="font-size: 20px; float: right; text-align: center; width: 20px; height:20px;">&times</span>
+    <div class="popup_header">
+        <span id="close_button" class="popupClose">&times</span>
     </div>
-      <hr style="height:1px ;padding-top:0;margin-top:0;margin-bottom:0;box-sizing: border-box;" />
+      <hr class="header_border"/>
     <br><br>
       <div style="position: absolute; top: 42px; left: 18px;">Please wait. Loading . . .</div>
-
   </div>
 
 </head>
@@ -288,7 +303,7 @@
       <script src="static/menu.js"></script>
       <script src="static/shut_down.js"></script>
   </div>
-    <hr style="height:1px ;padding-top:0;margin-top:0;margin-bottom:0;box-sizing: border-box;" />
+    <hr class="header_border"/>
   <div class="main">
 
     <div id="left_column">
@@ -297,70 +312,93 @@
             <img src="static/UNSWLogo.png" alt="UNSW Logo", style="max-width: 30%; max-height:100%">
         </div>
         <div id="load_panel">
-            <h3 style="font-size: 1.5vh">Select Load:</h3>
+            <h3 style="font-size: var(--main-font-size)">Select Load:</h3>
             <div id="load_selecion">
-                <span style="font-size: 1.5vh">Selected:</span>
-                <select id="select" name="select" ><option selected="selected">blank</option></select>
+                <span style="font-size: 2vh">Selected:</span>
+                <select id="select" name="select" style="font-size: var(--main-font-size)"><option selected="selected">blank</option></select>
                 <script src="static/build_load_selector.js"></script>
-                <button type="button" id="get_load" style="float: right; width: 15% !important;
-                height: 2.5vh; font-size: 1.5vh;" >Set</button>
+                <button type="button" id="get_load"
+                        style="float: right; width: 15% !important; height: var(--main-selector-height); font-size: var(--main-font-size);" >Set</button>
             </div>
             <hr>
             <div id="demograhphic_selection">
-                <span id="demo_label_0" class="demo_label"></span>
-                <div id="demo_0" class="demo_select_container">
-                    <select  id="demo_select_0" class="select_demo" multiple ></select>
+
+                <div id="demo_label_col" style="height: 100%; width: 80%; float: left;">
+                    <div id="demo_label_0" class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_1"  class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_2" class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_3"  class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_4"  class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_5" class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_6" class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_7" class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_8"  class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_9"  class="demo_label"></div>
                 </div>
-                <script> $('#demo_0').hide() </script>
-                <span id="demo_label_1"  class="demo_label"></span>
-                <div id="demo_1" class="demo_select_container">
-                    <select class="select_demo" id="demo_select_1" multiple ></select>
+                    <div id="demo_selector_col" style="height: 100%; width: 20%; float: left;">
+                        <div id="demo_0" class="demo_select_container">
+                        <select  id="demo_select_0" class="select_demo"></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_0').hide() </script>
+                    <div id="demo_1" class="demo_select_container">
+                        <select class="select_demo" id="demo_select_1" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_1').hide() </script>
+                    <div id="demo_2" class="demo_select_container">
+                        <select  id="demo_select_2" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_2').hide() </script>
+                    <div id="demo_3" class="demo_select_container">
+                        <select  id="demo_select_3" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_3').hide() </script>
+                    <div id="demo_4" class="demo_select_container">
+                        <select  id="demo_select_4" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_4').hide() </script>
+                    <div id="demo_5" class="demo_select_container">
+                        <select  id="demo_select_5" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_5').hide() </script>
+                    <div id="demo_6" class="demo_select_container">
+                        <select  id="demo_select_6" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_6').hide() </script>
+                    <div id="demo_7" class="demo_select_container">
+                        <select  id="demo_select_7" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_7').hide() </script>
+                    <div id="demo_8" class="demo_select_container">
+                        <select  id="demo_select_8" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_8').hide() </script>
+                    <div id="demo_9" class="demo_select_container">
+                        <select  id="demo_select_9" class="select_demo" ></select>
+                        <script> $('#demo_9').hide() </script>
+                    </div>
                 </div>
-                <script> $('#demo_1').hide() </script>
-                <span id="demo_label_2" class="demo_label"></span>
-                <div id="demo_2" class="demo_select_container">
-                    <select  id="demo_select_2" class="select_demo" multiple ></select>
-                </div>
-                <script> $('#demo_2').hide() </script>
-                <span id="demo_label_3"  class="demo_label"></span>
-                <div id="demo_3" class="demo_select_container">
-                    <select  id="demo_select_3" class="select_demo" multiple ></select>
-                </div>
-                <script> $('#demo_3').hide() </script>
-                <span id="demo_label_4"  class="demo_label"></span>
-                <div id="demo_4" class="demo_select_container">
-                    <select  id="demo_select_4" class="select_demo" multiple ></select>
-                </div>
-                <script> $('#demo_4').hide() </script>
-                <span id="demo_label_5" class="demo_label"></span>
-                <div id="demo_5" class="demo_select_container">
-                    <select  id="demo_select_5" class="select_demo" multiple ></select>
-                </div>
-                <script> $('#demo_5').hide() </script>
-                <span id="demo_label_6" class="demo_label"></span>
-                <div id="demo_6" class="demo_select_container">
-                    <select  id="demo_select_6" class="select_demo" multiple ></select>
-                </div>
-                <script> $('#demo_6').hide() </script>
-                <span id="demo_label_7" class="demo_label"></span>
-                <div id="demo_7" class="demo_select_container">
-                    <select  id="demo_select_7" class="select_demo" multiple ></select>
-                </div>
-                <script> $('#demo_7').hide() </script>
-                <span id="demo_label_8"  class="demo_label"></span>
-                <div id="demo_8" class="demo_select_container">
-                    <select  id="demo_select_8" class="select_demo" multiple ></select>
-                </div>
-                <script> $('#demo_8').hide() </script>
-                <span id="demo_label_9"  class="demo_label"></span>
-                <div id="demo_9" class="demo_select_container">
-                    <select  id="demo_select_9" class="select_demo" multiple ></select>
-                </div>
-                <script> $('#demo_9').hide() </script>
             </div>
             <hr>
             <div id="load_inspection">
-                <div style="height: 10%;  font-size:2vh; overflow: hidden;">
+                <div style="height: 10%;  font-size:var(--main-font-size); overflow: hidden;">
                 <div style="float: left; width: 40%; height: 100%;" >
                     <span id="sample_size_info">No. of users: N/A</span>
                 </div>
@@ -394,7 +432,7 @@
         </div>
 
         <div id="tariff_selection_panel">
-            <h3 style="font-size: 1.5vh">Select Tariff:</h3>
+            <h3 style="font-size: var(--main-font-size)">Select Tariff:</h3>
             <div id="left_tariff_col"  class="tariff_panel_cols">
                 <span class="standard_label">Type:</span>
                 <span class="standard_label">State:</span>
@@ -404,7 +442,9 @@
             </div>
             <div id="middle_tariff_col" class="tariff_panel_cols">
                 <select class="tariff_selectors" id="select_tariff_type" >
-                    <option selected="selected">blank</option>
+                    <option selected="selected">blank1</option>
+                    <option selected="selected">blank2</option>
+                    <option selected="selected">blank3</option>
                 </select>
                 <div class="inter_selector_padder"></div>
                 <select class="tariff_selectors" id="select_tariff_state" >

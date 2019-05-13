@@ -66,7 +66,7 @@ def filtered_load_data():
     filtered = False
     for column_name, selected_options in load_request['filter_options'].items():
         if 'All' not in selected_options:
-            demo_info = demo_info[demo_info[column_name].isin(selected_options)]
+            demo_info = demo_info[demo_info[column_name].isin([selected_options])]
             filtered = True
 
     # Create the requested chart data if it does not already exist.
