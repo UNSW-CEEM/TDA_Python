@@ -122,16 +122,29 @@ def demo_options(name):
     return jsonify({'actual_names': actual_names, "display_names": display_names_dict, "options": options})
 
 
-@app.route('/tariff_options')
+@app.route('/tariff_options', methods=['POST'])
 def tariff_options():
+    tariff_filter_state = request.get_json()
     with open('data/NetworkTariffs.json') as json_file:
         network_tariffs = json.load(json_file)
     option_types = {'#select_tariff_state': 'State',
-                    '#select_tariff_Provider': 'Provider'}
-    options = {'#select_tariff_state': [], '#select_tariff_Provider': []}
+                    '#select_tariff_provider': 'Provider',
+                    '#select_tariff_type': 'Type',
+                    '#select_tariff': 'Name'}
+    options = {'#select_tariff_state': [],
+                    '#select_tariff_provider': [],
+                    '#select_tariff_type': [],
+                    '#select_tariff': []}
     for tariff in network_tariffs:
+        # Decide if current tariff meets current filters
+        add_tariff_as_option = True
         for option_type, option_name in option_types.items():
-            if tariff[option_name] not in options[option_type]:
+            if ((tariff_filter_state[option_type] != 'Select1') &
+                    (tariff_filter_state[option_type] != tariff[option_name])):
+                add_tariff_as_option = False
+        # If the tariff meets the filters add its properties to the allowed options
+        for option_type, option_name in option_types.items():
+            if add_tariff_as_option and tariff[option_name] not in options[option_type]:
                 options[option_type].append(tariff[option_name])
     return jsonify(options)
 
