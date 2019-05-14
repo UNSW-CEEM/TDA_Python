@@ -1,4 +1,7 @@
-// This script gets the different load options and puts them in the load selector
+// This script is responsible for updating the tariff selection drop downs
+
+// This functions takes a set of options to populate the drop downs with,
+// it also reset the selected values based on a set of currently selected values
 var update_tariff_options = function(options_by_type, current_options){
         $.each(options_by_type, function(option_type, options){
             $(option_type).empty();
@@ -10,19 +13,22 @@ var update_tariff_options = function(options_by_type, current_options){
         });
 };
 
+// This function asks the server for possible tariff options given the current
+// options already selected, it then updates the drop downs.
 var get_tariff_options =  function(){
 
+    // Get the current state of the drop downs.
     var current_options = {'#select_tariff_state': {},
                          '#select_tariff_provider': {},
                          '#select_tariff_type': {},
                          '#select_tariff': {}};
-
     for (var key in current_options) {
         if (current_options.hasOwnProperty(key)) {
             current_options[key] = $(key).val();
         }
     }
 
+    // Ask the server what the options should be now.
     $.ajax({
         url: '/tariff_options',
         data: JSON.stringify(current_options),
@@ -30,12 +36,15 @@ var get_tariff_options =  function(){
         type : 'POST',
         async: 'false',
         dataType:"json",
+        // Call the function to update the drop downs with the new options.
         success: function(data){update_tariff_options(data, current_options);}
     });
 };
 
+// Get the options when the app first starts.
 get_tariff_options();
 
-$('.tariff_selectors').on('change', function() {
+// Get the options every time someone updates a tariff drop down.
+$('.tariff_filter').on('change', function() {
     get_tariff_options();
 });

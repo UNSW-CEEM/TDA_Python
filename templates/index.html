@@ -187,7 +187,13 @@
         width: 20%;
         height: 100%;
       }
-      .tariff_selectors {
+      .tariff_filter {
+        height: var(--main-selector-height);
+        font-size: var(--main-font-size);
+        display: block;
+        width: 80%;
+      }
+      .tariff_selector {
         height: var(--main-selector-height);
         font-size: var(--main-font-size);
         display: block;
@@ -204,6 +210,8 @@
         height: 10%;
         font-size: var(--main-font-size);
         overflow: hidden;
+        box-sizing: border-box;
+        margin: 0;
       }
       /* --- Create tabbed tariff area --- */
       .tab {
@@ -236,8 +244,39 @@
       }
       #duos_header {
         width: 100%;
-        height:10%;
+        height: 15%;
         overflow: hidden;
+      }
+
+      .tariff_table_wrapper{
+        position:relative;
+        height: 70%;
+      }
+
+      .tariff_table_scroll{
+        height:150px;
+        overflow:auto;
+        margin-top:20px;
+      }
+
+      .tariff_table_wrapper table {
+        width:100%;
+        border-collapse: collapse;
+        table-layout: fixed;
+      }
+
+      .tariff_table_wrapper table td {
+        background: #FFF;
+        border-style: solid;
+        border-width: 1px;
+        overflow: hidden;
+      }
+
+      #DUOS_tariff_table_header {
+            position:absolute;
+            top:-20px;
+            z-index:2;
+            height:20px;
       }
 
       #results_panel {
@@ -247,6 +286,7 @@
         padding: 0.5%;
         box-sizing: border-box;
       }
+
       #result_chart  {
         height:40%;
         width: 50%
@@ -441,27 +481,28 @@
                 <span class="standard_label">Tariff:</span>
             </div>
             <div id="middle_tariff_col" class="tariff_panel_cols">
-                <select class="tariff_selectors" id="select_tariff_type" >
+                <select class="tariff_filter" id="select_tariff_type" >
                     <option selected="selected">Select1</option>
                 </select>
                 <div class="inter_selector_padder"></div>
-                <select class="tariff_selectors" id="select_tariff_state" >
+                <select class="tariff_filter" id="select_tariff_state" >
                     <option selected="selected">Select1</option>
                 </select>
                 <div class="inter_selector_padder"></div>
-                <select class="tariff_selectors" id="select_tariff_provider" >
+                <select class="tariff_filter" id="select_tariff_provider" >
                     <option selected="selected">Select1</option>
                 </select>
                 <div class="inter_selector_padder"></div>
-                <select class="tariff_selectors" id="select_tariff_year" >
+                <select class="tariff_filter" id="select_tariff_year" >
                     <option selected="selected">Select1</option>
                 </select>
                 <div class="inter_selector_padder"></div>
-                <select class="tariff_selectors" id="select_tariff" >
+                <select class="tariff_selector" id="select_tariff" >
                     <option selected="selected">Select1</option>
                 </select>
             </div>
             <script src="static/build_tariff_selectors.js"></script>
+            <script src="static/build_tariff_table.js"></script>
             <div id="right_tariff_col" class="tariff_panel_cols">
                 <script src="static/tariff_tabs.js"></script>
                 <div id="tariff_panel_header">
@@ -483,8 +524,15 @@
                         <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
                         <input id="duos_energy_charge" type="text" value=""  style="width: 10%; float: left;">
                     </div>
-                    <br>
-                    <div>DUOS</div>
+                    <div class="tariff_table_wrapper">
+                        <div class="tariff_table_scroll">
+                        <table class="tariff_table" id="DUOS_tariff_table">
+                            <th>
+                                <tr class="tariff_table_header" id="DUOS_tariff_table_header"></tr>
+                            </th>
+                        </table>
+                    </div>
+                    </div>
                 </div>
                 <div id="TUOS" class="tabcontent">
                     TUOS

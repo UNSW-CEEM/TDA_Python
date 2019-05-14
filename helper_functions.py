@@ -31,3 +31,17 @@ def find_loads_demographic_config_file(load_file_name):
     else:
         demo_config_file_name = ''
     return demo_config_file_name
+
+
+def format_tariff_data_for_display(raw_tariff_json):
+    display_format = {'DUOS':
+                          { 'table_data':
+                                {'table_header': ['', 'Months', 'TimeIntervals', 'Unit', 'Value', 'Weekday', 'Weekend'],
+                                 'table_rows': [['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True']]}}}
+    return display_format

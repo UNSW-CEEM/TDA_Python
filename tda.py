@@ -125,8 +125,11 @@ def demo_options(name):
 @app.route('/tariff_options', methods=['POST'])
 def tariff_options():
     tariff_filter_state = request.get_json()
+    # Open the tariff data set.
     with open('data/NetworkTariffs.json') as json_file:
         network_tariffs = json.load(json_file)
+
+    # Define the options to update.
     option_types = {'#select_tariff_state': 'State',
                     '#select_tariff_provider': 'Provider',
                     '#select_tariff_type': 'Type',
@@ -135,6 +138,8 @@ def tariff_options():
                     '#select_tariff_provider': [],
                     '#select_tariff_type': [],
                     '#select_tariff': []}
+
+    # Look at each tariff build up a set of possible options for each option type.
     for tariff in network_tariffs:
         # Decide if current tariff meets current filters
         add_tariff_as_option = True
@@ -142,11 +147,30 @@ def tariff_options():
             if ((tariff_filter_state[option_type] != 'Select1') &
                     (tariff_filter_state[option_type] != tariff[option_name])):
                 add_tariff_as_option = False
-        # If the tariff meets the filters add its properties to the allowed options
+        # If the current tariff meets the all the filters add its properties to the allowed options.
         for option_type, option_name in option_types.items():
             if add_tariff_as_option and tariff[option_name] not in options[option_type]:
                 options[option_type].append(tariff[option_name])
+
     return jsonify(options)
+
+
+@app.route('/tariff_json', methods=['POST'])
+def tariff_json():
+    requested_tariff = request.get_json()
+    # Open the tariff data set.
+    with open('data/NetworkTariffs.json') as json_file:
+        network_tariffs = json.load(json_file)
+
+    # Look at each tariff and find the first one that matches the requested name.
+    for tariff in network_tariffs:
+        if tariff['Name'] == requested_tariff:
+            selected_tariff = tariff
+
+    # Reformat the tariff data to make it easier to display in the gui.
+    selected_tariff = helper_functions.format_tariff_data_for_display(selected_tariff)
+
+    return jsonify(selected_tariff)
 
 
 def shutdown_server():
