@@ -13,43 +13,63 @@ var get_tariff = function(){
         type : 'POST',
         async: 'false',
         dataType:"json",
-        // Call the function to update the drop downs with the new options.
-        success: function(data){build_tables(data);}
+        // Call the function to display the selected tariffs info
+        success: function(data){display_tariff_info(data);}
     });
 
 }
 
-var build_tables = function(tariff_data){
-    for (var key in tariff_data) {
-        if (tariff_data.hasOwnProperty(key)) {
-            build_table(tariff_data[key]);
+var display_tariff_info = function(tariff_data){
+    // display high level info
+    var label = document.getElementById("name_label");
+    label.innerHTML = 'Name: ' + tariff_data['name']
+    var label = document.getElementById("type_label");
+    label.innerHTML = 'Type: ' + tariff_data['type']
+    var label = document.getElementById("state_label");
+    label.innerHTML = 'State: ' + tariff_data['state']
+    // display info by nuos, duos etc
+    for (var key in tariff_data['sub_components']) {
+        if (tariff_data['sub_components'].hasOwnProperty(key)) {
+            display_table_and_charge_data(key, tariff_data['sub_components'][key]);
         }
     }
 }
 
-var build_table = function(tariff_data){
-    build_header(tariff_data['table_data']['table_header'])
+var display_table_and_charge_data = function(table_name, tariff_data){
+
+    document.getElementById(table_name + "_daily_charge").value = tariff_data['daily_charge'];
+    document.getElementById(table_name + "_energy_charge").value = tariff_data['energy_charge'];
+
+    build_header(table_name, tariff_data['table_data']['table_header'])
     for (var key in tariff_data['table_data']['table_rows']){
         if (tariff_data['table_data']['table_rows'].hasOwnProperty(key)) {
-            build_row(tariff_data['table_data']['table_rows'][key], 'DUOS_tariff_table')
+            build_row(tariff_data['table_data']['table_rows'][key], table_name + '_tariff_table')
         }
     }
-    var tariff_table = document.getElementById('DUOS_tariff_table');
-    tariff_table.style.height = (tariff_data['table_data']['table_rows'].length * 15).toString() + "px"
+    var tariff_table = document.getElementById( table_name + '_tariff_table');
+    //tariff_table.style.height = (tariff_data['table_data']['table_rows'].length * 15).toString() + "px"
+    $(document).ready(function() {
+        $('#' + table_name + '_tariff_table').DataTable( {
+            "scrollY": '15vh',
+            "scrollX": true,
+            "paging": false,
+            "info": false,
+            "filter": false
+        } );
+    } );
 }
 
-var build_header = function(header_data){
+var build_header = function(table_name, header_data){
     var length_row = header_data.length
     for (var i = 0; i < length_row; i++){
         var th = document.createElement('th');
         var text = document.createTextNode(header_data[i]);
         th.appendChild(text);
         th.style.width = (100).toString() + "px"
-        var header_row = document.getElementById('DUOS_tariff_table_header');
+        var header_row = document.getElementById( table_name + '_tariff_table_header');
         header_row.appendChild(th);
     }
-    var DUOS_tariff_table_header = document.getElementById('DUOS_tariff_table_header');
-    DUOS_tariff_table_header.style.width = (length_row * 100).toString() + "px"
+    var DUOS_tariff_table_header = document.getElementById(table_name + '_tariff_table_header');
 }
 
 var build_row = function(row_data, table_id){
@@ -61,9 +81,8 @@ var build_row = function(row_data, table_id){
         td.appendChild(text);
         tr.appendChild(td);
     }
-    var tariff_table = document.getElementById(table_id);
+    var tariff_table = document.getElementById(table_id + "_body");
     tariff_table.appendChild(tr);
-    tariff_table.style.width = (length_row * 100).toString() + "px"
 }
 
 // Get the options every time someone updates a tariff drop down.

@@ -34,14 +34,35 @@ def find_loads_demographic_config_file(load_file_name):
 
 
 def format_tariff_data_for_display(raw_tariff_json):
-    display_format = {'DUOS':
-                          { 'table_data':
-                                {'table_header': ['', 'Months', 'TimeIntervals', 'Unit', 'Value', 'Weekday', 'Weekend'],
-                                 'table_rows': [['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True']]}}}
+    display_format = {
+                      'name': "example",
+                      'type': "great_tariff",
+                      'state': "nsw",
+                      'sub_components': {
+                          'DUOS':
+                              { 'table_data':
+                                    {'table_header': ['', 'Months', 'TimeIntervals', 'Unit', 'Value', 'Weekday', 'Weekend'],
+                                     'table_rows': [['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True']]},
+                                'daily_charge': '1.0',
+                                'energy_charge': '2.0'},
+                          'NUOS':
+                              {'table_data':
+                                    {'table_header': ['', 'Months', 'TimeIntervals', 'Unit', 'Value', 'Weekday', 'Weekend'],
+                                    'table_rows': [['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
+                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True']]},
+                                'daily_charge': '1.0',
+                                'energy_charge': '2.0'}
+                      }
+    }
     return display_format

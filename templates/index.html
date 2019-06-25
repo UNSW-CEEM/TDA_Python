@@ -9,14 +9,13 @@
   <meta name="author" content="SitePoint">
 
   <!-- This is the 'importing' of external libraries. -->
-    <link rel="stylesheet" href="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.css">
     <link href="static/contextMenu/contextMenu.css"  rel="stylesheet" type="text/css" />
-    <script src="//cdn.jsdelivr.net/chartist.js/latest/chartist.min.js"></script>
     <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="crossorigin="anonymous"></script>
     <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
     <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
-    <script src="https://unpkg.com/sweetalert/dist/sweetalert.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
     <script src="static/contextMenu/contextMenu.js"></script>
 
   <style>
@@ -242,41 +241,16 @@
         padding: 1%;
         width: 100%;
       }
-      #duos_header {
+      .charges_header {
         width: 100%;
         height: 15%;
         overflow: hidden;
       }
 
-      .tariff_table_wrapper{
-        position:relative;
-        height: 70%;
-      }
-
-      .tariff_table_scroll{
-        height:150px;
-        overflow:auto;
-        margin-top:20px;
-      }
-
-      .tariff_table_wrapper table {
-        width:100%;
-        border-collapse: collapse;
-        table-layout: fixed;
-      }
-
-      .tariff_table_wrapper table td {
-        background: #FFF;
-        border-style: solid;
-        border-width: 1px;
-        overflow: hidden;
-      }
-
-      #DUOS_tariff_table_header {
-            position:absolute;
-            top:-20px;
-            z-index:2;
-            height:20px;
+      div.dataTables_wrapper {
+        width: 100%;
+        height: 85%;
+        margin: 0 auto;
       }
 
       #results_panel {
@@ -506,9 +480,9 @@
             <div id="right_tariff_col" class="tariff_panel_cols">
                 <script src="static/tariff_tabs.js"></script>
                 <div id="tariff_panel_header">
-                    <div style="width: 25%; float: left;">Name: N/A</div>
-                    <div style="width: 25%; float: left;">Type: N/A</div>
-                    <div style="width: 25%; float: left;">State: N/A</div>
+                    <div id="name_label", style="width: 25%; float: left;">Name: N/A</div>
+                    <div id="type_label", style="width: 25%; float: left;">Type: N/A</div>
+                    <div id="state_label", style="width: 25%; float: left;">State: N/A</div>
                     <div style="width: 25%; float: left;"><button>Add</button></div>
                 </div>
                 <div id="tariff_tabs" class="tab">
@@ -518,21 +492,21 @@
                     <button class="tablinks" onclick="displayTariff(event, 'NUOS')">NUOS</button>
                 </div>
                 <div id="DUOS" class="tabcontent" style="width: 100%;">
-                    <div id="duos_header">
+                    <div id="DUOS_header" class="charges_header">
                         <div style="float: left;">Daily Charge ($/day):</div>
-                        <input id="duos_daily_charge" type="text" value="" style="width: 10%; float: left;">
+                        <input id="DUOS_daily_charge" type="text" value="" style="width: 10%; float: left;">
                         <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
-                        <input id="duos_energy_charge" type="text" value=""  style="width: 10%; float: left;">
+                        <input id="DUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;">
                     </div>
-                    <div class="tariff_table_wrapper">
-                        <div class="tariff_table_scroll">
-                        <table class="tariff_table" id="DUOS_tariff_table">
-                            <th>
-                                <tr class="tariff_table_header" id="DUOS_tariff_table_header"></tr>
-                            </th>
-                        </table>
-                    </div>
-                    </div>
+
+                    <table id="DUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
+                        <thead>
+                        <tr class="tariff_table_header" id="DUOS_tariff_table_header"></tr>
+                        </thead>
+                        <tbody id="DUOS_tariff_table_body">
+                        </tbody>
+                    </table>
+
                 </div>
                 <div id="TUOS" class="tabcontent">
                     TUOS
@@ -540,8 +514,20 @@
                 <div id="DUOS_TUOS" class="tabcontent">
                     DUOS+TUOS
                 </div>
-                <div id="NUOS" class="tabcontent">
-                    NUOS
+                <div id="NUOS" class="tabcontent" style="width: 100%;">
+                    <div id="NUOS_header" class="charges_header">
+                        <div style="float: left;">Daily Charge ($/day):</div>
+                        <input id="NUOS_daily_charge" type="text" value="" style="width: 10%; float: left;">
+                        <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
+                        <input id="NUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;">
+                    </div>
+                    <table id="NUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
+                        <thead>
+                        <tr class="tariff_table_header" id="NUOS_tariff_table_header"></tr>
+                        </thead>
+                        <tbody id="NUOS_tariff_table_body">
+                        </tbody>
+                    </table>
                 </div>
                 <script>document.getElementById("default_tab").click();</script>
             </div>

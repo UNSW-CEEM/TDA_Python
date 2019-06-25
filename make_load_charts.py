@@ -14,5 +14,4 @@ def get_average_annual_profile(load, series_name=''):
     load = go.Scattergl(x=load['READING_DATETIME'], y=load['mean'], name=series_name)
     return load
 
-
 chart_methods = {'Annual Average Profile': get_average_annual_profile}
