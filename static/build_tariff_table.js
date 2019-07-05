@@ -14,31 +14,35 @@ var get_tariff = function(){
         async: 'false',
         dataType:"json",
         // Call the function to display the selected tariffs info
-        success: function(data){display_tariff_info(data);}
+        success: function(data){display_tariff_info(data);},
+        error: function(a,b,c){console.log(b); console.log(c);}
     });
 
 }
 
 var display_tariff_info = function(tariff_data){
+    console.log('try and load tariff 2')
     // display high level info
     var label = document.getElementById("name_label");
-    label.innerHTML = 'Name: ' + tariff_data['name']
+    label.innerHTML = 'Name: ' + tariff_data['Name']
     var label = document.getElementById("type_label");
-    label.innerHTML = 'Type: ' + tariff_data['type']
+    label.innerHTML = 'Type: ' + tariff_data['Type']
     var label = document.getElementById("state_label");
-    label.innerHTML = 'State: ' + tariff_data['state']
+    label.innerHTML = 'State: ' + tariff_data['State']
     // display info by nuos, duos etc
-    for (var key in tariff_data['sub_components']) {
-        if (tariff_data['sub_components'].hasOwnProperty(key)) {
-            display_table_and_charge_data(key, tariff_data['sub_components'][key]);
+    for (var key in tariff_data['Parameters']) {
+        if (tariff_data['Parameters'].hasOwnProperty(key)) {
+            display_table_and_charge_data(key, tariff_data['Parameters'][key]);
         }
     }
 }
 
 var display_table_and_charge_data = function(table_name, tariff_data){
 
-    document.getElementById(table_name + "_daily_charge").value = tariff_data['daily_charge'];
-    document.getElementById(table_name + "_energy_charge").value = tariff_data['energy_charge'];
+    document.getElementById(table_name + "_daily_charge").value = tariff_data['Daily']['Value'];
+    if ('Energy' in tariff_data){
+        document.getElementById(table_name + "_energy_charge").value = tariff_data['Daily']['Value'];
+    }
 
     build_header(table_name, tariff_data['table_data']['table_header'])
     for (var key in tariff_data['table_data']['table_rows']){
@@ -50,10 +54,10 @@ var display_table_and_charge_data = function(table_name, tariff_data){
     //tariff_table.style.height = (tariff_data['table_data']['table_rows'].length * 15).toString() + "px"
     $(document).ready(function() {
         $('#' + table_name + '_tariff_table').DataTable( {
-            "scrollY": '15vh',
+            "scrollY": '30vh',
             "scrollX": true,
-            "paging": false,
-            "info": false,
+            "paging": true,
+            "info": true,
             "filter": false
         } );
     } );

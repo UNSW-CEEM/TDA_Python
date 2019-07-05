@@ -1,7 +1,7 @@
 import pandas as pd
 from datetime import timedelta
 import numpy as np
-
+import copy
 
 def calc_mean_daily_load(load):
     load['READING_DATETIME'] = pd.to_datetime(load['READING_DATETIME'])
@@ -34,11 +34,31 @@ def find_loads_demographic_config_file(load_file_name):
 
 
 def format_tariff_data_for_display(raw_tariff_json):
-    display_format = {
-                      'name': "example",
-                      'type': "great_tariff",
-                      'state': "nsw",
-                      'sub_components': {
+    display_format = copy.deepcopy(raw_tariff_json)
+
+    for parameter_name, parameter in raw_tariff_json['Parameters'].items():
+        for component_name, component in parameter.items():
+            table_data = {}
+            table_data['table_header'] = ['Name']
+            table_data['table_rows'] = []
+            if ((component_name == 'Energy' and 'Unit' not in component.keys()) or
+                (component_name != 'Daily' and component_name != 'Energy')):
+                for sub_component, sub_details in component.items():
+                    row = [sub_component]
+                    for column_name, column_value in sub_details.items():
+                        if column_name not in table_data['table_header']:
+                            table_data['table_header'].append(str(column_name))
+                        row.append(str(column_value))
+                    table_data['table_rows'].append(row)
+                display_format['Parameters'][parameter_name]['table_data'] = table_data
+                if component_name == 'Energy':
+                    del display_format['Parameters'][parameter_name]['Energy']
+
+    displ1ay_format = {
+                      'Name': "example",
+                      'Type': "great_tariff",
+                      'State': "nsw",
+                      'Parameters': {
                           'DUOS':
                               { 'table_data':
                                     {'table_header': ['', 'Months', 'TimeIntervals', 'Unit', 'Value', 'Weekday', 'Weekend'],

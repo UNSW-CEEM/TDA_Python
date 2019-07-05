@@ -1,0 +1,573 @@
+<!doctype html>
+
+<html lang="en">
+<head>
+  <meta charset="utf-8">
+
+  <title style="background-color: #FFF;">TDA (CEEM, UNSW)</title>
+  <meta name="description" content="The HTML5 Herald">
+  <meta name="author" content="SitePoint">
+
+  <!-- This is the 'importing' of external libraries. -->
+    <link href="static/contextMenu/contextMenu.css"  rel="stylesheet" type="text/css" />
+    <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="crossorigin="anonymous"></script>
+    <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script>
+    <script src="https://cdn.plot.ly/plotly-latest.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script>
+    <script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
+    <script src="static/contextMenu/contextMenu.js"></script>
+
+  <style>
+      /* ---------- Project level settings ---------- */
+      :root {
+        --main-font-size: 1.75vh;
+        --main-selector-height: 2.25vh;
+      }
+      /* ---------- Popups ---------- */
+      #popupMenu2 {
+        width: 150px;
+        height: 80px;
+        background: #EEEEEE;
+        font-size: 16px;
+        display: none;
+        font-size: 12px;
+        border-color: #5D8FAF;
+        text-align: center;
+      }
+      .popup_header{
+        height: 20px;
+        background: #dde0e5;
+      }
+      .popupClose{
+        font-size: 20px;
+        float: right;
+        text-align: center;
+        width: 20px;
+        height:20px;
+      }
+      .header_border{
+        height:1px;
+        padding-top:0;
+        margin-top:0;
+        margin-bottom:0;
+        box-sizing: border-box;
+      }
+
+      html, body {
+        height:100%; margin: 0;
+      }
+      #container {
+        width: calc(100vw - (100vw - 100%));
+        height: calc(100vh - (100vh - 100%));
+        background-color: #EEEEEE;
+        margin: 0; box-sizing: border-box;
+      }
+      #menu_bar {
+        height: 20px%;
+        box-sizing: border-box;
+        background: #FFF;
+        margin: 0;
+      }
+
+      .main {
+        height: calc((100vh - (100vh - 100%)) - 21px);
+        width:100%; padding: 0.5%;
+        box-sizing: border-box;
+        margin: 0;
+      }
+      #left_column {
+        width:14.5%;
+        float:left;
+        height:100%;
+        clear: left;
+      }
+      #logos{
+        height: 20%;
+        box-sizing:
+        border-box;
+        margin: 0
+      }
+
+      .main_tab_content {
+        display: none;
+        border-style: groove;
+        border-width: 0.25%;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 1%;
+        width: 100%;
+      }
+
+      .main_tab_links {
+        background-color: inherit;
+        float: left;
+        border-style: solid;
+        border-width: 1px;
+        height: 50px;
+        width: 100%;
+        font-size: var(--main-font-size);
+      }
+
+      .main_tab_links:hover {
+        background-color: #ddd;
+      }
+
+      .main_tab_links.active {
+        background-color: #ccc;
+      }
+
+      /* ---------- Load Selection Panel ---------- */
+      #load_selection {
+        height: 10%;
+        min-height: 10%;
+        width: 35vw
+      }
+      #select {
+        width: 40%;
+        height: var(--main-selector-height);
+      }
+      #demograhphic_selection {
+        height: 30%;
+        min-height: 50%;
+        overflow: hidden;
+      }
+      #load_inspection {
+        height: 30%;
+        padding: 2%;
+      }
+      #load_chart {
+        position: relative;
+        height: 85%;
+      }
+      #sample_size_info {
+        font-size: var(--main-font-size);
+      }
+      #select_graph{
+        font-size: var(--main-font-size);
+      }
+      .demo_select_container {
+        width: 100%;
+        height: var(--main-selector-height);
+      }
+      .select_demo {
+        width: 100% !important;
+        height: 90%;
+        font-size: var(--main-font-size);
+      }
+      .select_demo:focus{
+        height:auto;
+        z-index:1;
+      }
+      .demo_label {
+        height: var(--main-selector-height);
+        font-size: var(--main-font-size);
+      }
+      .demo_select_padder {
+        height: 2%
+      }
+      #right_column {
+        float: right;
+        width:85%;
+        height:100%;
+        clear: right;
+      }
+      /* ---------- Tariff Selection Panel ---------- */
+
+
+      /* --- Put label in border ---*/
+      .tariff_panel_cols {
+        float: left;
+      }
+
+      # upper_tariff_section {
+        width: 100%
+        height: 40%
+      }
+
+      #left_tariff_col {
+        width: 50%;
+        height: 80%;
+      }
+      #middle_tariff_col {
+        width: 50%;
+        height: 80%;
+      }
+
+      .tariff_filter {
+        height: var(--main-selector-height);
+        font-size: var(--main-font-size);
+        display: block;
+        width: 80%;
+      }
+      .tariff_selector {
+        height: var(--main-selector-height);
+        font-size: var(--main-font-size);
+        display: block;
+        width: 80%;
+      }
+      .inter_selector_padder{
+        height: 2vh;
+      }
+      #lower_tariff_section {
+        width: 100%;
+        height: 65%;
+      }
+      #tariff_panel_header {
+        height: 10%;
+        font-size: var(--main-font-size);
+        overflow: hidden;
+        box-sizing: border-box;
+        margin: 0;
+      }
+      /* --- Create tabbed tariff area --- */
+      .tab {
+        overflow: hidden;
+        background-color: #f1f1f1;
+        height: 10%;
+      }
+
+      .tab button {
+        background-color: inherit;
+        float: left;
+        border-style: solid;
+        border-width: 1px;
+        height: 100%;
+        font-size: var(--main-font-size);
+      }
+
+      .tab button:hover {
+        background-color: #ddd;
+      }
+
+      .tab button.active {
+        background-color: #ccc;
+      }
+
+      .tabcontent {
+        display: none;
+        border-style: groove;
+        border-width: 0.25%;
+        height: 80%;
+        box-sizing: border-box;
+        padding: 1%;
+        width: 100%;
+      }
+
+      .charges_header {
+        width: 100%;
+        height: 15%;
+        overflow: hidden;
+      }
+
+      div.dataTables_wrapper {
+        width: 100%;
+        height: 85%;
+        margin: 0 auto;
+      }
+
+      #result_chart  {
+        height:40%;
+        width: 50%
+      }
+
+      .menu_button{
+        background: #FFF;
+        border: solid;
+        border-color: #FFF;
+        border-width: 1px;
+        height: 100%;
+        box-sizing: border-box;
+        margin: 0;
+      }
+      .menu_button:hover{
+        background: #ADDFFF;
+        border-color: #5D8FAF;
+      }
+
+      .standard_label {
+        height: 4.25vh;
+        font-size: var(--main-font-size);
+        display: block;
+      }
+      #close_button:hover {
+        background: #FF0000;
+        color: #EEEEEE
+      }
+
+  </style>
+
+  <div id="popupMenu2">
+    <div class="popup_header">
+        <span id="close_button" class="popupClose">&times</span>
+    </div>
+      <hr class="header_border"/>
+    <br><br>
+      <div style="position: absolute; top: 42px; left: 18px;">Please wait. Loading . . .</div>
+  </div>
+
+</head>
+
+<body>
+<div id="container">
+  <div id="menu_bar">
+      <button type="button" class="menu_button" id="projectmenu">Project</button>
+      <script src="static/menu.js"></script>
+      <script src="static/shut_down.js"></script>
+  </div>
+    <hr class="header_border"/>
+  <div class="main">
+
+    <div id="left_column">
+        <script src="static/main_tabs.js"></script>
+        <div id="logos">
+            <img src="static/UNSWLogo.png" alt="UNSW Logo", style="width: 100%;">
+            <img src="static/CEEMLogo.png" alt="UNSW Logo", style="float:left; width: 100%;">
+        </div>
+        <button id="default_panel" class="main_tab_links" onclick="displayPanels(event, 'load_panel')">Load</button>
+        <button class="main_tab_links" onclick="displayPanels(event, 'tariff_selection_panel')">Tariffs</button>
+        <button class="main_tab_links" onclick="displayPanels(event, 'results_panel')">Results</button>
+
+    </div>
+
+    <div id="right_column" class="main_tab">
+
+        <div id="load_panel" class="main_tab_content">
+
+            <div id="load_selecion">
+                <span style="font-size: 2vh">Selected:</span>
+                <select id="select" name="select" style="font-size: var(--main-font-size)"><option selected="selected">blank</option></select>
+                <script src="static/build_load_selector.js"></script>
+                <button type="button" id="get_load"
+                        style="float: right; width: 15% !important; height: var(--main-selector-height); font-size: var(--main-font-size);" >Set</button>
+            </div>
+            <hr>
+            <div id="demograhphic_selection">
+                <div id="demo_label_col" style="height: 100%; width: 80%; float: left;">
+                    <div id="demo_label_0" class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_1"  class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_2" class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_3"  class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_4"  class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_5" class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_6" class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_7" class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_8"  class="demo_label"></div>
+                    <div class="demo_select_padder"></div>
+                    <div id="demo_label_9"  class="demo_label"></div>
+                </div>
+                    <div id="demo_selector_col" style="height: 100%; width: 20%; float: left;">
+                        <div id="demo_0" class="demo_select_container">
+                        <select  id="demo_select_0" class="select_demo"></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_0').hide() </script>
+                    <div id="demo_1" class="demo_select_container">
+                        <select class="select_demo" id="demo_select_1" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_1').hide() </script>
+                    <div id="demo_2" class="demo_select_container">
+                        <select  id="demo_select_2" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_2').hide() </script>
+                    <div id="demo_3" class="demo_select_container">
+                        <select  id="demo_select_3" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_3').hide() </script>
+                    <div id="demo_4" class="demo_select_container">
+                        <select  id="demo_select_4" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_4').hide() </script>
+                    <div id="demo_5" class="demo_select_container">
+                        <select  id="demo_select_5" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_5').hide() </script>
+                    <div id="demo_6" class="demo_select_container">
+                        <select  id="demo_select_6" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_6').hide() </script>
+                    <div id="demo_7" class="demo_select_container">
+                        <select  id="demo_select_7" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_7').hide() </script>
+                    <div id="demo_8" class="demo_select_container">
+                        <select  id="demo_select_8" class="select_demo" ></select>
+                    </div>
+                    <div class="demo_select_padder"></div>
+                    <script> $('#demo_8').hide() </script>
+                    <div id="demo_9" class="demo_select_container">
+                        <select  id="demo_select_9" class="select_demo" ></select>
+                        <script> $('#demo_9').hide() </script>
+                    </div>
+                </div>
+            </div>
+            <hr>
+            <div id="load_inspection">
+                <div style="height: 10%;  font-size:var(--main-font-size); overflow: hidden;">
+                <div style="float: left; width: 40%; height: 100%;" >
+                    <span id="sample_size_info">No. of users: N/A</span>
+                </div>
+                <div  style="float: right; width: 45%; height: 100%; ">
+                    <select  id="select_graph" style="width:100%">
+                        <option value="Annual Average Profile"> Annual Average Profile</option>
+                        <option value="Daily kWh Histogram">Daily kWh Histogram</option>
+                    </select>
+                </div>
+                <div style="float: right; width: 10%; height: 100%;">
+                    <span style="float:right;">Show:</span>
+                </div>
+                </div>
+
+                <!-- Chart goes here in this div -->
+                <div class="chart" id="load_chart">
+                </div>
+                <script src="static/plot_load.js"></script>
+                <!-- This is the script.js that's in 'static' folder - it loads the chart data and draws the chart. -->
+            </div>
+        </div>
+
+
+        <div id="results_panel" class="main_tab_content">
+            <!-- Chart goes here in this div -->
+            <div id="result_chart">
+            </div>
+        </div>
+
+        <div id="tariff_selection_panel" class="main_tab_content">
+            <div id="upper_tariff_section">
+                <div id="left_tariff_col"  class="tariff_panel_cols">
+                    <span class="standard_label">Type:</span>
+                    <span class="standard_label">State:</span>
+                    <span class="standard_label">Provider:</span>
+                    <span class="standard_label">Year:</span>
+                    <span class="standard_label">Tariff:</span>
+                </div>
+                <div id="middle_tariff_col" class="tariff_panel_cols">
+                    <select class="tariff_filter" id="select_tariff_type" >
+                        <option selected="selected">Select1</option>
+                    </select>
+                    <div class="inter_selector_padder"></div>
+                    <select class="tariff_filter" id="select_tariff_state" >
+                        <option selected="selected">Select1</option>
+                    </select>
+                    <div class="inter_selector_padder"></div>
+                    <select class="tariff_filter" id="select_tariff_provider" >
+                        <option selected="selected">Select1</option>
+                    </select>
+                    <div class="inter_selector_padder"></div>
+                    <select class="tariff_filter" id="select_tariff_year" >
+                        <option selected="selected">Select1</option>
+                    </select>
+                    <div class="inter_selector_padder"></div>
+                    <select class="tariff_selector" id="select_tariff" >
+                        <option selected="selected">Select1</option>
+                    </select>
+                </div>
+            </div>
+            <script src="static/build_tariff_selectors.js"></script>
+            <script src="static/build_tariff_table.js"></script>
+            <div id="lower_tariff_section" class="tariff_panel_cols">
+                <script src="static/tariff_tabs.js"></script>
+                <div id="tariff_panel_header">
+                    <div id="name_label", style="width: 25%; float: left;">Name: N/A</div>
+                    <div id="type_label", style="width: 25%; float: left;">Type: N/A</div>
+                    <div id="state_label", style="width: 25%; float: left;">State: N/A</div>
+                    <div style="width: 25%; float: left;"><button>Add</button></div>
+                </div>
+                <div id="tariff_tabs" class="tab">
+                    <button id="default_tab" class="tablinks" onclick="displayTariff(event, 'DUOS')">DUOS</button>
+                    <button class="tablinks" onclick="displayTariff(event, 'TUOS')">TUOS</button>
+                    <button class="tablinks" onclick="displayTariff(event, 'DUOS_TUOS')">DUOS+TUOS</button>
+                    <button class="tablinks" onclick="displayTariff(event, 'NUOS')">NUOS</button>
+                </div>
+                <div id="DUOS" class="tabcontent" style="width: 100%;">
+                    <div id="DUOS_header" class="charges_header">
+                        <div style="float: left;">Daily Charge ($/day):</div>
+                        <input id="DUOS_daily_charge" type="text" value="" style="width: 10%; float: left;">
+                        <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
+                        <input id="DUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;">
+                    </div>
+
+                    <table id="DUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
+                        <thead>
+                        <tr class="tariff_table_header" id="DUOS_tariff_table_header"></tr>
+                        </thead>
+                        <tbody id="DUOS_tariff_table_body">
+                        </tbody>
+                    </table>
+
+                </div>
+                <div id="TUOS" class="tabcontent">
+                    <div id="TUOS_header" class="charges_header">
+                        <div style="float: left;">Daily Charge ($/day):</div>
+                        <input id="TUOS_daily_charge" type="text" value="" style="width: 10%; float: left;">
+                        <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
+                        <input id="TUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;">
+                    </div>
+
+                    <table id="TUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
+                        <thead>
+                        <tr class="tariff_table_header" id="TUOS_tariff_table_header"></tr>
+                        </thead>
+                        <tbody id="TUOS_tariff_table_body">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="DUOS_TUOS" class="tabcontent">
+                    <div id="DTUOS_header" class="charges_header">
+                        <div style="float: left;">Daily Charge ($/day):</div>
+                        <input id="DTUOS_daily_charge" type="text" value="" style="width: 10%; float: left;">
+                        <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
+                        <input id="DTUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;">
+                    </div>
+
+                    <table id="DTUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
+                        <thead>
+                        <tr class="tariff_table_header" id="DTUOS_tariff_table_header"></tr>
+                        </thead>
+                        <tbody id="DTUOS_tariff_table_body">
+                        </tbody>
+                    </table>
+                </div>
+                <div id="NUOS" class="tabcontent" style="width: 100%;">
+                    <div id="NUOS_header" class="charges_header">
+                        <div style="float: left;">Daily Charge ($/day):</div>
+                        <input id="NUOS_daily_charge" type="text" value="" style="width: 10%; float: left;">
+                        <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
+                        <input id="NUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;">
+                    </div>
+                    <table id="NUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
+                        <thead>
+                        <tr class="tariff_table_header" id="NUOS_tariff_table_header"></tr>
+                        </thead>
+                        <tbody id="NUOS_tariff_table_body">
+                        </tbody>
+                    </table>
+                </div>
+                <script>document.getElementById("default_tab").click();</script>
+            </div>
+        </div>
+
+    </div>
+
+
+  </div>
+
+</div>
+</body>
+</html>
