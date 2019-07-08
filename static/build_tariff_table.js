@@ -44,7 +44,16 @@ var display_table_and_charge_data = function(table_name, tariff_data){
         document.getElementById(table_name + "_energy_charge").value = tariff_data['Daily']['Value'];
     }
 
+    if ( $.fn.dataTable.isDataTable( '#' + table_name + '_tariff_table' ) ) {
+        var table = $('#' + table_name + '_tariff_table').DataTable();
+        table.MakeCellsEditable("destroy");
+        $('#' + table_name + '_tariff_table').DataTable().destroy();
+    }
+
+    $('#' + table_name + '_tariff_table' + ' tr').remove();
+
     build_header(table_name, tariff_data['table_data']['table_header'])
+
     for (var key in tariff_data['table_data']['table_rows']){
         if (tariff_data['table_data']['table_rows'].hasOwnProperty(key)) {
             build_row(tariff_data['table_data']['table_rows'][key], table_name + '_tariff_table')
@@ -58,22 +67,28 @@ var display_table_and_charge_data = function(table_name, tariff_data){
             "scrollX": true,
             "paging": true,
             "info": true,
-            "filter": false
+            "filter": false,
+            "retrieve": true
+
         } );
     } );
+
+    var table = $('#' + table_name + '_tariff_table').DataTable();
+    table.MakeCellsEditable({"onUpdate": myCallbackFunction});
+
 }
 
 var build_header = function(table_name, header_data){
     var length_row = header_data.length
+    var tr = document.createElement('tr');
     for (var i = 0; i < length_row; i++){
         var th = document.createElement('th');
         var text = document.createTextNode(header_data[i]);
         th.appendChild(text);
-        th.style.width = (100).toString() + "px"
-        var header_row = document.getElementById( table_name + '_tariff_table_header');
-        header_row.appendChild(th);
+        tr.appendChild(th);
     }
-    var DUOS_tariff_table_header = document.getElementById(table_name + '_tariff_table_header');
+    var header = document.getElementById( table_name + '_tariff_table_header');
+    header.appendChild(tr);
 }
 
 var build_row = function(row_data, table_id){
@@ -94,3 +109,9 @@ $('#select_tariff').on('change', function() {
     console.log('try and load tariff')
     get_tariff();
 });
+
+function myCallbackFunction(updatedCell, updatedRow, oldValue) {
+    console.log("The new value for the cell is: " + updatedCell.data());
+    console.log("The old value for that cell was: " + oldValue);
+    console.log("The values for each cell in that row are: " + updatedRow.data());
+}

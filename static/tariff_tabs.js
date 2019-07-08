@@ -17,4 +17,10 @@ function displayTariff(evt, tariffName) {
   // Show the current tab, and add an "active" class to the button that opened the tab
   document.getElementById(tariffName).style.display = "block";
   evt.currentTarget.className += " active";
+
+  // Adjust table column header widths when they become visible
+  if ( $.fn.dataTable.isDataTable( '#' + tariffName + '_tariff_table' ) ) {
+    var table = $('#' + tariffName + '_tariff_table').DataTable();
+    table.columns.adjust();
+  }
 }
