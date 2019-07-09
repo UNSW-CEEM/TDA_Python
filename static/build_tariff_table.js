@@ -23,12 +23,12 @@ var get_tariff = function(){
 var display_tariff_info = function(tariff_data){
     console.log('try and load tariff 2')
     // display high level info
-    var label = document.getElementById("name_label");
-    label.innerHTML = 'Name: ' + tariff_data['Name']
-    var label = document.getElementById("type_label");
-    label.innerHTML = 'Type: ' + tariff_data['Type']
-    var label = document.getElementById("state_label");
-    label.innerHTML = 'State: ' + tariff_data['State']
+    var label = document.getElementById("name_value");
+    label.innerHTML = tariff_data['Name']
+    var label = document.getElementById("type_value");
+    label.innerHTML = tariff_data['Type']
+    var label = document.getElementById("state_value");
+    label.innerHTML = tariff_data['State']
     // display info by nuos, duos etc
     for (var key in tariff_data['Parameters']) {
         if (tariff_data['Parameters'].hasOwnProperty(key)) {
@@ -74,7 +74,7 @@ var display_table_and_charge_data = function(table_name, tariff_data){
     } );
 
     var table = $('#' + table_name + '_tariff_table').DataTable();
-    table.MakeCellsEditable({"onUpdate": myCallbackFunction});
+    table.MakeCellsEditable({"onUpdate": display_save_mod_tariff_option});
 
 }
 
@@ -110,8 +110,10 @@ $('#select_tariff').on('change', function() {
     get_tariff();
 });
 
-function myCallbackFunction(updatedCell, updatedRow, oldValue) {
-    console.log("The new value for the cell is: " + updatedCell.data());
-    console.log("The old value for that cell was: " + oldValue);
-    console.log("The values for each cell in that row are: " + updatedRow.data());
+function display_save_mod_tariff_option() {
+  var tariff_save_option = document.getElementById("save_mod_tariff_option");
+  tariff_save_option.style.display = "block";
+  var save_name_input = document.getElementById("save_mod_tariff_name");
+  var current_name = document.getElementById("name_value");
+  save_name_input.value = current_name.innerHTML + " v2"
 }

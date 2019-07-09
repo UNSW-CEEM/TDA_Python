@@ -291,9 +291,22 @@
         font-size: var(--main-font-size);
         display: block;
       }
+
       #close_button:hover {
         background: #FF0000;
         color: #EEEEEE
+      }
+
+      .standard_button {
+        height: 4.25vh;
+      }
+
+      .standard_input {
+        height: 4.25vh;
+      }
+
+      #save_mod_tariff_option {
+        display: none;
       }
 
   </style>
@@ -486,9 +499,12 @@
             <div id="lower_tariff_section" class="tariff_panel_cols">
                 <script src="static/tariff_tabs.js"></script>
                 <div id="tariff_panel_header">
-                    <div id="name_label", style="width: 25%; float: left;">Name: N/A</div>
-                    <div id="type_label", style="width: 25%; float: left;">Type: N/A</div>
-                    <div id="state_label", style="width: 25%; float: left;">State: N/A</div>
+                    <div id="name_label", style="width: 5%; float: left;">Name:</div>
+                    <div id="name_value", style="width: 20%; float: left;">N/A</div>
+                    <div id="type_label", style="width: 5%; float: left;">Type:</div>
+                    <div id="type_value", style="width: 20%; float: left;">N/A</div>
+                    <div id="state_label", style="width: 5%; float: left;">State:</div>
+                    <div id="state_value", style="width: 20%; float: left;">N/A</div>
                     <div style="width: 25%; float: left;"><button>Add</button></div>
                 </div>
                 <div id="tariff_tabs" class="tab">
@@ -500,9 +516,9 @@
                 <div id="DUOS" class="tabcontent" style="width: 100%; ">
                     <div id="DUOS_header" class="charges_header">
                         <div style="float: left;">Daily Charge ($/day):</div>
-                        <input id="DUOS_daily_charge" type="text" value="" style="width: 10%; float: left;">
+                        <input id="DUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                         <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
-                        <input id="DUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;">
+                        <input id="DUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                     </div>
                     <div style="overflow-x: scroll;">
                         <table id="DUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
@@ -515,9 +531,9 @@
                 <div id="TUOS" class="tabcontent">
                     <div id="TUOS_header" class="charges_header">
                         <div style="float: left;">Daily Charge ($/day):</div>
-                        <input id="TUOS_daily_charge" type="text" value="" style="width: 10%; float: left;">
+                        <input id="TUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                         <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
-                        <input id="TUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;">
+                        <input id="TUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                     </div>
 
                     <table id="TUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
@@ -528,9 +544,9 @@
                 <div id="DTUOS" class="tabcontent">
                     <div id="DTUOS_header" class="charges_header">
                         <div style="float: left;">Daily Charge ($/day):</div>
-                        <input id="DTUOS_daily_charge" type="text" value="" style="width: 10%; float: left;">
+                        <input id="DTUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                         <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
-                        <input id="DTUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;">
+                        <input id="DTUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                     </div>
 
                     <table id="DTUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
@@ -541,15 +557,20 @@
                 <div id="NUOS" class="tabcontent" style="width: 100%;">
                     <div id="NUOS_header" class="charges_header">
                         <div style="float: left;">Daily Charge ($/day):</div>
-                        <input id="NUOS_daily_charge" type="text" value="" style="width: 10%; float: left;">
+                        <input id="NUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                         <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
-                        <input id="NUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;">
+                        <input id="NUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                     </div>
                     <table id="NUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
                         <thead class="tariff_table_header" id="NUOS_tariff_table_header"></thead>
                         <tbody id="NUOS_tariff_table_body"></tbody>
                     </table>
                 </div>
+                <div id="save_mod_tariff_option">
+                    <input id="save_mod_tariff_name" class="standard_input">
+                    <button id="save_mod_button" onclick="get_tariff_then_save(event)" class="standard_button">Save</button>
+                </div>
+
                 <script>document.getElementById("default_tab").click();</script>
             </div>
         </div>

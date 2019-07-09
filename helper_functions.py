@@ -2,6 +2,7 @@ import pandas as pd
 from datetime import timedelta
 import numpy as np
 import copy
+import math
 
 def calc_mean_daily_load(load):
     load['READING_DATETIME'] = pd.to_datetime(load['READING_DATETIME'])
@@ -51,38 +52,32 @@ def format_tariff_data_for_display(raw_tariff_json):
                         row.append(str(column_value))
                     table_data['table_rows'].append(row)
                 display_format['Parameters'][parameter_name]['table_data'] = table_data
-                if component_name == 'Energy':
-                    del display_format['Parameters'][parameter_name]['Energy']
+                del display_format['Parameters'][parameter_name][component_name]
 
-    displ1ay_format = {
-                      'Name': "example",
-                      'Type': "great_tariff",
-                      'State': "nsw",
-                      'Parameters': {
-                          'DUOS':
-                              { 'table_data':
-                                    {'table_header': ['', 'Months', 'TimeIntervals', 'Unit', 'Value', 'Weekday', 'Weekend'],
-                                     'table_rows': [['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                    ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True']]},
-                                'daily_charge': '1.0',
-                                'energy_charge': '2.0'},
-                          'NUOS':
-                              {'table_data':
-                                    {'table_header': ['', 'Months', 'TimeIntervals', 'Unit', 'Value', 'Weekday', 'Weekend'],
-                                    'table_rows': [['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True'],
-                                                  ['1', '1,2,3', '["00:00","07:00"]', '$/kWh', '0.3', 'True', 'True']]},
-                                'daily_charge': '1.0',
-                                'energy_charge': '2.0'}
-                      }
-    }
     return display_format
+
+
+def format_tariff_data_for_storage(display_formatted_tariff):
+    storage_format = copy.deepcopy(display_formatted_tariff)
+
+    for parameter_name, parameter in display_formatted_tariff['Parameters'].items():
+        for component_name, component in parameter.items():
+            charges = {}
+            if component_name == 'table_data':
+                for row in component['table_rows']:
+                    for counter, item in enumerate(row):
+                        if counter == 0:
+                            charges[item] = {}
+                        else:
+                            if component['table_header'][counter] in ['Unit']:
+                                charges[row[0]][component['table_header'][counter]] = item
+                            else:
+                                if item == 'inf':
+                                    charges[row[0]][component['table_header'][counter]] = math.inf
+                                else:
+                                    charges[row[0]][component['table_header'][counter]] = eval(item)
+                del storage_format['Parameters'][parameter_name][component_name]
+                storage_format['Parameters'][parameter_name]['Energy'] = charges
+
+    return storage_format
+

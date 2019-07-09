@@ -173,6 +173,13 @@ def tariff_json():
     return jsonify(selected_tariff)
 
 
+@app.route('/save_tariff', methods=['POST'])
+def save_tariff():
+    tariff_to_save = request.get_json()
+    print(helper_functions.format_tariff_data_for_storage(tariff_to_save))
+    return "saved"
+
+
 def shutdown_server():
     print('called shutdown')
     func = request.environ.get('werkzeug.server.shutdown')
