@@ -20,11 +20,7 @@
     <script src="static/dataTables.cellEdit.js"></script>
 
   <style>
-      /* ---------- Project level settings ---------- */
-      :root {
-        --main-font-size: 1.75vh;
-        --main-selector-height: 2.25vh;
-      }
+
       /* ---------- Popups ---------- */
       #popupMenu2 {
         width: 150px;
@@ -36,10 +32,12 @@
         border-color: #5D8FAF;
         text-align: center;
       }
+
       .popup_header{
         height: 20px;
         background: #dde0e5;
       }
+
       .popupClose{
         font-size: 20px;
         float: right;
@@ -47,6 +45,7 @@
         width: 20px;
         height:20px;
       }
+
       .header_border{
         height:1px;
         padding-top:0;
@@ -56,14 +55,48 @@
       }
 
       html, body {
-        height:100%; margin: 0;
+        height:100%;
+        margin: 0;
+        font-size: 1.75vh;
       }
+
+      select {
+        height: 2.25vh;
+        width: 20vw;
+        margin-bottom: 2vh;
+      }
+
+      button {
+        height: 2.25vh;
+        width: 10vw;
+      }
+
+      input {
+        height: 2.25vh;
+        width: 20vw;
+      }
+
+      .label {
+        margin-bottom: 2vh;
+      }
+
+      .row {
+        display: flex;
+      }
+
+      .col {
+        display: flex;
+        flex-direction: column;
+      }
+
       #container {
         width: calc(100vw - (100vw - 100%));
         height: calc(100vh - (100vh - 100%));
         background-color: #EEEEEE;
-        margin: 0; box-sizing: border-box;
+        margin: 0;
+        box-sizing: border-box;
       }
+
       #menu_bar {
         height: 20px%;
         box-sizing: border-box;
@@ -76,17 +109,12 @@
         width:100%; padding: 0.5%;
         box-sizing: border-box;
         margin: 0;
+        display: flex;
       }
-      #left_column {
-        width:14.5%;
-        float:left;
-        height:100%;
-        clear: left;
-      }
+
       #logos{
         height: 20%;
-        box-sizing:
-        border-box;
+        box-sizing: border-box;
         margin: 0
       }
 
@@ -98,6 +126,7 @@
         box-sizing: border-box;
         padding: 1%;
         width: 100%;
+
       }
 
       .main_tab_links {
@@ -107,7 +136,6 @@
         border-width: 1px;
         height: 50px;
         width: 100%;
-        font-size: var(--main-font-size);
       }
 
       .main_tab_links:hover {
@@ -119,129 +147,39 @@
       }
 
       /* ---------- Load Selection Panel ---------- */
-      #load_selection {
-        height: 10%;
-        min-height: 10%;
-        width: 35vw
-      }
-      #select {
-        width: 40%;
-        height: var(--main-selector-height);
-      }
       #demograhphic_selection {
         height: 30%;
         min-height: 50%;
         overflow: hidden;
       }
+
       #load_inspection {
         height: 30%;
         padding: 2%;
       }
+
       #load_chart {
         position: relative;
         height: 85%;
       }
-      #sample_size_info {
-        font-size: var(--main-font-size);
-      }
-      #select_graph{
-        font-size: var(--main-font-size);
-      }
-      .demo_select_container {
-        width: 100%;
-        height: var(--main-selector-height);
-      }
-      .select_demo {
-        width: 100% !important;
-        height: 90%;
-        font-size: var(--main-font-size);
-      }
-      .select_demo:focus{
-        height:auto;
-        z-index:1;
-      }
-      .demo_label {
-        height: var(--main-selector-height);
-        font-size: var(--main-font-size);
-      }
-      .demo_select_padder {
-        height: 2%
-      }
-      #right_column {
-        float: right;
-        width:85%;
-        height:100%;
-        clear: right;
-      }
-      /* ---------- Tariff Selection Panel ---------- */
 
-
-      /* --- Put label in border ---*/
-      .tariff_panel_cols {
-        float: left;
-      }
-
-      # upper_tariff_section {
-        width: 100%
-        height: 40%
-      }
-
-      #left_tariff_col {
-        width: 50%;
-        height: 80%;
-      }
-      #middle_tariff_col {
-        width: 50%;
-        height: 80%;
-      }
-
-      .tariff_filter {
-        height: var(--main-selector-height);
-        font-size: var(--main-font-size);
-        display: block;
-        width: 80%;
-      }
-      .tariff_selector {
-        height: var(--main-selector-height);
-        font-size: var(--main-font-size);
-        display: block;
-        width: 80%;
-      }
-      .inter_selector_padder{
-        height: 2vh;
-      }
-      #lower_tariff_section {
-        width: 100%;
-        height: 65%;
-      }
-      #tariff_panel_header {
-        height: 10%;
-        font-size: var(--main-font-size);
-        overflow: hidden;
-        box-sizing: border-box;
-        margin: 0;
-      }
-      /* --- Create tabbed tariff area --- */
-      .tab {
+      .tab_button_area {
         overflow: hidden;
         background-color: #f1f1f1;
-        height: 10%;
       }
 
-      .tab button {
+      .tab_button_area button {
         background-color: inherit;
         float: left;
         border-style: solid;
         border-width: 1px;
-        height: 100%;
-        font-size: var(--main-font-size);
       }
 
-      .tab button:hover {
+      .tab_button_area button:hover {
         background-color: #ddd;
       }
 
-      .tab button.active {
+      .tab_button_area button.active {
         background-color: #ccc;
       }
 
@@ -255,16 +193,11 @@
         width: 100%;
       }
 
-      .charges_header {
-        width: 100%;
-        height: 15%;
-        overflow: hidden;
-      }
-
       div.dataTables_wrapper {
         width: 100%;
         height: 85%;
         margin: 0 auto;
+
       }
 
       #result_chart  {
@@ -281,28 +214,15 @@
         box-sizing: border-box;
         margin: 0;
       }
-      .menu_button:hover{
+
+      .menu_button: hover{
         background: #ADDFFF;
         border-color: #5D8FAF;
       }
 
-      .standard_label {
-        height: 4.25vh;
-        font-size: var(--main-font-size);
-        display: block;
-      }
-
-      #close_button:hover {
+      #close_button: hover {
         background: #FF0000;
         color: #EEEEEE
-      }
-
-      .standard_button {
-        height: 4.25vh;
-      }
-
-      .standard_input {
-        height: 4.25vh;
       }
 
       #save_mod_tariff_option {
@@ -332,11 +252,11 @@
     <hr class="header_border"/>
   <div class="main">
 
-    <div id="left_column">
+    <div id="left_column" class="tab_button_area" style="flex: 14.5%">
         <script src="static/main_tabs.js"></script>
         <div id="logos">
-            <img src="static/UNSWLogo.png" alt="UNSW Logo", style="width: 100%;">
-            <img src="static/CEEMLogo.png" alt="UNSW Logo", style="float:left; width: 100%;">
+            <img src="static/UNSWLogo.png" alt="UNSW Logo" style="width: 100%;">
+            <img src="static/CEEMLogo.png" alt="UNSW Logo" style="float:left; width: 100%;">
         </div>
         <button id="default_panel" class="main_tab_links" onclick="displayPanels(event, 'load_panel')">Load</button>
         <button class="main_tab_links" onclick="displayPanels(event, 'tariff_selection_panel')">Tariffs</button>
@@ -344,95 +264,80 @@
 
     </div>
 
-    <div id="right_column" class="main_tab">
+    <div id="right_column" class="main_tab" style="flex: 85%">
 
         <div id="load_panel" class="main_tab_content">
 
-            <div id="load_selecion">
-                <span style="font-size: 2vh">Selected:</span>
-                <select id="select" name="select" style="font-size: var(--main-font-size)"><option selected="selected">blank</option></select>
-                <script src="static/build_load_selector.js"></script>
-                <button type="button" id="get_load"
-                        style="float: right; width: 15% !important; height: var(--main-selector-height); font-size: var(--main-font-size);" >Set</button>
+            <div id="load_selecion" class="row" style="height: 2.5%;">
+                <div style="width: 50%;">
+                    <span>Selected:</span>
+                    <select id="select" name="select"><option selected="selected">blank</option></select>
+                </div>
+                <div style="width: 50%;">
+                    <script src="static/build_load_selector.js"></script>
+                    <button type="button" id="get_load">Set</button>
+                </div>
             </div>
             <hr>
-            <div id="demograhphic_selection">
-                <div id="demo_label_col" style="height: 100%; width: 80%; float: left;">
-                    <div id="demo_label_0" class="demo_label"></div>
-                    <div class="demo_select_padder"></div>
-                    <div id="demo_label_1"  class="demo_label"></div>
-                    <div class="demo_select_padder"></div>
-                    <div id="demo_label_2" class="demo_label"></div>
-                    <div class="demo_select_padder"></div>
-                    <div id="demo_label_3"  class="demo_label"></div>
-                    <div class="demo_select_padder"></div>
-                    <div id="demo_label_4"  class="demo_label"></div>
-                    <div class="demo_select_padder"></div>
-                    <div id="demo_label_5" class="demo_label"></div>
-                    <div class="demo_select_padder"></div>
-                    <div id="demo_label_6" class="demo_label"></div>
-                    <div class="demo_select_padder"></div>
-                    <div id="demo_label_7" class="demo_label"></div>
-                    <div class="demo_select_padder"></div>
-                    <div id="demo_label_8"  class="demo_label"></div>
-                    <div class="demo_select_padder"></div>
-                    <div id="demo_label_9"  class="demo_label"></div>
+            <div id="demograhphic_selection" class="row">
+                <div id="demo_label_col" class="col" style="flex: 80%;">
+                    <div id="demo_label_0" class="label"></div>
+                    <div id="demo_label_1"  class="label"></div>
+                    <div id="demo_label_2" class="label"></div>
+                    <div id="demo_label_3"  class="label"></div>
+                    <div id="demo_label_4"  class="label"></div>
+                    <div id="demo_label_5" class="label"></div>
+                    <div id="demo_label_6" class="label"></div>
+                    <div id="demo_label_7" class="label"></div>
+                    <div id="demo_label_8"  class="label"></div>
+                    <div id="demo_label_9"  class="label"></div>
                 </div>
-                    <div id="demo_selector_col" style="height: 100%; width: 20%; float: left;">
-                        <div id="demo_0" class="demo_select_container">
-                        <select  id="demo_select_0" class="select_demo"></select>
+                <div id="demo_selector_col" class="col" style="flex: 20%;">
+                    <div id="demo_0" class="demo_select_container">
+                        <select  id="demo_select_0"></select>
                     </div>
-                    <div class="demo_select_padder"></div>
                     <script> $('#demo_0').hide() </script>
                     <div id="demo_1" class="demo_select_container">
-                        <select class="select_demo" id="demo_select_1" ></select>
+                        <select class="select_demo"></select>
                     </div>
-                    <div class="demo_select_padder"></div>
                     <script> $('#demo_1').hide() </script>
                     <div id="demo_2" class="demo_select_container">
-                        <select  id="demo_select_2" class="select_demo" ></select>
+                        <select  id="demo_select_2"></select>
                     </div>
-                    <div class="demo_select_padder"></div>
                     <script> $('#demo_2').hide() </script>
                     <div id="demo_3" class="demo_select_container">
-                        <select  id="demo_select_3" class="select_demo" ></select>
+                        <select  id="demo_select_3"></select>
                     </div>
-                    <div class="demo_select_padder"></div>
                     <script> $('#demo_3').hide() </script>
                     <div id="demo_4" class="demo_select_container">
-                        <select  id="demo_select_4" class="select_demo" ></select>
+                        <select  id="demo_select_4"></select>
                     </div>
-                    <div class="demo_select_padder"></div>
                     <script> $('#demo_4').hide() </script>
                     <div id="demo_5" class="demo_select_container">
-                        <select  id="demo_select_5" class="select_demo" ></select>
+                        <select  id="demo_select_5"></select>
                     </div>
-                    <div class="demo_select_padder"></div>
                     <script> $('#demo_5').hide() </script>
                     <div id="demo_6" class="demo_select_container">
-                        <select  id="demo_select_6" class="select_demo" ></select>
+                        <select  id="demo_select_6"></select>
                     </div>
-                    <div class="demo_select_padder"></div>
                     <script> $('#demo_6').hide() </script>
                     <div id="demo_7" class="demo_select_container">
-                        <select  id="demo_select_7" class="select_demo" ></select>
+                        <select  id="demo_select_7"></select>
                     </div>
-                    <div class="demo_select_padder"></div>
                     <script> $('#demo_7').hide() </script>
                     <div id="demo_8" class="demo_select_container">
-                        <select  id="demo_select_8" class="select_demo" ></select>
+                        <select  id="demo_select_8"></select>
                     </div>
-                    <div class="demo_select_padder"></div>
                     <script> $('#demo_8').hide() </script>
                     <div id="demo_9" class="demo_select_container">
-                        <select  id="demo_select_9" class="select_demo" ></select>
-                        <script> $('#demo_9').hide() </script>
+                        <select  id="demo_select_9"></select>
                     </div>
+                    <script> $('#demo_9').hide() </script>
                 </div>
             </div>
             <hr>
             <div id="load_inspection">
-                <div style="height: 10%;  font-size:var(--main-font-size); overflow: hidden;">
+                <div style="height: 10%; overflow: hidden;">
                 <div style="float: left; width: 40%; height: 100%;" >
                     <span id="sample_size_info">No. of users: N/A</span>
                 </div>
@@ -463,32 +368,28 @@
         </div>
 
         <div id="tariff_selection_panel" class="main_tab_content">
-            <div id="upper_tariff_section">
-                <div id="left_tariff_col"  class="tariff_panel_cols">
-                    <span class="standard_label">Type:</span>
-                    <span class="standard_label">State:</span>
-                    <span class="standard_label">Provider:</span>
-                    <span class="standard_label">Year:</span>
-                    <span class="standard_label">Tariff:</span>
+            <div id="upper_tariff_section" class="row" style="height: 40%;">
+                <div id="left_tariff_col"  class="col" style="flex: 50%">
+                    <span class="label">Type:</span>
+                    <span class="label">State:</span>
+                    <span class="label">Provider:</span>
+                    <span class="label">Year:</span>
+                    <span class="label">Tariff:</span>
                 </div>
-                <div id="middle_tariff_col" class="tariff_panel_cols">
-                    <select class="tariff_filter" id="select_tariff_type" >
+                <div id="middle_tariff_col" class="col" style="flex: 50%">
+                    <select id="select_tariff_type">
                         <option selected="selected">Select1</option>
                     </select>
-                    <div class="inter_selector_padder"></div>
-                    <select class="tariff_filter" id="select_tariff_state" >
+                    <select id="select_tariff_state">
                         <option selected="selected">Select1</option>
                     </select>
-                    <div class="inter_selector_padder"></div>
-                    <select class="tariff_filter" id="select_tariff_provider" >
+                    <select id="select_tariff_provider">
                         <option selected="selected">Select1</option>
                     </select>
-                    <div class="inter_selector_padder"></div>
-                    <select class="tariff_filter" id="select_tariff_year" >
+                    <select id="select_tariff_year">
                         <option selected="selected">Select1</option>
                     </select>
-                    <div class="inter_selector_padder"></div>
-                    <select class="tariff_selector" id="select_tariff" >
+                    <select id="select_tariff">
                         <option selected="selected">Select1</option>
                     </select>
                 </div>
@@ -496,32 +397,32 @@
             <script src="static/build_tariff_selectors.js"></script>
             <script src="static/build_tariff_table.js"></script>
             <script src="static/save_tariff.js"></script>
-            <div id="lower_tariff_section" class="tariff_panel_cols">
+            <div id="lower_tariff_section" class="row" style="flex-direction: column; height: 60%;">
                 <script src="static/tariff_tabs.js"></script>
-                <div id="tariff_panel_header">
-                    <div id="name_label", style="width: 5%; float: left;">Name:</div>
-                    <div id="name_value", style="width: 20%; float: left;">N/A</div>
-                    <div id="type_label", style="width: 5%; float: left;">Type:</div>
-                    <div id="type_value", style="width: 20%; float: left;">N/A</div>
-                    <div id="state_label", style="width: 5%; float: left;">State:</div>
-                    <div id="state_value", style="width: 20%; float: left;">N/A</div>
-                    <div style="width: 25%; float: left;"><button>Add</button></div>
+                <div id="tariff_panel_header" class="row" style="height: 10%">
+                    <div id="name_label", style="flex: 5%;">Name:</div>
+                    <div id="name_value", style="flex: 20%;">N/A</div>
+                    <div id="type_label", style="flex: 5%;">Type:</div>
+                    <div id="type_value", style="flex: 20%;">N/A</div>
+                    <div id="state_label", style="flex: 5%;">State:</div>
+                    <div id="state_value", style="flex: 20%;">N/A</div>
+                    <div style="flex: 25%;"><button>Add</button></div>
                 </div>
-                <div id="tariff_tabs" class="tab">
+                <div id="tariff_tabs" class="tab_button_area">
                     <button id="default_tab" class="tablinks" onclick="displayTariff(event, 'DUOS')">DUOS</button>
                     <button class="tablinks" onclick="displayTariff(event, 'TUOS')">TUOS</button>
                     <button class="tablinks" onclick="displayTariff(event, 'DTUOS')">DUOS+TUOS</button>
                     <button class="tablinks" onclick="displayTariff(event, 'NUOS')">NUOS</button>
                 </div>
                 <div id="DUOS" class="tabcontent" style="width: 100%; ">
-                    <div id="DUOS_header" class="charges_header">
+                    <div id="DUOS_header" class="row" style="height: 20%">
                         <div style="float: left;">Daily Charge ($/day):</div>
                         <input id="DUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                         <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
                         <input id="DUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                     </div>
-                    <div style="overflow-x: scroll;">
-                        <table id="DUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
+                    <div style="width: 100%; height:85%;">
+                        <table id="DUOS_tariff_table" class="display nowrap" width="100%">
                             <thead class="tariff_table_header" id="DUOS_tariff_table_header"></thead>
                             <tbody id="DUOS_tariff_table_body"></tbody>
                     </table>
@@ -529,48 +430,51 @@
 
                 </div>
                 <div id="TUOS" class="tabcontent">
-                    <div id="TUOS_header" class="charges_header">
+                    <div id="TUOS_header" class="row" style="height: 20%">
                         <div style="float: left;">Daily Charge ($/day):</div>
                         <input id="TUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                         <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
                         <input id="TUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                     </div>
-
-                    <table id="TUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
-                        <thead class="tariff_table_header" id="TUOS_tariff_table_header"></thead>
-                        <tbody id="TUOS_tariff_table_body"></tbody>
-                    </table>
+                    <div style="overflow-x: scroll;">
+                        <table id="TUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
+                            <thead class="tariff_table_header" id="TUOS_tariff_table_header"></thead>
+                            <tbody id="TUOS_tariff_table_body"></tbody>
+                        </table>
+                    </div>
                 </div>
                 <div id="DTUOS" class="tabcontent">
-                    <div id="DTUOS_header" class="charges_header">
+                    <div id="DTUOS_header" class="row" style="height: 10%">
                         <div style="float: left;">Daily Charge ($/day):</div>
                         <input id="DTUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                         <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
                         <input id="DTUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                     </div>
-
-                    <table id="DTUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
-                        <thead class="tariff_table_header" id="DTUOS_tariff_table_header"></thead>
-                        <tbody id="DTUOS_tariff_table_body"></tbody>
-                    </table>
+                    <div style="overflow-x: scroll;">
+                        <table id="DTUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
+                            <thead class="tariff_table_header" id="DTUOS_tariff_table_header"></thead>
+                            <tbody id="DTUOS_tariff_table_body"></tbody>
+                        </table>
+                    </div>
                 </div>
                 <div id="NUOS" class="tabcontent" style="width: 100%;">
-                    <div id="NUOS_header" class="charges_header">
+                    <div id="NUOS_header" class="row" style="height: 10%">
                         <div style="float: left;">Daily Charge ($/day):</div>
                         <input id="NUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                         <div style="float: left; padding-left: 5%">Energy Charge ($/kWh):</div>
                         <input id="NUOS_energy_charge" type="text" value=""  style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
                     </div>
-                    <table id="NUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
-                        <thead class="tariff_table_header" id="NUOS_tariff_table_header"></thead>
-                        <tbody id="NUOS_tariff_table_body"></tbody>
-                    </table>
+                    <div style="overflow-x: scroll;">
+                        <table id="NUOS_tariff_table" class="display nowrap" style="width:100%; height:85%;">
+                            <thead class="tariff_table_header" id="NUOS_tariff_table_header"></thead>
+                            <tbody id="NUOS_tariff_table_body"></tbody>
+                        </table>
+                    </div>
                 </div>
                 <div id="save_mod_tariff_option">
-                    <input id="save_mod_tariff_name" class="standard_input">
-                    <button id="save_mod_button" onclick="get_tariff_then_save(event)" class="standard_button">Save</button>
+                    <input id="save_mod_tariff_name">
+                    <button id="save_mod_button" onclick="get_tariff_then_save(event)">Save</button>
                 </div>
-
                 <script>document.getElementById("default_tab").click();</script>
             </div>
         </div>

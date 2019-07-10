@@ -60,16 +60,14 @@ var display_table_and_charge_data = function(table_name, tariff_data){
         }
     }
     var tariff_table = document.getElementById( table_name + '_tariff_table');
-    //tariff_table.style.height = (tariff_data['table_data']['table_rows'].length * 15).toString() + "px"
     $(document).ready(function() {
         $('#' + table_name + '_tariff_table').DataTable( {
             "scrollY": '30vh',
             "scrollX": true,
-            "paging": true,
+            "paging": false,
             "info": true,
             "filter": false,
             "retrieve": true
-
         } );
     } );
 
