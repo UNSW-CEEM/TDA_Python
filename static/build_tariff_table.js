@@ -52,27 +52,30 @@ var display_table_and_charge_data = function(table_name, tariff_data){
 
     $('#' + table_name + '_tariff_table' + ' tr').remove();
 
-    build_header(table_name, tariff_data['table_data']['table_header'])
+    if ('table_data' in tariff_data){
 
-    for (var key in tariff_data['table_data']['table_rows']){
-        if (tariff_data['table_data']['table_rows'].hasOwnProperty(key)) {
-            build_row(tariff_data['table_data']['table_rows'][key], table_name + '_tariff_table')
+        build_header(table_name, tariff_data['table_data']['table_header'])
+
+        for (var key in tariff_data['table_data']['table_rows']){
+            if (tariff_data['table_data']['table_rows'].hasOwnProperty(key)) {
+                build_row(tariff_data['table_data']['table_rows'][key], table_name + '_tariff_table')
+            }
         }
-    }
-    var tariff_table = document.getElementById( table_name + '_tariff_table');
-    $(document).ready(function() {
-        $('#' + table_name + '_tariff_table').DataTable( {
+
+        table = $('#' + table_name + '_tariff_table').DataTable( {
             "scrollY": '30vh',
             "scrollX": true,
             "paging": false,
-            "info": true,
+            "info": false,
+            "searching": false,
             "filter": false,
             "retrieve": true
         } );
-    } );
 
-    var table = $('#' + table_name + '_tariff_table').DataTable();
-    table.MakeCellsEditable({"onUpdate": display_save_mod_tariff_option});
+        table.MakeCellsEditable({"onUpdate": display_save_mod_tariff_option});
+    }
+
+
 
 }
 
