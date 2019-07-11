@@ -27,7 +27,7 @@ var add_demo_selectors = function(response){
     }
 }
 
-var plot_filtered_load =  function(){
+var get_load_details_from_ui = function(){
 
     var filter_options = {}
 
@@ -46,6 +46,14 @@ var plot_filtered_load =  function(){
     var chart_type = $('#select_graph').children("option:selected").val();
 
     var load_request = {'file_name': file_name, 'filter_options': filter_options, 'chart_type': chart_type}
+
+    return load_request
+
+}
+
+var plot_filtered_load =  function(){
+
+    load_request = get_load_details_from_ui()
 
     $.ajax({
     url: '/filtered_load_data',
@@ -66,9 +74,9 @@ var plot_load = function(response){
                   paper_bgcolor: '#EEEEEE',
                   plot_bgcolor: '#c7c7c7',
                   showlegend: true};
-    Plotly.newPlot('load_chart', response, layout);
+    Plotly.newPlot('load_chart', response['chart_data'], layout);
     var file_name = $('#select').children("option:selected").val();
-    $.getJSON('/n_users/' + file_name, print_n_users);
+    print_n_users(response['n_users'])
     $('#get_load').contextMenu('close');
 }
 

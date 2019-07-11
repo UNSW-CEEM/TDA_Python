@@ -18,6 +18,8 @@
     <link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.12/css/jquery.dataTables.min.css">
     <script src="static/contextMenu/contextMenu.js"></script>
     <script src="static/dataTables.cellEdit.js"></script>
+    <script src="static/results_tabs.js"></script>
+    <script src="static/plot_results.js"></script>
 
   <style>
 
@@ -94,8 +96,6 @@
         float: left;
       }
 
-
-
       #container {
         width: calc(100vw - (100vw - 100%));
         height: calc(100vh - (100vh - 100%));
@@ -124,51 +124,6 @@
         margin: 0
       }
 
-      .main_tab_content {
-        display: none;
-        border-style: groove;
-        border-width: 0.25%;
-        height: 100%;
-        box-sizing: border-box;
-        padding: 1%;
-        width: 100%;
-
-      }
-
-      .main_tab_links {
-        background-color: inherit;
-        float: left;
-        border-style: solid;
-        border-width: 1px;
-        height: 50px;
-        width: 100%;
-      }
-
-      .main_tab_links:hover {
-        background-color: #ddd;
-      }
-
-      .main_tab_links.active {
-        background-color: #ccc;
-      }
-
-      /* ---------- Load Selection Panel ---------- */
-      #demograhphic_selection {
-        height: 30%;
-        min-height: 50%;
-        overflow: hidden;
-      }
-
-      #load_inspection {
-        height: 30%;
-        padding: 2%;
-      }
-
-      #load_chart {
-        position: relative;
-        height: 85%;
-      }
-
       .tab_button_area {
         overflow: hidden;
         background-color: #f1f1f1;
@@ -179,6 +134,7 @@
         float: left;
         border-style: solid;
         border-width: 1px;
+        height: 100%;
       }
 
       .tab_button_area button:hover {
@@ -193,22 +149,30 @@
         display: none;
         border-style: groove;
         border-width: 0.25%;
-        height: 80%;
+        height: 100%;
         box-sizing: border-box;
         padding: 1%;
         width: 100%;
       }
 
-      div.dataTables_wrapper {
+      .results_tab_content {
+        display: none;
+        border-style: groove;
+        border-width: 0.25%;
+        height: 95%;
+        box-sizing: border-box;
+        padding: 1%;
         width: 100%;
-        height: 85%;
-        margin: 0 auto;
-
       }
 
-      #result_chart  {
-        height:40%;
-        width: 50%
+      .main_tab_content {
+        display: none;
+        border-style: groove;
+        border-width: 0.25%;
+        height: 100%;
+        box-sizing: border-box;
+        padding: 1%;
+        width: 100%;
       }
 
       .menu_button{
@@ -235,8 +199,6 @@
         display: none;
       }
 
-      .datatable-row-detail { width: 50vw; }
-
   </style>
 
   <div id="popupMenu2">
@@ -260,19 +222,20 @@
     <hr class="header_border"/>
   <div class="main">
 
-    <div id="left_column" class="tab_button_area" style="height: 100%; width: 14.5%; float: left;">
+    <div id="left_column" class="tab_button_area" style="height: 100%; width: 14.5%; float: left; padding: 0 1% 0 1%">
         <script src="static/main_tabs.js"></script>
         <div id="logos">
             <img src="static/UNSWLogo.png" alt="UNSW Logo" style="width: 100%;">
             <img src="static/CEEMLogo.png" alt="UNSW Logo" style="float:left; width: 100%;">
         </div>
-        <button id="default_panel" class="main_tab_links" onclick="displayPanels(event, 'load_panel')">Load</button>
-        <button class="main_tab_links" onclick="displayPanels(event, 'tariff_selection_panel')">Tariffs</button>
-        <button class="main_tab_links" onclick="displayPanels(event, 'results_panel')">Results</button>
+        <button id="default_panel" class="main_tab_links" onclick="displayPanels(event, 'load_panel')" style="width: 100%; height: 50px">Load</button>
+        <button class="main_tab_links" onclick="displayPanels(event, 'tariff_selection_panel')" style="width: 100%; height: 50px">Tariffs</button>
+        <button class="main_tab_links" onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">Results</button>
+
 
     </div>
 
-    <div id="right_column" class="main_tab" style="height: 100%; width: 85%; float: left;">
+    <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left;">
 
         <div id="load_panel" class="main_tab_content">
 
@@ -287,7 +250,7 @@
                 </div>
             </div>
             <hr>
-            <div id="demograhphic_selection" class="row">
+            <div id="demograhphic_selection" class="row" style="height: 45%">
                 <div id="demo_label_col" class="col" style="width: 75%;">
                     <div id="demo_label_0" class="label_stacked"></div>
                     <div id="demo_label_1"  class="label_stacked"></div>
@@ -302,7 +265,7 @@
                 </div>
                 <div id="demo_selector_col" class="col" style="width: 25%;">
                     <div id="demo_0" class="demo_select_container">
-                        <select  id="demo_select_0"></select>
+                        <select  id="demo_select_0" class="select_demo"></select>
                     </div>
                     <script> $('#demo_0').hide() </script>
                     <div id="demo_1" class="demo_select_container">
@@ -310,41 +273,41 @@
                     </div>
                     <script> $('#demo_1').hide() </script>
                     <div id="demo_2" class="demo_select_container">
-                        <select  id="demo_select_2"></select>
+                        <select  id="demo_select_2" class="select_demo"></select>
                     </div>
                     <script> $('#demo_2').hide() </script>
                     <div id="demo_3" class="demo_select_container">
-                        <select  id="demo_select_3"></select>
+                        <select  id="demo_select_3" class="select_demo"></select>
                     </div>
                     <script> $('#demo_3').hide() </script>
                     <div id="demo_4" class="demo_select_container">
-                        <select  id="demo_select_4"></select>
+                        <select  id="demo_select_4" class="select_demo"></select>
                     </div>
                     <script> $('#demo_4').hide() </script>
                     <div id="demo_5" class="demo_select_container">
-                        <select  id="demo_select_5"></select>
+                        <select  id="demo_select_5" class="select_demo"></select>
                     </div>
                     <script> $('#demo_5').hide() </script>
                     <div id="demo_6" class="demo_select_container">
-                        <select  id="demo_select_6"></select>
+                        <select  id="demo_select_6" class="select_demo"></select>
                     </div>
                     <script> $('#demo_6').hide() </script>
                     <div id="demo_7" class="demo_select_container">
-                        <select  id="demo_select_7"></select>
+                        <select  id="demo_select_7" class="select_demo"></select>
                     </div>
                     <script> $('#demo_7').hide() </script>
                     <div id="demo_8" class="demo_select_container">
-                        <select  id="demo_select_8"></select>
+                        <select  id="demo_select_8" class="select_demo"></select>
                     </div>
                     <script> $('#demo_8').hide() </script>
                     <div id="demo_9" class="demo_select_container">
-                        <select  id="demo_select_9"></select>
+                        <select  id="demo_select_9" class="select_demo"></select>
                     </div>
                     <script> $('#demo_9').hide() </script>
                 </div>
             </div>
             <hr>
-            <div id="load_inspection">
+            <div id="load_inspection" style="height: 50%">
                 <div style="height: 10%; overflow: hidden;">
                 <div style="float: left; width: 40%; height: 100%;" >
                     <span id="sample_size_info">No. of users: N/A</span>
@@ -359,24 +322,28 @@
                     <span style="float:right;">Show:</span>
                 </div>
                 </div>
-
-                <!-- Chart goes here in this div -->
-                <div class="chart" id="load_chart">
-                </div>
+                <div class="chart" id="load_chart" style="height: 80%;"></div>
                 <script src="static/plot_load.js"></script>
-                <!-- This is the script.js that's in 'static' folder - it loads the chart data and draws the chart. -->
             </div>
         </div>
 
 
         <div id="results_panel" class="main_tab_content">
-            <!-- Chart goes here in this div -->
-            <div id="result_chart">
+            <div class="tab_button_area" style="height: 5%">
+                <button id="default_results_tab" class="results_tab_links" onclick="displayResults(event, 'single_variable_tab')">Single variable graphs</button>
+                <button class="results_tab_links" onclick="displayResults(event, 'dual_variable_tab')">Dual variable graphs</button>
             </div>
+            <div id="single_variable_tab" class="results_tab_content">
+                <div id="result_chart">1</div>
+            </div>
+            <div id="dual_variable_tab" class="results_tab_content">
+                <div>2</div>
+            </div>
+            <script>document.getElementById("default_results_tab").click();</script>
         </div>
 
         <div id="tariff_selection_panel" class="main_tab_content">
-            <div id="upper_tariff_section" class="row" style="height: 40%;">
+            <div id="upper_tariff_section" class="row" style="height: 30%;">
                 <div id="left_tariff_col"  class="col" style="width: 15%">
                     <div class="label_stacked">Type:</div>
                     <div class="label_stacked">State:</div>
@@ -405,24 +372,24 @@
             <script src="static/build_tariff_selectors.js"></script>
             <script src="static/build_tariff_table.js"></script>
             <script src="static/save_tariff.js"></script>
-            <div id="lower_tariff_section" class="row" style="height: 60%;">
+            <div id="lower_tariff_section" class="row" style="height: 70%;">
                 <script src="static/tariff_tabs.js"></script>
-                <div id="tariff_panel_header" class="row" style="height: 10%;">
+                <div id="tariff_panel_header" class="row" style="height: 20%;">
                     <div id="name_label" class="col" style="width: 5%;">Name:</div>
                     <div id="name_value" class="col" style="width: 20%;">N/A</div>
                     <div id="type_label" class="col" style="width: 5%;">Type:</div>
                     <div id="type_value" class="col" style="width: 20%;">N/A</div>
                     <div id="state_label" class="col" style="width: 5%;">State:</div>
                     <div id="state_value" class="col" style="width: 20%;">N/A</div>
-                    <div style="width: 20%;" class="col"><button>Add</button></div>
+                    <div id="add_case" style="width: 20%;" class="col" onclick="add_case(event)"><button>Add</button></div>
                 </div>
-                <div id="tariff_tabs" class="tab_button_area">
+                <div id="tariff_tabs" class="tab_button_area" style="height: 5%">
                     <button id="default_tab" class="tablinks" onclick="displayTariff(event, 'DUOS')">DUOS</button>
                     <button class="tablinks" onclick="displayTariff(event, 'TUOS')">TUOS</button>
                     <button class="tablinks" onclick="displayTariff(event, 'DTUOS')">DUOS+TUOS</button>
                     <button class="tablinks" onclick="displayTariff(event, 'NUOS')">NUOS</button>
                 </div>
-                <div id="DUOS" class="tabcontent" style="width: 100%;">
+                <div id="DUOS" class="tabcontent" style="height: 70%;">
                     <div id="DUOS_header" class="row" style="height: 20%">
                         <div style="float: left;">Daily Charge ($/day):</div>
                         <input id="DUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
@@ -437,7 +404,7 @@
                     </div>
 
                 </div>
-                <div id="TUOS" class="tabcontent">
+                <div id="TUOS" class="tabcontent" style="height: 70%;">
                     <div id="TUOS_header" class="row" style="height: 20%">
                         <div style="float: left;">Daily Charge ($/day):</div>
                         <input id="TUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
@@ -451,7 +418,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="DTUOS" class="tabcontent">
+                <div id="DTUOS" class="tabcontent" style="height: 70%;">
                     <div id="DTUOS_header" class="row" style="height: 10%">
                         <div style="float: left;">Daily Charge ($/day):</div>
                         <input id="DTUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
@@ -465,7 +432,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="NUOS" class="tabcontent" style="width: 100%;">
+                <div id="NUOS" class="tabcontent"  style="height: 70%;">
                     <div id="NUOS_header" class="row" style="height: 10%">
                         <div style="float: left;">Daily Charge ($/day):</div>
                         <input id="NUOS_daily_charge" type="text" value="" style="width: 10%; float: left;" onclick="display_save_mod_tariff_option(event)">
@@ -479,7 +446,7 @@
                         </table>
                     </div>
                 </div>
-                <div id="save_mod_tariff_option">
+                <div id="save_mod_tariff_option" style="height: 5%">
                     <input id="save_mod_tariff_name" style="width: 50%;">
                     <button id="save_mod_button" onclick="get_tariff_then_save(event)">Save</button>
                 </div>
@@ -491,7 +458,7 @@
 
 
   </div>
-
+  <script>document.getElementById("default_panel").click();</script>
 </div>
 </body>
 </html>

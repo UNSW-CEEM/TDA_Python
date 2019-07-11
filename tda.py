@@ -7,13 +7,16 @@ import plotly
 import json
 from make_load_charts import chart_methods
 import data_interface
+import Bill_Calc
 from time import time
 
 
 raw_data = {}
-filtered_data = {}
 raw_charts = {}
 filtered_charts = {}
+results_by_case = {}
+load_by_case = {}
+tariff_by_case = {}
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -42,32 +45,18 @@ def load_names():
     return jsonify(load_names)
 
 
-@app.route('/n_users/<name>')
-def n_users(name):
-    if name in filtered_data and filtered_data[name] is not None:
-        n = len(set(filtered_data[name]['CUSTOMER_KEY']))
-    else:
-        n = len(set(raw_data[name]['CUSTOMER_KEY']))
-    return str(n)
-
-
 @app.route('/filtered_load_data', methods=['POST'])
 def filtered_load_data():
-    t0 = time()
+
     load_request = request.get_json()
+
     # Get raw load data.
-    t1 = time()
     if load_request['file_name'] not in raw_data:
         raw_data[load_request['file_name']] = data_interface.get_load_table_alt('data/', load_request['file_name'])
-    print('Time get load data {}'.format(time() - t1))
-    # Create filtered set of customer keys.
-    demo_info_file_name = helper_functions.find_loads_demographic_file(load_request['file_name'])
-    demo_info = pd.read_csv('data/' + demo_info_file_name, dtype=str)
-    filtered = False
-    for column_name, selected_options in load_request['filter_options'].items():
-        if 'All' not in selected_options:
-            demo_info = demo_info[demo_info[column_name].isin([selected_options])]
-            filtered = True
+
+    filtered, filtered_data = data_interface.filter_load_data(raw_data[load_request['file_name']],
+                                                              load_request['file_name'],
+                                                              load_request['filter_options'])
 
     # Create the requested chart data if it does not already exist.
     if load_request['file_name'] not in raw_charts:
@@ -78,20 +67,37 @@ def filtered_load_data():
 
     # If filtering has been applied also create the filtered chart data,
     if filtered:
-        filtered_data[load_request['file_name']] = \
-            raw_data[load_request['file_name']][raw_data[load_request['file_name']]['CUSTOMER_KEY'].
-                isin(demo_info['CUSTOMER_KEY'])]
-        filtered_chart = chart_methods[load_request['chart_type']](filtered_data[load_request['file_name']],
-                                                                   series_name='Selected')
+        filtered_chart = chart_methods[load_request['chart_type']](filtered_data, series_name='Selected')
         chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']], filtered_chart]
+        n_users = data_interface.n_users(filtered_data)
     else:
-        filtered_data[load_request['file_name']] = None
         chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']]]
+        n_users = data_interface.n_users(raw_data[load_request['file_name']])
+
 
     # Format as json.
-    graph_json = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
-    print('Total time in plot filtered load {}'.format(time()-t0))
-    return graph_json
+    return_data = {"n_users": n_users, "chart_data": chart_data}
+    return_data = json.dumps(return_data, cls=plotly.utils.PlotlyJSONEncoder)
+    return return_data
+
+
+@app.route('/add_case', methods=['POST'])
+def add_case():
+    case_details = request.get_json()
+    case_name = case_details['case_name']
+    load_file_name = case_details['load_details']['file_name']
+    filter_options = case_details['load_details']['filter_options']
+    requested_tariff = case_details['tariff_name']
+
+    filtered, load_data = data_interface.filter_load_data(raw_data[load_file_name], load_file_name, filter_options)
+
+    selected_tariff = data_interface.get_tariff(requested_tariff)
+
+    results_by_case[case_name] = Bill_Calc.bill_calculator(load_data, selected_tariff)
+    load_by_case[case_name] = load_data
+    tariff_by_case[case_name] = selected_tariff
+    print(results_by_case[case_name])
+    return
 
 
 @app.route('/demo_options/<name>')
@@ -158,18 +164,8 @@ def tariff_options():
 @app.route('/tariff_json', methods=['POST'])
 def tariff_json():
     requested_tariff = request.get_json()
-    # Open the tariff data set.
-    with open('data/NetworkTariffs.json') as json_file:
-        network_tariffs = json.load(json_file)
-
-    # Look at each tariff and find the first one that matches the requested name.
-    for tariff in network_tariffs:
-        if tariff['Name'] == requested_tariff:
-            selected_tariff = tariff
-
-    # Reformat the tariff data to make it easier to display in the gui.
+    selected_tariff = data_interface.get_tariff(requested_tariff)
     selected_tariff = helper_functions.format_tariff_data_for_display(selected_tariff)
-
     return jsonify(selected_tariff)
 
 

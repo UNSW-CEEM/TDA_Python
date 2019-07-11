@@ -63,7 +63,7 @@ var display_table_and_charge_data = function(table_name, tariff_data){
         }
 
         table = $('#' + table_name + '_tariff_table').DataTable( {
-            "scrollY": '30vh',
+            "scrollY": '25vh',
             "scrollX": true,
             "paging": false,
             "info": false,
