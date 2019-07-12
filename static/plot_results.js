@@ -26,6 +26,8 @@ var add_case = function(){
 
 var plot_results = function(){
 
+    var case_details = {'chart_name': 'Bill Distribution', 'case_name': 'dummy_case'}
+
     // Define the chart layout
     var layout = {autosize: true,
                   margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
@@ -35,14 +37,14 @@ var plot_results = function(){
 
     // Get chart data
     $.ajax({
-        url: '/get_results',
+        url: '/get_results_chart',
         data: JSON.stringify(case_details),
         contentType: 'application/json;charset=UTF-8',
         type : 'POST',
         async: 'false',
         dataType:"json",
         success: function(data){
-            Plotly.newPlot('result_chart', response, layout);
+            Plotly.newPlot('result_chart', data, layout);
         ;}
     });
 

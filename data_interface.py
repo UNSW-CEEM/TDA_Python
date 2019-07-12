@@ -25,17 +25,9 @@ def extract_demographics_options(demographic_table):
 
 
 def get_load_table(folder_path, load_file):
-    load_data = pd.read_csv(folder_path + load_file)
-    load_data['READING_DATETIME'] = pd.to_datetime(load_data['READING_DATETIME'])
-    load_data = pd.melt(load_data, id_vars=['READING_DATETIME'],
-                        value_vars=[x for x in load_data.columns if x != 'READING_DATETIME'],
-                        var_name='CUSTOMER_KEY', value_name='Energy_kWh')
-    x=1
-    return load_data
-
-
-def get_load_table_alt(folder_path, load_file):
     load_data = feather.read_dataframe(folder_path + load_file)
+    load_data['Datetime'] = pd.to_datetime(load_data['READING_DATETIME'])
+    load_data = load_data.sort_values(by=['Datetime'])
     return load_data
 
 
@@ -51,13 +43,13 @@ def filter_load_data(raw_data, file_name, filter_options):
             demo_info = demo_info[demo_info[column_name].isin([selected_options])]
             filtered = True
 
-    filtered_data = raw_data[raw_data['CUSTOMER_KEY'].isin(demo_info['CUSTOMER_KEY'])]
+    filtered_data = raw_data.loc[:, ['Datetime'] + list(demo_info['CUSTOMER_KEY'])]
 
     return filtered, filtered_data
 
 
 def n_users(load_data):
-    n = len(set(load_data['CUSTOMER_KEY']))
+    n = len(load_data.columns) - 1
     return n
 
 

@@ -6,6 +6,7 @@ import helper_functions
 import plotly
 import json
 from make_load_charts import chart_methods
+from make_results_charts import results_chart_methods
 import data_interface
 import Bill_Calc
 from time import time
@@ -52,7 +53,8 @@ def filtered_load_data():
 
     # Get raw load data.
     if load_request['file_name'] not in raw_data:
-        raw_data[load_request['file_name']] = data_interface.get_load_table_alt('data/', load_request['file_name'])
+        raw_data[load_request['file_name']] = data_interface.get_load_table('data/', load_request['file_name'])
+
 
     filtered, filtered_data = data_interface.filter_load_data(raw_data[load_request['file_name']],
                                                               load_request['file_name'],
@@ -93,11 +95,20 @@ def add_case():
 
     selected_tariff = data_interface.get_tariff(requested_tariff)
 
-    results_by_case[case_name] = Bill_Calc.bill_calculator(load_data, selected_tariff)
+    results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), selected_tariff)
     load_by_case[case_name] = load_data
     tariff_by_case[case_name] = selected_tariff
-    print(results_by_case[case_name])
-    return
+    return jsonify('done')
+
+
+@app.route('/get_results_chart', methods=['POST'])
+def get_results_chart():
+    details = request.get_json()
+    chart_name = details['chart_name']
+    case_name = details['case_name']
+    chart_data = results_chart_methods[chart_name](results_by_case[case_name])
+    return_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
+    return return_data
 
 
 @app.route('/demo_options/<name>')
