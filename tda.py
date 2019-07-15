@@ -6,7 +6,7 @@ import helper_functions
 import plotly
 import json
 from make_load_charts import chart_methods
-from make_results_charts import results_chart_methods
+from make_results_charts import results_chart_methods, dual_variable_chart_method, single_case_chart_methods
 import data_interface
 import Bill_Calc
 from time import time
@@ -101,12 +101,33 @@ def add_case():
     return jsonify('done')
 
 
-@app.route('/get_results_chart', methods=['POST'])
-def get_results_chart():
+@app.route('/get_single_variable_chart', methods=['POST'])
+def get_single_variable_chart():
     details = request.get_json()
     chart_name = details['chart_name']
     case_name = details['case_name']
     chart_data = results_chart_methods[chart_name](results_by_case[case_name])
+    return_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
+    return return_data
+
+
+@app.route('/get_dual_variable_chart', methods=['POST'])
+def get_dual_variable_chart():
+    details = request.get_json()
+    x_axis = details['x_axis']
+    y_axis = details['y_axis']
+    case_name = details['case_name']
+    chart_data = dual_variable_chart_method(results_by_case[case_name], x_axis, y_axis)
+    return_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
+    return return_data
+
+
+@app.route('/get_single_case_chart', methods=['POST'])
+def get_single_case_chart():
+    details = request.get_json()
+    chart_name = details['chart_name']
+    case_name = details['case_name']
+    chart_data = single_case_chart_methods[chart_name](results_by_case[case_name])
     return_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
     return return_data
 
@@ -197,7 +218,7 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    shutdown_server()
+    #shutdown_server()
     return 'Server shutting down...'
 
 

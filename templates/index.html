@@ -26,6 +26,7 @@
     <script src="static/dataTables.cellEdit.js"></script>
     <script src="static/results_tabs.js"></script>
     <script src="static/plot_results.js"></script>
+    <script src="static/case_info_tab.js"></script>
 
   <style>
 
@@ -181,6 +182,16 @@
         width: 100%;
       }
 
+       .case_info_tab_content {
+        display: none;
+        border-style: groove;
+        border-width: 0.25%;
+        height: 85.5%;
+        box-sizing: border-box;
+        padding: 1%;
+        width: 100%;
+      }
+
       .menu_button{
         background: #FFF;
         border: solid;
@@ -235,16 +246,12 @@
             <img src="static/CEEMLogo.png" alt="UNSW Logo" style="float:left; width: 100%;">
         </div>
         <button id="default_panel" class="main_tab_links" onclick="displayPanels(event, 'load_panel')" style="width: 100%; height: 50px">Load</button>
-        <button class="main_tab_links" onclick="displayPanels(event, 'tariff_selection_panel')" style="width: 100%; height: 50px">Tariffs</button>
-        <button class="main_tab_links" onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">Results</button>
-
-
+        <button id="tariff_panel_button" class="main_tab_links" onclick="displayPanels(event, 'tariff_selection_panel')" style="width: 100%; height: 50px">Tariffs</button>
+        <button id="results_panel_button" class="main_tab_links" onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">Results</button>
     </div>
 
     <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left;">
-
         <div id="load_panel" class="main_tab_content">
-
             <div id="load_selecion" class="row" style="height: 2.5%;">
                 <div class="col" style="width: 50%;">
                     <div class="col">Selected:</div>
@@ -333,19 +340,87 @@
             </div>
         </div>
 
-
         <div id="results_panel" class="main_tab_content">
-            <div class="tab_button_area" style="height: 5%">
-                <button id="default_results_tab" class="results_tab_links" onclick="displayResults(event, 'single_variable_tab')">Single variable graphs</button>
-                <button class="results_tab_links" onclick="displayResults(event, 'dual_variable_tab')">Dual variable graphs</button>
+            <div class="col" style="width: 60%">
+                <div class="tab_button_area" style="height: 5%">
+                    <button id="default_results_tab" class="results_tab_links" onclick="displayResults(event, 'single_variable_tab')">Single variable graphs</button>
+                    <button id="dual_var_button" class="results_tab_links" onclick="displayResults(event, 'dual_variable_tab')">Dual variable graphs</button>
+                    <button id="single_case_button" class="results_tab_links" onclick="displayResults(event, 'single_case_tab')">Single case graphs</button>
+                </div>
+                <div id="single_variable_tab" class="results_tab_content">
+                    <div id="single_variable_result_chart" class="row" style="height: 80%"></div>
+                    <div class="row" style="height: 20%">
+                        <div class="col" style="width: 20%">
+                            <div class="label_line">Select figure:</div>
+                        </div>
+                        <div class="col" style="width: 80%">
+                            <select id="single_variable_chart_type" style="width: 50%">
+                                <option value="Bill Distribution">Bill Distribution</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="dual_variable_tab" class="results_tab_content">
+                    <div id="dual_variable_result_chart" class="row" style="height: 80%"></div>
+                    <div class="row" style="height: 20%">
+                        <div class="col" style="width: 20%">
+                            <div class="label_stacked">X axis:</div>
+                            <div class="label_stacked">Y axis:</div>
+                        </div>
+                        <div class="col" style="width: 80%">
+                            <select id="dual_variable_x_axis" style="width: 50%">
+                                <option value="Annual_kWh">Annual kWh</option>
+                            </select>
+                            <select id="dual_variable_y_axis" style="width: 50%">
+                                <option value="Bill">Bill ($/year)</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
+                <div id="single_case_tab" class="results_tab_content">
+                    <div id="single_case_result_chart" class="row" style="height: 80%"></div>
+                    <div class="row" style="height: 20%">
+                        <div class="col" style="width: 20%">
+                            <div class="label_stacked">Select case:</div>
+                            <div class="label_stacked">Select figure:</div>
+                        </div>
+                        <div class="col" style="width: 80%">
+                            <select id="single_case_result_chosen_case" style="width: 50%">
+                                <option value="dummy_case">dummy case</option>
+                            </select>
+                            <select id="single_case_chart_type" style="width: 50%">
+                                <option value="bill_components">Bill Components</option>
+                            </select>
+                        </div>
+                    </div>
+                </div>
             </div>
-            <div id="single_variable_tab" class="results_tab_content">
-                <div id="result_chart">1</div>
+
+            <div class="col" style="margin-left: 1%; width: 39%">
+                <div class="row" style="height: 50%">
+                    <h3 style="padding: 5%">List of cases:</h3>
+                </div>
+                <div class="row" style="height: 50%">
+                    <div id="case_tabs" class="tab_button_area" style="height: 10%">
+                        <button id="default_case_info_tab" class="case_tab_links" onclick="displayCaseInfoType(event, 'load_info')">Load Info</button>
+                        <button class="case_tab_links" onclick="displayCaseInfoType(event, 'tariff_info')">Tariff Info</button>
+                        <button class="case_tab_links" onclick="displayCaseInfoType(event, 'demog_info')">Demog Info</button>
+                    </div>
+                    <div class="case_info_tab_content" id="load_info">
+                        1
+                    </div>
+                    <div class="case_info_tab_content" id="tariff_info">
+                        2
+                    </div>
+                    <div class="case_info_tab_content" id="demog_info">
+                        3
+                    </div>
+
+                </div>
             </div>
-            <div id="dual_variable_tab" class="results_tab_content">
-                <div>2</div>
-            </div>
+
             <script>document.getElementById("default_results_tab").click();</script>
+            <script>document.getElementById("default_case_info_tab").click();</script>
         </div>
 
         <div id="tariff_selection_panel" class="main_tab_content">

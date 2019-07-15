@@ -18,4 +18,14 @@ function displayResults(evt, results_type) {
   document.getElementById(results_type).style.display = "block";
   evt.currentTarget.className += " active";
 
+  if ( $('#dual_variable_result_chart').children().length > 0 ) {
+    Plotly.Plots.resize('dual_variable_result_chart');
+  }
+    if ( $('#single_variable_result_chart').children().length > 0 ) {
+    Plotly.Plots.resize('single_variable_result_chart');
+ }
+   if ( $('#single_case_result_chart').children().length > 0 ) {
+    Plotly.Plots.resize('single_case_result_chart');
+ }
+
 }
