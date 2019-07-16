@@ -228,21 +228,17 @@
 
 
 
-  <div id="popupMenu2">
-    <div class="popup_header">
-        <span id="close_button" class="popupClose">&times</span>
-    </div>
-      <hr class="header_border"/>
-    <br><br>
-      <div style="position: absolute; top: 42px; left: 18px;">Please wait. Loading . . .</div>
-  </div>
 
-    <body>
-        <div id="dialog" title="Basic dialog" style="display: none">
+    <div id="dialog" title="Basic dialog" style="display: none">
         <p>Loading . . .  please wait.</p>
     </div>
 
-    </body>
+    <div id="case_namer" title="Basic dialog" style="display: none">
+        <p>Please provide a name for this case.</p>
+        <input id="case_name">
+    </div>
+
+
 
 </head>
 
@@ -515,7 +511,7 @@
                     <div id="type_value" class="col" style="width: 20%;">N/A</div>
                     <div id="state_label" class="col" style="width: 5%;">State:</div>
                     <div id="state_value" class="col" style="width: 20%;">N/A</div>
-                    <div id="add_case" style="width: 20%;" class="col" onclick="add_case(event)"><button>Add</button></div>
+                    <div id="add_case" style="width: 20%;" class="col" onclick="launch_case_namer(event)"><button>Add</button></div>
                 </div>
                 <div id="tariff_tabs" class="tab_button_area" style="height: 5%">
                     <button id="default_tab" class="tablinks" onclick="displayTariff(event, 'DUOS')">DUOS</button>

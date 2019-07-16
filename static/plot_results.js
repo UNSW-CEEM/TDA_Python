@@ -1,6 +1,19 @@
 
+var launch_case_namer = function(){
+    $( "#case_namer" ).dialog({
+        height: 400,
+        width: 350,
+        modal: true,
+        buttons: {"Save case": add_case}
+    });
+}
+
 var add_case = function(){
+    $('#case_namer').dialog('close');
     $('#dialog').dialog({modal: true});
+
+    // Get the name of the selected tariff.
+    case_name = $('#case_name').val();
 
     // Get the name of the selected tariff.
     tariff_name = $('#select_tariff').val();
@@ -9,7 +22,7 @@ var add_case = function(){
     load_request = get_load_details_from_ui();
 
     // Bundle case details into a single object
-    case_details = {'case_name': "dummy_case",
+    case_details = {'case_name': case_name,
                     'tariff_name': tariff_name,
                     'load_details': load_request};
 
