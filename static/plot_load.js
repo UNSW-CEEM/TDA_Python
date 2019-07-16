@@ -76,7 +76,8 @@ var plot_load = function(response){
     Plotly.newPlot('load_chart', response['chart_data'], layout, {responsive: true});
     var file_name = $('#select').children("option:selected").val();
     print_n_users(response['n_users'])
-    $('#get_load').contextMenu('close');
+    //$('#get_load').contextMenu('close');
+    $('#dialog').dialog('close');
 }
 
 var print_n_users = function(n_users){
@@ -99,16 +100,19 @@ var make_loading_popup = function(){
 }
 
 $('#get_load').click(function() {
+  $('#dialog').dialog({modal: true});
   var file_name = $('#select').children("option:selected").val();
   $.getJSON('/demo_options/' + file_name, add_demo_selectors);
   plot_filtered_load();
 });
 
 $('.select_demo').on('change', function() {
+    $('#dialog').dialog({modal: true});
     plot_filtered_load();
 });
 
 $('#select_graph').on('change', function() {
+    $('#dialog').dialog({modal: true});
     plot_filtered_load();
 });
 
@@ -116,6 +120,6 @@ window.onresize = function() {
     Plotly.Plots.resize('load_chart');
 };
 
-$('#get_load').contextMenu('popup', '#popupMenu2');
+//$('#get_load').contextMenu('popup', '#popupMenu2', {winEventClose: false, closeOnClick: false});
 
-$('.popupClose').on('click', function(e){$('#get_load').contextMenu('close');});
+//$('.popupClose').on('click', function(e){$('#get_load').contextMenu('close');});

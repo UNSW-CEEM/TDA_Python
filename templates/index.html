@@ -1,6 +1,7 @@
 <!doctype html>
 
 <html lang="en">
+
 <head>
   <meta charset="utf-8">
 
@@ -27,6 +28,8 @@
     <script src="static/results_tabs.js"></script>
     <script src="static/plot_results.js"></script>
     <script src="static/case_info_tab.js"></script>
+    <script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">
 
   <style>
 
@@ -222,6 +225,9 @@
 
   </style>
 
+
+
+
   <div id="popupMenu2">
     <div class="popup_header">
         <span id="close_button" class="popupClose">&times</span>
@@ -230,6 +236,13 @@
     <br><br>
       <div style="position: absolute; top: 42px; left: 18px;">Please wait. Loading . . .</div>
   </div>
+
+    <body>
+        <div id="dialog" title="Basic dialog" style="display: none">
+        <p>Loading . . .  please wait.</p>
+    </div>
+
+    </body>
 
 </head>
 
@@ -367,17 +380,53 @@
                 <div id="dual_variable_tab" class="results_tab_content">
                     <div id="dual_variable_result_chart" class="row" style="height: 80%"></div>
                     <div class="row" style="height: 20%">
-                        <div class="col" style="width: 20%">
+                        <div class="col" style="width: 10%">
                             <div class="label_stacked">X axis:</div>
                             <div class="label_stacked">Y axis:</div>
                         </div>
-                        <div class="col" style="width: 80%">
-                            <select id="dual_variable_x_axis" style="width: 50%">
+                        <div class="col" style="width: 40%">
+                            <select id="dual_variable_x_axis" style="width: 80%">
                                 <option value="Annual_kWh">Annual kWh</option>
                             </select>
-                            <select id="dual_variable_y_axis" style="width: 50%">
+                            <select id="dual_variable_y_axis" style="width: 80%">
                                 <option value="Bill">Bill ($/year)</option>
+                                <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
                             </select>
+                        </div>
+                        <div id="peak_options" class="col" style="width: 49%; display: none;">
+                            <div class="row" style="height: 30%;">
+                                <div class="col" style="width: 50%">
+                                    <div class="label_line" style="width: 20%">N =</div>
+                                    <select id="n_peaks_select" style="width: 30%; float: left;"></select>
+                                </div>
+                                <div class="col" style="width: 50%">
+                                    <div class="label_line" style="width: 70%">One Peak/Day</div>
+                                    <input type="checkbox" style="width: 20%;">
+                                </div>
+                                <script src="static/make_n_peak_options.js"></script>
+                            </div>
+                            <div class="row" style="height: 70%;">
+                                <div class="row" style="height: 50%;">
+                                    <div class="col" style="width: 50%">
+                                        <div class="label_line" style="width: 60%">Spring</div>
+                                        <input type="checkbox" style="width: 20%;">
+                                    </div>
+                                    <div class="col" style="width: 50%">
+                                        <div class="label_line" style="width: 60%">Autumn</div>
+                                        <input type="checkbox" style="width: 20%;">
+                                    </div>
+                                </div>
+                                <div class="row" style="height: 50%;">
+                                    <div class="col" style="width: 50%">
+                                        <div class="label_line" style="width: 60%">Summer</div>
+                                        <input type="checkbox" style="width: 20%;">
+                                    </div>
+                                    <div class="col" style="width: 50%">
+                                        <div class="label_line" style="width: 60%">Winter</div>
+                                        <input type="checkbox" style="width: 20%;">
+                                    </div>
+                                </div>
+                            </div>
                         </div>
                     </div>
                 </div>

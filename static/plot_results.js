@@ -1,5 +1,7 @@
 
 var add_case = function(){
+    $('#dialog').dialog({modal: true});
+
     // Get the name of the selected tariff.
     tariff_name = $('#select_tariff').val();
 
@@ -31,6 +33,7 @@ var plot_results = function(){
     plot_single_case_results();
     // Always show single variable graph by default.
     document.getElementById('default_results_tab').click();
+    $('#dialog').dialog('close');
 }
 
 var plot_single_variable_results = function(){
