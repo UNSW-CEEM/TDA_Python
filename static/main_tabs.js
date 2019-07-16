@@ -2,12 +2,6 @@ function displayPanels(evt, panelName) {
   // Declare all variables
   var i, tabcontent, tablinks;
 
-  // Get all elements with class="tabcontent" and hide them
-  tabcontent = document.getElementsByClassName("main_tab_content");
-  for (i = 0; i < tabcontent.length; i++) {
-    tabcontent[i].style.display = "none";
-  }
-
   // Get all elements with class="tablinks" and remove the class "active"
   tablinks = document.getElementsByClassName("main_tab_links");
   for (i = 0; i < tablinks.length; i++) {
@@ -15,6 +9,6 @@ function displayPanels(evt, panelName) {
   }
 
   // Show the current tab, and add an "active" class to the button that opened the tab
-  document.getElementById(panelName).style.display = "block";
+  $("#" + panelName).insertBefore($('.main_tab_content').first());
   evt.currentTarget.className += " active";
 }

@@ -163,7 +163,6 @@
       }
 
       .results_tab_content {
-        display: none;
         border-style: groove;
         border-width: 0.25%;
         height: 95%;
@@ -173,7 +172,6 @@
       }
 
       .main_tab_content {
-        display: none;
         border-style: groove;
         border-width: 0.25%;
         height: 100%;
@@ -216,6 +214,12 @@
         display: none;
       }
 
+      .visuallyhidden {
+        position: absolute;
+        top: -9999px !important;
+        left: -9999px !important;
+      }
+
   </style>
 
   <div id="popupMenu2">
@@ -250,7 +254,7 @@
         <button id="results_panel_button" class="main_tab_links" onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">Results</button>
     </div>
 
-    <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left;">
+    <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left; overflow: hidden;">
         <div id="load_panel" class="main_tab_content">
             <div id="load_selecion" class="row" style="height: 2.5%;">
                 <div class="col" style="width: 50%;">
@@ -341,8 +345,8 @@
         </div>
 
         <div id="results_panel" class="main_tab_content">
-            <div class="col" style="width: 60%">
-                <div class="tab_button_area" style="height: 5%">
+            <div class="col" style="width: 60%; overflow: hidden;">
+                <div id="results_tab_set" class="tab_button_area" style="height: 5%">
                     <button id="default_results_tab" class="results_tab_links" onclick="displayResults(event, 'single_variable_tab')">Single variable graphs</button>
                     <button id="dual_var_button" class="results_tab_links" onclick="displayResults(event, 'dual_variable_tab')">Dual variable graphs</button>
                     <button id="single_case_button" class="results_tab_links" onclick="displayResults(event, 'single_case_tab')">Single case graphs</button>
