@@ -191,4 +191,4 @@ data/demographics_load_lookup_table.csv
 data/AG300_Demographics.csv
 data/*
 data/Load_1.csv
-!data/.gitkeep 
+!data/.gitkeep.txt
