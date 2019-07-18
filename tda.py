@@ -83,6 +83,19 @@ def filtered_load_data():
     return return_data
 
 
+@app.route('/get_case_default_name', methods=['GET'])
+def get_case_default_name():
+    base_name = "Case "
+    not_unique = True
+    number = 1
+    while not_unique:
+        test_name = base_name + str(number)
+        if test_name not in results_by_case.keys():
+            break
+        number += 1
+    return jsonify(test_name)
+
+
 @app.route('/add_case', methods=['POST'])
 def add_case():
     case_details = request.get_json()
@@ -101,12 +114,23 @@ def add_case():
     return jsonify('done')
 
 
+@app.route('/delete_case', methods=['POST'])
+def delete_case():
+    case_name = request.get_json()
+    results_by_case.pop(case_name)
+    load_by_case.pop(case_name)
+    tariff_by_case.pop(case_name)
+    return jsonify('done')
+
+
 @app.route('/get_single_variable_chart', methods=['POST'])
 def get_single_variable_chart():
     details = request.get_json()
     chart_name = details['chart_name']
-    case_name = details['case_name']
-    chart_data = results_chart_methods[chart_name](results_by_case[case_name])
+    case_names = details['case_names']
+    chart_data = []
+    for name in case_names:
+        chart_data.append(results_chart_methods[chart_name](results_by_case[name], name))
     return_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
     return return_data
 
@@ -116,8 +140,10 @@ def get_dual_variable_chart():
     details = request.get_json()
     x_axis = details['x_axis']
     y_axis = details['y_axis']
-    case_name = details['case_name']
-    chart_data = dual_variable_chart_method(results_by_case[case_name], x_axis, y_axis)
+    case_names = details['case_names']
+    chart_data = []
+    for name in case_names:
+        chart_data.append(dual_variable_chart_method(results_by_case[name], x_axis, y_axis, name))
     return_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
     return return_data
 

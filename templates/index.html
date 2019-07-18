@@ -85,6 +85,8 @@
       input {
         height: 2.25vh;
         width: 100%;
+        float: left;
+        margin: 0;
       }
 
       .label_stacked {
@@ -223,11 +225,15 @@
         left: -9999px !important;
       }
 
+      div.ui-dialog-buttonpane button{
+        height: 40px;
+      }
+
+      .case_control {
+        display: none
+      }
+
   </style>
-
-
-
-
 
     <div id="dialog" title="Basic dialog" style="display: none">
         <p>Loading . . .  please wait.</p>
@@ -236,6 +242,16 @@
     <div id="case_namer" title="Basic dialog" style="display: none">
         <p>Please provide a name for this case.</p>
         <input id="case_name">
+    </div>
+
+    <div id="case_control_template" class="row case_control"
+         style="width: 100%; margin-bottom: 2vh; float: left;">
+        <div class="label_line case_label"></div>
+        <input class="case_visibility_checkbox" type="checkbox" style="width: 15%;"
+               checked onclick="on_checkbox_change()">
+        <button style="float: left;">?</button>
+        <button class='case_delete_button' style="float: left;"
+                onclick="delete_case(this)">&times;</button>
     </div>
 
 
@@ -434,8 +450,8 @@
                             <div class="label_stacked">Select figure:</div>
                         </div>
                         <div class="col" style="width: 80%">
-                            <select id="single_case_result_chosen_case" style="width: 50%">
-                                <option value="dummy_case">dummy case</option>
+                            <select id="single_case_result_chosen_case" style="width: 50%"
+                                    onchange="plot_single_case_results()">
                             </select>
                             <select id="single_case_chart_type" style="width: 50%">
                                 <option value="bill_components">Bill Components</option>
@@ -446,8 +462,8 @@
             </div>
 
             <div class="col" style="margin-left: 1%; width: 39%">
-                <div class="row" style="height: 50%">
-                    <h3 style="padding: 5%">List of cases:</h3>
+                <div id="case_list" class="row" style="height: 50%">
+                    <h3 id="start_case_list" style="padding: 5%">List of cases:</h3>
                 </div>
                 <div class="row" style="height: 50%">
                     <div id="case_tabs" class="tab_button_area" style="height: 10%">
@@ -511,7 +527,7 @@
                     <div id="type_value" class="col" style="width: 20%;">N/A</div>
                     <div id="state_label" class="col" style="width: 5%;">State:</div>
                     <div id="state_value" class="col" style="width: 20%;">N/A</div>
-                    <div id="add_case" style="width: 20%;" class="col" onclick="launch_case_namer(event)"><button>Add</button></div>
+                    <div id="add_case" style="width: 20%;" class="col" onclick="get_default_case_name(event)"><button>Add</button></div>
                 </div>
                 <div id="tariff_tabs" class="tab_button_area" style="height: 5%">
                     <button id="default_tab" class="tablinks" onclick="displayTariff(event, 'DUOS')">DUOS</button>

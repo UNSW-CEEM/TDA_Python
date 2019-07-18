@@ -6,16 +6,16 @@ import numpy as np
 from time import time
 
 
-def bill_distribution(results):
-    chart = [go.Histogram(x=results['Bill'], histnorm='probability')]
+def bill_distribution(results, name):
+    chart = go.Histogram(x=results['Bill'], histnorm='probability', name=name)
     return chart
 
 
 results_chart_methods = {'Bill Distribution': bill_distribution}
 
 
-def dual_variable_chart_method(data, x_axis, y_axis):
-    chart = [go.Scattergl(x=data[x_axis], y=data[y_axis], mode='markers')]
+def dual_variable_chart_method(data, x_axis, y_axis, name):
+    chart = go.Scattergl(x=data[x_axis], y=data[y_axis], mode='markers', name=name)
     return chart
 
 
