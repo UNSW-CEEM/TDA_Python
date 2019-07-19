@@ -35,6 +35,7 @@ var add_case_to_gui = function(){
     // Set the value of the checkbox in the case_control
     $('#' + case_name_no_spaces + ' ' + '.case_visibility_checkbox').attr('value', case_name);
     $('#' + case_name_no_spaces + ' ' + '.case_delete_button').attr('value', case_name);
+    $('#' + case_name_no_spaces + ' ' + '.case_info_button').attr('value', case_name);
     // Set label in case control equal to case name.
     $('#' + case_name_no_spaces + ' ' + '.case_label').html(case_name)
     // Add the case to the python side.
@@ -72,8 +73,23 @@ var on_checkbox_change = function(){
   plot_results();
 }
 
+var get_active_component = function(){
+    var component
+    var tablinks = $(".tablinks");
+    $.each(tablinks, function(index, link){
+        if ($(link).hasClass('active')){
+          component = link.value
+        }
+        return component
+    });
+    return component
+}
+
 
 var add_case = function(){
+    // Get the active component tab when the add case button was clicked.
+    var component = get_active_component();
+
     // Get the name of the selected tariff.
     case_name = $('#case_name').val();
 
@@ -86,6 +102,7 @@ var add_case = function(){
     // Bundle case details into a single object
     case_details = {'case_name': case_name,
                     'tariff_name': tariff_name,
+                    'component': component,
                     'load_details': load_request};
 
     $('#case_namer').dialog('close');
@@ -98,7 +115,11 @@ var add_case = function(){
         type : 'POST',
         async: 'false',
         dataType:"json",
-        success: function(data){plot_results()}
+        success: function(data){
+            plot_results();
+            get_and_display_case_tariff_info(case_name);
+            get_and_display_case_load_info(case_name);
+            }
     });
 }
 
@@ -230,4 +251,32 @@ var delete_case = function(delete_button){
 
     // Re plot charts
     plot_results();
+
+    //update case info tabs
+    update_info_tabs_on_case_delete(case_name);
+
+}
+
+var update_info_tabs_on_case_delete = function(case_name){
+    // If the case being delete had its info displayed, then change the display info to another case.
+    // If there are no other cases then clear the info tabs.
+
+    if ($('#tariff_info_case').text() == case_name){
+        // Get list of cases.
+        case_controllers = $("#case_list .case_label")
+
+        if (case_controllers.length < 1){
+            // If there are no case with info to display.
+            // Remove table displaying tariff info.
+            tear_down_current_table('info', true);
+            // Stop display info summaries
+            $("#info_tariff_summary_labels").css("display", "none");
+            $("#info_load_summary_labels").css("display", "none");
+        } else {
+            // If there are other cases then display the info for the first one.
+            get_and_display_case_tariff_info(case_controllers[0].innerHTML);
+            get_and_display_case_load_info(case_controllers[0].innerHTML);
+        }
+    }
+
 }

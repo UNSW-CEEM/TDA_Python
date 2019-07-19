@@ -120,6 +120,24 @@ window.onresize = function() {
     Plotly.Plots.resize('load_chart');
 };
 
-//$('#get_load').contextMenu('popup', '#popupMenu2', {winEventClose: false, closeOnClick: false});
+var get_and_display_case_load_info = function(case_name){
+    // Get tariff info for case.
+    $.ajax({
+        url: '/get_case_load',
+        data: JSON.stringify(case_name),
+        contentType: 'application/json;charset=UTF-8',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        // Call the function to display the selected tariffs info
+        success: function(data){display_case_load_info(case_name, data);},
+        error: function(a,b,c){console.log(b); console.log(c);}
+    });
+}
 
-//$('.popupClose').on('click', function(e){$('#get_load').contextMenu('close');});
+var display_case_load_info = function(case_name, load_info){
+    $('#load_info_case').text(case_name);
+    $('#load_info_n_users').text(load_info['n_users'].toString());
+    $('#load_info_database').text(load_info['database']);
+    $("#info_load_summary_labels").css("display", "block");
+}

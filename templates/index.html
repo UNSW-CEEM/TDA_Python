@@ -94,6 +94,11 @@
         width: 100%;
       }
 
+      .label_close_stacked {
+        margin-bottom: 0.5vh;
+        width: 100%;
+      }
+
       .label_line {
         height: 100%;
         float: left;
@@ -249,12 +254,11 @@
         <div class="label_line case_label"></div>
         <input class="case_visibility_checkbox" type="checkbox" style="width: 15%;"
                checked onclick="on_checkbox_change()">
-        <button style="float: left;">?</button>
+        <button class='case_info_button' style="float: left;"
+                onclick="reset_case_tariff_info_from_button(this)">?</button>
         <button class='case_delete_button' style="float: left;"
                 onclick="delete_case(this)">&times;</button>
     </div>
-
-
 
 </head>
 
@@ -462,20 +466,68 @@
             </div>
 
             <div class="col" style="margin-left: 1%; width: 39%">
-                <div id="case_list" class="row" style="height: 50%">
+                <div id="case_list" class="row" style="height: 35%">
                     <h3 id="start_case_list" style="padding: 5%">List of cases:</h3>
                 </div>
-                <div class="row" style="height: 50%">
+                <div class="row" style="height: 65%">
                     <div id="case_tabs" class="tab_button_area" style="height: 10%">
                         <button id="default_case_info_tab" class="case_tab_links" onclick="displayCaseInfoType(event, 'load_info')">Load Info</button>
                         <button class="case_tab_links" onclick="displayCaseInfoType(event, 'tariff_info')">Tariff Info</button>
                         <button class="case_tab_links" onclick="displayCaseInfoType(event, 'demog_info')">Demog Info</button>
                     </div>
                     <div class="case_info_tab_content" id="load_info">
-                        1
+                        <div id="info_load_summary_labels" class="col" style="width: 100%; display: none;">
+                            <div class="row" style="height: 2.5vh;">
+                                <div class="label_line">Case:&nbsp</div>
+                                <div id="load_info_case" class="label_line"></div>
+                            </div>
+                            <div class="row" style="height: 2.5vh;">
+                                <div class="label_line">No. of users:&nbsp</div>
+                                <div id="load_info_n_users" class="label_line"></div>
+                            </div>
+                            <div class="row" style="height: 2.5vh;">
+                                <div class="label_line">Database:&nbsp</div>
+                                <div id="load_info_database" class="label_line"></div>
+                            </div>
+                        </div>
                     </div>
                     <div class="case_info_tab_content" id="tariff_info">
-                        2
+                        <div id="info_tariff_summary" class="row" style="height: 40%;">
+                            <div id="info_tariff_summary_labels" class="col" style="width: 100%; display: none;">
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Case:&nbsp</div>
+                                    <div id="tariff_info_case" class="label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Name:&nbsp</div>
+                                    <div id="tariff_info_name" class="label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Type:&nbsp</div>
+                                    <div id="tariff_info_type" class="label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">State:&nbsp</div>
+                                    <div id="tariff_info_state" class="label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Tariff Component:&nbsp</div>
+                                    <div id="tariff_info_component" class="label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Daily Charge ($/day):&nbsp</div>
+                                    <div id="tariff_info_daily_charge" class="label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Energy Charge ($/kWh):&nbsp</div>
+                                    <div id="tariff_info_energy_charge" class="label_line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <table id="info_tariff_table" class="display nowrap" style="width:100%; height:55%;">
+                            <thead class="tariff_table_header" id="info_tariff_table_header"></thead>
+                            <tbody id="info_tariff_table_body"></tbody>
+                        </table>
                     </div>
                     <div class="case_info_tab_content" id="demog_info">
                         3
@@ -530,10 +582,11 @@
                     <div id="add_case" style="width: 20%;" class="col" onclick="get_default_case_name(event)"><button>Add</button></div>
                 </div>
                 <div id="tariff_tabs" class="tab_button_area" style="height: 5%">
-                    <button id="default_tab" class="tablinks" onclick="displayTariff(event, 'DUOS')">DUOS</button>
-                    <button class="tablinks" onclick="displayTariff(event, 'TUOS')">TUOS</button>
-                    <button class="tablinks" onclick="displayTariff(event, 'DTUOS')">DUOS+TUOS</button>
-                    <button class="tablinks" onclick="displayTariff(event, 'NUOS')">NUOS</button>
+                    <button class="tablinks" value="DUOS" onclick="displayTariff(event, 'DUOS')">DUOS</button>
+                    <button class="tablinks" value="TUOS" onclick="displayTariff(event, 'TUOS')">TUOS</button>
+                    <button class="tablinks" value="DTUOS" onclick="displayTariff(event, 'DTUOS')">DUOS+TUOS</button>
+                    <button id="default_tab" class="tablinks" value="NUOS"
+                            onclick="displayTariff(event, 'NUOS')">NUOS</button>
                 </div>
                 <div id="DUOS" class="tabcontent" style="height: 70%;">
                     <div id="DUOS_header" class="row" style="height: 20%">
@@ -546,7 +599,7 @@
                         <table id="DUOS_tariff_table" class="display nowrap" style="width: 100%; height:85%;">
                             <thead class="tariff_table_header" id="DUOS_tariff_table_header"></thead>
                             <tbody id="DUOS_tariff_table_body"></tbody>
-                    </table>
+                        </table>
                     </div>
 
                 </div>

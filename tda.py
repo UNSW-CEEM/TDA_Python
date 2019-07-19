@@ -18,6 +18,9 @@ filtered_charts = {}
 results_by_case = {}
 load_by_case = {}
 tariff_by_case = {}
+load_file_name_by_case = {}
+load_n_users_by_case = {}
+
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -37,6 +40,7 @@ else:
 @app.route('/')
 def index():
     return render_template('index.html')
+
 
 @app.route('/load_names')
 def load_names():
@@ -107,11 +111,28 @@ def add_case():
     filtered, load_data = data_interface.filter_load_data(raw_data[load_file_name], load_file_name, filter_options)
 
     selected_tariff = data_interface.get_tariff(requested_tariff)
+    selected_tariff = helper_functions.strip_tariff_to_single_component(selected_tariff, case_details['component'])
 
     results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), selected_tariff)
     load_by_case[case_name] = load_data
     tariff_by_case[case_name] = selected_tariff
+    load_file_name_by_case[case_name] = load_file_name
+    load_n_users_by_case[case_name] = data_interface.n_users(load_data)
     return jsonify('done')
+
+
+@app.route('/get_case_tariff', methods=['POST'])
+def get_case_tariff():
+    case_name = request.get_json()
+    tariff = tariff_by_case[case_name]
+    tariff = helper_functions.format_tariff_data_for_display(tariff)
+    return jsonify(tariff)
+
+
+@app.route('/get_case_load', methods=['POST'])
+def get_case_load():
+    case_name = request.get_json()
+    return jsonify({'n_users': load_n_users_by_case[case_name], 'database': load_file_name_by_case[case_name]})
 
 
 @app.route('/delete_case', methods=['POST'])

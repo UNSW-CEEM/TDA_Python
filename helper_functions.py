@@ -81,3 +81,12 @@ def format_tariff_data_for_storage(display_formatted_tariff):
 
     return storage_format
 
+
+def strip_tariff_to_single_component(tariff, component_name):
+    components_to_delete = []
+    for parameter_name, parameter in tariff['Parameters'].items():
+        if parameter_name != component_name:
+            components_to_delete.append(parameter_name)
+    for component in components_to_delete:
+        tariff['Parameters'].pop(component)
+    return tariff

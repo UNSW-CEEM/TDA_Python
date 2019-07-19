@@ -43,7 +43,9 @@ def filter_load_data(raw_data, file_name, filter_options):
             demo_info = demo_info[demo_info[column_name].isin([selected_options])]
             filtered = True
 
-    filtered_data = raw_data.loc[:, ['Datetime'] + list(demo_info['CUSTOMER_KEY'])]
+    customer_id = [c_id for c_id in list(demo_info['CUSTOMER_KEY']) if c_id in raw_data.columns]
+
+    filtered_data = raw_data.loc[:, ['Datetime'] + customer_id]
 
     return filtered, filtered_data
 
@@ -63,4 +65,6 @@ def get_tariff(requested_tariff):
             selected_tariff = tariff
 
     return selected_tariff
+
+
 
