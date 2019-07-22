@@ -85,45 +85,6 @@ var get_active_component = function(){
     return component
 }
 
-
-var add_case = function(){
-    // Get the active component tab when the add case button was clicked.
-    var component = get_active_component();
-
-    // Get the name of the selected tariff.
-    case_name = $('#case_name').val();
-
-    // Get the name of the selected tariff.
-    tariff_name = $('#select_tariff').val();
-
-    // Get load details
-    load_request = get_load_details_from_ui();
-
-    // Bundle case details into a single object
-    case_details = {'case_name': case_name,
-                    'tariff_name': tariff_name,
-                    'component': component,
-                    'load_details': load_request};
-
-    $('#case_namer').dialog('close');
-    $('#dialog').dialog({modal: true});
-    // Get the python app to create the case and calculate results, after this is done create the result plots.
-    $.ajax({
-        url: '/add_case',
-        data: JSON.stringify(case_details),
-        contentType: 'application/json;charset=UTF-8',
-        type : 'POST',
-        async: 'false',
-        dataType:"json",
-        success: function(data){
-            plot_results();
-            get_and_display_case_tariff_info(case_name);
-            get_and_display_case_load_info(case_name);
-            get_and_display_case_demo_info(case_name);
-            }
-    });
-}
-
 var plot_results = function(){
     // Plot results for each results tab.
     plot_single_variable_results();
@@ -231,55 +192,4 @@ var plot_single_case_results = function(){
             Plotly.newPlot('single_case_result_chart', data, layout, {responsive: true});
         ;}
     });
-}
-
-var delete_case = function(delete_button){
-    var case_name = $(delete_button).attr('value')
-    var case_name_no_spaces = case_name.replace(/\s/g, '');
-
-    // Delete case controller
-    $('#' + case_name_no_spaces).remove();
-
-    // Delete case on python side.
-    $.ajax({
-        url: '/delete_case',
-        data: JSON.stringify(case_name),
-        contentType: 'application/json;charset=UTF-8',
-        type : 'POST',
-        async: 'false',
-        dataType:"json"
-    });
-
-    // Re plot charts
-    plot_results();
-
-    //update case info tabs
-    update_info_tabs_on_case_delete(case_name);
-
-}
-
-var update_info_tabs_on_case_delete = function(case_name){
-    // If the case being delete had its info displayed, then change the display info to another case.
-    // If there are no other cases then clear the info tabs.
-
-    if ($('#tariff_info_case').text() == case_name){
-        // Get list of cases.
-        case_controllers = $("#case_list .case_label")
-
-        if (case_controllers.length < 1){
-            // If there are no case with info to display.
-            // Remove table displaying tariff info.
-            tear_down_current_table('info', true);
-            // Stop display info summaries
-            $("#info_tariff_summary_labels").css("display", "none");
-            $("#info_load_summary_labels").css("display", "none");
-            $("#demog_info").empty();
-        } else {
-            // If there are other cases then display the info for the first one.
-            get_and_display_case_tariff_info(case_controllers[0].innerHTML);
-            get_and_display_case_load_info(case_controllers[0].innerHTML);
-            get_and_display_demo_info(case_controllers[0].innerHTML);
-        }
-    }
-
 }
