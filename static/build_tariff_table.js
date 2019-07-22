@@ -141,6 +141,7 @@ var reset_case_tariff_info_from_button = function(info_button){
         var case_name = $(info_button).attr('value');
         get_and_display_case_tariff_info(case_name);
         get_and_display_case_load_info(case_name);
+        get_and_display_case_demo_info(case_name);
 }
 
 var get_and_display_case_tariff_info = function(case_name){

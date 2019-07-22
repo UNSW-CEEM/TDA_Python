@@ -1,8 +1,3 @@
-
-// THis is javascript's 'print' function - you can open up your js console in your browser and see them.
-console.log('Hi im javascript');
-
-
 // This is a jquery function that visits the '/data' endpoint. See run.py  (or try in your browser)
 $.getJSON('/data',function(response){
 

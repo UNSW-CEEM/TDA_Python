@@ -141,3 +141,26 @@ var display_case_load_info = function(case_name, load_info){
     $('#load_info_database').text(load_info['database']);
     $("#info_load_summary_labels").css("display", "block");
 }
+
+var get_and_display_case_demo_info = function(case_name){
+    // Get tariff info for case.
+    $.ajax({
+        url: '/get_case_demo_options',
+        data: JSON.stringify(case_name),
+        contentType: 'application/json;charset=UTF-8',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        // Call the function to display the selected tariffs info
+        success: function(data){display_case_demo_info(case_name, data);},
+        error: function(a,b,c){console.log(b); console.log(c);}
+    });
+}
+
+var display_case_demo_info = function(case_name, demo_options){
+        $("#demog_info").empty();
+        $('#demog_info').append($('<div>').text(case_name));
+        $.each(demo_options, function(name, option_chosen){
+                $('#demog_info').append($('<div>').text(name + ": " + option_chosen));
+        });
+}

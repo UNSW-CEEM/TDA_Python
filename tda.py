@@ -20,6 +20,7 @@ load_by_case = {}
 tariff_by_case = {}
 load_file_name_by_case = {}
 load_n_users_by_case = {}
+filter_options_by_case = {}
 
 
 def resource_path(relative_path):
@@ -118,6 +119,7 @@ def add_case():
     tariff_by_case[case_name] = selected_tariff
     load_file_name_by_case[case_name] = load_file_name
     load_n_users_by_case[case_name] = data_interface.n_users(load_data)
+    filter_options_by_case[case_name] = filter_options
     return jsonify('done')
 
 
@@ -133,6 +135,12 @@ def get_case_tariff():
 def get_case_load():
     case_name = request.get_json()
     return jsonify({'n_users': load_n_users_by_case[case_name], 'database': load_file_name_by_case[case_name]})
+
+
+@app.route('/get_case_demo_options', methods=['POST'])
+def get_case_demo_options():
+    case_name = request.get_json()
+    return jsonify(filter_options_by_case[case_name])
 
 
 @app.route('/delete_case', methods=['POST'])

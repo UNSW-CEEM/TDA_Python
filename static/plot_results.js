@@ -119,6 +119,7 @@ var add_case = function(){
             plot_results();
             get_and_display_case_tariff_info(case_name);
             get_and_display_case_load_info(case_name);
+            get_and_display_case_demo_info(case_name);
             }
     });
 }
@@ -272,10 +273,12 @@ var update_info_tabs_on_case_delete = function(case_name){
             // Stop display info summaries
             $("#info_tariff_summary_labels").css("display", "none");
             $("#info_load_summary_labels").css("display", "none");
+            $("#demog_info").empty();
         } else {
             // If there are other cases then display the info for the first one.
             get_and_display_case_tariff_info(case_controllers[0].innerHTML);
             get_and_display_case_load_info(case_controllers[0].innerHTML);
+            get_and_display_demo_info(case_controllers[0].innerHTML);
         }
     }
 
