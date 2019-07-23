@@ -55,12 +55,16 @@ def n_users(load_data):
     return n
 
 
-def get_tariff(requested_tariff):
-    with open('data/NetworkTariffs.json') as json_file:
-        network_tariffs = json.load(json_file)
+def get_tariff(tariff_panel, requested_tariff):
+    if tariff_panel == 'network_tariff_selection_panel':
+        with open('data/NetworkTariffs.json') as json_file:
+            tariffs = json.load(json_file)
+    else:
+        with open('data/RetailTariffs.json') as json_file:
+            tariffs = json.load(json_file)
 
     # Look at each tariff and find the first one that matches the requested name.
-    for tariff in network_tariffs:
+    for tariff in tariffs:
         if tariff['Name'] == requested_tariff:
             selected_tariff = tariff
 

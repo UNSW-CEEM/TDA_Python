@@ -43,6 +43,21 @@ def index():
     return render_template('index.html')
 
 
+@app.route('/tariff_selectors')
+def tariff_selectors():
+    return render_template('tariff_selectors.html')
+
+
+@app.route('/tariff_table')
+def tariff_table():
+    return render_template('tariff_table.html')
+
+
+@app.route('/tariff_panel_header')
+def tariff_panel_header():
+    return render_template('tariff_panel_header.html')
+
+
 @app.route('/load_names')
 def load_names():
     load_names = []
@@ -217,23 +232,29 @@ def demo_options(name):
 
 @app.route('/tariff_options', methods=['POST'])
 def tariff_options():
-    tariff_filter_state = request.get_json()
+    request_details = request.get_json()
+    tariff_filter_state = request_details['current_options']
+    tariff_panel = request_details['tariff_panel']
     # Open the tariff data set.
-    with open('data/NetworkTariffs.json') as json_file:
-        network_tariffs = json.load(json_file)
+    if tariff_panel == 'network_tariff_selection_panel':
+        with open('data/NetworkTariffs.json') as json_file:
+            tariffs = json.load(json_file)
+    else:
+        with open('data/RetailTariffs.json') as json_file:
+            tariffs = json.load(json_file)
 
     # Define the options to update.
-    option_types = {'#select_tariff_state': 'State',
-                    '#select_tariff_provider': 'Provider',
-                    '#select_tariff_type': 'Type',
-                    '#select_tariff': 'Name'}
-    options = {'#select_tariff_state': [],
-                    '#select_tariff_provider': [],
-                    '#select_tariff_type': [],
-                    '#select_tariff': []}
+    option_types = {'.select_tariff_state': 'State',
+                    '.select_tariff_provider': 'Provider',
+                    '.select_tariff_type': 'Type',
+                    '.select_tariff': 'Name'}
+    options = {'.select_tariff_state': [],
+               '.select_tariff_provider': [],
+               '.select_tariff_type': [],
+               '.select_tariff': []}
 
     # Look at each tariff build up a set of possible options for each option type.
-    for tariff in network_tariffs:
+    for tariff in tariffs:
         # Decide if current tariff meets current filters
         add_tariff_as_option = True
         for option_type, option_name in option_types.items():
@@ -250,8 +271,8 @@ def tariff_options():
 
 @app.route('/tariff_json', methods=['POST'])
 def tariff_json():
-    requested_tariff = request.get_json()
-    selected_tariff = data_interface.get_tariff(requested_tariff)
+    request_details = request.get_json()
+    selected_tariff = data_interface.get_tariff(request_details['tariff_panel'], request_details['tariff_name'])
     selected_tariff = helper_functions.format_tariff_data_for_display(selected_tariff)
     return jsonify(selected_tariff)
 

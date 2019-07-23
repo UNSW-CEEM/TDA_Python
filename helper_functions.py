@@ -36,14 +36,12 @@ def find_loads_demographic_config_file(load_file_name):
 
 def format_tariff_data_for_display(raw_tariff_json):
     display_format = copy.deepcopy(raw_tariff_json)
-
     for parameter_name, parameter in raw_tariff_json['Parameters'].items():
         for component_name, component in parameter.items():
             table_data = {}
-            table_data['table_header'] = ['Name']
             table_data['table_rows'] = []
-            if ((component_name == 'Energy' and 'Unit' not in component.keys()) or
-                (component_name != 'Daily' and component_name != 'Energy')):
+            if contains_sub_dict(component):
+                table_data['table_header'] = ['Name']
                 for sub_component, sub_details in component.items():
                     row = [sub_component]
                     for column_name, column_value in sub_details.items():
@@ -51,10 +49,27 @@ def format_tariff_data_for_display(raw_tariff_json):
                             table_data['table_header'].append(str(column_name))
                         row.append(str(column_value))
                     table_data['table_rows'].append(row)
-                display_format['Parameters'][parameter_name]['table_data'] = table_data
-                del display_format['Parameters'][parameter_name][component_name]
-
+            else:
+                table_data['table_header'] = []
+                row = []
+                for column_name, column_value in component.items():
+                    if column_name not in table_data['table_header']:
+                        table_data['table_header'].append(str(column_name))
+                    row.append(str(column_value))
+                table_data['table_rows'].append(row)
+            display_format['Parameters'][parameter_name][component_name] = table_data
     return display_format
+
+
+def contains_sub_dict(test_dict):
+    is_dict = False
+    for key, value in test_dict.items():
+        if type(value) is dict:
+            is_dict = True
+    return is_dict
+
+
+
 
 
 def format_tariff_data_for_storage(display_formatted_tariff):
