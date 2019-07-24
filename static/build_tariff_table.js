@@ -104,7 +104,7 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
         "info": false,
         "searching": false,
         "filter": false,
-        "retrieve": true
+        "retrieve": true,
     } );
 
     // If turned on add editing functionality.

@@ -178,6 +178,10 @@
         width: 100%;
       }
 
+      .tabcontent h4 {
+        margin-bottom: 0;
+      }
+
       .results_tab_content {
         border-style: groove;
         border-width: 0.25%;
@@ -253,6 +257,10 @@
 
       .case_control {
         display: none
+      }
+
+      .dataTables_scrollBody {
+         border-bottom: 0 !important;
       }
 
   </style>
@@ -587,10 +595,10 @@
                                     onclick="displayTariff(event, 'network_tariff_selection_panel', 'NUOS')">NUOS</button>
                         </div>
                         <div style="height: 70%; width: 100%; overflow: hidden;">
-                            <div id="DUOS" class="tabcontent" style="overflow: scroll-y"></div>
-                            <div id="TUOS" class="tabcontent"></div>
-                            <div id="DTUOS" class="tabcontent"></div>
-                            <div id="NUOS" class="tabcontent"></div>
+                            <div id="DUOS" class="tabcontent" style="overflow-y: scroll"></div>
+                            <div id="TUOS" class="tabcontent" style="overflow-y: scroll"></div>
+                            <div id="DTUOS" class="tabcontent" style="overflow-y: scroll"></div>
+                            <div id="NUOS" class="tabcontent" style="overflow-y: scroll"></div>
                         </div>
                         <div class="save_mod_tariff_option" style="height: 5%">
                             <input class="save_mod_tariff_name" style="width: 50%;">
@@ -620,10 +628,8 @@
                                 Retail
                             </button>
                         </div>
-                        <div style="height: 70%; width: 100%; overflow: hidden;">
-                            <div id="Retail" class="tabcontent">
-                                <script>$(function(){$("#Retail").load("tariff_table");});</script>
-                            </div>
+                        <div style="height: 70%; width: 100%; overflow: hidden; ">
+                            <div id="Retail" class="tabcontent" style="overflow-y: scroll"></div>
                         </div>
                         <div class="save_mod_tariff_option" style="height: 5%">
                             <input class="save_mod_tariff_name" style="width: 50%;">
