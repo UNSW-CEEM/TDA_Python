@@ -99,7 +99,7 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
 
     // Convert to a DataTable to get scrolling functionality, turn other functionality off.
     table = $(table_identifier).DataTable( {
-        "scrollX": true,
+        //"scrollX": true,
         "paging": false,
         "info": false,
         "searching": false,
@@ -111,6 +111,7 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
     if (editable){
         table.MakeCellsEditable({"onUpdate": display_save_mod_tariff_option});
     }
+
 
 }
 
