@@ -87,8 +87,11 @@ var tear_down_current_table = function(table, editable, parameter_type){
 var display_table_data = function(parameter_type, table_name, table_data, editable){
     var table_identifier = '#' + parameter_type + ' .' + table_name + '.tariff_table'
 
+    // Set value of table equal to table name, this is used when user edits and saves the table.
+    $(table_identifier).attr('value', table_name);
+
     // Build the table header.
-    build_header(table_identifier, table_data['table_header'])
+    build_header(table_identifier, table_data['table_header']);
 
     // Build each row in the table.
     for (var key in table_data['table_rows']){

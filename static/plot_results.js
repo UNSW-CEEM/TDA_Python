@@ -73,9 +73,9 @@ var on_checkbox_change = function(){
   plot_results();
 }
 
-var get_active_component = function(){
+var get_active_network_component = function(){
     var component
-    var tablinks = $(".tablinks");
+    var tablinks = $("#network_tariff_selection_panel .tablinks");
     $.each(tablinks, function(index, link){
         if ($(link).hasClass('active')){
           component = link.value

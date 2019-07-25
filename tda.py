@@ -126,7 +126,7 @@ def add_case():
 
     filtered, load_data = data_interface.filter_load_data(raw_data[load_file_name], load_file_name, filter_options)
 
-    selected_tariff = data_interface.get_tariff(requested_tariff)
+    selected_tariff = data_interface.get_tariff('network_tariff_selection_panel', requested_tariff)
     selected_tariff = helper_functions.strip_tariff_to_single_component(selected_tariff, case_details['component'])
 
     results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), selected_tariff)
@@ -236,12 +236,7 @@ def tariff_options():
     tariff_filter_state = request_details['current_options']
     tariff_panel = request_details['tariff_panel']
     # Open the tariff data set.
-    if tariff_panel == 'network_tariff_selection_panel':
-        with open('data/NetworkTariffs.json') as json_file:
-            tariffs = json.load(json_file)
-    else:
-        with open('data/RetailTariffs.json') as json_file:
-            tariffs = json.load(json_file)
+    tariffs = data_interface.get_tariffs(tariff_panel)
 
     # Define the options to update.
     option_types = {'.select_tariff_state': 'State',
@@ -259,7 +254,8 @@ def tariff_options():
         add_tariff_as_option = True
         for option_type, option_name in option_types.items():
             if ((tariff_filter_state[option_type] != 'Select1') &
-                    (tariff_filter_state[option_type] != tariff[option_name])):
+                (tariff_filter_state[option_type] != tariff[option_name])) & \
+                (option_name != 'Name'):
                 add_tariff_as_option = False
         # If the current tariff meets the all the filters add its properties to the allowed options.
         for option_type, option_name in option_types.items():
@@ -279,9 +275,21 @@ def tariff_json():
 
 @app.route('/save_tariff', methods=['POST'])
 def save_tariff():
-    tariff_to_save = request.get_json()
-    print(helper_functions.format_tariff_data_for_storage(tariff_to_save))
-    return "saved"
+    tariff_to_save = helper_functions.format_tariff_data_for_storage(request.get_json())
+    # Open the tariff data set.
+    if tariff_to_save['ProviderType'] == 'Network':
+        with open('data/UserDefinedNetworkTariffs.json', 'rt') as json_file:
+            tariffs = json.load(json_file)
+        tariffs.append(tariff_to_save)
+        with open('data/UserDefinedNetworkTariffs.json', 'wt') as json_file:
+            json.dump(tariffs, json_file)
+    else:
+        with open('data/UserDefinedRetailTariffs.json', 'rt') as json_file:
+            tariffs = json.load(json_file)
+        tariffs.append(tariff_to_save)
+        with open('data/UserDefinedRetailTariffs.json', 'wt') as json_file:
+            json.dump(tariffs, json_file)
+    return jsonify("saved")
 
 
 def shutdown_server():

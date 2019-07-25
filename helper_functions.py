@@ -92,6 +92,33 @@ def contains_sub_dict(test_dict):
 def format_tariff_data_for_storage(display_formatted_tariff):
     storage_format = copy.deepcopy(display_formatted_tariff)
 
+    storage_format['Parameters'] = {}
+    if display_formatted_tariff['ProviderType'] == 'Network':
+        for parameter_name, parameter in display_formatted_tariff['Parameters'].items():
+            table_set = add_dicts(parameter)
+            storage_format['Parameters'][parameter_name] = table_set
+    else:
+        table_set = add_dicts(display_formatted_tariff['Parameters'])
+        storage_format['Parameters']["Retail"] = table_set
+    return storage_format
+
+
+def add_dicts(parameter):
+    dict_set = {}
+    for component_name, component in parameter.items():
+        if 'Name' in component['table_header']:
+            sub_dict = {}
+            for row in component['table_rows']:
+                sub_dict[row[0]] = dict(zip(component['table_header'][1:], row[1:]))
+            dict_set[component_name] = sub_dict
+        else:
+            dict_set[component_name] = dict(zip(component['table_header'], component['table_rows'][0]))
+    return dict_set
+
+
+def format_tariff_data_for_storage_old(display_formatted_tariff):
+    storage_format = copy.deepcopy(display_formatted_tariff)
+
     for parameter_name, parameter in display_formatted_tariff['Parameters'].items():
         for component_name, component in parameter.items():
             charges = {}
