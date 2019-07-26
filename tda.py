@@ -53,11 +53,6 @@ def tariff_table():
     return render_template('tariff_table.html')
 
 
-@app.route('/tariff_panel_header')
-def tariff_panel_header():
-    return render_template('tariff_panel_header.html')
-
-
 @app.route('/load_names')
 def load_names():
     load_names = []

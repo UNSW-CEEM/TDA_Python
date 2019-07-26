@@ -24,7 +24,7 @@ var get_tariff_then_save = function(evt, tariff_type_tab_id){
 
 var save_tariff = function(current_tariff, tariff_type_tab_id){
 
-    current_tariff['Parameters'] = get_tariff_parameters_from_ui();
+    current_tariff['Parameters'] = get_tariff_parameters_from_ui(tariff_type_tab_id);
 
     current_tariff['Name'] = $('#' + tariff_type_tab_id + ' .save_mod_tariff_name').val();
 
@@ -43,14 +43,20 @@ var save_tariff = function(current_tariff, tariff_type_tab_id){
 }
 
 
-var get_tariff_parameters_from_ui = function(){
+var get_tariff_parameters_from_ui = function(tariff_type_tab_id){
 
     // Pull tariff data from GUI and format in the standard used for communicating with the python backend.
-    var parameters = {DUOS: get_parameter_tables("DUOS"),
-                     TUOS: get_parameter_tables("TUOS"),
-                     DTUOS: get_parameter_tables("DTUOS"),
-                     NUOS: get_parameter_tables("NUOS")
-                     }
+    var parameters = {};
+
+    // Get the buttons used to display the parameter tabs.
+    var tariff_parameter_tab_buttons = $('#' + tariff_type_tab_id + ' .tab_button_area').children();
+
+    // Look through the buttons, using there value to retrieve the correct set of tables.
+    $.each(tariff_parameter_tab_buttons, function(index, button){
+        var parameter_name = $(button).attr('value');
+        parameters[parameter_name] = get_parameter_tables(parameter_name);
+    })
+
     return parameters
 
 }

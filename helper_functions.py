@@ -98,8 +98,8 @@ def format_tariff_data_for_storage(display_formatted_tariff):
             table_set = add_dicts(parameter)
             storage_format['Parameters'][parameter_name] = table_set
     else:
-        table_set = add_dicts(display_formatted_tariff['Parameters'])
-        storage_format['Parameters']["Retail"] = table_set
+        table_set = add_dicts(display_formatted_tariff['Parameters']["Retail"])
+        storage_format['Parameters'] = table_set
     return storage_format
 
 
@@ -114,31 +114,6 @@ def add_dicts(parameter):
         else:
             dict_set[component_name] = dict(zip(component['table_header'], component['table_rows'][0]))
     return dict_set
-
-
-def format_tariff_data_for_storage_old(display_formatted_tariff):
-    storage_format = copy.deepcopy(display_formatted_tariff)
-
-    for parameter_name, parameter in display_formatted_tariff['Parameters'].items():
-        for component_name, component in parameter.items():
-            charges = {}
-            if component_name == 'table_data':
-                for row in component['table_rows']:
-                    for counter, item in enumerate(row):
-                        if counter == 0:
-                            charges[item] = {}
-                        else:
-                            if component['table_header'][counter] in ['Unit']:
-                                charges[row[0]][component['table_header'][counter]] = item
-                            else:
-                                if item == 'inf':
-                                    charges[row[0]][component['table_header'][counter]] = math.inf
-                                else:
-                                    charges[row[0]][component['table_header'][counter]] = eval(item)
-                del storage_format['Parameters'][parameter_name][component_name]
-                storage_format['Parameters'][parameter_name]['Energy'] = charges
-
-    return storage_format
 
 
 def strip_tariff_to_single_component(tariff, component_name):

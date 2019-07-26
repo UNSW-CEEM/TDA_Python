@@ -20,6 +20,10 @@ var get_tariff = function(tariff_type_panel){
         error: function(a,b,c){console.log(b); console.log(c);}
     });
 
+  // Hide the save option when a new tariff is displayed.
+  var tariff_save_option = $('#' + tariff_type_panel + " .save_mod_tariff_option");
+  $(tariff_save_option).css('display', "none")
+
 }
 
 var display_tariff_info = function(tariff_type_panel, tariff_data){
@@ -64,7 +68,7 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables)
         $table_template.css("display", "block");
 
         // Put contents in table.
-        display_table_data(parameter_type, table_name, table_data, true);
+        display_table_data(parameter_type, table_name, table_data, true, tariff_type_panel);
     })
 }
 
@@ -84,7 +88,7 @@ var tear_down_current_table = function(table, editable, parameter_type){
 
 }
 
-var display_table_data = function(parameter_type, table_name, table_data, editable){
+var display_table_data = function(parameter_type, table_name, table_data, editable, tariff_type_panel){
     var table_identifier = '#' + parameter_type + ' .' + table_name + '.tariff_table'
 
     // Set value of table equal to table name, this is used when user edits and saves the table.
@@ -108,11 +112,13 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
         "searching": false,
         "filter": false,
         "retrieve": true,
+        "sort": false
     } );
 
     // If turned on add editing functionality.
     if (editable){
-        table.MakeCellsEditable({"onUpdate": display_save_mod_tariff_option});
+        panel_specific_call_back = function(){display_save_mod_tariff_option(tariff_type_panel)};
+        table.MakeCellsEditable({"onUpdate": panel_specific_call_back});
     }
 
 
@@ -144,11 +150,11 @@ var build_row = function(row_data, table_identifier){
     tariff_table.append(tr);
 }
 
-var display_save_mod_tariff_option = function() {
-  var tariff_save_option = document.getElementById("save_mod_tariff_option");
-  tariff_save_option.style.display = "block";
+var display_save_mod_tariff_option = function(tariff_type_panel) {
+  var tariff_save_option = $('#' + tariff_type_panel + " .save_mod_tariff_option");
+  $(tariff_save_option).css('display', "block")
   var save_name_input = document.getElementById("save_mod_tariff_name");
-  var current_name = document.getElementById("name_value");
-  save_name_input.value = current_name.innerHTML + " v2"
+  var current_name = $('#' + tariff_type_panel + " .name_value").html();
+  $('#' + tariff_type_panel + " .save_mod_tariff_name").val(current_name + " v2");
 }
 
