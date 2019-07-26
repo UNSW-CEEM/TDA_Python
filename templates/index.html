@@ -38,35 +38,10 @@
     <script src="static/build_tariff_table.js"></script>
     <script src="static/save_tariff.js"></script>
     <script src="static/tariff_type_tabs.js"></script>
+    <script src="static/delete_tariff.js"></script>
 
 
   <style>
-
-      /* ---------- Popups ---------- */
-      #popupMenu2 {
-        width: 150px;
-        height: 80px;
-        background: #EEEEEE;
-        font-size: 16px;
-        display: none;
-        font-size: 12px;
-        border-color: #5D8FAF;
-        text-align: center;
-      }
-
-      .popup_header{
-        height: 20px;
-        background: #dde0e5;
-      }
-
-      .popupClose{
-        font-size: 20px;
-        float: right;
-        text-align: center;
-        width: 20px;
-        height:20px;
-      }
-
       .header_border{
         height:1px;
         padding-top:0;
@@ -131,14 +106,13 @@
       }
 
       #menu_bar {
-        height: 20px%;
         box-sizing: border-box;
         background: #FFF;
         margin: 0;
       }
 
       .main {
-        height: calc((100vh - (100vh - 100%)) - 21px);
+        height: calc((100vh - (100vh - 100%)) - 27px);
         width:100%; padding: 0.5%;
         box-sizing: border-box;
         margin: 0;
@@ -152,7 +126,6 @@
 
       .tab_button_area {
         overflow: hidden;
-        background-color: #f1f1f1;
       }
 
       .tab_button_area button {
@@ -173,7 +146,7 @@
 
       .tabcontent {
         border-style: groove;
-        border-width: 0.25%;
+        border-width: 0.1%;
         height: 100%;
         box-sizing: border-box;
         padding: 1%;
@@ -186,7 +159,7 @@
 
       .results_tab_content {
         border-style: groove;
-        border-width: 0.25%;
+        border-width: 0.1%;
         height: 95%;
         box-sizing: border-box;
         padding: 1%;
@@ -194,8 +167,6 @@
       }
 
       .main_tab_content {
-        border-style: groove;
-        border-width: 0.25%;
         height: 100%;
         box-sizing: border-box;
         padding: 1%;
@@ -205,7 +176,7 @@
 
       .tariff_type_tab_content {
         border-style: groove;
-        border-width: 0.25%;
+        border-width: 0.1%;
         height: 100%;
         box-sizing: border-box;
         padding: 1%;
@@ -216,7 +187,7 @@
        .case_info_tab_content {
         display: none;
         border-style: groove;
-        border-width: 0.25%;
+        border-width: 0.1%;
         height: 85.5%;
         box-sizing: border-box;
         padding: 1%;
@@ -265,6 +236,15 @@
          border-bottom: 0 !important;
       }
 
+      .ui-menu {
+        width: 150px;
+        float: left;
+      }
+
+      .ui-menu div {
+      }
+
+
   </style>
 
     <div id="dialog" title="Basic dialog" style="display: none">
@@ -296,9 +276,22 @@
 
 <body>
 <div id="container">
-  <div id="menu_bar">
-      <button type="button" class="menu_button" id="projectmenu" style="width: 10%">Project</button>
-      <script src="static/menu.js"></script>
+  <div id="menu_bar" style="height: 26px;">
+      <ul id="tariff_menu">
+          <li><div>Tariffs</div>
+              <ul>
+                  <li><div>Network Sets</div>
+                      <ul id="network_tariff_sets"></ul>
+                  </li>
+                  <li><div>Retail Sets</div>
+                      <ul id="retail_tariff_sets"></ul>
+                  </li>
+                  <li><div>Update</div></li>
+              </ul>
+          </li>
+      </ul>
+      <script src="static/tariff_set_options.js"></script>
+      <script>$(function(){$("#tariff_menu").menu();});</script>
       <script src="static/shut_down.js"></script>
   </div>
     <hr class="header_border"/>
@@ -503,9 +496,12 @@
                 </div>
                 <div class="row" style="height: 65%">
                     <div id="case_tabs" class="tab_button_area" style="height: 10%">
-                        <button id="default_case_info_tab" class="case_tab_links" onclick="displayCaseInfoType(event, 'load_info')">Load Info</button>
-                        <button class="case_tab_links" onclick="displayCaseInfoType(event, 'tariff_info')">Tariff Info</button>
-                        <button class="case_tab_links" onclick="displayCaseInfoType(event, 'demog_info')">Demog Info</button>
+                        <button id="default_case_info_tab" class="case_tab_links"
+                                onclick="displayCaseInfoType(event, 'load_info')">Load Info</button>
+                        <button class="case_tab_links"
+                                onclick="displayCaseInfoType(event, 'tariff_info')">Tariff Info</button>
+                        <button class="case_tab_links"
+                                onclick="displayCaseInfoType(event, 'demog_info')">Demog Info</button>
                     </div>
                     <div class="case_info_tab_content" id="load_info">
                         <div id="info_load_summary_labels" class="col" style="width: 100%; display: none;">
@@ -606,8 +602,10 @@
                         <div id="tariff_tabs" class="tab_button_area" style="height: 5%">
                             <button class="tablinks" value="DUOS"
                                     onclick="displayTariff(event, 'network_tariff_selection_panel', 'DUOS')">DUOS</button>
-                            <button class="tablinks" value="TUOS" onclick="displayTariff(event, 'network_tariff_selection_panel', 'TUOS')">TUOS</button>
-                            <button class="tablinks" value="DTUOS" onclick="displayTariff(event, 'network_tariff_selection_panel', 'DTUOS')">DUOS+TUOS</button>
+                            <button class="tablinks" value="TUOS"
+                                    onclick="displayTariff(event, 'network_tariff_selection_panel', 'TUOS')">TUOS</button>
+                            <button class="tablinks" value="DTUOS"
+                                    onclick="displayTariff(event, 'network_tariff_selection_panel', 'DTUOS')">DUOS+TUOS</button>
                             <button id="network_default_tab" class="tablinks" value="NUOS"
                                     onclick="displayTariff(event, 'network_tariff_selection_panel', 'NUOS')">NUOS</button>
                         </div>
@@ -617,11 +615,12 @@
                             <div id="DTUOS" class="tabcontent" style="overflow-y: scroll"></div>
                             <div id="NUOS" class="tabcontent" style="overflow-y: scroll"></div>
                         </div>
-                        <div class="save_mod_tariff_option" style="height: 5%">
+                        <div class="save_mod_tariff_option" style="height: 5%; width: 90%;">
                             <input class="save_mod_tariff_name" style="width: 50%;">
                             <button class="save_mod_button"
                                     onclick="get_tariff_then_save(event, 'network_tariff_selection_panel')">Save</button>
                         </div>
+                        <button style="width: 5%; float: right;" onclick="delete_tariff(event, 'network_tariff_selection_panel')">Delete</button>
                         <script>document.getElementById("network_default_tab").click();</script>
                     </div>
                 </div>
@@ -660,11 +659,12 @@
                         <div style="height: 70%; width: 100%; overflow: hidden; ">
                             <div id="Retail" class="tabcontent" style="overflow-y: scroll"></div>
                         </div>
-                        <div class="save_mod_tariff_option" style="height: 5%">
+                        <div class="save_mod_tariff_option" style="height: 5%; width: 90%; margin-right: 0;">
                             <input class="save_mod_tariff_name" style="width: 50%;">
                             <button class="save_mod_button"
                                     onclick="get_tariff_then_save(event, 'retail_tariff_selection_panel')">Save</button>
                         </div>
+                        <button style="height: 5%; width: 5%; float: right;" onclick="delete_tariff(event, 'retail_tariff_selection_panel')">Delete</button>
                         <script>document.getElementById("retail_default_tab").click();</script>
                     </div>
                 </div>

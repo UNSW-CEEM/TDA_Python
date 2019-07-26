@@ -61,6 +61,26 @@ def load_names():
     return jsonify(load_names)
 
 
+@app.route('/tariff_set_options/<tariff_type>')
+def tariff_set_options(tariff_type):
+    tariff_set_options = []
+    folder = 'data/{}_tariff_set_versions/'.format(tariff_type)
+    for file_name in os.listdir(folder):
+        tariff_set_options.append(file_name.split('.')[0])
+    return jsonify(tariff_set_options)
+
+
+@app.route('/set_tariff_set_in_use', methods=['POST'])
+def set_tariff_set_in_use():
+    request_details = request.get_json()
+    folder_and_name = 'data/{}_tariff_set_versions/{}.json'.format(request_details['type'], request_details['version'])
+    with open(folder_and_name, 'rt') as json_file:
+        tariffs = json.load(json_file)
+    with open('data/{}Tariffs.json'.format(request_details['type']), 'wt') as json_file:
+        json.dump(tariffs, json_file)
+    return jsonify('done')
+
+
 @app.route('/filtered_load_data', methods=['POST'])
 def filtered_load_data():
 
@@ -285,6 +305,29 @@ def save_tariff():
         with open('data/UserDefinedRetailTariffs.json', 'wt') as json_file:
             json.dump(tariffs, json_file)
     return jsonify("saved")
+
+
+@app.route('/delete_tariff', methods=['POST'])
+def delete_tariff():
+    request_details = request.get_json()
+    # Open the tariff data set.
+    if request_details['tariff_panel'] == 'network_tariff_selection_panel':
+        file_name = 'NetworkTariffs'
+    else:
+        file_name = 'RetailTariffs'
+
+    for file_type in ['', 'UserDefined']:
+        with open('data/{}{}.json'.format(file_type, file_name), 'rt') as json_file:
+            tariffs = json.load(json_file)
+
+        for i, tariff in enumerate(tariffs):
+            if request_details['tariff_name'] == tariff['Name']:
+                del tariffs[i]
+
+        with open('data/{}{}.json'.format(file_type, file_name), 'wt') as json_file:
+            json.dump(tariffs, json_file)
+
+    return jsonify("deleted")
 
 
 def shutdown_server():

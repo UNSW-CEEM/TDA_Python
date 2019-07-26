@@ -44,9 +44,3 @@ var get_tariff_options =  function(parent_id){
         success: function(data){update_tariff_options(parent_id, data, current_options);}
     });
 };
-
-
-// Get the options every time someone updates a tariff drop down.
-$('.tariff_filter').on('change', function() {
-    get_tariff_options();
-});
