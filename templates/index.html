@@ -214,10 +214,6 @@
         color: #EEEEEE
       }
 
-      .save_mod_tariff_option {
-        display: none;
-      }
-
       .visuallyhidden {
         position: absolute;
         top: -9999px !important;
@@ -597,18 +593,12 @@
                             <button id="network_default_tab" class="tablinks" value="NUOS"
                                     onclick="displayTariff(event, 'network_tariff_selection_panel', 'NUOS')">NUOS</button>
                         </div>
-                        <div style="height: 85%; width: 100%; overflow: hidden;">
+                        <div style="height: 95%; width: 100%; overflow: hidden;">
                             <div id="DUOS" class="tabcontent" style="overflow-y: scroll"></div>
                             <div id="TUOS" class="tabcontent" style="overflow-y: scroll"></div>
                             <div id="DTUOS" class="tabcontent" style="overflow-y: scroll"></div>
                             <div id="NUOS" class="tabcontent" style="overflow-y: scroll"></div>
                         </div>
-                        <div class="save_mod_tariff_option" style="height: 5%; width: 90%;">
-                            <input class="save_mod_tariff_name" style="width: 50%;">
-                            <button class="save_mod_button"
-                                    onclick="get_tariff_then_save(event, 'network_tariff_selection_panel')">Save</button>
-                        </div>
-                        <button style="width: 10%; float: right;" onclick="delete_tariff(event, 'network_tariff_selection_panel')">Delete</button>
                         <script>document.getElementById("network_default_tab").click();</script>
                     </div>
                 </div>
@@ -632,15 +622,9 @@
                                 Retail
                             </button>
                         </div>
-                        <div style="height: 85%; width: 100%; overflow: hidden; ">
+                        <div style="height: 95%; width: 100%; overflow: hidden; ">
                             <div id="Retail" class="tabcontent" style="overflow-y: scroll"></div>
                         </div>
-                        <div class="save_mod_tariff_option" style="height: 5%; width: 90%; margin-right: 0;">
-                            <input class="save_mod_tariff_name" style="width: 50%;">
-                            <button class="save_mod_button"
-                                    onclick="get_tariff_then_save(event, 'retail_tariff_selection_panel')">Save</button>
-                        </div>
-                        <button style="height: 5%; width: 10%; float: right;" onclick="delete_tariff(event, 'retail_tariff_selection_panel')">Delete</button>
                         <script>document.getElementById("retail_default_tab").click();</script>
                     </div>
                 </div>

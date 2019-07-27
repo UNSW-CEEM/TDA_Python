@@ -1,5 +1,5 @@
-var get_tariff_then_save = function(evt, tariff_type_tab_id){
-
+var get_tariff_then_save = function(evt, div_that_got_clicked){
+    var tariff_type_tab_id = $(div_that_got_clicked).closest('[id]').attr('id');
     // Get the name of the selected tariff.
     var tariff_name = $('#' + tariff_type_tab_id + ' .select_tariff').val();
 

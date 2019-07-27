@@ -3,7 +3,7 @@
         <h4 style="margin: 0;">Filter tariffs:</h4>
         <hr style="width: 80%; float: left;">
     </div>
-    <div class="row" style="height: 50%">
+    <div class="row" style="height: 45%">
         <div id="left_tariff_col"  class="col" style="width: 30%">
             <div class="label_stacked">Type:</div>
             <div class="label_stacked">State:</div>
@@ -12,16 +12,16 @@
         </div>
         <div id="middle_tariff_col" class="col" style="width: 50%">
             <select class="select_tariff_type tariff_filter">
-                <option selected="selected">Select1</option>
+                <option selected="selected">Any</option>
             </select>
             <select class="select_tariff_state tariff_filter">
-                <option selected="selected">Select1</option>
+                <option selected="selected">Any</option>
             </select>
             <select class="select_tariff_provider tariff_filter">
-                <option selected="selected">Select1</option>
+                <option selected="selected">Any</option>
             </select>
             <select class="select_tariff_year tariff_filter">
-                <option selected="selected">Select1</option>
+                <option selected="selected">Any</option>
             </select>
         </div>
     </div>
@@ -29,36 +29,51 @@
         <h4 style="margin: 0;">Select tariff:</h4>
         <hr style="width: 80%; float: left;">
     </div>
-    <div class="row" style="height: 35%">
+    <div class="row" style="height: 40%">
         <div class="col" style="width: 30%">
             <div class="label_stacked">Tariff:</div>
         </div>
         <div class="col" style="width: 50%">
             <select class="select_tariff">
-                <option selected="selected">Select1</option>
+                <option selected="selected">Select one</option>
             </select>
         </div>
     </div>
 </div>
 <div class="col" style="width: 50%">
     <div class="row" style="height: 15%">
-        <h4 style="margin: 0;">Selected tariff:</h4>
+        <h4 style="margin: 0;">Tariff Details:</h4>
         <hr style="width: 80%; float: left;">
     </div>
-    <div class="row" style="height: 85%">
+    <div class="row" style="height: 45%">
         <div class="tariff_panel_header col" style="width: 30%;">
             <div class="name_label label_stacked">Name:&nbsp</div>
             <div class="type_label label_stacked">Type:&nbsp</div>
             <div class="state_label label_stacked">State:&nbsp</div>
-            <div style="height: 5%;" class="add_case row"
-                 onclick="get_default_case_name(event, this)">
-                <button>Add</button>
-            </div>
         </div>
         <div class="tariff_panel_header col" style="width: 70%;">
             <div class="name_value label_stacked">N/A</div>
             <div class="type_value label_stacked">N/A</div>
             <div class="state_value label_stacked">N/A</div>
+        </div>
+    </div>
+    <div class="row" style="height: 15%">
+        <h4 style="margin: 0;">Actions:</h4>
+        <hr style="width: 80%; float: left;">
+    </div>
+    <div class="row" style="height: 40%">
+        <div style="height: 5%;" class="add_case label_stacked">
+                <button style="width: 60%; text-align: left;"
+                        onclick="get_default_case_name(event, this)">Apply tariff to load and create case</button>
+        </div>
+        <div style="height: 5%;" class="label_stacked">
+                <button style="width: 60%; text-align: left;"
+                        onclick="delete_tariff(event, this)">Delete from active database</button>
+        </div>
+        <div class="save_mod_tariff_option" style="height: 5%; width: 100%;">
+            <button class="save_mod_button" style="width: 60%; text-align: left;"
+                    onclick="get_tariff_then_save(event, this)">Save new version of tariff</button>
+            <input class="save_mod_tariff_name row" style="width: 59%;">
         </div>
     </div>
 </div>

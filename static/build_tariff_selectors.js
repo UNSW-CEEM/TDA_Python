@@ -6,7 +6,11 @@ var update_tariff_options = function(parent_id, options_by_type, current_options
         $.each(options_by_type, function(option_type, options){
             option_identifier = '#' + parent_id + ' ' + option_type
             $(option_identifier).empty();
-            $(option_identifier).append($('<option>').text("Select1"));
+            if (option_type == '.select_tariff'){
+                $(option_identifier).append($('<option>').text("Select one"));
+            } else {
+                $(option_identifier).append($('<option>').text("Any"));
+            }
             $.each(options, function(i, option){
                     $(option_identifier).append($('<option>').text(option));
             });

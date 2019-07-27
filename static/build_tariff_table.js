@@ -22,7 +22,7 @@ var get_tariff = function(tariff_type_panel){
 
   // Hide the save option when a new tariff is displayed.
   var tariff_save_option = $('#' + tariff_type_panel + " .save_mod_tariff_option");
-  $(tariff_save_option).css('display', "none")
+  //$(tariff_save_option).css('display', "none")
 
 }
 
@@ -152,7 +152,7 @@ var build_row = function(row_data, table_identifier){
 
 var display_save_mod_tariff_option = function(tariff_type_panel) {
   var tariff_save_option = $('#' + tariff_type_panel + " .save_mod_tariff_option");
-  $(tariff_save_option).css('display', "inline")
+  //$(tariff_save_option).css('display', "inline")
   var save_name_input = document.getElementById("save_mod_tariff_name");
   var current_name = $('#' + tariff_type_panel + " .name_value").html();
   $('#' + tariff_type_panel + " .save_mod_tariff_name").val(current_name + " v2");

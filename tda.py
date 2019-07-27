@@ -268,9 +268,8 @@ def tariff_options():
         # Decide if current tariff meets current filters
         add_tariff_as_option = True
         for option_type, option_name in option_types.items():
-            if ((tariff_filter_state[option_type] != 'Select1') &
-                (tariff_filter_state[option_type] != tariff[option_name])) & \
-                (option_name != 'Name'):
+            if ((tariff_filter_state[option_type] != 'Any') &
+               (tariff_filter_state[option_type] != tariff[option_name])) & (option_name != 'Name'):
                 add_tariff_as_option = False
         # If the current tariff meets the all the filters add its properties to the allowed options.
         for option_type, option_name in option_types.items():
