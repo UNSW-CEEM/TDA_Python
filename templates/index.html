@@ -572,8 +572,8 @@
             </div>
             <div id="tariff_type_container" style="height: 95%; width: 100%; overflow: hidden;">
                 <div id="network_tariff_selection_panel" class="tariff_type_tab_content">
-                    <div class="upper_tariff_section row" style="height: 30%;"></div>
-                    <script>$("#network_tariff_selection_panel .upper_tariff_section").load("tariff_selectors",
+                    <div class="upper_tariff_section row" style="height: 45%;">
+                        <script>$("#network_tariff_selection_panel .upper_tariff_section").load("tariff_selectors",
                                 function(){
                                     get_tariff_options("network_tariff_selection_panel")
                                     $('#network_tariff_selection_panel .select_tariff').on('change', function() {
@@ -582,22 +582,10 @@
                                     $('#network_tariff_selection_panel .tariff_filter').on('change', function() {
                                         get_tariff_options('network_tariff_selection_panel');
                                     });
-                              });</script>
-                    <div class="lower_tariff_section row" style="height: 70%;">
-                        <div class="tariff_panel_header row" style="height: 20%;">
-                            <div class="tariff_panel_header row" style="height: 20%;">
-                            <div class="name_label col" style="width: 5%;">Name:&nbsp</div>
-                            <div class="name_value col" style="width: 20%;">N/A</div>
-                            <div class="type_label col" style="width: 5%;">Type:&nbsp</div>
-                            <div class="type_value col" style="width: 20%;">N/A</div>
-                            <div class="state_label col" style="width: 5%;">State:&nbsp</div>
-                            <div class="state_value col" style="width: 20%;">N/A</div>
-                            <div style="width: 20%;" class="add_case col"
-                                 onclick="get_default_case_name(event, 'network_tariff_selection_panel')">
-                                <button>Add</button>
-                            </div>
-                        </div>
-                        </div>
+                              });
+                        </script>
+                    </div>
+                    <div class="lower_tariff_section row" style="height: 55%;">
                         <script src="static/tariff_tabs.js"></script>
                         <div id="tariff_tabs" class="tab_button_area" style="height: 5%">
                             <button class="tablinks" value="DUOS"
@@ -609,7 +597,7 @@
                             <button id="network_default_tab" class="tablinks" value="NUOS"
                                     onclick="displayTariff(event, 'network_tariff_selection_panel', 'NUOS')">NUOS</button>
                         </div>
-                        <div style="height: 70%; width: 100%; overflow: hidden;">
+                        <div style="height: 85%; width: 100%; overflow: hidden;">
                             <div id="DUOS" class="tabcontent" style="overflow-y: scroll"></div>
                             <div id="TUOS" class="tabcontent" style="overflow-y: scroll"></div>
                             <div id="DTUOS" class="tabcontent" style="overflow-y: scroll"></div>
@@ -620,12 +608,12 @@
                             <button class="save_mod_button"
                                     onclick="get_tariff_then_save(event, 'network_tariff_selection_panel')">Save</button>
                         </div>
-                        <button style="width: 5%; float: right;" onclick="delete_tariff(event, 'network_tariff_selection_panel')">Delete</button>
+                        <button style="width: 10%; float: right;" onclick="delete_tariff(event, 'network_tariff_selection_panel')">Delete</button>
                         <script>document.getElementById("network_default_tab").click();</script>
                     </div>
                 </div>
                 <div id="retail_tariff_selection_panel" class="tariff_type_tab_content">
-                    <div class="upper_tariff_section row" style="height: 30%;"></div>
+                    <div class="upper_tariff_section row" style="height: 45%;"></div>
                     <script>$("#retail_tariff_selection_panel .upper_tariff_section").load("tariff_selectors",
                                 function(){
                                     get_tariff_options("retail_tariff_selection_panel")
@@ -636,19 +624,7 @@
                                         get_tariff_options('retail_tariff_selection_panel');
                                     });
                              });</script>
-                    <div class="lower_tariff_section row" style="height: 70%;">
-                        <div class="tariff_panel_header row" style="height: 20%;">
-                            <div class="name_label col" style="width: 5%;">Name:&nbsp</div>
-                            <div class="name_value col" style="width: 30%;">N/A</div>
-                            <div class="type_label col" style="width: 5%;">Type:&nbsp</div>
-                            <div class="type_value col" style="width: 20%;">N/A</div>
-                            <div class="state_label col" style="width: 5%;">State:&nbsp</div>
-                            <div class="state_value col" style="width: 20%;">N/A</div>
-                            <div style="width: 10%;" class="add_case col"
-                                 onclick="get_default_case_name(event, 'retail_tariff_selection_panel')">
-                                <button>Add</button>
-                            </div>
-                        </div>
+                    <div class="lower_tariff_section row" style="height: 55%;">
                         <script src="static/tariff_tabs.js"></script>
                         <div class="tariff_tabs tab_button_area" style="height: 5%">
                             <button id="retail_default_tab" class="tablinks" value="Retail"
@@ -656,7 +632,7 @@
                                 Retail
                             </button>
                         </div>
-                        <div style="height: 70%; width: 100%; overflow: hidden; ">
+                        <div style="height: 85%; width: 100%; overflow: hidden; ">
                             <div id="Retail" class="tabcontent" style="overflow-y: scroll"></div>
                         </div>
                         <div class="save_mod_tariff_option" style="height: 5%; width: 90%; margin-right: 0;">
@@ -664,7 +640,7 @@
                             <button class="save_mod_button"
                                     onclick="get_tariff_then_save(event, 'retail_tariff_selection_panel')">Save</button>
                         </div>
-                        <button style="height: 5%; width: 5%; float: right;" onclick="delete_tariff(event, 'retail_tariff_selection_panel')">Delete</button>
+                        <button style="height: 5%; width: 10%; float: right;" onclick="delete_tariff(event, 'retail_tariff_selection_panel')">Delete</button>
                         <script>document.getElementById("retail_default_tab").click();</script>
                     </div>
                 </div>

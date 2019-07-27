@@ -1,5 +1,7 @@
 
-var get_default_case_name = function(){
+var get_default_case_name = function(event, div_that_got_clicked){
+    var parent_id = $(div_that_got_clicked).closest('[id]').attr('id');
+    console.log(parent_id)
     // Get a un used case name to put as the default name in the case namer dialog box.
     $.ajax({
         url: '/get_case_default_name',
