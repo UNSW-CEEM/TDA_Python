@@ -62,19 +62,13 @@
         <hr style="width: 80%; float: left;">
     </div>
     <div class="row" style="height: 40%">
-        <div style="height: 5%;" class="add_case label_stacked">
-                <button style="width: 60%; text-align: left;"
-                        onclick="get_default_case_name(event, this)">Apply tariff to load and create case</button>
-        </div>
-        <div style="height: 5%;" class="label_stacked">
-                <button style="width: 60%; text-align: left;"
-                        onclick="delete_tariff(event, this)">Delete from active database</button>
-        </div>
-        <div class="save_mod_tariff_option" style="height: 5%; width: 100%;">
-            <button class="save_mod_button" style="width: 60%; text-align: left;"
+        <button style="width: 60%; text-align: left;"
+                onclick="get_default_case_name(event, this)">Apply tariff to load and create case</button>
+        <button style="width: 60%; text-align: left;"
+                onclick="delete_tariff(event, this)">Delete from active database</button>
+        <button class="save_mod_button" style="width: 60%; text-align: left;"
                     onclick="get_tariff_then_save(event, this)">Save new version of tariff</button>
-            <input class="save_mod_tariff_name row" style="width: 59%;">
-        </div>
+        <input class="save_mod_tariff_name row" style="width: 59%;">
     </div>
 </div>
 
