@@ -10,6 +10,7 @@ from datetime import datetime, timedelta
 def get_average_annual_profile(load, series_name=''):
     print(load.head())
     t0 = time()
+    print(load.head())
     load['mean'] = load.loc[:, [col for col in load.columns if col != 'Datetime']].mean(axis=1)
     load = load.loc[:, ['Datetime', 'mean']]
     print('time to find mean {}'.format(time() - t0))
