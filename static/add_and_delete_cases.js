@@ -47,7 +47,7 @@ var get_active_component = function(parent_id){
         return component
     });
     return component
-
+}
 
 var delete_case = function(delete_button){
     var case_name = $(delete_button).attr('value')
