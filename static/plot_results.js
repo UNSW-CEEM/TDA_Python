@@ -75,20 +75,6 @@ var on_checkbox_change = function(){
   plot_results();
 }
 
-
-var get_active_component = function(parent_id){
-    var component
-    var tablinks = $("#" + parent_id + " .tablinks");
-    $.each(tablinks, function(index, link){
-        if ($(link).hasClass('active')){
-          component = link.value
-        }
-        return component
-    });
-    return component
-}
-
-
 var plot_results = function(){
     // Plot results for each results tab.
     plot_single_variable_results();

@@ -37,6 +37,18 @@ var add_case = function(parent_id){
     });
 }
 
+var get_active_component = function(parent_id){
+    var component
+    var tablinks = $("#" + parent_id + " .tablinks");
+    $.each(tablinks, function(index, link){
+        if ($(link).hasClass('active')){
+          component = link.value
+        }
+        return component
+    });
+    return component
+
+
 var delete_case = function(delete_button){
     var case_name = $(delete_button).attr('value')
     var case_name_no_spaces = case_name.replace(/\s/g, '');
