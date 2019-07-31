@@ -138,10 +138,11 @@ def add_case():
     load_file_name = case_details['load_details']['file_name']
     filter_options = case_details['load_details']['filter_options']
     requested_tariff = case_details['tariff_name']
+    tariff_panel = case_details['tariff_panel']
 
     filtered, load_data = data_interface.filter_load_data(raw_data[load_file_name], load_file_name, filter_options)
 
-    selected_tariff = data_interface.get_tariff('network_tariff_selection_panel', requested_tariff)
+    selected_tariff = data_interface.get_tariff(tariff_panel, requested_tariff)
     selected_tariff = helper_functions.strip_tariff_to_single_component(selected_tariff, case_details['component'])
 
     results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), selected_tariff)
