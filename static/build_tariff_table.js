@@ -35,12 +35,12 @@ var display_tariff_info = function(tariff_type_panel, tariff_data){
     // display info by nuos, duos etc
     for (var key in tariff_data['Parameters']) {
         if (tariff_data['Parameters'].hasOwnProperty(key)) {
-            display_tables(tariff_type_panel, key, tariff_data['Parameters'][key]);
+            display_tables(tariff_type_panel, key, tariff_data['Parameters'][key], true);
         }
     }
 }
 
-var display_tables = function(tariff_type_panel, parameter_type, data_of_tables){
+var display_tables = function(tariff_type_panel, parameter_type, data_of_tables, editable){
     // Get a list of the tables currently on display
     var current_tables = $('#' + parameter_type + ' .tariff_table')
     // Tear down all the current tables.
@@ -68,11 +68,11 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables)
         $table_template.css("display", "block");
 
         // Put contents in table.
-        display_table_data(parameter_type, table_name, table_data, true, tariff_type_panel);
+        display_table_data(parameter_type, table_name, table_data, editable, tariff_type_panel);
     })
 }
 
-var tear_down_current_table = function(table, editable, parameter_type){
+var tear_down_current_table = function(table, editable){
     // If the html table has already been made into a DataTable, then destroy the DataTable before
     // updating the display.
     if ($.fn.dataTable.isDataTable(table) ) {

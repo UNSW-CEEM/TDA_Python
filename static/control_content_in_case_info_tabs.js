@@ -54,7 +54,14 @@ var update_info_tabs_on_case_delete = function(case_name){
         if (case_controllers.length < 1){
             // If there are no case with info to display.
             // Remove table displaying tariff info.
-            tear_down_current_table('info', true);
+            // Get a list of the tables currently on display
+            var current_tables = $('#info .tariff_table')
+            // Tear down all the current tables.
+            $.each(current_tables, function(index, table){
+                tear_down_current_table(table, true)
+            })
+            // Delete remaining html
+             $('#info').empty();
             // Stop display info summaries
             $("#info_tariff_summary_labels").css("display", "none");
             $("#info_load_summary_labels").css("display", "none");
@@ -93,7 +100,7 @@ var get_and_display_case_tariff_info = function(case_name){
 
 var display_case_tariff_info = function(case_name, tariff_data){
     component = Object.keys(tariff_data['Parameters'])[0];
-    display_table_data('info', tariff_data['Parameters'][component], true);
+    display_tables('info', 'info', tariff_data['Parameters'][component], false);
     $('#tariff_info_case').text(case_name);
     $('#tariff_info_name').text(tariff_data['Name']);
     $('#tariff_info_type').text(tariff_data['Type']);
