@@ -1,21 +1,22 @@
-var add_case = function(){
+var add_case = function(parent_id){
     // Get the active component tab when the add case button was clicked.
-    var component = get_active_network_component();
+    var component = get_active_component(parent_id);
 
     // Get the name of the selected tariff.
     case_name = $('#case_name').val();
 
     // Get the name of the selected tariff.
-    network_tariff_name = $('#network_tariff_selection_panel' + ' .select_tariff').val();
+    tariff_name = $('#' + parent_id + ' .select_tariff').val();
 
     // Get load details
     load_request = get_load_details_from_ui();
 
     // Bundle case details into a single object
     case_details = {'case_name': case_name,
-                    'tariff_name': network_tariff_name,
+                    'tariff_name': tariff_name,
                     'component': component,
-                    'load_details': load_request};
+                    'load_details': load_request,
+                    'tariff_panel': parent_id};
 
     $('#case_namer').dialog('close');
     $('#dialog').dialog({modal: true});

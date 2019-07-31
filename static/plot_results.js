@@ -8,20 +8,20 @@ var get_default_case_name = function(event, div_that_got_clicked){
         contentType: 'application/json;charset=UTF-8',
         async: 'false',
         dataType:"json",
-        success: function(data){launch_case_namer(data)}
+        success: function(data){launch_case_namer(data, parent_id)}
     });
 }
 
 
-var launch_case_namer = function(default_name){
+var launch_case_namer = function(default_name, parent_id){
     $('#case_name').val(default_name)
     $( "#case_namer" ).dialog({
         modal: true,
-        buttons: {"Save case": add_case_to_gui}
+        buttons: {"Save case": function(){add_case_to_gui(parent_id)}}
     });
 }
 
-var add_case_to_gui = function(){
+var add_case_to_gui = function(parent_id){
     // Get case name
     case_name = $('#case_name').val();
     case_name_no_spaces = case_name.replace(/\s/g, '');
@@ -41,7 +41,7 @@ var add_case_to_gui = function(){
     // Set label in case control equal to case name.
     $('#' + case_name_no_spaces + ' ' + '.case_label').html(case_name)
     // Add the case to the python side.
-    add_case();
+    add_case(parent_id);
     //Update the select for the single case results.
     update_single_case_selector();
 }
@@ -75,9 +75,10 @@ var on_checkbox_change = function(){
   plot_results();
 }
 
-var get_active_network_component = function(){
+
+var get_active_component = function(parent_id){
     var component
-    var tablinks = $("#network_tariff_selection_panel .tablinks");
+    var tablinks = $("#" + parent_id + " .tablinks");
     $.each(tablinks, function(index, link){
         if ($(link).hasClass('active')){
           component = link.value
@@ -86,6 +87,7 @@ var get_active_network_component = function(){
     });
     return component
 }
+
 
 var plot_results = function(){
     // Plot results for each results tab.
