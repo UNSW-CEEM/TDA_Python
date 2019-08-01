@@ -1,9 +1,9 @@
 var add_case = function(parent_id){
-    // Get the active component tab when the add case button was clicked.
-    var component = get_active_component(parent_id);
-
     // Get the name of the selected tariff.
     case_name = $('#case_name').val();
+
+    // Get the active component tab when the add case button was clicked.
+    var component = get_active_component(parent_id);
 
     // Get the name of the selected tariff.
     tariff_name = $('#' + parent_id + ' .select_tariff').val();

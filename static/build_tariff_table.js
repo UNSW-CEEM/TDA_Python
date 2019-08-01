@@ -5,25 +5,47 @@ var get_tariff = function(tariff_type_panel){
     // Get the name of the selected tariff.
     tariff_name = $('#' + tariff_type_panel + ' .select_tariff').val();
 
-    request_details = {'tariff_panel': tariff_type_panel, 'tariff_name': tariff_name}
+    if (tariff_name != "None"){
+        request_details = {'tariff_panel': tariff_type_panel, 'tariff_name': tariff_name}
 
-    // Ask for the corresponding json.
-    $.ajax({
-        url: '/tariff_json',
-        data: JSON.stringify(request_details),
-        contentType: 'application/json;charset=UTF-8',
-        type : 'POST',
-        async: 'false',
-        dataType:"json",
-        // Call the function to display the selected tariffs info
-        success: function(data){display_tariff_info(tariff_type_panel, data);},
-        error: function(a,b,c){console.log(b); console.log(c);}
-    });
+        // Ask for the corresponding json.
+        $.ajax({
+            url: '/tariff_json',
+            data: JSON.stringify(request_details),
+            contentType: 'application/json;charset=UTF-8',
+            type : 'POST',
+            async: 'false',
+            dataType:"json",
+            // Call the function to display the selected tariffs info
+            success: function(data){display_tariff_info(tariff_type_panel, data);},
+            error: function(a,b,c){console.log(b); console.log(c);}
+        });
 
-  // Hide the save option when a new tariff is displayed.
-  var tariff_save_option = $('#' + tariff_type_panel + " .save_mod_tariff_option");
-  //$(tariff_save_option).css('display', "none")
+        // Hide the save option when a new tariff is displayed.
+        var tariff_save_option = $('#' + tariff_type_panel + " .save_mod_tariff_option");
+        //$(tariff_save_option).css('display', "none")
 
+    } else {
+       reset_tariff_options(tariff_type_panel);
+       tear_down_tables_in_tariff_type_panel(tariff_type_panel);
+    }
+
+
+
+}
+
+var tear_down_tables_in_tariff_type_panel = function(parent_id){
+    var current_tables = $('#' + parent_id + ' .tariff_table')
+    // Tear down all the current tables.
+    $.each(current_tables, function(index, table){
+        tear_down_current_table(table, true)
+    })
+
+    var table_sets = $('#' + parent_id + ' .table_set')
+    // Tear down all the current tables.
+    $.each(table_sets, function(index, set){
+       $(set).empty();
+    })
 }
 
 var display_tariff_info = function(tariff_type_panel, tariff_data){

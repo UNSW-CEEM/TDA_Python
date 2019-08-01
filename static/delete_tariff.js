@@ -17,7 +17,8 @@ var delete_tariff = function(evt, div_that_got_clicked){
         type : 'POST',
         async: 'false',
         dataType:"json",
-        success: function(){get_tariff_options(tariff_type_tab_id);},
+        success: function(){reset_tariff_options(tariff_type_tab_id);
+                            tear_down_tables_in_tariff_type_panel(tariff_type_tab_id);},
         error: function(){console.log('failed to delete');}
     });
 }

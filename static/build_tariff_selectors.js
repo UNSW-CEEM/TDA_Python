@@ -7,7 +7,7 @@ var update_tariff_options = function(parent_id, options_by_type, current_options
             option_identifier = '#' + parent_id + ' ' + option_type
             $(option_identifier).empty();
             if (option_type == '.select_tariff'){
-                $(option_identifier).append($('<option>').text("Select one"));
+                $(option_identifier).append($('<option>').text("None"));
             } else {
                 $(option_identifier).append($('<option>').text("Any"));
             }
@@ -48,3 +48,14 @@ var get_tariff_options =  function(parent_id){
         success: function(data){update_tariff_options(parent_id, data, current_options);}
     });
 };
+
+var reset_tariff_options = function(parent_id){
+    $('#' + parent_id + ' .select_tariff_provider').val('Any');
+    $('#' + parent_id + ' .select_tariff_state').val('Any');
+    $('#' + parent_id + ' .select_tariff_type').val('Any');
+    $('#' + parent_id + ' .select_tariff').val('None');
+    $('#' + parent_id + ' .name_value').html('N/A');
+    $('#' + parent_id + ' .type_value').html('N/A');
+    $('#' + parent_id + ' .state_value').html('N/A');
+    get_tariff_options(parent_id);
+}
