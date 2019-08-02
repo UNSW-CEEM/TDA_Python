@@ -19,21 +19,28 @@ def dual_variable_chart_method(data, x_axis, y_axis, name):
     return chart
 
 
+def is_component(suffixes, name_to_check):
+    for suffix in suffixes:
+        if suffix in name_to_check:
+            return True
+    return False
+
+
 def bill_components(data):
     data = data.sort_values('Bill', ascending=False)
     data = data.reset_index(drop=True)
     traces = []
-    potential_components = {'NUOS_DailyCharge': 'Daily', 'NUOS_EnergyCharge': 'Energy', 'NUOS_TOUCharge': 'TOU'}
-    for component, legend_name in potential_components.items():
-        if component in data.columns:
-            trace = dict(
-                name=legend_name,
-                x=data.index.values,
-                y=data[component],
-                mode='lines',
-                stackgroup='one'
-            )
-            traces.append(trace)
+    compenent_suffixes = ['Retailer', 'DUOS', 'NUOS', 'TUOS', 'DTOUS']
+    potential_components = [col for col in data.columns if is_component(compenent_suffixes, col)]
+    for component in potential_components:
+        trace = dict(
+            name=component,
+            x=data.index.values,
+            y=data[component],
+            mode='lines',
+            stackgroup='one'
+        )
+        traces.append(trace)
     return traces
 
 
