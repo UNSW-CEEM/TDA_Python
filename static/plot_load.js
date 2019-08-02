@@ -99,11 +99,15 @@ var make_loading_popup = function(){
   return newWindow
 }
 
-$('#get_load').click(function() {
-  $('#dialog').dialog({modal: true});
-  var file_name = $('#select').children("option:selected").val();
-  $.getJSON('/demo_options/' + file_name, add_demo_selectors);
-  plot_filtered_load();
+var perform_plot_load_actions = function(){
+    $('#dialog').dialog({modal: true});
+    var file_name = $('#select').children("option:selected").val();
+    $.getJSON('/demo_options/' + file_name, add_demo_selectors);
+    plot_filtered_load();
+}
+
+$('#select').on('change', function() {
+    perform_plot_load_actions();
 });
 
 $('.select_demo').on('change', function() {

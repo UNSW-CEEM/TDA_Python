@@ -29,6 +29,8 @@
     <link rel="stylesheet" type="text/css" href="static/frozen_from_web/jquery-ui-1.12.1/jquery-ui.css">
     <script src="static/frozen_from_web/contextMenu/contextMenu.js"></script>
     <script src="static/frozen_from_web/dataTables.cellEdit.js"></script>
+    <script src="static/frozen_from_web/dropdownPlain.js"></script>
+    <link rel="stylesheet" href="static/frozen_from_web/dropdown_menu.css" type="text/css"/>
     <script src="static/results_tabs.js"></script>
     <script src="static/plot_results.js"></script>
     <script src="static/add_and_delete_cases.js"></script>
@@ -114,6 +116,7 @@
         background-color: #EEEEEE;
         margin: 0;
         box-sizing: border-box;
+        overflow: hidden;
       }
 
       #menu_bar {
@@ -243,15 +246,6 @@
          border-bottom: 0 !important;
       }
 
-      .ui-menu {
-        width: 150px;
-        float: left;
-      }
-
-      .ui-menu div {
-      }
-
-
   </style>
 
     <div id="dialog" title="Basic dialog" style="display: none">
@@ -268,9 +262,9 @@
         <div class="label_line case_label"></div>
         <input class="case_visibility_checkbox" type="checkbox" style="width: 15%;"
                checked onclick="on_checkbox_change()">
-        <button class='case_info_button' style="float: left;"
+        <button class='case_info_button' style="float: left; width: 10%;"
                 onclick="reset_case_tariff_info_from_button(this)">?</button>
-        <button class='case_delete_button' style="float: left;"
+        <button class='case_delete_button' style="float: left; width: 10%;"
                 onclick="delete_case(this)">&times;</button>
     </div>
 
@@ -283,25 +277,25 @@
 
 <body>
 <div id="container">
-  <div id="menu_bar" style="height: 26px;">
-      <ul id="tariff_menu">
+  <div id="menu_bar" style="height: 20px;">
+      <ul id="tariff_menu" class="dropdown">
+          <li><div>File</div></li>
           <li><div>Tariffs</div>
-              <ul>
+              <ul class="sub_menu">
                   <li><div>Network Sets</div>
-                      <ul id="network_tariff_sets"></ul>
+                      <ul class="sub_menu" id="network_tariff_sets"></ul>
                   </li>
                   <li><div>Retail Sets</div>
-                      <ul id="retail_tariff_sets"></ul>
+                      <ul class="sub_menu" id="retail_tariff_sets"></ul>
                   </li>
                   <li><div>Update</div></li>
               </ul>
           </li>
       </ul>
       <script src="static/tariff_set_options.js"></script>
-      <script>$(function(){$("#tariff_menu").menu();});</script>
       <script src="static/shut_down.js"></script>
   </div>
-    <hr class="header_border"/>
+  <hr class="header_border"/>
   <div class="main">
 
     <div id="left_column" class="tab_button_area" style="height: 100%; width: 14.5%; float: left; padding: 0 1% 0 1%">
@@ -317,92 +311,113 @@
 
     <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left; overflow: hidden;">
         <div id="load_panel" class="main_tab_content">
-            <div id="load_selection" class="row" style="height: 2.5%;">
-                <div class="col" style="width: 50%;">
-                    <div class="col">Selected:</div>
-                    <select id="select" class="col" style="width: 60%" name="select"><option selected="selected">blank</option></select>
+            <div style="height: 5%"></div>
+            <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
+                        border-style: solid; border-color: #EEEEEE;">
+                <div id="load_selection" class="row" style="height: 55%;">
+                    <div class="col" style="width: 50%;">
+                        <div class="row" style="height: 10%">
+                            <h4 style="margin: 0;">Select Load</h4>
+                            <hr style="width: 80%; float: left;">
+                        </div>
+                        <div class="row" style="height: 80%">
+                            <div class="col" style="width: 30%;">
+                                <div class="label_stacked">Selected:</div>
+                            </div>
+                            <div class="col" style="width: 50%;">
+                                <select id="select" name="select">
+                                    <option selected="selected">blank</option>
+                                </select>
+                                <script src="static/build_load_selector.js"></script>
+                                <script>$(document).ready(
+                                            function(){
+                                                $('#select').find('option:contains("test_data.feather")').attr("selected",true);
+                                                perform_plot_load_actions();
+                                            })
+                                </script>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col" style="width: 50%;">
+                        <div class="row" style="height: 10%">
+                            <h4 style="margin: 0;">Demographic Filters</h4>
+                            <hr style="width: 80%; float: left;">
+                        </div>
+                        <div id="demograhphic_selection" class="row" style="height: 100%">
+                            <div id="demo_label_col" class="col" style="width: 75%;">
+                                <div id="demo_label_0" class="label_stacked"></div>
+                                <div id="demo_label_1"  class="label_stacked"></div>
+                                <div id="demo_label_2" class="label_stacked"></div>
+                                <div id="demo_label_3"  class="label_stacked"></div>
+                                <div id="demo_label_4"  class="label_stacked"></div>
+                                <div id="demo_label_5" class="label_stacked"></div>
+                                <div id="demo_label_6" class="label_stacked"></div>
+                                <div id="demo_label_7" class="label_stacked"></div>
+                                <div id="demo_label_8"  class="label_stacked"></div>
+                                <div id="demo_label_9"  class="label_stacked"></div>
+                            </div>
+                            <div id="demo_selector_col" class="col" style="width: 25%;">
+                                <div id="demo_0" class="demo_select_container">
+                                    <select  id="demo_select_0" class="select_demo"></select>
+                                </div>
+                                <script> $('#demo_0').hide() </script>
+                                <div id="demo_1" class="demo_select_container">
+                                    <select class="select_demo"></select>
+                                </div>
+                                <script> $('#demo_1').hide() </script>
+                                <div id="demo_2" class="demo_select_container">
+                                    <select  id="demo_select_2" class="select_demo"></select>
+                                </div>
+                                <script> $('#demo_2').hide() </script>
+                                <div id="demo_3" class="demo_select_container">
+                                    <select  id="demo_select_3" class="select_demo"></select>
+                                </div>
+                                <script> $('#demo_3').hide() </script>
+                                <div id="demo_4" class="demo_select_container">
+                                    <select  id="demo_select_4" class="select_demo"></select>
+                                </div>
+                                <script> $('#demo_4').hide() </script>
+                                <div id="demo_5" class="demo_select_container">
+                                    <select  id="demo_select_5" class="select_demo"></select>
+                                </div>
+                                <script> $('#demo_5').hide() </script>
+                                <div id="demo_6" class="demo_select_container">
+                                    <select  id="demo_select_6" class="select_demo"></select>
+                                </div>
+                                <script> $('#demo_6').hide() </script>
+                                <div id="demo_7" class="demo_select_container">
+                                    <select  id="demo_select_7" class="select_demo"></select>
+                                </div>
+                                <script> $('#demo_7').hide() </script>
+                                <div id="demo_8" class="demo_select_container">
+                                    <select  id="demo_select_8" class="select_demo"></select>
+                                </div>
+                                <script> $('#demo_8').hide() </script>
+                                <div id="demo_9" class="demo_select_container">
+                                    <select  id="demo_select_9" class="select_demo"></select>
+                                </div>
+                                <script> $('#demo_9').hide() </script>
+                            </div>
+                        </div>
+                    </div>
                 </div>
-                <div class="col" style="width: 50%;">
-                    <script src="static/build_load_selector.js"></script>
-                    <button type="button" id="get_load" class="col" style="width: 25%; float: right">Set</button>
+                <hr>
+                <div id="load_inspection" style="height: 45%">
+                    <div style="height: 10%; overflow: hidden;">
+                        <div id="sample_size_info" style="float: left; width: 60%; height: 100%;">
+                            No. of users: N/A
+                        </div>
+                        <div style="float: left; width: 10%; height: 100%;">Show:</div>
+                        <select  id="select_graph" style="float: left; width: 30%;">
+                            <option value="Annual Average Profile"> Annual Average Profile</option>
+                            <option value="Daily kWh Histogram">Daily kWh Histogram</option>
+                        </select>
+                    </div>
+                    <div class="chart" id="load_chart" style="height: 80%;"></div>
+                    <script src="static/plot_load.js"></script>
                 </div>
             </div>
-            <hr>
-            <div id="demograhphic_selection" class="row" style="height: 45%">
-                <div id="demo_label_col" class="col" style="width: 75%;">
-                    <div id="demo_label_0" class="label_stacked"></div>
-                    <div id="demo_label_1"  class="label_stacked"></div>
-                    <div id="demo_label_2" class="label_stacked"></div>
-                    <div id="demo_label_3"  class="label_stacked"></div>
-                    <div id="demo_label_4"  class="label_stacked"></div>
-                    <div id="demo_label_5" class="label_stacked"></div>
-                    <div id="demo_label_6" class="label_stacked"></div>
-                    <div id="demo_label_7" class="label_stacked"></div>
-                    <div id="demo_label_8"  class="label_stacked"></div>
-                    <div id="demo_label_9"  class="label_stacked"></div>
-                </div>
-                <div id="demo_selector_col" class="col" style="width: 25%;">
-                    <div id="demo_0" class="demo_select_container">
-                        <select  id="demo_select_0" class="select_demo"></select>
-                    </div>
-                    <script> $('#demo_0').hide() </script>
-                    <div id="demo_1" class="demo_select_container">
-                        <select class="select_demo"></select>
-                    </div>
-                    <script> $('#demo_1').hide() </script>
-                    <div id="demo_2" class="demo_select_container">
-                        <select  id="demo_select_2" class="select_demo"></select>
-                    </div>
-                    <script> $('#demo_2').hide() </script>
-                    <div id="demo_3" class="demo_select_container">
-                        <select  id="demo_select_3" class="select_demo"></select>
-                    </div>
-                    <script> $('#demo_3').hide() </script>
-                    <div id="demo_4" class="demo_select_container">
-                        <select  id="demo_select_4" class="select_demo"></select>
-                    </div>
-                    <script> $('#demo_4').hide() </script>
-                    <div id="demo_5" class="demo_select_container">
-                        <select  id="demo_select_5" class="select_demo"></select>
-                    </div>
-                    <script> $('#demo_5').hide() </script>
-                    <div id="demo_6" class="demo_select_container">
-                        <select  id="demo_select_6" class="select_demo"></select>
-                    </div>
-                    <script> $('#demo_6').hide() </script>
-                    <div id="demo_7" class="demo_select_container">
-                        <select  id="demo_select_7" class="select_demo"></select>
-                    </div>
-                    <script> $('#demo_7').hide() </script>
-                    <div id="demo_8" class="demo_select_container">
-                        <select  id="demo_select_8" class="select_demo"></select>
-                    </div>
-                    <script> $('#demo_8').hide() </script>
-                    <div id="demo_9" class="demo_select_container">
-                        <select  id="demo_select_9" class="select_demo"></select>
-                    </div>
-                    <script> $('#demo_9').hide() </script>
-                </div>
-            </div>
-            <hr>
-            <div id="load_inspection" style="height: 50%">
-                <div style="height: 10%; overflow: hidden;">
-                <div style="float: left; width: 40%; height: 100%;" >
-                    <span id="sample_size_info">No. of users: N/A</span>
-                </div>
-                <div  style="float: right; width: 45%; height: 100%; ">
-                    <select  id="select_graph" style="width:100%">
-                        <option value="Annual Average Profile"> Annual Average Profile</option>
-                        <option value="Daily kWh Histogram">Daily kWh Histogram</option>
-                    </select>
-                </div>
-                <div style="float: right; width: 10%; height: 100%;">
-                    <span style="float:right;">Show:</span>
-                </div>
-                </div>
-                <div class="chart" id="load_chart" style="height: 80%;"></div>
-                <script src="static/plot_load.js"></script>
-            </div>
+
         </div>
 
         <div id="results_panel" class="main_tab_content">
