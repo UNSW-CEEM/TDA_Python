@@ -41,6 +41,7 @@
     <script src="static/save_tariff.js"></script>
     <script src="static/tariff_type_tabs.js"></script>
     <script src="static/delete_tariff.js"></script>
+    <script src="static/down_sample_check_list.js"></script>
 
 
   <style>
@@ -246,6 +247,8 @@
          border-bottom: 0 !important;
       }
 
+      .down_sample_option { height: 15px;}
+
   </style>
 
     <div id="dialog" title="Basic dialog" style="display: none">
@@ -279,7 +282,26 @@
 <div id="container">
   <div id="menu_bar" style="height: 20px;">
       <ul id="tariff_menu" class="dropdown">
-          <li><div>File</div></li>
+          <li><div>Projects</div></li>
+          <li><div>Load</div>
+              <ul class="sub_menu">
+                  <li><div>Down-sample Users (Random Selection)</div>
+                      <ul class="sub_menu" id="down_sample_options">
+                          <li>
+                              <input class="down_sample_option" type="checkbox" checked value="1" style="width: 20%;"
+                              onclick="update_check_list(event, this)">
+                              <div style="width: 80%;">100% (full data)</div>
+                          </li>
+                          <li>
+                              <input class="down_sample_option" type="checkbox" value="0.5" style="width: 20%;"
+                              onclick="update_check_list(event, this)">
+                              <div style="width: 80%;">50%</div>
+                          </li>
+                      </ul>
+                  </li>
+              </ul>
+          </li>
+
           <li><div>Tariffs</div>
               <ul class="sub_menu">
                   <li><div>Network Sets</div>

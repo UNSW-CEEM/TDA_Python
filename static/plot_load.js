@@ -27,6 +27,18 @@ var add_demo_selectors = function(response){
     }
 }
 
+var get_down_sample_setting = function(){
+    var chosen_down_sample_option
+    var options = $('.down_sample_option')
+    $.each(options, function(i, option){
+        if ($(option).is(":checked")){
+            chosen_down_sample_option = parseFloat($(option).attr('value'))
+        }
+    });
+    console.log(chosen_down_sample_option)
+    return chosen_down_sample_option
+}
+
 var get_load_details_from_ui = function(){
 
     var filter_options = {}
@@ -45,7 +57,10 @@ var get_load_details_from_ui = function(){
 
     var chart_type = $('#select_graph').children("option:selected").val();
 
-    var load_request = {'file_name': file_name, 'filter_options': filter_options, 'chart_type': chart_type}
+    var down_sample_option = get_down_sample_setting();
+
+    var load_request = {'file_name': file_name, 'filter_options': filter_options, 'chart_type': chart_type,
+                        'sample_fraction': down_sample_option};
 
     return load_request
 

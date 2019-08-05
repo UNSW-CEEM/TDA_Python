@@ -87,6 +87,8 @@ def filtered_load_data():
 
     load_request = request.get_json()
 
+    print('hi the down sample option is {}'.format(load_request['sample_fraction']))
+
     # Get raw load data.
     if load_request['file_name'] not in raw_data:
         raw_data[load_request['file_name']] = data_interface.get_load_table('data/', load_request['file_name'])
