@@ -9,6 +9,7 @@ from make_load_charts import chart_methods
 from make_results_charts import results_chart_methods, dual_variable_chart_method, single_case_chart_methods
 import data_interface
 import Bill_Calc
+from tariff_formatting import format_tariff_data_for_display, format_tariff_data_for_storage
 from time import time
 
 
@@ -158,7 +159,7 @@ def add_case():
 def get_case_tariff():
     case_name = request.get_json()
     tariff = tariff_by_case[case_name]
-    tariff = helper_functions.format_tariff_data_for_display(tariff)
+    tariff = format_tariff_data_for_display(tariff)
     return jsonify(tariff)
 
 
@@ -284,13 +285,13 @@ def tariff_options():
 def tariff_json():
     request_details = request.get_json()
     selected_tariff = data_interface.get_tariff(request_details['tariff_panel'], request_details['tariff_name'])
-    selected_tariff = helper_functions.format_tariff_data_for_display(selected_tariff)
+    selected_tariff = format_tariff_data_for_display(selected_tariff)
     return jsonify(selected_tariff)
 
 
 @app.route('/save_tariff', methods=['POST'])
 def save_tariff():
-    tariff_to_save = helper_functions.format_tariff_data_for_storage(request.get_json())
+    tariff_to_save = format_tariff_data_for_storage(request.get_json())
     # Open the tariff data set.
     if tariff_to_save['ProviderType'] == 'Network':
         with open('data/UserDefinedNetworkTariffs.json', 'rt') as json_file:
