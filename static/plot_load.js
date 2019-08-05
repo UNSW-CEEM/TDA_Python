@@ -39,6 +39,18 @@ var get_down_sample_setting = function(){
     return chosen_down_sample_option
 }
 
+var get_missing_data_limit = function(){
+    var chosen_missing_data_limit
+    var options = $('.missing_data_limit')
+    $.each(options, function(i, option){
+        if ($(option).is(":checked")){
+            chosen_missing_data_limit = parseFloat($(option).attr('value'))
+        }
+    });
+    console.log(chosen_missing_data_limit)
+    return chosen_missing_data_limit
+}
+
 var get_load_details_from_ui = function(){
 
     var filter_options = {}
@@ -59,8 +71,10 @@ var get_load_details_from_ui = function(){
 
     var down_sample_option = get_down_sample_setting();
 
+    var missing_data_limit = get_missing_data_limit();
+
     var load_request = {'file_name': file_name, 'filter_options': filter_options, 'chart_type': chart_type,
-                        'sample_fraction': down_sample_option};
+                        'sample_fraction': down_sample_option, 'missing_data_limit': missing_data_limit};
 
     return load_request
 
@@ -122,6 +136,14 @@ var perform_plot_load_actions = function(){
 }
 
 $('#select').on('change', function() {
+    perform_plot_load_actions();
+});
+
+$('.down_sample_option').on('change', function() {
+    perform_plot_load_actions();
+});
+
+$('.missing_data_limit').on('change', function() {
     perform_plot_load_actions();
 });
 
