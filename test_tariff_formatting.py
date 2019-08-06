@@ -1,5 +1,5 @@
 import unittest
-from tariff_formatting import format_tariff_data_for_display, format_tariff_data_for_storage
+from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage
 from data_interface import get_tariffs
 
 

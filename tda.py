@@ -9,8 +9,8 @@ from make_load_charts import chart_methods
 from make_results_charts import results_chart_methods, dual_variable_chart_method, single_case_chart_methods
 import data_interface
 import Bill_Calc
-from tariff_formatting import format_tariff_data_for_display, format_tariff_data_for_storage
-from time import time
+from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
+    get_options_from_tariff_set
 
 
 raw_data = {}
@@ -56,14 +56,14 @@ def tariff_table():
 
 @app.route('/load_names')
 def load_names():
-    load_names = []
+    names = []
     for file_name in os.listdir('data/'):
-        load_names.append(file_name)
-    return jsonify(load_names)
+        names.append(file_name)
+    return jsonify(names)
 
 
-@app.route('/tariff_set_options/<tariff_type>')
-def tariff_set_options(tariff_type):
+@app.route('/get_tariff_set_options/<tariff_type>')
+def get_tariff_set_options(tariff_type):
     tariff_set_options = []
     folder = 'data/{}_tariff_set_versions/'.format(tariff_type)
     for file_name in os.listdir(folder):
@@ -93,7 +93,6 @@ def filtered_load_data():
     if load_request['file_name'] not in raw_data:
         raw_data[load_request['file_name']] = data_interface.get_load_table('data/', load_request['file_name'])
 
-
     filtered, filtered_data = data_interface.filter_load_data(raw_data[load_request['file_name']],
                                                               load_request['file_name'],
                                                               load_request['filter_options'])
@@ -113,7 +112,6 @@ def filtered_load_data():
     else:
         chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']]]
         n_users = data_interface.n_users(raw_data[load_request['file_name']])
-
 
     # Format as json.
     return_data = {"n_users": n_users, "chart_data": chart_data}
@@ -225,6 +223,7 @@ def get_single_case_chart():
 def demo_options(name):
     demo_config_file_name = helper_functions.find_loads_demographic_config_file(name)
     demo_file_name = helper_functions.find_loads_demographic_file(name)
+
     if demo_config_file_name != '' and demo_config_file_name in os.listdir('data/'):
         demo_config = pd.read_csv('data/' + demo_config_file_name)
         columns_to_use = demo_config[demo_config['use'] == 1]
@@ -256,30 +255,8 @@ def tariff_options():
     tariff_panel = request_details['tariff_panel']
     # Open the tariff data set.
     tariffs = data_interface.get_tariffs(tariff_panel)
-
-    # Define the options to update.
-    option_types = {'.select_tariff_state': 'State',
-                    '.select_tariff_provider': 'Provider',
-                    '.select_tariff_type': 'Type',
-                    '.select_tariff': 'Name'}
-    options = {'.select_tariff_state': [],
-               '.select_tariff_provider': [],
-               '.select_tariff_type': [],
-               '.select_tariff': []}
-
-    # Look at each tariff build up a set of possible options for each option type.
-    for tariff in tariffs:
-        # Decide if current tariff meets current filters
-        add_tariff_as_option = True
-        for option_type, option_name in option_types.items():
-            if ((tariff_filter_state[option_type] != 'Any') &
-               (tariff_filter_state[option_type] != tariff[option_name])) & (option_name != 'Name'):
-                add_tariff_as_option = False
-        # If the current tariff meets the all the filters add its properties to the allowed options.
-        for option_type, option_name in option_types.items():
-            if add_tariff_as_option and tariff[option_name] not in options[option_type]:
-                options[option_type].append(tariff[option_name])
-
+    # Given the tariff set and the current state of the filter find the remain options for the gui filters
+    options = get_options_from_tariff_set(tariffs, tariff_filter_state)
     return jsonify(options)
 
 
@@ -333,6 +310,12 @@ def delete_tariff():
     return jsonify("deleted")
 
 
+@app.route('/import_load_data', methods=['POST'])
+def import_load_data():
+    print("No code for importing data yet!")
+    return jsonify("deleted")
+
+
 def shutdown_server():
     print('called shutdown')
     func = request.environ.get('werkzeug.server.shutdown')
@@ -343,11 +326,11 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    #shutdown_server()
+    # shutdown_server()
     return 'Server shutting down...'
 
 
 if __name__ == '__main__':
     app.run()
 
-    #init_gui(app, width=1200, height=800, window_title='TDA')  # This one runs it as a standalone app
+    # init_gui(app, width=1200, height=800, window_title='TDA')  # This one runs it as a standalone app

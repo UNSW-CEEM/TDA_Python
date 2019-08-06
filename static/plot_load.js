@@ -105,7 +105,6 @@ var plot_load = function(response){
     Plotly.newPlot('load_chart', response['chart_data'], layout, {responsive: true});
     var file_name = $('#select').children("option:selected").val();
     print_n_users(response['n_users'])
-    //$('#get_load').contextMenu('close');
     $('#dialog').dialog('close');
 }
 

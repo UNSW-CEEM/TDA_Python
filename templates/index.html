@@ -10,7 +10,6 @@
   <meta name="author" content="SitePoint">
 
   <!-- This is the 'importing' of external libraries. -->
-    <link href="static/frozen_from_web/contextMenu/contextMenu.css"  rel="stylesheet" type="text/css" />
     <!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="crossorigin="anonymous"></script>-->
     <script src="static/frozen_from_web/jquery-3.3.1.min.js"></script>
     <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script> -->
@@ -27,7 +26,6 @@
     <script src="static/frozen_from_web/jquery-ui-1.12.1/jquery-ui.js"></script>
     <!--<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">-->
     <link rel="stylesheet" type="text/css" href="static/frozen_from_web/jquery-ui-1.12.1/jquery-ui.css">
-    <script src="static/frozen_from_web/contextMenu/contextMenu.js"></script>
     <script src="static/frozen_from_web/dataTables.cellEdit.js"></script>
     <script src="static/frozen_from_web/dropdownPlain.js"></script>
     <link rel="stylesheet" href="static/frozen_from_web/dropdown_menu.css" type="text/css"/>
@@ -42,6 +40,7 @@
     <script src="static/tariff_type_tabs.js"></script>
     <script src="static/delete_tariff.js"></script>
     <script src="static/check_list.js"></script>
+    <script src="static/import_data.js"></script>
 
 
   <style>
@@ -288,7 +287,10 @@
           <li><div>Projects</div></li>
           <li><div>Load</div>
               <ul class="sub_menu">
-                   <li><div>Maximum Allowed Missing Data (%)</div>
+                  <li>
+                      <div onclick="import_data()">Import Data</div>
+                  </li>
+                  <li><div>Maximum Allowed Missing Data (%)</div>
                       <ul class="sub_menu">
                           <li>
                               <input class="missing_data_limit menu_check_list" type="checkbox" checked value="0"
