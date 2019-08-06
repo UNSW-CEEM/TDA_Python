@@ -91,6 +91,9 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables,
 
         // Put contents in table.
         display_table_data(parameter_type, table_name, table_data, editable, tariff_type_panel);
+
+        // Insert a button for adding a row to the table
+        $("<div style='width: 100%; height: 15%'><button onclick=user_add_row('.tariff_table.{}')>+</button></div>".replace('{}', table_name)).appendTo($("#" + parameter_type))
     })
 }
 
@@ -117,12 +120,12 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
     $(table_identifier).attr('value', table_name);
 
     // Build the table header.
-    build_header(table_identifier, table_data['table_header']);
+    build_header(table_identifier, table_data['table_header'], editable);
 
     // Build each row in the table.
     for (var key in table_data['table_rows']){
         if (table_data['table_rows'].hasOwnProperty(key)) {
-            build_row(table_data['table_rows'][key], table_identifier)
+            build_row(table_data['table_rows'][key], table_identifier, editable)
         }
     }
 
@@ -140,15 +143,21 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
     // If turned on add editing functionality.
     if (editable){
         panel_specific_call_back = function(){display_save_mod_tariff_option(tariff_type_panel)};
-        table.MakeCellsEditable({"onUpdate": panel_specific_call_back});
+        table.MakeCellsEditable({"onUpdate": panel_specific_call_back, "columns": columns_to_edit(table_data)});
     }
 
 
 }
 
-var build_header = function(table_identifier, header_data){
+var build_header = function(table_identifier, header_data, editable){
     var length_row = header_data.length
     var tr = document.createElement('tr');
+    if (editable){
+        var th = document.createElement('th');
+        var text = document.createTextNode('Delete row');
+        th.appendChild(text);
+        tr.appendChild(th);
+    }
     for (var i = 0; i < length_row; i++){
         var th = document.createElement('th');
         var text = document.createTextNode(header_data[i]);
@@ -159,9 +168,16 @@ var build_header = function(table_identifier, header_data){
     header.append(tr);
 }
 
-var build_row = function(row_data, table_identifier){
+var build_row = function(row_data, table_identifier, editable){
     var length_row = row_data.length
     var tr = document.createElement('tr');
+    if (editable){
+        var td = document.createElement('td');
+        var delete_button = document.createElement('template');
+        delete_button.innerHTML = "<button onclick=user_delete_row(this)>x</button>"
+        td.appendChild(delete_button.content.firstChild);
+        tr.appendChild(td);
+    }
     for (var i = 0; i < length_row; i++){
         var td = document.createElement('td');
         var text = document.createTextNode(row_data[i]);
@@ -170,6 +186,27 @@ var build_row = function(row_data, table_identifier){
     }
     var tariff_table = $(table_identifier + " .tariff_table_body");
     tariff_table.append(tr);
+}
+
+var user_add_row = function(table_identifier){
+    var rows =  $(table_identifier).DataTable().rows().data();
+    var last_row =  rows[rows.length - 1];
+    $(table_identifier).DataTable().row.add(last_row).draw();
+}
+
+
+var user_delete_row = function(row){
+    var table = $(row).closest('.tariff_table');
+    table.DataTable().row($(row).parents('tr')).remove().draw(false);
+}
+
+var columns_to_edit = function(table_data){
+    var l = table_data['table_rows'][0].length
+    var column_indexes = []
+    for (var i = 0; i < l; i++){
+        column_indexes.push(i + 1)
+    }
+    return column_indexes
 }
 
 var display_save_mod_tariff_option = function(tariff_type_panel) {
