@@ -89,11 +89,22 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables,
         // Make visible
         $table_template.css("display", "block");
 
+        // Decide if the table is multi row, used to determine if the user can delete and add rows.
+        var multi_row = table_data['table_header'].includes("Name")
+
         // Put contents in table.
-        display_table_data(parameter_type, table_name, table_data, editable, tariff_type_panel);
+        display_table_data(parameter_type, table_name, table_data, editable, multi_row, tariff_type_panel);
 
         // Insert a button for adding a row to the table
-        $("<div style='width: 100%; height: 15%'><button onclick=user_add_row('.tariff_table.{}')>+</button></div>".replace('{}', table_name)).appendTo($("#" + parameter_type))
+        if (multi_row){
+            $("<div style='width: 100%; height: 15%'><button onclick=user_add_row('.tariff_table.{}')>+</button></div>".
+            replace('{}', table_name)).appendTo($("#" + parameter_type))
+        } else {
+            // Spacer to keep layout consistent even if there is no button.
+            $("<div style='width: 100%; height: 10%'></div>").appendTo($("#" + parameter_type))
+        }
+
+
     })
 }
 
@@ -113,19 +124,19 @@ var tear_down_current_table = function(table, editable){
 
 }
 
-var display_table_data = function(parameter_type, table_name, table_data, editable, tariff_type_panel){
+var display_table_data = function(parameter_type, table_name, table_data, editable, multi_row, tariff_type_panel){
     var table_identifier = '#' + parameter_type + ' .' + table_name + '.tariff_table'
 
     // Set value of table equal to table name, this is used when user edits and saves the table.
     $(table_identifier).attr('value', table_name);
 
     // Build the table header.
-    build_header(table_identifier, table_data['table_header'], editable);
+    build_header(table_identifier, table_data['table_header'], editable, multi_row);
 
     // Build each row in the table.
     for (var key in table_data['table_rows']){
         if (table_data['table_rows'].hasOwnProperty(key)) {
-            build_row(table_data['table_rows'][key], table_identifier, editable)
+            build_row(table_data['table_rows'][key], table_identifier, editable, multi_row)
         }
     }
 
@@ -149,12 +160,14 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
 
 }
 
-var build_header = function(table_identifier, header_data, editable){
+var build_header = function(table_identifier, header_data, editable, multi_row){
     var length_row = header_data.length
     var tr = document.createElement('tr');
-    if (editable){
+    // If the table is editable and has a Name column (i.e. is has multiple rows), then add a column in the header
+    // that matches the column with the row delete buttons, leave the name blank.
+    if (editable & multi_row){
         var th = document.createElement('th');
-        var text = document.createTextNode('Delete row');
+        var text = document.createTextNode('');
         th.appendChild(text);
         tr.appendChild(th);
     }
@@ -168,10 +181,12 @@ var build_header = function(table_identifier, header_data, editable){
     header.append(tr);
 }
 
-var build_row = function(row_data, table_identifier, editable){
+var build_row = function(row_data, table_identifier, editable, multi_row){
     var length_row = row_data.length
     var tr = document.createElement('tr');
-    if (editable){
+    // If the table is editable and has a Name column (i.e. is has multiple rows), then add a button for deleting
+    // rows.
+    if (editable & multi_row){
         var td = document.createElement('td');
         var delete_button = document.createElement('template');
         delete_button.innerHTML = "<button onclick=user_delete_row(this)>x</button>"
@@ -197,7 +212,7 @@ var user_add_row = function(table_identifier){
 
 var user_delete_row = function(row){
     var table = $(row).closest('.tariff_table');
-    table.DataTable().row($(row).parents('tr')).remove().draw(false);
+    table.DataTable().row($(row).parents('tr')).remove().draw();
 }
 
 var columns_to_edit = function(table_data){

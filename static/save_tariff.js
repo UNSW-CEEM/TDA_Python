@@ -51,7 +51,7 @@ var get_tariff_parameters_from_ui = function(tariff_type_tab_id){
     // Get the buttons used to display the parameter tabs.
     var tariff_parameter_tab_buttons = $('#' + tariff_type_tab_id + ' .tab_button_area').children();
 
-    // Look through the buttons, using there value to retrieve the correct set of tables.
+    // Look through the buttons, using their value to retrieve the correct set of tables.
     $.each(tariff_parameter_tab_buttons, function(index, button){
         var parameter_name = $(button).attr('value');
         parameters[parameter_name] = get_parameter_tables(parameter_name);
@@ -60,7 +60,6 @@ var get_tariff_parameters_from_ui = function(tariff_type_tab_id){
     return parameters
 
 }
-
 
 var get_parameter_tables = function(parameter){
     // Get a list of all the table for the given parameter.
@@ -82,12 +81,18 @@ var get_tariff_table_data = function(parameter, table_name){
    var rows_arr = []
    // Find the table to get the tariff data out of.
    var rows = $('#' + parameter + ' .' + table_name + ' tbody tr');
+   // If the table header includes a column for a delete button then start collecting the data from the second column.
+   if($('#' + parameter + ' .' + table_name + " thead tr th")[0].innerHTML == ''){
+    var start_col = 1
+   } else {
+    var start_col = 0
+   }
    // Loop through the rows in the table
    $.each(rows, function(index, row){
        // Array to store the row values in.
        var row_arr = []
        // Loop through row values and place them in the array.
-       for (var j = 0, col; col = row.cells[j]; j++) {
+       for (var j = start_col, col; col = row.cells[j]; j++) {
          row_arr.push(col.innerText);
        }
        // Added array of row values to the array of rows.
@@ -97,7 +102,10 @@ var get_tariff_table_data = function(parameter, table_name){
    var header = []
    // Loop through the header adding the values to the array.
    $('#' + parameter + ' .' + table_name + " thead tr th").each(function(){
-       header.push($(this).text());
+       // Don't save the column header for the delete row buttons.
+       if ($(this).text() != ''){
+           header.push($(this).text());
+       }
    });
 
    // Consolidate table data into a single object to return.
