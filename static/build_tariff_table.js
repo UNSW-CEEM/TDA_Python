@@ -97,7 +97,7 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables,
 
         // Insert a button for adding a row to the table
         if (multi_row){
-            $("<div style='width: 100%; height: 15%'><button onclick=user_add_row('.tariff_table.{}')>+</button></div>".
+            $("<div style='width: 100%; height: 15%'><button onclick=user_add_row('.tariff_table.{}')>&#10010;</button></div>".
             replace('{}', table_name)).appendTo($("#" + parameter_type))
         } else {
             // Spacer to keep layout consistent even if there is no button.
@@ -189,7 +189,7 @@ var build_row = function(row_data, table_identifier, editable, multi_row){
     if (editable & multi_row){
         var td = document.createElement('td');
         var delete_button = document.createElement('template');
-        delete_button.innerHTML = "<button onclick=user_delete_row(this)>x</button>"
+        delete_button.innerHTML = "<button onclick=user_delete_row(this)>&#10006</button>"
         td.appendChild(delete_button.content.firstChild);
         tr.appendChild(td);
     }
