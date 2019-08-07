@@ -52,9 +52,12 @@
             <div class="state_label label_stacked">State:&nbsp</div>
         </div>
         <div class="tariff_panel_header col" style="width: 70%;">
-            <div class="name_value label_stacked">N/A</div>
-            <div class="type_value label_stacked">N/A</div>
-            <div class="state_value label_stacked">N/A</div>
+            <div class="name_value label_stacked tariff_label">N/A</div>
+            <input class="name_input tariff_input">
+            <div class="type_value label_stacked tariff_label">N/A</div>
+            <input class="type_input tariff_input">
+            <div class="state_value label_stacked tariff_label">N/A</div>
+            <input class="state_input tariff_input">
         </div>
     </div>
     <div class="row" style="height: 12%">
@@ -68,7 +71,6 @@
                 onclick="delete_tariff(event, this)">Delete from active database</button>
         <button class="save_mod_button" style="width: 60%; text-align: left; height: 3.25vh;"
                     onclick="get_tariff_then_save(event, this)">Save new version of tariff</button>
-        <input class="save_mod_tariff_name row" style="width: 59%;">
     </div>
 </div>
 

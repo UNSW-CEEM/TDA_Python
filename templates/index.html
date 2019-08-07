@@ -41,6 +41,7 @@
     <script src="static/delete_tariff.js"></script>
     <script src="static/check_list.js"></script>
     <script src="static/import_data.js"></script>
+    <script src="static/create_new_tariff.js"></script>
 
 
   <style>
@@ -59,20 +60,20 @@
       }
 
       select {
-        height: 2.25vh;
-        margin-bottom: 2vh;
+        height: 3.0vh;
+        margin-bottom: 1.2vh;
         width: 100%;
-        font-size: 1.25vh;
+        font-size: 1.75vh;
       }
 
       button {
-        height: 2.25vh;
+        height: 3.25vh;
         background-color: inherit;
         float: left;
         border-style: solid;
         border-width: 1px;
         margin: 0;
-        font-size: 1.25vh;
+        font-size: 1.75vh;
         padding: 0.25vh;
       }
 
@@ -85,6 +86,17 @@
         width: 100%;
         float: left;
         margin: 0;
+      }
+
+      .tariff_input {
+        width: 70%;
+        display: none;
+        margin-bottom: 1.2vh;
+      }
+
+      .tariff_label {
+        width: 70%;
+        float: left;
       }
 
       .label_stacked {
@@ -260,6 +272,20 @@
         <p>Loading . . .  please wait.</p>
     </div>
 
+    <div id="create_tariff_popup" title="Create new tariff" style="display: none">
+        <p>This will override any unsaved changes to the current tariff. Do you wish to continue?</p>
+    </div>
+
+    <div id="choose_component_type" title="Choose component type" style="display: none">
+        <p>Please select the component type to add:</p>
+        <select>
+            <option>Daily</option>
+            <option>Energy Flat</option>
+            <option>Energy TOU</option>
+            <option>Demand</option>
+        </select>
+    </div>
+
     <div id="case_namer" title="Basic dialog" style="display: none">
         <p>Please provide a name for this case.</p>
         <input id="case_name">
@@ -390,7 +416,7 @@
           <li>
               <div>Tariff</div>
               <ul class="sub_menu">
-                  <li><div>Create New Tariff</div></li>
+                  <li><div onclick="launch_tariff_creator()">Create New Tariff</div></li>
                   <li><div>Tariff Info</div></li>
                   <li><div>Reset Network Tariffs</div>
                       <ul class="sub_menu" id="network_tariff_sets"></ul>

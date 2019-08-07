@@ -26,7 +26,7 @@ var save_tariff = function(current_tariff, tariff_type_tab_id){
 
     current_tariff['Parameters'] = get_tariff_parameters_from_ui(tariff_type_tab_id);
 
-    current_tariff['Name'] = $('#' + tariff_type_tab_id + ' .save_mod_tariff_name').val();
+    current_tariff['Name'] = $('#' + tariff_type_tab_id + ' .name_input').val();
 
     // Ask the server what the options should be now.
     $.ajax({
