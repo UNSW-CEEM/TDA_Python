@@ -24,14 +24,12 @@ var get_tariff = function(tariff_type_panel){
         // Hide the save option when a new tariff is displayed.
         var tariff_save_option = $('#' + tariff_type_panel + " .save_mod_tariff_option");
         //$(tariff_save_option).css('display', "none")
-
+        $('#' + tariff_type_panel + ' .component_adder').show();
     } else {
        reset_tariff_options(tariff_type_panel);
        tear_down_tables_in_tariff_type_panel(tariff_type_panel);
+       $('#' + tariff_type_panel + ' .component_adder').hide();
     }
-
-
-
 }
 
 var tear_down_tables_in_tariff_type_panel = function(parent_id){
@@ -79,37 +77,46 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables,
         $('#' + parameter_type).empty();
     }
 
+
     // Display the new tables.
     $.each(data_of_tables, function(table_name, table_data){
-        // Get a copy of the table template
-        var $table_template = $('.tariff_table').first().clone();
+        // Only add table if one with the same name does not already exist.
+        if($('#' + parameter_type + ' .tariff_table[value={}]'.replace('{}', table_name)).length < 1){
+            // Get a copy of the table template
+            var $table_template = $('.tariff_table').first().clone();
 
-        // Add table name to class of table just created.
-        $table_template.addClass(table_name)
+            // Add table name to class of table just created.
+            $table_template.addClass(table_name)
 
-        // Insert table title
-        $("<h4>" + table_name + ":</h4>").appendTo($("#" + parameter_type))
-        // Insert table template
-        $table_template.appendTo($("#" + parameter_type))
+            // Insert table title
+            $("<h4 class='" + table_name  + "'>" + table_name + ":</h4>").appendTo($("#" + parameter_type))
+            // Insert table template
+            $table_template.appendTo($("#" + parameter_type))
 
-        // Make visible
-        $table_template.css("display", "block");
+            // Make visible
+            $table_template.css("display", "block");
 
-        // Decide if the table is multi row, used to determine if the user can delete and add rows.
-        var multi_row = table_data['table_header'].includes("Name")
+            // Decide if the table is multi row, used to determine if the user can delete and add rows.
+            var multi_row = table_data['table_header'].includes("Name")
 
-        // Put contents in table.
-        display_table_data(parameter_type, table_name, table_data, editable, multi_row, tariff_type_panel);
+            // Put contents in table.
+            display_table_data(parameter_type, table_name, table_data, editable, multi_row, tariff_type_panel);
 
-        // Insert a button for adding a row to the table
-        if (multi_row){
-            $("<div style='width: 100%; height: 15%'><button onclick=user_add_row('.tariff_table.{}')>&#10010;</button></div>".
-            replace('{}', table_name)).appendTo($("#" + parameter_type))
-        } else {
-            // Spacer to keep layout consistent even if there is no button.
-            $("<div style='width: 100%; height: 10%'></div>").appendTo($("#" + parameter_type))
+            // Insert a button for adding a row to the table
+            if (editable){
+                if (multi_row){
+                    $("<div class='{a}' style='width: 100%; height: 15%'><button onclick=user_add_row('{a}')>&#10010;</button><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
+                    .replace(/{a}/g, table_name).replace(/{b}/g, parameter_type)).appendTo($("#" + parameter_type))
+                } else {
+                    $("<div class='{a}' style='width: 100%; height: 15%'><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
+                    .replace(/{a}/g, table_name).replace(/{b}/g, parameter_type)).appendTo($("#" + parameter_type))
+                }
+            } else {
+                // Spacer to keep layout consistent even if there is no button.
+                $("<div class='{}' style='width: 100%; height: 10%'></div>".replace(/{}/g, table_name)).appendTo($("#" + parameter_type))
+            }
+
         }
-
     })
 }
 
@@ -126,7 +133,6 @@ var tear_down_current_table = function(table, editable){
         // Then destroy the DataTable.
         data_table.destroy();
     }
-
 }
 
 var display_table_data = function(parameter_type, table_name, table_data, editable, multi_row, tariff_type_panel){
@@ -214,10 +220,15 @@ var user_add_row = function(table_identifier){
     $(table_identifier).DataTable().row.add(last_row).draw();
 }
 
-
 var user_delete_row = function(row){
     var table = $(row).closest('.tariff_table');
     table.DataTable().row($(row).parents('tr')).remove().draw();
+}
+
+var user_delete_table = function(table_name, parameter_type){
+    var table = $('#' + parameter_type + ' .tariff_table.' + table_name)
+    tear_down_current_table(table, true);
+    $('#' + parameter_type + ' .' + table_name).remove()
 }
 
 var columns_to_edit = function(table_data){
