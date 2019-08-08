@@ -8,26 +8,19 @@ var launch_tariff_creator = function(){
 }
 
 var enable_tariff_creation = function(){
-    // Make the inputs for providing tariff details visible.
-    $('.tariff_input').show();
-    $('.tariff_label').hide();
-
+    // Change selected tariff to none
+    $('.select_tariff').val('None');
+    $('.tariff_label').html('N/A');
     // Add a button to enable the user to add components to their tariff
     var parameter_types = $('.table_set')
     $.each(parameter_types, function(i, parameter_type){
         $("#" + $(parameter_type).prop('id')).empty()
-    //    $("<div style='width: 100%; height: 15%'><button onclick=get_component_type(this)>&#10010; Add component</button></div>").
-    //    appendTo($("#" + $(parameter_type).prop('id')))
     })
     $('.component_adder').show();
     $('#create_tariff_popup').dialog('close');
 }
 
 var disable_tariff_creation = function(){
-    // Make the inputs for providing tariff details hidden.
-    $('.tariff_input').hide();
-    $('.tariff_label').show();
-    //$('.component_adder').hide();
 }
 
 

@@ -90,12 +90,11 @@
 
       .tariff_input {
         width: 70%;
-        display: none;
         margin-bottom: 1.2vh;
       }
 
       .tariff_label {
-        width: 70%;
+        width: 100%;
         float: left;
       }
 
@@ -108,6 +107,7 @@
       .label_close_stacked {
         margin-bottom: 0.5vh;
         width: 100%;
+        float: left;
       }
 
       .label_line {
@@ -279,6 +279,21 @@
     <div id="choose_component_type" title="Choose component type" style="display: none">
         <p>Please select the component type to add:</p>
         <select></select>
+    </div>
+
+    <div id="tariff_meta_details_editor" title="Set tariff details" style="display: none;">
+                <label class="label_close_stacked">Name</label>
+                <input type="text" value="" class="text ui-widget-content ui-corner-all name tariff_input">
+                <label class="label_close_stacked">Provider</label>
+                <input type="text" value="" class="text ui-widget-content ui-corner-all provider tariff_input">
+                <label class="label_close_stacked">Type</label>
+                <input type="text"  value="" class="text ui-widget-content ui-corner-all type tariff_input">
+                <label class="label_close_stacked">State</label>
+                <input type="text" value="" class="text ui-widget-content ui-corner-all state tariff_input">
+                <label class="label_close_stacked">Year</label>
+                <input type="text" value="" class="text ui-widget-content ui-corner-all year tariff_input">
+                <label class="label_close_stacked">Info</label>
+                <input type="text" value="" class="text ui-widget-content ui-corner-all info tariff_input">
     </div>
 
     <div id="case_namer" title="Basic dialog" style="display: none">

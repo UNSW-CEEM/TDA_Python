@@ -1,4 +1,5 @@
 var get_tariff_then_save = function(evt, div_that_got_clicked){
+
     var tariff_type_tab_id = $(div_that_got_clicked).closest('[id]').attr('id');
     // Get the name of the selected tariff.
     var tariff_name = $('#' + tariff_type_tab_id + ' .select_tariff').val();
@@ -8,25 +9,70 @@ var get_tariff_then_save = function(evt, div_that_got_clicked){
         'tariff_name': tariff_name
     }
 
-    // Ask for the corresponding json.
-    $.ajax({
-        url: '/tariff_json',
-        data: JSON.stringify(request_details),
-        contentType: 'application/json;charset=UTF-8',
-        type : 'POST',
-        async: 'false',
-        dataType:"json",
-        // Call the function to display the selected tariffs info
-        success: function(data){save_tariff(data, tariff_type_tab_id);},
-        error: function(a,b,c){console.log(b); console.log(c);}
+    if (tariff_name !== 'None'){
+        // Ask for the corresponding json.
+        $.ajax({
+            url: '/tariff_json',
+            data: JSON.stringify(request_details),
+            contentType: 'application/json;charset=UTF-8',
+            type : 'POST',
+            async: 'false',
+            dataType:"json",
+            // Call the function to display the selected tariffs info
+            success: function(data){get_tariff_details_from_user(data, tariff_type_tab_id);},
+            error: function(a,b,c){console.log(b); console.log(c);}
+        });
+    } else {
+      get_tariff_details_from_user({}, tariff_type_tab_id);
+    }
+
+}
+
+var get_tariff_details_from_user = function(current_tariff, tariff_type_tab_id){
+    var selected_tariff_name = $('#' + tariff_type_tab_id + ' .select_tariff').val();
+
+    if (selected_tariff_name !== 'None'){
+       // Fill default values in meta details editor
+       $('#tariff_meta_details_editor .name').prop('value', selected_tariff_name + 'v2')
+       $('#tariff_meta_details_editor .provider').prop('value', current_tariff['Provider'])
+       $('#tariff_meta_details_editor .type').prop('value', current_tariff['Type'])
+       $('#tariff_meta_details_editor .state').prop('value', current_tariff['State'])
+       $('#tariff_meta_details_editor .year').prop('value', current_tariff['Year'])
+       $('#tariff_meta_details_editor .info').prop('value', current_tariff['Info'])
+    } else {
+       // Fill default values in meta details editor
+       $('#tariff_meta_details_editor .name').prop('value', '')
+       $('#tariff_meta_details_editor .provider').prop('value', '')
+       $('#tariff_meta_details_editor .type').prop('value', '')
+       $('#tariff_meta_details_editor .state').prop('value', '')
+       $('#tariff_meta_details_editor .year').prop('value', '')
+       $('#tariff_meta_details_editor .info').prop('value', '')
+    }
+
+    current_tariff['Parameters'] = get_tariff_parameters_from_ui(tariff_type_tab_id);
+
+    $( "#tariff_meta_details_editor" ).dialog({
+        modal: true,
+        buttons: {"Save": function(){save_tariff(current_tariff, tariff_type_tab_id);},
+                  "Cancel": function(){$('#tariff_meta_details_editor').dialog('close');}}
     });
 }
 
 var save_tariff = function(current_tariff, tariff_type_tab_id){
 
-    current_tariff['Parameters'] = get_tariff_parameters_from_ui(tariff_type_tab_id);
+    // Fill default values in meta details editor
+    current_tariff['Name'] = $('#tariff_meta_details_editor .name').prop('value')
+    current_tariff['Provider'] = $('#tariff_meta_details_editor .provider').prop('value')
+    current_tariff['Type'] = $('#tariff_meta_details_editor .type').prop('value')
+    current_tariff['State'] = $('#tariff_meta_details_editor .state').prop('value')
+    current_tariff['Year'] = $('#tariff_meta_details_editor .year').prop('value')
+    current_tariff['Info'] = $('#tariff_meta_details_editor .info').prop('value')
 
-    current_tariff['Name'] = $('#' + tariff_type_tab_id + ' .name_input').val();
+    if (tariff_type_tab_id == 'network_tariff_selection_panel'){
+        current_tariff['ProviderType'] = 'Network'
+    } else {
+        current_tariff['ProviderType'] = 'Retailer'
+    }
 
     // Ask the server what the options should be now.
     $.ajax({
@@ -40,6 +86,8 @@ var save_tariff = function(current_tariff, tariff_type_tab_id){
         success: function(){get_tariff_options(tariff_type_tab_id);},
         error: function(){console.log("Update tariffs not called")}
         });
+
+    $('#tariff_meta_details_editor').dialog('close');
 }
 
 

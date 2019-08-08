@@ -214,10 +214,10 @@ var build_row = function(row_data, table_identifier, editable, multi_row){
     tariff_table.append(tr);
 }
 
-var user_add_row = function(table_identifier){
-    var rows =  $(table_identifier).DataTable().rows().data();
+var user_add_row = function(table_name){
+    var rows =  $('.tariff_table.' + table_name).DataTable().rows().data();
     var last_row =  rows[rows.length - 1];
-    $(table_identifier).DataTable().row.add(last_row).draw();
+    $('.tariff_table.' + table_name).DataTable().row.add(last_row).draw();
 }
 
 var user_delete_row = function(row){
