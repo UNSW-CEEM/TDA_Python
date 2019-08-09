@@ -164,7 +164,8 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
 
     // If turned on add editing functionality.
     if (editable){
-        table.MakeCellsEditable({"onUpdate": update_table_structures_after_edit, "columns": columns_to_edit(table_data)});
+        table.MakeCellsEditable({"onUpdate": update_table_structures_after_edit,
+                                 "columns": columns_to_edit(table_data, multi_row)});
     }
 }
 
@@ -257,15 +258,47 @@ var user_delete_table = function(tariff_type_panel, table_name){
     $('#' + tariff_type_panel + ' .' + table_name).remove()
 }
 
-var columns_to_edit = function(table_data){
+var columns_to_edit = function(table_data, multi_row){
     var l = table_data['table_rows'][0].length
     var column_indexes = []
     for (var i = 0; i < l; i++){
         if (table_data['table_header'][i] !== 'Unit'){
-            column_indexes.push(i + 1)
+            if (multi_row){
+                column_indexes.push(i + 1)
+            } else {
+                column_indexes.push(i)
+            }
+
         }
     }
     return column_indexes
 }
 
+var nuos_equals_duos_plus_tuos = function(){
+    var duos_tables = $('#DUOS .tariff_table')
+    var tuos_tables = $('#TUOS .tariff_table')
+    var dtuos_tables = $('#DTUOS .tariff_table')
+    var nuos_tables = $('#NUOS .tariff_table')
 
+    $.each(duos_tables, function(i, duos_table){
+        column_index = get_value_index_in_header($(duos_table).attr('value'))
+        number_rows = $(duos_table).DataTable().rows().indexes().length
+        for (var j = 0; j < number_rows; j++){
+            var duos_value = parseFloat($(duos_tables[i]).DataTable().cell(j, column_index).data());
+            var tuos_value = parseFloat($(tuos_tables[i]).DataTable().cell(j, column_index).data());
+            var new_value = (duos_value + tuos_value).toFixed(4)
+            $(dtuos_tables[i]).DataTable().cell(j, column_index).data(new_value);
+            $(nuos_tables[i]).DataTable().cell(j, column_index).data(new_value);
+        }
+    });
+}
+
+var get_value_index_in_header = function(table_name){
+    var header_row = $('#DUOS .' + table_name + '.tariff_table thead tr th');
+    for (var i = 0; i < header_row.length; i++){
+        if(header_row[i].innerHTML == 'Value'){
+            var value_index = i
+        }
+    }
+    return value_index
+}
