@@ -164,8 +164,24 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
 
     // If turned on add editing functionality.
     if (editable){
-        panel_specific_call_back = function(){};
-        table.MakeCellsEditable({"onUpdate": panel_specific_call_back, "columns": columns_to_edit(table_data)});
+        table.MakeCellsEditable({"onUpdate": update_table_structures_after_edit, "columns": columns_to_edit(table_data)});
+    }
+}
+
+
+
+var update_table_structures_after_edit = function(updatedCell, updatedRow, oldValue){
+    var edited_table_id = updatedRow.table().node().id
+    var edited_table = $('#' + edited_table_id)
+    var tariff_type_panel = $(edited_table).closest('.tariff_type_tab_content').attr('id');
+    var table_name = $(edited_table).attr('value');
+    var tables = $('#' + tariff_type_panel + ' .tariff_table.' + table_name)
+    var row_index = updatedCell.index()['row']
+    var column_index = updatedCell.index()['column']
+    if ($(edited_table).DataTable().column(column_index).header().innerHTML !== 'Value'){
+        $.each(tables, function(i, table){
+            $(table).DataTable().cell(row_index, column_index).data(updatedCell.data());
+        });
     }
 }
 
@@ -234,16 +250,20 @@ var user_delete_row = function(row, tariff_type_panel){
 }
 
 var user_delete_table = function(tariff_type_panel, table_name){
-    var table = $('#' + parameter_type + ' .tariff_table.' + table_name)
-    tear_down_current_table(table, true);
-    $('#' + parameter_type + ' .' + table_name).remove()
+    var tables = $('#' + tariff_type_panel + ' .tariff_table.' + table_name)
+    $.each(tables, function(i, table){
+        tear_down_current_table(table, true);
+    });
+    $('#' + tariff_type_panel + ' .' + table_name).remove()
 }
 
 var columns_to_edit = function(table_data){
     var l = table_data['table_rows'][0].length
     var column_indexes = []
     for (var i = 0; i < l; i++){
-        column_indexes.push(i + 1)
+        if (table_data['table_header'][i] !== 'Unit'){
+            column_indexes.push(i + 1)
+        }
     }
     return column_indexes
 }
