@@ -105,11 +105,11 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables,
             // Insert a button for adding a row to the table
             if (editable){
                 if (multi_row){
-                    $("<div class='{a}' style='width: 100%; height: 15%'><button onclick=user_add_row('{a}')>&#10010;</button><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
-                    .replace(/{a}/g, table_name).replace(/{b}/g, parameter_type)).appendTo($("#" + parameter_type))
+                    $("<div class='{c}' style='width: 100%; height: 15%'><button onclick=\"user_add_row('{a}', '{b}', '{c}')\">&#10010;</button><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
+                    .replace(/{a}/g, tariff_type_panel).replace(/{b}/g, parameter_type).replace(/{c}/g, table_name)).appendTo($("#" + parameter_type))
                 } else {
-                    $("<div class='{a}' style='width: 100%; height: 15%'><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
-                    .replace(/{a}/g, table_name).replace(/{b}/g, parameter_type)).appendTo($("#" + parameter_type))
+                    $("<div class='{b}' style='width: 100%; height: 15%'><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
+                    .replace(/{a}/g, tariff_type_panel).replace(/{b}/g, table_name)).appendTo($("#" + parameter_type))
                 }
             } else {
                 // Spacer to keep layout consistent even if there is no button.
@@ -147,7 +147,7 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
     // Build each row in the table.
     for (var key in table_data['table_rows']){
         if (table_data['table_rows'].hasOwnProperty(key)) {
-            build_row(table_data['table_rows'][key], table_identifier, editable, multi_row)
+            build_row(table_data['table_rows'][key], table_identifier, editable, multi_row, tariff_type_panel)
         }
     }
 
@@ -164,11 +164,9 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
 
     // If turned on add editing functionality.
     if (editable){
-        panel_specific_call_back = function(){display_save_mod_tariff_option(tariff_type_panel)};
+        panel_specific_call_back = function(){};
         table.MakeCellsEditable({"onUpdate": panel_specific_call_back, "columns": columns_to_edit(table_data)});
     }
-
-
 }
 
 var build_header = function(table_identifier, header_data, editable, multi_row){
@@ -192,7 +190,7 @@ var build_header = function(table_identifier, header_data, editable, multi_row){
     header.append(tr);
 }
 
-var build_row = function(row_data, table_identifier, editable, multi_row){
+var build_row = function(row_data, table_identifier, editable, multi_row, tariff_type_panel){
     var length_row = row_data.length
     var tr = document.createElement('tr');
     // If the table is editable and has a Name column (i.e. is has multiple rows), then add a button for deleting
@@ -200,7 +198,8 @@ var build_row = function(row_data, table_identifier, editable, multi_row){
     if (editable & multi_row){
         var td = document.createElement('td');
         var delete_button = document.createElement('template');
-        delete_button.innerHTML = "<button onclick=user_delete_row(this)>&#10006</button>"
+        delete_button.innerHTML = "<button onclick=\"user_delete_row(this, '{}')\">&#10006</button>".
+            replace('{}', tariff_type_panel)
         td.appendChild(delete_button.content.firstChild);
         tr.appendChild(td);
     }
@@ -214,18 +213,27 @@ var build_row = function(row_data, table_identifier, editable, multi_row){
     tariff_table.append(tr);
 }
 
-var user_add_row = function(table_name){
-    var rows =  $('.tariff_table.' + table_name).DataTable().rows().data();
+var user_add_row = function(tariff_type_panel, parameter_type, table_name){
+    var rows =  $('#' + parameter_type + ' .tariff_table.' + table_name).DataTable().rows().data();
     var last_row =  rows[rows.length - 1];
-    $('.tariff_table.' + table_name).DataTable().row.add(last_row).draw();
+    var tables = $('#' + tariff_type_panel + ' .tariff_table.' + table_name)
+    $.each(tables, function(i, table){
+        $(table).DataTable().row.add(last_row).draw();
+    });
 }
 
-var user_delete_row = function(row){
+var user_delete_row = function(row, tariff_type_panel){
     var table = $(row).closest('.tariff_table');
-    table.DataTable().row($(row).parents('tr')).remove().draw();
+    var table_name = $(table).attr('value');
+    var row_index = $(row).parents('tr').index();
+    var tables_to_edit = $('#' + tariff_type_panel + ' .tariff_table.' + table_name)
+    $.each(tables_to_edit, function(i, table_to_edit){
+        $(table_to_edit).DataTable().row(row_index).remove().draw();
+    });
+    //table.DataTable().row($(row).parents('tr')).remove().draw();
 }
 
-var user_delete_table = function(table_name, parameter_type){
+var user_delete_table = function(tariff_type_panel, table_name){
     var table = $('#' + parameter_type + ' .tariff_table.' + table_name)
     tear_down_current_table(table, true);
     $('#' + parameter_type + ' .' + table_name).remove()
@@ -240,10 +248,4 @@ var columns_to_edit = function(table_data){
     return column_indexes
 }
 
-var display_save_mod_tariff_option = function(tariff_type_panel) {
-  var current_name = $('#' + tariff_type_panel + " .name_value").html();
-  $('#' + tariff_type_panel + " .name_input").val(current_name + " v2");
-  $('#' + tariff_type_panel + " .name_input").show();
-  $('#' + tariff_type_panel + " .name_value").hide();
-}
 

@@ -33,7 +33,7 @@ var get_tariff_details_from_user = function(current_tariff, tariff_type_tab_id){
 
     if (selected_tariff_name !== 'None'){
        // Fill default values in meta details editor
-       $('#tariff_meta_details_editor .name').prop('value', selected_tariff_name + 'v2')
+       $('#tariff_meta_details_editor .name').prop('value', selected_tariff_name + ' v2')
        $('#tariff_meta_details_editor .provider').prop('value', current_tariff['Provider'])
        $('#tariff_meta_details_editor .type').prop('value', current_tariff['Type'])
        $('#tariff_meta_details_editor .state').prop('value', current_tariff['State'])
@@ -53,6 +53,7 @@ var get_tariff_details_from_user = function(current_tariff, tariff_type_tab_id){
 
     $( "#tariff_meta_details_editor" ).dialog({
         modal: true,
+        width: 500,
         buttons: {"Save": function(){save_tariff(current_tariff, tariff_type_tab_id);},
                   "Cancel": function(){$('#tariff_meta_details_editor').dialog('close');}}
     });
