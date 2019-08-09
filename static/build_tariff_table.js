@@ -105,7 +105,7 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables,
             // Insert a button for adding a row to the table
             if (editable){
                 if (multi_row){
-                    $("<div class='{c}' style='width: 100%; height: 15%'><button onclick=\"user_add_row('{a}', '{b}', '{c}')\">&#10010;</button><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
+                    $("<div class='{c}' style='width: 100%; height: 15%'><button onclick=\"user_add_row('{a}', '{b}', '{c}')\">&#10010;</button><button onclick=\"user_delete_table('{a}', '{c}')\">&#10006</button></div>"
                     .replace(/{a}/g, tariff_type_panel).replace(/{b}/g, parameter_type).replace(/{c}/g, table_name)).appendTo($("#" + parameter_type))
                 } else {
                     $("<div class='{b}' style='width: 100%; height: 15%'><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
