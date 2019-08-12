@@ -28,7 +28,7 @@ var reset_tariff_set = function(type, version){
         async: 'false',
         dataType:"json",
         success: function(){
-            if(type='Retail'){
+            if(type == 'Retail'){
                 reset_tariff_options('retail_tariff_selection_panel');
             } else {
                 reset_tariff_options('network_tariff_selection_panel');

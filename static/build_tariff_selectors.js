@@ -58,4 +58,6 @@ var reset_tariff_options = function(parent_id){
     $('#' + parent_id + ' .type_value').html('N/A');
     $('#' + parent_id + ' .state_value').html('N/A');
     get_tariff_options(parent_id);
+    tear_down_tables_in_tariff_type_panel(parent_id);
+    $('#' + parent_id + ' .component_adder').hide();
 }
