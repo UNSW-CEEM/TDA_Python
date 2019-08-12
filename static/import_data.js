@@ -6,8 +6,21 @@ var import_data = function(type, version){
         async: 'false',
         dataType:"json",
         success: function(){
-            $('#dialog').dialog('close');
+            $('#updating_tariffs p').text(data)
         }
     });
 
+};
+
+var delete_data = function(type, version){
+    $('#dialog').dialog({modal: true});
+    $.ajax({
+        url: '/delete_load_data',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        success: function(){
+            $('#updating_tariffs p').text(data)
+        }
+    });
 };

@@ -37,3 +37,21 @@ var reset_tariff_set = function(type, version){
     });
 };
 
+var update_tariff_data_sets = function(){
+    $('#updating_tariffs').dialog({
+        modal: true,
+        buttons: {"OK": function(){$('#updating_tariffs').dialog('close')}}
+    });
+    // Get the server to check the ceem tariff api for a more recent set of tariffs.
+    $.ajax({
+        url: '/update_tariffs',
+        contentType: 'application/json;charset=UTF-8',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        success: function(data){
+            $('#updating_tariffs p').text(data)
+        }
+    });
+};
+

@@ -359,6 +359,18 @@ def import_load_data():
     return jsonify("deleted")
 
 
+@app.route('/delete_load_data', methods=['POST'])
+def delete_load_data():
+    print("No code for deleting data yet!")
+    return jsonify("deleted")
+
+
+@app.route('/update_tariffs', methods=['POST'])
+def update_tariffs():
+    print("No code for updating tariffs yet!")
+    return jsonify("No code for updating tariffs yet!")
+
+
 def shutdown_server():
     print('called shutdown')
     func = request.environ.get('werkzeug.server.shutdown')

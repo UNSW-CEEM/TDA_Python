@@ -268,7 +268,11 @@
 
   </style>
 
-    <div id="dialog" title="Basic dialog" style="display: none">
+    <div id="dialog" title="Processing data" style="display: none">
+        <p>Loading . . .  please wait.</p>
+    </div>
+
+    <div id="updating_tariffs" title="Updating tariffs" style="display: none">
         <p>Loading . . .  please wait.</p>
     </div>
 
@@ -337,7 +341,7 @@
           <li><div>Load</div>
               <ul class="sub_menu">
                   <li><div onclick="import_data()">Import Load Data</div></li>
-                  <li><div>Delete Load Data</div></li>
+                  <li><div onclick="delete_data()">Delete Load Data</div></li>
                   <li><div>Restore Original Load Data</div></li>
                   <hr>
                   <li><div>Maximum Allowed Missing Data (%)</div>
@@ -434,7 +438,7 @@
                   <li><div>Reset Retail Tariffs</div>
                       <ul class="sub_menu" id="retail_tariff_sets"></ul>
                   </li>
-                  <li><div>Update Tariffs</div></li>
+                  <li><div onclick="update_tariff_data_sets()">Update Tariffs</div></li>
               </ul>
           </li>
           <li>
