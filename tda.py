@@ -70,15 +70,18 @@ def tariff_table():
 
 @app.route('/load_names')
 def load_names():
+    # Get the list of load files for the user to choose from.
     names = []
-    for file_name in os.listdir('data/'):
+    for file_name in os.listdir('data/load/'):
         names.append(file_name)
     return jsonify(names)
 
 
 @app.route('/get_tariff_set_options/<tariff_type>')
 def get_tariff_set_options(tariff_type):
+    # Get the versions of the tariff data base for the user to choose from.
     tariff_set_options = []
+    # Determines if 'Network' or 'Retail' results are returned
     folder = 'data/{}_tariff_set_versions/'.format(tariff_type)
     for file_name in os.listdir(folder):
         tariff_set_options.append(file_name.split('.')[0])
@@ -87,10 +90,19 @@ def get_tariff_set_options(tariff_type):
 
 @app.route('/set_tariff_set_in_use', methods=['POST'])
 def set_tariff_set_in_use():
+    # Replace the network or retail data sets in the main 'data' folder with a set from the 'tariff_set_versions' folder
+    # Allows the user to continue using older versions of the tariff data base.
+
     request_details = request.get_json()
+
+    # Determine if 'Retail' of 'Network tariffs are being updated and sets the correct version to retrieve.
     folder_and_name = 'data/{}_tariff_set_versions/{}.json'.format(request_details['type'], request_details['version'])
+
+    # Open the tariff file that is going to be used.
     with open(folder_and_name, 'rt') as json_file:
         tariffs = json.load(json_file)
+
+    # Write contents to the file in the 'data' folder that acts as the active tariff data set.
     with open('data/{}Tariffs.json'.format(request_details['type']), 'wt') as json_file:
         json.dump(tariffs, json_file)
     return jsonify('done')
@@ -105,7 +117,7 @@ def filtered_load_data():
 
     # Get raw load data.
     if load_request['file_name'] not in raw_data:
-        raw_data[load_request['file_name']] = data_interface.get_load_table('data/', load_request['file_name'])
+        raw_data[load_request['file_name']] = data_interface.get_load_table('data/load/', load_request['file_name'])
 
     filtered, filtered_data = data_interface.filter_load_data(raw_data[load_request['file_name']],
                                                               load_request['file_name'],
@@ -135,6 +147,9 @@ def filtered_load_data():
 
 @app.route('/get_case_default_name', methods=['GET'])
 def get_case_default_name():
+    # Default case names are of the format 'Case n'. If 'Case 1' is in use then try 'Case 2' etc until a case default
+    # case name that is not in use is found.
+
     base_name = "Case "
     not_unique = True
     number = 1
@@ -148,6 +163,10 @@ def get_case_default_name():
 
 @app.route('/add_case', methods=['POST'])
 def add_case():
+    # Using the currently active tariff (network tariff by default at the moment) calculate the bill for all load
+    # profiles and save the results. Also save the other details associated with the case.
+
+    # Unpack request details
     case_details = request.get_json()
     case_name = case_details['case_name']
     load_file_name = case_details['load_details']['file_name']
@@ -155,12 +174,18 @@ def add_case():
     requested_tariff = case_details['tariff_name']
     tariff_panel = case_details['tariff_panel']
 
+    # Filter load.
     filtered, load_data = data_interface.filter_load_data(raw_data[load_file_name], load_file_name, filter_options)
 
+    # Get the required tariff from storage.
     selected_tariff = data_interface.get_tariff(tariff_panel, requested_tariff)
+    # Just get a single component for the tariff (need to change this to using all components i.e. 'DUOS' and 'TUOS')
     selected_tariff = helper_functions.strip_tariff_to_single_component(selected_tariff, case_details['component'])
 
+    # Calculate the bills and save results into dict.
     results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), selected_tariff)
+
+    # Save input data and settings associated with the case.
     load_by_case[case_name] = load_data
     tariff_by_case[case_name] = selected_tariff
     load_file_name_by_case[case_name] = load_file_name
@@ -171,6 +196,7 @@ def add_case():
 
 @app.route('/get_case_tariff', methods=['POST'])
 def get_case_tariff():
+    # Get the tariff associated with a particular case.
     case_name = request.get_json()
     tariff = tariff_by_case[case_name]
     tariff = format_tariff_data_for_display(tariff)
@@ -179,18 +205,21 @@ def get_case_tariff():
 
 @app.route('/get_case_load', methods=['POST'])
 def get_case_load():
+    # Get the set of load profiles associated with a particular case.
     case_name = request.get_json()
     return jsonify({'n_users': load_n_users_by_case[case_name], 'database': load_file_name_by_case[case_name]})
 
 
 @app.route('/get_case_demo_options', methods=['POST'])
 def get_case_demo_options():
+    # Get the demographic filtering options associated with a particular case.
     case_name = request.get_json()
     return jsonify(filter_options_by_case[case_name])
 
 
 @app.route('/delete_case', methods=['POST'])
 def delete_case():
+    # Delete all data associated with a particular case.
     case_name = request.get_json()
     results_by_case.pop(case_name)
     load_by_case.pop(case_name)
@@ -244,8 +273,8 @@ def demo_options(name):
         n = len(columns_to_use['actual_names']) if len(columns_to_use['actual_names']) < 10 else 10
         actual_names = list(columns_to_use['actual_names'].iloc[:n])
         display_names = list(columns_to_use['display_names'])
-    elif demo_file_name != '' and demo_file_name in os.listdir('data/'):
-        demo = pd.read_csv('data/' + demo_file_name)
+    elif demo_file_name != '' and demo_file_name in os.listdir('data/demographics/'):
+        demo = pd.read_csv('data/demographics/' + demo_file_name)
         n = len(demo.columns) if len(demo.columns) < 11 else 11
         actual_names = list(demo.columns[1:n])
         display_names = list(demo.columns[1:n])

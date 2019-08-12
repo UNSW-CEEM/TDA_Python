@@ -34,7 +34,7 @@ def get_load_table(folder_path, load_file):
 def filter_load_data(raw_data, file_name, filter_options):
     # Create filtered set of customer keys.
     demo_info_file_name = helper_functions.find_loads_demographic_file(file_name)
-    demo_info = pd.read_csv('data/' + demo_info_file_name, dtype=str)
+    demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
 
     filtered = False
 
