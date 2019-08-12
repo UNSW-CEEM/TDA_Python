@@ -6,6 +6,9 @@ var get_tariff = function(tariff_type_panel){
     tariff_name = $('#' + tariff_type_panel + ' .select_tariff').val();
 
     if (tariff_name != "None"){
+        // If the tariff selected is other than the default None selection, then send a request to the server for
+        // the tariff json.
+
         request_details = {'tariff_panel': tariff_type_panel, 'tariff_name': tariff_name}
 
         // Ask for the corresponding json.
@@ -21,24 +24,25 @@ var get_tariff = function(tariff_type_panel){
             error: function(a,b,c){console.log(b); console.log(c);}
         });
 
-        // Hide the save option when a new tariff is displayed.
-        var tariff_save_option = $('#' + tariff_type_panel + " .save_mod_tariff_option");
         //$(tariff_save_option).css('display', "none")
         $('#' + tariff_type_panel + ' .component_adder').show();
+
     } else {
+       // If the tariff option is None then reset the tariff panel to its default state
        reset_tariff_options(tariff_type_panel);
-       tear_down_tables_in_tariff_type_panel(tariff_type_panel);
-       $('#' + tariff_type_panel + ' .component_adder').hide();
     }
 }
 
 var tear_down_tables_in_tariff_type_panel = function(parent_id){
+    // Get the set of tables,
     var current_tables = $('#' + parent_id + ' .tariff_table')
+
     // Tear down all the current tables.
     $.each(current_tables, function(index, table){
         tear_down_current_table(table, true)
     })
 
+    // Remove any residual html (such as headings) from the table set tabs.
     var table_sets = $('#' + parent_id + ' .table_set')
     // Tear down all the current tables.
     $.each(table_sets, function(index, set){

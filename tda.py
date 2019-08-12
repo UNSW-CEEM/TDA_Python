@@ -12,15 +12,29 @@ import Bill_Calc
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
     get_options_from_tariff_set
 
+# Dictionaries for storing data associated with the current state of the program.
+raw_data = {}  # Data as loaded from feather files, stored in dict on a file name basis
 
-raw_data = {}
+# Chart data for the load plots, only storing data for non filtered data as filtering can change between plot updates.
+# Stored on a file name basis.
 raw_charts = {}
-filtered_charts = {}
+
+# Results from calculating bill for a set of load profiles with a given tariff. Stored on a case name basis.
 results_by_case = {}
+
+# Load profiles after any filtering, for a given case, stored on a case name basis.
 load_by_case = {}
+
+# Tariff for a given case, stored on a case name basis.
 tariff_by_case = {}
+
+# The source file name which describes were the load data came from for a given case, stored on a case name basis.
 load_file_name_by_case = {}
+
+# Number of users for a given case.
 load_n_users_by_case = {}
+
+# The filtering used for a given case, stored on a case name basis.
 filter_options_by_case = {}
 
 
