@@ -8,7 +8,7 @@ p                                   { margin: 15px 0; }
 */
 ul.dropdown                         { position: relative; margin: 0; height: 20px; padding: 0px 10px 0px 10px;}
 ul.dropdown li                      { font-weight: bold; float: left; zoom: 1; background: inherit; padding: 4px 8px;
-                                      color: #222; font-size: 11px}
+                                      color: #222; font-size: 11px; z-index: 99}
 ul.dropdown li:hover                { background: #ddd; color: black; position: relative; }
 
 
