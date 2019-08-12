@@ -73,7 +73,7 @@ def load_names():
     # Get the list of load files for the user to choose from.
     names = []
     for file_name in os.listdir('data/load/'):
-        names.append(file_name)
+        names.append(file_name.split('.')[0])
     return jsonify(names)
 
 

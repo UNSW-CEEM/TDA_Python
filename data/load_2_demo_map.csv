@@ -1,6 +1,3 @@
 load,demo,demo_config
-General_filtered.feather,DemogInfo_filtered.csv,DemogInfo_filtered_cols_to_use.csv
-Control_filtered.feather,DemogInfo_filtered.csv,DemogInfo_filtered_cols_to_use.csv
-SGSC.csv,DemogInfo_filtered.csv,DemogInfo_filtered_cols_to_use.csv
-SGSC.feather,DemogInfo_filtered.csv,DemogInfo_filtered_cols_to_use.csv
-test_data.feather,DemogInfo_filtered.csv,DemogInfo_filtered_cols_to_use.csv
+SGSC,DemogInfo_filtered.csv,DemogInfo_filtered_cols_to_use.csv
+test_data,DemogInfo_filtered.csv,DemogInfo_filtered_cols_to_use.csv

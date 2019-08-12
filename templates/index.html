@@ -483,7 +483,7 @@
                                 <script src="static/build_load_selector.js"></script>
                                 <script>$(document).ready(
                                             function(){
-                                                $('#select').find('option:contains("test_data.feather")').attr("selected",true);
+                                                $('#select').find('option:contains("test_data")').attr("selected",true);
                                                 perform_plot_load_actions();
                                             })
                                 </script>
@@ -565,7 +565,7 @@
                             <option value="Daily kWh Histogram">Daily kWh Histogram</option>
                         </select>
                     </div>
-                    <div class="chart" id="load_chart" style="height: 80%;"></div>
+                    <div class="chart" id="load_chart" style="height: 100%;"></div>
                     <script src="static/plot_load.js"></script>
                 </div>
             </div>
