@@ -40,8 +40,11 @@
     <script src="static/tariff_type_tabs.js"></script>
     <script src="static/delete_tariff.js"></script>
     <script src="static/check_list.js"></script>
-    <script src="static/import_data.js"></script>
+    <script src="static/manage_data.js"></script>
     <script src="static/create_new_tariff.js"></script>
+    <script src="static/network_load_options.js"></script>
+    <script src="static/tariff_info.js"></script>
+    <script src="static/project_menu.js"></script>
 
 
   <style>
@@ -263,13 +266,28 @@
 
       .menu_check_list {
         height: 15px;
-        width: 20%;
+        width: 10%;
       }
 
   </style>
+    <div id="message_dialog" title="Update" style="display: none">
+        <p></p>
+    </div>
+
+    <div id="warning_dialog" title="Warning" style="display: none">
+        <p></p>
+    </div>
 
     <div id="dialog" title="Processing data" style="display: none">
         <p>Loading . . .  please wait.</p>
+    </div>
+
+    <div id="import_dialog" title="Import data" style="display: none">
+        <p>Loading . . .  please wait.</p>
+    </div>
+
+    <div id="delete_dialog" title="Delete data" style="display: none">
+        <select></select>
     </div>
 
     <div id="updating_tariffs" title="Updating tariffs" style="display: none">
@@ -330,19 +348,19 @@
       <ul id="tariff_menu" class="dropdown">
           <li><div>Project</div>
               <ul>
-                  <li>Load Project</li>
-                  <li>Save Project</li>
-                  <li>Save Project As</li>
-                  <li>Delete Project</li>
+                  <li><div onclick="load_project()">Load Project</div></li>
+                  <li><div>Save Project</div></li>
+                  <li><div>Save Project As</div></li>
+                  <li><div>Delete Project</div></li>
                   <hr>
-                  <li>Restart Tool</li>
+                  <li><div>Restart Tool</div></li>
               </ul>
           </li>
           <li><div>Load</div>
               <ul class="sub_menu">
-                  <li><div onclick="import_data()">Import Load Data</div></li>
-                  <li><div onclick="delete_data()">Delete Load Data</div></li>
-                  <li><div>Restore Original Load Data</div></li>
+                  <li><div onclick="import_data('load')">Import Load Data</div></li>
+                  <li><div onclick="choose_data_to_delete()">Delete Load Data</div></li>
+                  <li><div onclick="restore_original_data_set()">Restore Original Load Data</div></li>
                   <hr>
                   <li><div>Maximum Allowed Missing Data (%)</div>
                       <ul class="sub_menu">
@@ -423,7 +441,30 @@
                       </ul>
                   </li>
                   <hr>
-                  <li><div>Network Load</div></li>
+                  <li><div>Network Load</div>
+                    <ul class="sub_menu" id="network_load_options">
+                        <li>
+                            <input class="network_load_option menu_check_list" type="checkbox" value="full"
+                              checked onclick="update_check_list(event, this)">
+                            <div>Aggregation of Whole Load Data</div>
+                        </li>
+                        <li>
+                            <input class="network_load_option menu_check_list" type="checkbox" value="filtered"
+                              onclick="update_check_list(event, this)">
+                            <div>Aggregation of Filtered Load Data</div>
+                        </li>
+                        <li>
+                            <input class="network_load_option menu_check_list" type="checkbox" value="synthetic"
+                              onclick="check_for_synthetic_options_then_update_check_list(event, this)">
+                            <div>Synthetic Network Load</div>
+                            <ul class="sub_menu" id="synthetic_network_load_options"></ul>
+                        </li>
+                        <hr>
+                        <li>
+                            <div onclick="import_data('network', add_option_to_ui)">Create New Synthetic Network Load</div>
+                        </li>
+                    </ul>
+                  </li>
               </ul>
           </li>
 
@@ -431,7 +472,7 @@
               <div>Tariff</div>
               <ul class="sub_menu">
                   <li><div onclick="launch_tariff_creator()">Create New Tariff</div></li>
-                  <li><div>Tariff Info</div></li>
+                  <li><div onclick="open_tariff_info()">Tariff Info</div></li>
                   <li><div>Reset Network Tariffs</div>
                       <ul class="sub_menu" id="network_tariff_sets"></ul>
                   </li>

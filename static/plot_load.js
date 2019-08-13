@@ -35,7 +35,6 @@ var get_down_sample_setting = function(){
             chosen_down_sample_option = parseFloat($(option).attr('value'))
         }
     });
-    console.log(chosen_down_sample_option)
     return chosen_down_sample_option
 }
 
@@ -47,8 +46,31 @@ var get_missing_data_limit = function(){
             chosen_missing_data_limit = parseFloat($(option).attr('value'))
         }
     });
-    console.log(chosen_missing_data_limit)
     return chosen_missing_data_limit
+}
+
+var get_network_load_setting = function(){
+    // Check which network load type is checked in the drop down menu.
+    var chosen_network_load
+    var options = $('.network_load_option')
+    $.each(options, function(i, option){
+        if ($(option).is(":checked")){
+            chosen_network_load = $(option).attr('value')
+        }
+    });
+
+    // If the synthetic option is chosen then replace the return value with the name of the chosen synthetic load.
+    if (chosen_network_load == 'synthetic'){
+         var synthetic_options = $('.synthetic_network_load_option')
+        $.each(synthetic_options, function(i, option){
+            if ($(option).is(":checked")){
+                chosen_network_load = $(option).attr('value')
+            }
+        });
+    }
+
+    console.log(chosen_network_load)
+    return chosen_network_load
 }
 
 var get_load_details_from_ui = function(){
@@ -73,8 +95,11 @@ var get_load_details_from_ui = function(){
 
     var missing_data_limit = get_missing_data_limit();
 
+    var network_load = get_network_load_setting();
+
     var load_request = {'file_name': file_name, 'filter_options': filter_options, 'chart_type': chart_type,
-                        'sample_fraction': down_sample_option, 'missing_data_limit': missing_data_limit};
+                        'sample_fraction': down_sample_option, 'missing_data_limit': missing_data_limit,
+                        'network_load': network_load};
 
     return load_request
 

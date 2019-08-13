@@ -8,7 +8,7 @@ var add_case = function(parent_id){
     // Get the name of the selected tariff.
     tariff_name = $('#' + parent_id + ' .select_tariff').val();
 
-    // Get load details
+    // Get load name
     load_request = get_load_details_from_ui();
 
     // Bundle case details into a single object

@@ -355,20 +355,47 @@ def delete_tariff():
 
 @app.route('/import_load_data', methods=['POST'])
 def import_load_data():
-    print("No code for importing data yet!")
-    return jsonify("deleted")
+    return jsonify("No python code for importing data yet!")
 
 
 @app.route('/delete_load_data', methods=['POST'])
 def delete_load_data():
-    print("No code for deleting data yet!")
-    return jsonify("deleted")
+    request_details = request.get_json()
+    print('I know you want to delete {}'.format(request_details['name']))
+    return jsonify("No python code for deleting data yet!")
+
+
+@app.route('/restore_original_data_set', methods=['POST'])
+def restore_original_data_set():
+    return jsonify("No python code for restoring data yet!")
 
 
 @app.route('/update_tariffs', methods=['POST'])
 def update_tariffs():
-    print("No code for updating tariffs yet!")
-    return jsonify("No code for updating tariffs yet!")
+    return jsonify("No python code for updating tariffs yet!")
+
+
+@app.route('/open_tariff_info', methods=['POST'])
+def open_tariff_info():
+    return jsonify("No python code for opening tariff info yet!")
+
+
+@app.route('/create_synthetic_network_load', methods=['POST'])
+def create_synthetic_network_load():
+    message = "No python code for creating synthetic network load yet! But we have returned a dummy name to add!"
+    dummy_name_to_add_as_option_in_ui = "not real option"
+    return jsonify({'message': message, 'name': dummy_name_to_add_as_option_in_ui})
+
+
+@app.route('/open_sample', methods=['POST'])
+def open_sample():
+    print('open sample for data: {}'.format(request.get_json()))
+    return jsonify("No python code for opening sample {} data yet!".format(request.get_json()))
+
+
+@app.route('/load_project', methods=['POST'])
+def load_project():
+    return jsonify("No python code for loading projects yet!")
 
 
 def shutdown_server():
