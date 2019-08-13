@@ -41,8 +41,8 @@ def get_daily_kWh_hist(load, series_name=''):
     layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
 
-    #data ={'data': [trace], 'layout':layout}
-    data = trace
+    data ={'data': [trace], 'layout':layout}
+    #data = trace
     return data
 
 def get_daily_average_profile(x):
@@ -215,7 +215,7 @@ def get_seasonal_daily_pattern(load, series_name=''):
     trace1 = go.Scatter(x=list(np.array(range(0,48))/2), y=load_summer_daily, name= 'Summer', mode='lines')
 
     # winter
-    load_winter = load_average[load_average['Month_Number'].isin([1,11,12])]
+    load_winter = load_average[load_average['Month_Number'].isin([6,7,8])]
     load_winter_reshape = np.array(load_winter['power']).reshape(-1,48)
     load_winter_daily = np.nanmean(load_winter_reshape,axis=0)
     trace2 = go.Scatter(x=list(np.array(range(0,48))/2), y=load_winter_daily, name= 'Winter', mode='lines')

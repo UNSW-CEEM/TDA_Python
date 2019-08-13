@@ -72,10 +72,12 @@ def filtered_load_data():
     # If filtering has been applied also create the filtered chart data,
     if filtered:
         filtered_chart = chart_methods[load_request['chart_type']](filtered_data, series_name='Selected')
+        chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
+        #chart_data.append(filtered_chart)
         chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']], filtered_chart]
         n_users = data_interface.n_users(filtered_data)
     else:
-        chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']]]
+        chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
         n_users = data_interface.n_users(raw_data[load_request['file_name']])
 
 
