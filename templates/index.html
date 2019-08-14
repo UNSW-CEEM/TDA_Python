@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
+  <meta  name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title style="background-color: #FFF;">TDA (CEEM, UNSW)</title>
   <meta name="description" content="The HTML5 Herald">
@@ -11,24 +11,15 @@
 
   <!-- This is the 'importing' of external libraries. -->
     <!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="crossorigin="anonymous"></script>-->
-    <script src="static/frozen_from_web/jquery-3.3.1.min.js"></script>
-    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script> -->
-    <script src="static/frozen_from_web/moment.min.js" type="text/javascript"></script>
-    <!--<script src="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
-    <script src="static/frozen_from_web/plotly-latest.min.js"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script> -->
-    <!-- <script src="static/frozen_from_web/d3.min.js"></script> -->
-    <!--<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> -->
-    <script src="static/frozen_from_web/jquery.dataTables.min.js"></script>
-    <!--<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">-->
-    <link rel="stylesheet" type="text/css" href="static/frozen_from_web/jquery.dataTables.min.css">
-    <!--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
-    <script src="static/frozen_from_web/jquery-ui-1.12.1/jquery-ui.js"></script>
-    <!--<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">-->
-    <link rel="stylesheet" type="text/css" href="static/frozen_from_web/jquery-ui-1.12.1/jquery-ui.css">
-    <script src="static/frozen_from_web/dataTables.cellEdit.js"></script>
-    <script src="static/frozen_from_web/dropdownPlain.js"></script>
-    <link rel="stylesheet" href="static/frozen_from_web/dropdown_menu.css" type="text/css"/>
+    <script src="static/jquery-3.4.1.min.js"></script>
+    <script src="static/plotly-1.49.2.min.js"></script>
+    <script src="static/DataTables/dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/DataTables/dataTables.min.css">
+    <script src="static/jquery-ui-1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/jquery-ui-1.12.1/jquery-ui.css">
+    <script src="static/CellEdit-master/js/dataTables.cellEdit.js"></script>
+    <script src="static/css_trick_dropdown_example/dropdownPlain.js"></script>
+    <link rel="stylesheet" href="static/css_trick_dropdown_example/dropdown_menu.css" type="text/css"/>
     <script src="static/results_tabs.js"></script>
     <script src="static/plot_results.js"></script>
     <script src="static/add_and_delete_cases.js"></script>
@@ -80,15 +71,17 @@
         padding: 0.25vh;
       }
 
-      button:hover {
-        background-color: #ddd;
-      }
-
       input {
         height: 2.25vh;
         width: 100%;
         float: left;
         margin: 0;
+      }
+
+      .case_info_button, .case_delete_button  {
+            height: 2.25vh;
+            width: 2.25vh;
+            font-size: 1.5vh;
       }
 
       .tariff_input {
@@ -111,6 +104,127 @@
         margin-bottom: 0.5vh;
         width: 100%;
         float: left;
+      }
+
+      @media screen and (min-height: 800px) {
+        html, body, select, button {
+            font-size: 14px;
+        }
+
+        select {
+            height: 24px;
+            margin-bottom: 9.px;
+        }
+
+        input {
+            height: 18px;
+        }
+
+        .case_info_button, .case_delete_button {
+            height: 18px;
+            width: 18px;
+            font-size: 12px;
+            padding:0;
+        }
+
+        .tariff_input {
+            margin-bottom: 9.6px;
+        }
+
+        .label_stacked {
+            height: 18px;
+            margin-bottom: 16px;
+        }
+
+        .label_close_stacked {
+            margin-bottom: 4px;
+        }
+      }
+
+      .case_area {
+        margin-left: 1%;
+        width: 39%;
+        height: 100%;
+        float: left;
+      }
+
+      .results_area {
+        overflow: hidden;
+        width: 60%;
+        height: 100%;
+        float: left;
+      }
+
+      .case_area_top, .case_area_bottom {
+        width: 100%;
+      }
+
+      .case_area_top {
+        height: 35%;
+      }
+
+      .case_area_bottom {
+        height: 68%;
+      }
+
+      .results_tab_content {
+        border-style: groove;
+        border-width: 2px;
+        height: 95%;
+        box-sizing: border-box;
+        padding: 1%;
+        width: 100%;
+      }
+
+      #results_tab_set {
+        height: 5%;
+      }
+
+      #case_tabs{
+        height: 7.5%;
+      }
+
+      @media screen and (min-height: 620px) {
+          .results_area {
+            width: 100%;
+            height: 60%;
+          }
+
+          .case_area {
+            margin-top: 1%;
+            margin-left: 0%;
+            width: 100%;
+            height: 39%;
+          }
+
+          .case_area_top {
+            height: 100%;
+            float: left;
+            width: 39%;
+          }
+
+          .case_area_bottom {
+            height: 100%;
+            float: left;
+            width: 60%;
+          }
+
+          .results_tab_content{
+            height: 93%;
+          }
+
+          #results_tab_set {
+            height: 7%;
+          }
+
+          #case_tabs{
+            height: 10%;
+          }
+
+      }
+
+      button:hover {
+        background-color: #ddd;
       }
 
       .label_line {
@@ -187,15 +301,6 @@
 
       .tabcontent h4 {
         margin-bottom: 0;
-      }
-
-      .results_tab_content {
-        border-style: groove;
-        border-width: 2px;
-        height: 95%;
-        box-sizing: border-box;
-        padding: 1%;
-        width: 100%;
       }
 
       .main_tab_content {
@@ -328,9 +433,9 @@
         <div class="label_line case_label"></div>
         <input class="case_visibility_checkbox" type="checkbox" style="width: 15%;"
                checked onclick="on_checkbox_change()">
-        <button class='case_info_button' style="float: left; width: 10%;"
+        <button class='case_info_button' style="float: left;"
                 onclick="reset_case_tariff_info_from_button(this)">?</button>
-        <button class='case_delete_button' style="float: left; width: 10%;"
+        <button class='case_delete_button' style="float: left;"
                 onclick="delete_case(this)">&#10006</button>
     </div>
 
@@ -622,8 +727,8 @@
         </div>
 
         <div id="results_panel" class="main_tab_content">
-            <div class="col" style="width: 60%; overflow: hidden;">
-                <div id="results_tab_set" class="tab_button_area" style="height: 5%">
+            <div class="results_area">
+                <div id="results_tab_set" class="tab_button_area">
                     <button id="default_results_tab" class="results_tab_links" onclick="displayResults(event, 'single_variable_tab')">Single variable graphs</button>
                     <button id="dual_var_button" class="results_tab_links" onclick="displayResults(event, 'dual_variable_tab')">Dual variable graphs</button>
                     <button id="single_case_button" class="results_tab_links" onclick="displayResults(event, 'single_case_tab')">Single case graphs</button>
@@ -713,12 +818,12 @@
                 </div>
             </div>
 
-            <div class="col" style="margin-left: 1%; width: 39%">
-                <div id="case_list" class="row" style="height: 35%">
+            <div class="case_area">
+                <div id="case_list" class="case_area_top">
                     <h3 id="start_case_list" style="padding: 5%">List of cases:</h3>
                 </div>
-                <div class="row" style="height: 68%">
-                    <div id="case_tabs" class="tab_button_area" style="height: 7.4%">
+                <div class="case_area_bottom">
+                    <div id="case_tabs" class="tab_button_area">
                         <button id="default_case_info_tab" class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'load_info')">Load Info</button>
                         <button class="case_tab_links"
