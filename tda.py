@@ -53,6 +53,8 @@ def filtered_load_data():
 
     load_request = request.get_json()
 
+    print(load_request)
+
     # Get raw load data.
     if load_request['file_name'] not in raw_data:
         raw_data[load_request['file_name']] = data_interface.get_load_table('data/', load_request['file_name'])
@@ -71,10 +73,14 @@ def filtered_load_data():
 
     # If filtering has been applied also create the filtered chart data,
     if filtered:
+        print('filtered data ==========================')
         filtered_chart = chart_methods[load_request['chart_type']](filtered_data, series_name='Selected')
-        chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
-        #chart_data.append(filtered_chart)
-        chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']], filtered_chart]
+        # chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
+        # chart_data.append(filtered_chart)
+        # chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']], filtered_chart]
+        # n_users = data_interface.n_users(filtered_data)
+
+        chart_data = filtered_chart
         n_users = data_interface.n_users(filtered_data)
     else:
         chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
