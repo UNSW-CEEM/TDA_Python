@@ -395,7 +395,30 @@ def open_sample():
 
 @app.route('/load_project', methods=['POST'])
 def load_project():
-    return jsonify("No python code for loading projects yet!")
+    message = "No python code for loading projects yet! But we have returned a dummy name to add!"
+    dummy_name_to_add_in_ui = "not a real project"
+    also_return_a_list_of_cases_loaded = ['Case 1', 'Case 2', 'Some other case']
+    return jsonify({'message': message, 'name': dummy_name_to_add_in_ui, 'cases': also_return_a_list_of_cases_loaded})
+
+
+@app.route('/save_project', methods=['POST'])
+def save_project():
+    return jsonify("No python code for saving projects yet!")
+
+
+@app.route('/save_project_as', methods=['POST'])
+def save_project_as():
+    return jsonify("No python code for saving projects as yet!")
+
+
+@app.route('/delete_project', methods=['POST'])
+def delete_project():
+    return jsonify("No python code for deleting projects as yet!")
+
+
+@app.route('/restart_tool', methods=['POST'])
+def restart_tool():
+    return jsonify("No python code for restarting yet!")
 
 
 def shutdown_server():

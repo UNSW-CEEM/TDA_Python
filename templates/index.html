@@ -349,11 +349,11 @@
           <li><div>Project</div>
               <ul>
                   <li><div onclick="load_project()">Load Project</div></li>
-                  <li><div>Save Project</div></li>
-                  <li><div>Save Project As</div></li>
-                  <li><div>Delete Project</div></li>
+                  <li><div onclick="save_project()">Save Project</div></li>
+                  <li><div onclick="save_project_as()">Save Project As</div></li>
+                  <li><div onclick="delete_project()">Delete Project</div></li>
                   <hr>
-                  <li><div>Restart Tool</div></li>
+                  <li><div onclick="restart_tool()">Restart Tool</div></li>
               </ul>
           </li>
           <li><div>Load</div>
@@ -507,6 +507,10 @@
     </div>
 
     <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left; overflow: hidden;">
+        <div style="z-index: 99; position: absolute; top: 30px; right: 100px;">
+            Project name: &nbsp
+            <div id="project_name" style="float: right;">N/A</div>
+        </div>
         <div id="load_panel" class="main_tab_content">
             <div style="height: 5%"></div>
             <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;

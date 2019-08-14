@@ -1,4 +1,4 @@
-var add_case = function(parent_id){
+var add_case_to_python = function(parent_id){
     // Get the name of the selected tariff.
     case_name = $('#case_name').val();
 

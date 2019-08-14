@@ -17,15 +17,19 @@ var launch_case_namer = function(default_name, parent_id){
     $('#case_name').val(default_name)
     $( "#case_namer" ).dialog({
         modal: true,
-        buttons: {"Save case": function(){add_case_to_gui(parent_id)}}
+        buttons: {"Save case": function(){add_case(parent_id)}}
     });
 }
 
-var add_case_to_gui = function(parent_id){
-    // Get case name
+var add_case = function(parent_id){
     case_name = $('#case_name').val();
-    case_name_no_spaces = case_name.replace(/\s/g, '');
+    add_case_to_gui(case_name)
+    add_case_to_python(parent_id);
+    update_single_case_selector();
+}
 
+var add_case_to_gui = function(case_name){
+    case_name_no_spaces = case_name.replace(/\s/g, '');
     // Get a copy of the case control template.
     var $new_case_control = $('#case_control_template').clone();
     // Set the id of the copy equal to the case name.
@@ -40,10 +44,6 @@ var add_case_to_gui = function(parent_id){
     $('#' + case_name_no_spaces + ' ' + '.case_info_button').attr('value', case_name);
     // Set label in case control equal to case name.
     $('#' + case_name_no_spaces + ' ' + '.case_label').html(case_name)
-    // Add the case to the python side.
-    add_case(parent_id);
-    //Update the select for the single case results.
-    update_single_case_selector();
 }
 
 var update_single_case_selector = function(){
