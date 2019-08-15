@@ -1,7 +1,7 @@
 var add_demo_selectors = function(response){
-    console.log(response)
     var arraylength = response.actual_names.length
 
+    // Hide existing selectors and remove content
     for (var i = 0; i < 10; i++){
         selector_id = "demo_select_" + i.toString()
         div_id = "demo_" + i.toString()
@@ -12,6 +12,7 @@ var add_demo_selectors = function(response){
         label.innerHTML = ''
     }
 
+    // Show the required selectors and add the new content to them.
     for (var i = 0; i < arraylength; i++){
         selector_id = "demo_select_" + i.toString()
         label_id = "demo_label_" + i.toString()
@@ -155,7 +156,7 @@ var make_loading_popup = function(){
 var perform_plot_load_actions = function(){
     $('#dialog').dialog({modal: true});
     var file_name = $('#select').children("option:selected").val();
-    $.getJSON('/demo_options/' + file_name, add_demo_selectors);
+    $.getJSON('/get_demo_options/' + file_name, add_demo_selectors);
     plot_filtered_load();
 }
 

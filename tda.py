@@ -6,11 +6,11 @@ import helper_functions
 import plotly
 import json
 from make_load_charts import chart_methods
-from make_results_charts import results_chart_methods, dual_variable_chart_method, single_case_chart_methods
+from make_results_charts import singe_variable_chart, dual_variable_chart, single_case_chart
 import data_interface
 import Bill_Calc
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
-    get_options_from_tariff_set
+    get_options_from_tariff_set, strip_tariff_to_single_component
 
 # Dictionaries for storing data associated with the current state of the program.
 raw_data = {}  # Data as loaded from feather files, stored in dict on a file name basis
@@ -119,8 +119,11 @@ def filtered_load_data():
     if load_request['file_name'] not in raw_data:
         raw_data[load_request['file_name']] = data_interface.get_load_table('data/load/', load_request['file_name'])
 
-    filtered, filtered_data = data_interface.filter_load_data(raw_data[load_request['file_name']],
-                                                              load_request['file_name'],
+    # Filter data
+    demo_info_file_name = data_interface.find_loads_demographic_file(load_request['file_name'])
+    demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
+    filtered, filtered_data = helper_functions.filter_load_data(raw_data[load_request['file_name']],
+                                                              demo_info,
                                                               load_request['filter_options'])
 
     # Create the requested chart data if it does not already exist.
@@ -134,10 +137,10 @@ def filtered_load_data():
     if filtered:
         filtered_chart = chart_methods[load_request['chart_type']](filtered_data, series_name='Selected')
         chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']], filtered_chart]
-        n_users = data_interface.n_users(filtered_data)
+        n_users = helper_functions.n_users(filtered_data)
     else:
         chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']]]
-        n_users = data_interface.n_users(raw_data[load_request['file_name']])
+        n_users = helper_functions.n_users(raw_data[load_request['file_name']])
 
     # Format as json.
     return_data = {"n_users": n_users, "chart_data": chart_data}
@@ -149,16 +152,8 @@ def filtered_load_data():
 def get_case_default_name():
     # Default case names are of the format 'Case n'. If 'Case 1' is in use then try 'Case 2' etc until a case default
     # case name that is not in use is found.
-
-    base_name = "Case "
-    not_unique = True
-    number = 1
-    while not_unique:
-        test_name = base_name + str(number)
-        if test_name not in results_by_case.keys():
-            break
-        number += 1
-    return jsonify(test_name)
+    name = helper_functions.get_unique_default_case_name(results_by_case.keys())
+    return jsonify(name)
 
 
 @app.route('/add_case', methods=['POST'])
@@ -175,12 +170,15 @@ def add_case():
     tariff_panel = case_details['tariff_panel']
 
     # Filter load.
-    filtered, load_data = data_interface.filter_load_data(raw_data[load_file_name], load_file_name, filter_options)
+    demo_info_file_name = data_interface.find_loads_demographic_file(load_file_name)
+    demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
+    filtered, load_data = helper_functions.filter_load_data(raw_data[load_file_name], demo_info,
+                                                            filter_options)
 
     # Get the required tariff from storage.
     selected_tariff = data_interface.get_tariff(tariff_panel, requested_tariff)
     # Just get a single component for the tariff (need to change this to using all components i.e. 'DUOS' and 'TUOS')
-    selected_tariff = helper_functions.strip_tariff_to_single_component(selected_tariff, case_details['component'])
+    selected_tariff = strip_tariff_to_single_component(selected_tariff, case_details['component'])
 
     # Calculate the bills and save results into dict.
     results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), selected_tariff)
@@ -189,7 +187,7 @@ def add_case():
     load_by_case[case_name] = load_data
     tariff_by_case[case_name] = selected_tariff
     load_file_name_by_case[case_name] = load_file_name
-    load_n_users_by_case[case_name] = data_interface.n_users(load_data)
+    load_n_users_by_case[case_name] = helper_functions.n_users(load_data)
     filter_options_by_case[case_name] = filter_options
     return jsonify('done')
 
@@ -232,11 +230,8 @@ def get_single_variable_chart():
     details = request.get_json()
     chart_name = details['chart_name']
     case_names = details['case_names']
-    chart_data = []
-    for name in case_names:
-        chart_data.append(results_chart_methods[chart_name](results_by_case[name], name))
-    return_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
-    return return_data
+    results_to_plot = dict([(name, results_by_case[name]) for name in case_names])
+    return singe_variable_chart(chart_name, results_to_plot)
 
 
 @app.route('/get_dual_variable_chart', methods=['POST'])
@@ -245,11 +240,8 @@ def get_dual_variable_chart():
     x_axis = details['x_axis']
     y_axis = details['y_axis']
     case_names = details['case_names']
-    chart_data = []
-    for name in case_names:
-        chart_data.append(dual_variable_chart_method(results_by_case[name], x_axis, y_axis, name))
-    return_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
-    return return_data
+    results_to_plot = dict([(name, results_by_case[name]) for name in case_names])
+    return dual_variable_chart(results_to_plot, x_axis, y_axis)
 
 
 @app.route('/get_single_case_chart', methods=['POST'])
@@ -257,38 +249,20 @@ def get_single_case_chart():
     details = request.get_json()
     chart_name = details['chart_name']
     case_name = details['case_name']
-    chart_data = single_case_chart_methods[chart_name](results_by_case[case_name])
-    return_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
-    return return_data
+    return single_case_chart(chart_name, results_by_case[case_name])
 
 
-@app.route('/demo_options/<name>')
-def demo_options(name):
-    demo_config_file_name = helper_functions.find_loads_demographic_config_file(name)
-    demo_file_name = helper_functions.find_loads_demographic_file(name)
+@app.route('/get_demo_options/<name>')
+def get_demo_options(name):
+    demo_file_name = data_interface.find_loads_demographic_file(name)
 
-    if demo_config_file_name != '' and demo_config_file_name in os.listdir('data/'):
-        demo_config = pd.read_csv('data/' + demo_config_file_name)
-        columns_to_use = demo_config[demo_config['use'] == 1]
-        n = len(columns_to_use['actual_names']) if len(columns_to_use['actual_names']) < 10 else 10
-        actual_names = list(columns_to_use['actual_names'].iloc[:n])
-        display_names = list(columns_to_use['display_names'])
-    elif demo_file_name != '' and demo_file_name in os.listdir('data/demographics/'):
+    if demo_file_name != '' and demo_file_name in os.listdir('data/demographics/'):
         demo = pd.read_csv('data/demographics/' + demo_file_name)
-        n = len(demo.columns) if len(demo.columns) < 11 else 11
-        actual_names = list(demo.columns[1:n])
-        display_names = list(demo.columns[1:n])
+        demo_options = helper_functions.get_demographic_options_from_demo_file(demo)
     else:
-        actual_names = []
-        display_names = []
+        demo_options = {'actual_names': [], "display_names": {}, "options": {}}
 
-    options = {}
-    display_names_dict = {}
-    for name, display_name in zip(actual_names, display_names):
-        options[name] = ['All'] + list([str(val) for val in demo[name].unique()])
-        display_names_dict[name] = display_name
-
-    return jsonify({'actual_names': actual_names, "display_names": display_names_dict, "options": options})
+    return jsonify(demo_options)
 
 
 @app.route('/tariff_options', methods=['POST'])
@@ -306,7 +280,8 @@ def tariff_options():
 @app.route('/tariff_json', methods=['POST'])
 def tariff_json():
     request_details = request.get_json()
-    selected_tariff = data_interface.get_tariff(request_details['tariff_panel'], request_details['tariff_name'])
+    selected_tariff = data_interface.get_tariff(request_details['tariff_panel'],
+                                                request_details['tariff_name'])
     selected_tariff = format_tariff_data_for_display(selected_tariff)
     return jsonify(selected_tariff)
 
