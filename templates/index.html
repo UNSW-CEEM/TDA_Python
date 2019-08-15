@@ -58,12 +58,13 @@
         margin-bottom: 1.2vh;
         width: 100%;
         font-size: 1.75vh;
+        max-width: 200px;
       }
 
       button {
         height: 3.25vh;
         background-color: inherit;
-        float: left;
+        display: inline;
         border-style: solid;
         border-width: 1px;
         margin: 0;
@@ -74,14 +75,15 @@
       input {
         height: 2.25vh;
         width: 100%;
-        float: left;
+        display: inline;
         margin: 0;
       }
 
-      .case_info_button, .case_delete_button  {
+      .case_info_button, .case_delete_button, .case_visibility_checkbox  {
             height: 2.25vh;
             width: 2.25vh;
             font-size: 1.5vh;
+            margin-top: 0.375vh;
       }
 
       .tariff_input {
@@ -96,7 +98,8 @@
 
       .label_stacked {
         height: 2.25vh;
-        margin-bottom: 2vh;
+        margin-bottom: 1.625vh;
+        margin-top: 0.375vh;
         width: 100%;
       }
 
@@ -120,11 +123,13 @@
             height: 18px;
         }
 
-        .case_info_button, .case_delete_button {
+        .case_info_button, .case_delete_button, .case_visibility_checkbox {
             height: 18px;
             width: 18px;
             font-size: 12px;
             padding:0;
+            margin-top: 0.375vh;
+            vertical-align: bottom;
         }
 
         .tariff_input {
@@ -244,8 +249,9 @@
       }
 
       .label_line {
+        padding-top: 0.375vh;
         height: 100%;
-        float: left;
+        display: inline;
       }
 
       .row {
@@ -274,15 +280,15 @@
 
       .main {
         height: calc((100vh - (100vh - 100%)) - 27px);
-        width:100%; padding: 0.5%;
+        width:100%;
+        padding: 0.5% 0.5% 0.5% 0%;
         box-sizing: border-box;
         margin: 0;
       }
 
-      #logos{
-        height: 20%;
-        box-sizing: border-box;
-        margin: 0
+      .logos{
+        margin: 10px;
+        display: inline-block;
       }
 
       .tab_button_area {
@@ -322,7 +328,7 @@
       .main_tab_content {
         height: 100%;
         box-sizing: border-box;
-        padding: 1%;
+        padding: padding: 1% 1% 1% 0%;;
         width: 100%;
         overflow: hidden;
       }
@@ -390,7 +396,12 @@
         width: 10%;
       }
 
+      .main_tab_links {
+        width: 100%;
+        height: 50px;
+      }
   </style>
+
     <div id="message_dialog" title="Update" style="display: none">
         <p></p>
     </div>
@@ -447,12 +458,10 @@
     <div id="case_control_template" class="row case_control"
          style="width: 100%; margin-bottom: 2vh; float: left;">
         <div class="label_line case_label"></div>
-        <input class="case_visibility_checkbox" type="checkbox" style="width: 15%;"
+        <input class="case_visibility_checkbox" type="checkbox" style="width: 10%;"
                checked onclick="on_checkbox_change()">
-        <button class='case_info_button' style="float: left;"
-                onclick="reset_case_tariff_info_from_button(this)">?</button>
-        <button class='case_delete_button' style="float: left;"
-                onclick="delete_case(this)">&#10006</button>
+        <button class='case_info_button' onclick="reset_case_tariff_info_from_button(this)">?</button>
+        <button class='case_delete_button'onclick="delete_case(this)">&#10006</button>
     </div>
 
     <table class="tariff_table display nowrap"
@@ -616,15 +625,20 @@
   <hr class="header_border"/>
   <div class="main">
 
-    <div id="left_column" class="tab_button_area" style="height: 100%; width: 14.5%; float: left; padding: 0 1% 0 1%">
+    <div id="left_column" class="tab_button_area" style="height: 100%; width: 14.5%; max-width: 200px; float: left;">
         <script src="static/main_tabs.js"></script>
-        <div id="logos">
+        <div class="logos">
             <img src="static/UNSWLogo.png" alt="UNSW Logo" style="width: 100%;">
+        </div>
+        <div class="logos">
             <img src="static/CEEMLogo.png" alt="UNSW Logo" style="float:left; width: 100%;">
         </div>
-        <button id="default_panel" class="main_tab_links" onclick="displayPanels(event, 'load_panel')" style="width: 100%; height: 50px">Load</button>
-        <button id="tariff_panel_button" class="main_tab_links" onclick="displayPanels(event, 'tariff_selection_panel')" style="width: 100%; height: 50px">Tariffs</button>
-        <button id="results_panel_button" class="main_tab_links" onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">Results</button>
+        <button id="default_panel" class="main_tab_links"
+                onclick="displayPanels(event, 'load_panel')" style="width: 100%; height: 50px">Load</button>
+        <button id="tariff_panel_button" class="main_tab_links"
+                onclick="displayPanels(event, 'tariff_selection_panel')" style="width: 100%; height: 50px">Tariffs</button>
+        <button id="results_panel_button" class="main_tab_links"
+                onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">Results</button>
     </div>
 
     <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left; overflow: hidden;">
@@ -633,7 +647,7 @@
             <div id="project_name" style="float: right;">N/A</div>
         </div>
         <div id="load_panel" class="main_tab_content">
-            <div style="height: 5%"></div>
+            <div style="height: 4.13%"></div>
             <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
                         border-style: solid; border-color: #EEEEEE;">
                 <div id="load_selection" class="row" style="height: 55%;">
@@ -729,11 +743,11 @@
                         <div id="sample_size_info" style="float: left; width: 60%; height: 100%;">
                             No. of users: N/A
                         </div>
-                        <div style="float: left; width: 10%; height: 100%;">Show:</div>
-                        <select  id="select_graph" style="float: left; width: 30%;">
+                        <select  id="select_graph" style="float: right; width: 30%;">
                             <option value="Annual Average Profile"> Annual Average Profile</option>
                             <option value="Daily kWh Histogram">Daily kWh Histogram</option>
                         </select>
+                        <div class="label_line" style="float: right;">Show:&nbsp</div>
                     </div>
                     <div class="chart" id="load_chart" style="height: 100%;"></div>
                     <script src="static/plot_load.js"></script>
@@ -752,8 +766,8 @@
                 <div id="single_variable_tab" class="results_tab_content">
                     <div id="single_variable_result_chart" class="row" style="height: 80%"></div>
                     <div class="row" style="height: 20%">
-                        <div class="col" style="width: 20%">
-                            <div class="label_line">Select figure:</div>
+                        <div class="col">
+                            <div class="label_line">Select figure:&nbsp</div>
                         </div>
                         <div class="col" style="width: 80%">
                             <select id="single_variable_chart_type" style="width: 50%">
@@ -765,14 +779,15 @@
                 <div id="dual_variable_tab" class="results_tab_content">
                     <div id="dual_variable_result_chart" class="row" style="height: 80%"></div>
                     <div class="row" style="height: 20%">
-                        <div class="col" style="width: 10%">
-                            <div class="label_stacked">X axis:</div>
-                            <div class="label_stacked">Y axis:</div>
+                        <div class="col">
+                            <div class="label_stacked">X axis:&nbsp</div>
+                            <div class="label_stacked">Y axis:&nbsp</div>
                         </div>
                         <div class="col" style="width: 40%">
                             <select id="dual_variable_x_axis" style="width: 80%">
                                 <option value="Annual_kWh">Annual kWh</option>
                             </select>
+                            <br/>
                             <select id="dual_variable_y_axis" style="width: 80%">
                                 <option value="Bill">Bill ($/year)</option>
                                 <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
@@ -818,15 +833,16 @@
                 <div id="single_case_tab" class="results_tab_content">
                     <div id="single_case_result_chart" class="row" style="height: 80%"></div>
                     <div class="row" style="height: 20%">
-                        <div class="col" style="width: 20%">
-                            <div class="label_stacked">Select case:</div>
-                            <div class="label_stacked">Select figure:</div>
+                        <div class="col">
+                            <div class="label_stacked">Select case:&nbsp</div>
+                            <div class="label_stacked">Select figure:&nbsp</div>
                         </div>
-                        <div class="col" style="width: 80%">
-                            <select id="single_case_result_chosen_case" style="width: 50%"
+                        <div class="col" style="width: 30%">
+                            <select id="single_case_result_chosen_case" style="width: 100%"
                                     onchange="plot_single_case_results()">
                             </select>
-                            <select id="single_case_chart_type" style="width: 50%">
+                            <br/>
+                            <select id="single_case_chart_type" style="width: 100%;">
                                 <option value="bill_components">Bill Components</option>
                             </select>
                         </div>
@@ -897,7 +913,7 @@
             <script>document.getElementById("default_case_info_tab").click();</script>
         </div>
         <div id="tariff_selection_panel" class="main_tab_content">
-            <div id="tariff_type_tabs" class="tab_button_area" style="height: 5%">
+            <div id="tariff_type_tabs" class="tab_button_area" style="height: 4.13%">
                 <button class="tariff_type_links"
                         onclick="displayTariffType(event, 'network_tariff_selection_panel')">Network tariffs</button>
                 <button id="default_tariff_type_tab" class="tariff_type_links"
@@ -920,7 +936,7 @@
                     </div>
                     <div class="lower_tariff_section row" style="height: 55%;">
                         <script src="static/tariff_tabs.js"></script>
-                        <div id="tariff_tabs" class="tab_button_area" style="height: 10%">
+                        <div id="tariff_tabs" class="tab_button_area" style="height: 8.35%">
                             <button class="tablinks" value="DUOS"
                                     onclick="displayTariff(event, 'network_tariff_selection_panel', 'DUOS')">DUOS</button>
                             <button class="tablinks" value="TUOS"
@@ -959,7 +975,7 @@
                              });</script>
                     <div class="lower_tariff_section row" style="height: 55%;">
                         <script src="static/tariff_tabs.js"></script>
-                        <div class="tariff_tabs tab_button_area" style="height: 10%">
+                        <div class="tariff_tabs tab_button_area" style="height: 8.35%">
                             <button id="retail_default_tab" class="tablinks" value="Retail"
                                     onclick="displayTariff(event, 'retail_tariff_selection_panel', 'Retail')">
                                 Retail
