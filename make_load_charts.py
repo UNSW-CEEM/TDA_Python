@@ -7,41 +7,66 @@ from time import time
 from datetime import datetime, timedelta
 
 
-def get_average_annual_profile(load, series_name=''):
+def get_average_annual_profile(load, load_filtered, series_name):
     print(load.head())
     t0 = time()
-    print(load.head())
-    load['mean'] = load.loc[:, [col for col in load.columns if col != 'Datetime']].mean(axis=1)
-    load = load.loc[:, ['Datetime', 'mean']]
-    print('time to find mean {}'.format(time() - t0))
 
-    trace = go.Scattergl(x=load['Datetime'], y=load['mean'], name=series_name)
+    ### load mean
+    load2 = load.copy()
+    load2.set_index('Datetime',inplace=True)
+    
+    print(load2.head())
+    load_mean = load2.mean(axis=1)
+    print(load_mean.head())
+
+    trace1 = go.Scattergl(x=load_mean.index, y=load_mean.values, name=series_name[0])
+
+
+    ### load_filtered mean
+    print('=================== filtered')
+    print(load_filtered.head())
+    load_filtered2 = load_filtered.copy()
+    load_filtered2.set_index('Datetime',inplace=True)
+
+    print(load_filtered2.head())
+    load_filtered_mean = load_filtered2.mean(axis=1)
+    print(load_filtered_mean.head())
+
+    trace2 = go.Scattergl(x=load_filtered_mean.index, y=load_filtered_mean.values, name=series_name[1])
+
 
     Xaxis = "Time"
     Yaxis = "Average Load (kW)"
     layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
 
-    data = {'data':[trace],'layout':layout}
+    data = {'data':[trace1, trace2],'layout':layout}
     return data
 
 
-def get_daily_kWh_hist(load, series_name=''):
+def get_daily_kWh_hist(load, load_filtered, series_name):
+    print(load.head())
     load2 = load.copy()
-    del load2['READING_DATETIME']
     del load2['Datetime']
-    del load2['mean']
     load_sum = load2.sum(axis=0)/2/365
     print(load2.head())
 
-    trace = go.Histogram(x=list(load_sum),histnorm='probability')
+    print(load_filtered.head())
+    load_filtered2 = load_filtered.copy()
+    del load_filtered2['Datetime']
+    load_filtered_sum = load_filtered2.sum(axis=0)/2/365
+    print(load_filtered2.head())
+
+
+    trace1 = go.Histogram(x=list(load_sum),histnorm='probability',name=series_name[0])
+    trace2 = go.Histogram(x=list(load_filtered_sum),histnorm='probability',name=series_name[1])
 
     Xaxis = "Daily Electricity (kWh)"
     Yaxis = "Percentage"
     layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
 
-    data ={'data': [trace], 'layout':layout}
+    data ={'data': [trace1, trace2], 'layout':layout}
     #data = trace
     return data
 
@@ -50,12 +75,10 @@ def get_daily_average_profile(x):
     return np.nanmean(x_array,axis=0)
 
 
-def get_daily_profiles(load, series_name=''):
+def get_daily_profiles(load):
     load2=load.copy()
     print(load2.head())
-    del load2['READING_DATETIME']
     del load2['Datetime']
-    del load2['mean']
     print(load2.head())
 
     load_daily_average = load2.apply(get_daily_average_profile)
@@ -77,12 +100,10 @@ def get_daily_profiles(load, series_name=''):
 
     return data
 
-def get_daily_profile_interquartile(load, series_name=''):
+def get_daily_profile_interquartile(load):
     load2=load.copy()
     print(load2.head())
-    del load2['READING_DATETIME']
     del load2['Datetime']
-    del load2['mean']
     print(load2.head())
 
     load_daily_average = load2.apply(get_daily_average_profile)
@@ -112,9 +133,11 @@ def get_daily_profile_interquartile(load, series_name=''):
 
     return data
 
-def get_average_load_duration_curve(load, series_name=''):
-
-    load_average = load['mean']
+def get_average_load_duration_curve(load):
+    load2=load.copy()
+    load2.drop(['Datetime'], axis=1, inplace=True)
+    
+    load_average = load2.mean(axis=1)
     print(load_average.head())
 
     load_average_sort = load_average.sort_values(ascending = False, inplace = False, na_position ='last')
@@ -130,16 +153,20 @@ def get_average_load_duration_curve(load, series_name=''):
     data = {'data': [trace], 'layout':layout}
     return data
 
-def get_average_peak_day_profile(load, series_name=''):
+def get_average_peak_day_profile(load):
 
-    load_average = load[['Datetime','mean']]
-    print('load_average:')
+    load2=load.copy()
+    load2.set_index('Datetime',inplace=True)
+        
+    load_average = load2.mean(axis=1)
     print(load_average.head())
-    load_average.set_index('Datetime',inplace=True)
-    print(load_average.head())
+
+    # organise data
+    load_average = pd.DataFrame(load_average)
+    load_average.columns = ['power']
 
     # find the max day
-    peak_day_index = load_average['mean'].idxmax()
+    peak_day_index = load_average['power'].idxmax()
     print('peak_day_index')
     print(peak_day_index)
     print(type(peak_day_index))
@@ -153,7 +180,7 @@ def get_average_peak_day_profile(load, series_name=''):
     load_average_peak_day = load_average.loc[peak_day_string]
     print(load_average_peak_day)
 
-    trace = go.Scatter(x=list(range(0,48)),y=list(load_average_peak_day['mean']))
+    trace = go.Scatter(x=load_average_peak_day.index,y=list(load_average_peak_day['power']))
 
     Xaxis = "Time"
     Yaxis = "Load (kW)"
@@ -163,12 +190,12 @@ def get_average_peak_day_profile(load, series_name=''):
     data = {'data': [trace], 'layout':layout}
     return data
 
-def get_monthly_average_kWh(load, series_name=''):
+def get_monthly_average_kWh(load):
 
-    load_average = load[['Datetime','mean']]
-    print('load_average:')
-    print(load_average.head())
-    load_average.set_index('Datetime',inplace=True)
+    load2=load.copy()
+    load2.set_index('Datetime',inplace=True)
+        
+    load_average = load2.mean(axis=1)
     print(load_average.head())
 
     # find mean for each month
@@ -176,9 +203,9 @@ def get_monthly_average_kWh(load, series_name=''):
     print(monthly_mean)
 
     monthly_mean = monthly_mean*24
-    print(list(monthly_mean['mean']))
+    print(list(monthly_mean.values))
 
-    trace = go.Bar(x=list(range(0,12)),y=list(monthly_mean['mean']))
+    trace = go.Bar(x=list(range(0,12)),y=monthly_mean.values)
 
     Xaxis = "Daily Electricity (kWh)"
     Yaxis = "Load (kW)"
@@ -189,12 +216,12 @@ def get_monthly_average_kWh(load, series_name=''):
 
     return data
 
-def get_seasonal_daily_pattern(load, series_name=''):
+def get_seasonal_daily_pattern(load):
 
-    load_average = load[['Datetime','mean']]
-    print('load_average:')
-    print(load_average.head())
-    load_average.set_index('Datetime',inplace=True)
+    load2=load.copy()
+    load2.set_index('Datetime',inplace=True)
+        
+    load_average = load2.mean(axis=1)
     print(load_average.head())
 
     # organise data

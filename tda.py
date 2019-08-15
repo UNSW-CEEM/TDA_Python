@@ -63,29 +63,43 @@ def filtered_load_data():
     filtered, filtered_data = data_interface.filter_load_data(raw_data[load_request['file_name']],
                                                               load_request['file_name'],
                                                               load_request['filter_options'])
+    print(filtered)
+    if not filtered:
+        filtered_data = raw_data[load_request['file_name']]
 
     # Create the requested chart data if it does not already exist.
     if load_request['file_name'] not in raw_charts:
         raw_charts[load_request['file_name']] = {}
-    if load_request['chart_type'] not in raw_charts[load_request['file_name']]:
+    # if load_request['chart_type'] not in raw_charts[load_request['file_name']]:
+
+    if load_request['chart_type'] in ['Annual Average Profile','Daily kWh Histogram']:
         raw_charts[load_request['file_name']][load_request['chart_type']] = \
-            chart_methods[load_request['chart_type']](raw_data[load_request['file_name']], series_name='All')
+            chart_methods[load_request['chart_type']](raw_data[load_request['file_name']], filtered_data, series_name=['All', 'Selected'])
+    else:
+        raw_charts[load_request['file_name']][load_request['chart_type']] = \
+            chart_methods[load_request['chart_type']](filtered_data)
 
-    # If filtering has been applied also create the filtered chart data,
+    #### prepare chart data and n_users
+    chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
     if filtered:
-        print('filtered data ==========================')
-        filtered_chart = chart_methods[load_request['chart_type']](filtered_data, series_name='Selected')
-        # chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
-        # chart_data.append(filtered_chart)
-        # chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']], filtered_chart]
-        # n_users = data_interface.n_users(filtered_data)
-
-        chart_data = filtered_chart
         n_users = data_interface.n_users(filtered_data)
     else:
-        chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
         n_users = data_interface.n_users(raw_data[load_request['file_name']])
 
+    # If filtering has been applied also create the filtered chart data,
+    # if filtered:
+    #     print('filtered data ==========================')
+    #     filtered_chart = chart_methods[load_request['chart_type']](filtered_data, series_name='Selected')
+    #     # chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
+    #     # chart_data.append(filtered_chart)
+    #     # chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']], filtered_chart]
+    #     # n_users = data_interface.n_users(filtered_data)
+
+    #     chart_data = filtered_chart
+    #     n_users = data_interface.n_users(filtered_data)
+    # else:
+    #     chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
+    #     n_users = data_interface.n_users(raw_data[load_request['file_name']])
 
     # Format as json.
     return_data = {"n_users": n_users, "chart_data": chart_data}
