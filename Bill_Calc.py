@@ -8,6 +8,7 @@ import sys
 # Inputs: Tariff and Load profile (30 min interval, one year,
 # timestamps are the end of time period: 12:30 is consumption from 12 to 12:30)
 
+
 def bill_calculator(load_profile, tariff, network_load=None, FiT=True):
 
     def pre_processing_load(load_profile):
@@ -37,18 +38,18 @@ def bill_calculator(load_profile, tariff, network_load=None, FiT=True):
         # if retail tariff calculate the daily and energy from the parameters
         if tariff['ProviderType'] == 'Retailer':
             # daily charge using the number of unique days in the load profile
-            Results['DailyCharge'] = (len(load_profile.index.normalize().unique())-1) * tariff['Parameters']['Daily']['Value']
+            Results['Retailer_DailyCharge'] = (len(load_profile.index.normalize().unique())-1) * tariff['Parameters']['Daily']['Value']
             # calculate the energy charge by multiplying the energy by usage
-            Results['EnergyCharge'] = Results['Annual_kWh'] * tariff['Parameters']['Energy']['Value']
+            Results['Retailer_EnergyCharge'] = Results['Annual_kWh'] * tariff['Parameters']['Energy']['Value']
             #  if there is discount
-            Results['EnergyCharge_Discounted'] = Results['EnergyCharge'] * (1 - tariff['Discount (%)'] / 100)
+            Results['Retailer_EnergyCharge_Discounted'] = Results['Retailer_EnergyCharge'] * (1 - tariff['Discount (%)'] / 100)
             # if there is feed in tariff add a new column to df with the rebate
             if FiT:
-                Results['Fit_Rebate'] = Results['Annual_kWh_exp'] * tariff['Parameters']['FiT']['Value']
+                Results['Retailer_Fit_Rebate'] = Results['Annual_kWh_exp'] * tariff['Parameters']['FiT']['Value']
             else:
-                Results['Fit_Rebate'] = 0
+                Results['Retailer_Fit_Rebate'] = 0
             #     final bill is the sum of daily charge, energy charge and negative rebate of the feed in tariff
-            Results['Bill'] = Results['DailyCharge'] + Results['EnergyCharge'] - Results['Fit_Rebate']
+            Results['Bill'] = Results['Retailer_DailyCharge'] + Results['Retailer_EnergyCharge'] - Results['Retailer_Fit_Rebate']
         else:
             # if it's network tariff do the same for each component separately
             for TarComp, TarCompVal in tariff['Parameters'].items():
@@ -56,6 +57,7 @@ def bill_calculator(load_profile, tariff, network_load=None, FiT=True):
                 Results[TarComp + '_EnergyCharge'] = Results['Annual_kWh'] * TarCompVal['Energy']['Value']
             Results['Bill'] = Results['NUOS_DailyCharge'] + Results['NUOS_EnergyCharge']
         return Results
+
     # block annual tariff where you have different charges for different levels of usage
     def block_annual(load_profile, tariff):
         # The high bounds is for annual
@@ -100,6 +102,7 @@ def bill_calculator(load_profile, tariff, network_load=None, FiT=True):
                 Results[TarComp + '_Fit_Rebate'] = Results['Annual_kWh_exp'] * TarCompVal['FiT']['Value']
             else:
                 Results[TarComp + '_Fit_Rebate'] = 0
+
         if tariff['ProviderType'] == 'Retailer':
             Results['Bill'] = Results['Retailer_DailyCharge'] + Results['Retailer_EnergyCharge_Discounted'] - \
                               Results['Retailer_Fit_Rebate']
@@ -162,6 +165,7 @@ def bill_calculator(load_profile, tariff, network_load=None, FiT=True):
                 Results[TarComp + '_Fit_Rebate'] = Results['Annual_kWh_exp'] * TarCompVal['FiT']['Value']
             else:
                 Results[TarComp + '_Fit_Rebate'] = 0
+
         if tariff['ProviderType'] == 'Retailer':
             Results['Bill'] = Results['Retailer_DailyCharge'] + Results['Retailer_EnergyCharge_Discounted'] - \
                               Results['Retailer_Fit_Rebate']
@@ -176,7 +180,6 @@ def bill_calculator(load_profile, tariff, network_load=None, FiT=True):
         load_profile_M={}
         for m in range(1, 13):
             load_profile_M['M_'+str(m)] = load_profile_imp.loc[load_profile_imp.index.month == m, :]
-
 
         f_load_profile = load_profile
         imports = [np.nansum(f_load_profile[col].values[f_load_profile[col].values > 0])
@@ -224,6 +227,7 @@ def bill_calculator(load_profile, tariff, network_load=None, FiT=True):
                 Results[TarComp + '_Fit_Rebate'] = Results['Annual_kWh_exp'] * TarCompVal['FiT']['Value']
             else:
                 Results[TarComp + '_Fit_Rebate'] = 0
+
         if tariff['ProviderType'] == 'Retailer':
             Results['Bill'] = Results['Retailer_DailyCharge'] + Results['Retailer_EnergyCharge_Discounted'] - \
                               Results['Retailer_Fit_Rebate']
@@ -231,7 +235,6 @@ def bill_calculator(load_profile, tariff, network_load=None, FiT=True):
             Results['Bill'] = Results['NUOS_DailyCharge'] + Results['NUOS_EnergyCharge_Discounted'] - Results[
                 'NUOS_Fit_Rebate']
         return Results
-
 
     def tou_calc(load_profile, tariff):
         # different charge in different times of day, month, weekday weekend,
