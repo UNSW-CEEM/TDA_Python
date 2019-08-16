@@ -62,6 +62,9 @@ single_case_chart_methods = {'bill_components': bill_components}
 
 
 def single_case_chart(chart_name, results_to_plot):
-    chart_data = single_case_chart_methods[chart_name](results_to_plot)
+    if results_to_plot is not None:
+        chart_data = single_case_chart_methods[chart_name](results_to_plot)
+    else:
+        chart_data = []
     chart_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
     return chart_data

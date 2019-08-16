@@ -40,3 +40,24 @@ def filter_load_data(raw_data, demo_info, filter_options):
 def n_users(load_data):
     n = len(load_data.columns) - 1
     return n
+
+
+def get_tariff_by_case(case_name, tariff_type, network_tariffs_by_case, retail_tariffs_by_case):
+    tariff = 'None'
+    if tariff_type == 'network_tariff_selection_panel':
+        if case_name in network_tariffs_by_case.keys():
+            tariff = network_tariffs_by_case[case_name]
+    else:
+        if case_name in retail_tariffs_by_case.keys():
+            tariff = retail_tariffs_by_case[case_name]
+    return tariff
+
+
+def get_results_subset_to_plot(case_names, retail_results_by_case, network_results_by_case):
+    results_to_plot = {}
+    for name in case_names:
+        if name in retail_results_by_case.keys():
+            results_to_plot[name] = retail_results_by_case[name]
+        elif name in network_results_by_case.keys():
+            results_to_plot[name] = network_results_by_case[name]
+    return results_to_plot

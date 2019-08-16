@@ -11,8 +11,8 @@ def get_load_table(folder_path, load_file):
     return load_data
 
 
-def get_tariff(tariff_panel, requested_tariff):
-    tariffs = get_tariffs(tariff_panel)
+def get_tariff(tariff_type, requested_tariff):
+    tariffs = get_tariffs(tariff_type)
     # Look at each tariff and find the first one that matches the requested name.
     for tariff in tariffs:
         if tariff['Name'] == requested_tariff:
@@ -20,8 +20,8 @@ def get_tariff(tariff_panel, requested_tariff):
     return selected_tariff
 
 
-def get_tariffs(tariff_panel):
-    if tariff_panel == 'network_tariff_selection_panel':
+def get_tariffs(tariff_type):
+    if tariff_type == 'network_tariff_selection_panel':
         with open('data/NetworkTariffs.json') as json_file:
             tariffs = json.load(json_file)
         with open('data/UserDefinedNetworkTariffs.json') as json_file:

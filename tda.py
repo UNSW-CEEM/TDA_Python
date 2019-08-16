@@ -20,13 +20,15 @@ raw_data = {}  # Data as loaded from feather files, stored in dict on a file nam
 raw_charts = {}
 
 # Results from calculating bill for a set of load profiles with a given tariff. Stored on a case name basis.
-results_by_case = {}
+network_results_by_case = {}
+retail_results_by_case = {}
 
 # Load profiles after any filtering, for a given case, stored on a case name basis.
 load_by_case = {}
 
 # Tariff for a given case, stored on a case name basis.
-tariff_by_case = {}
+network_tariffs_by_case = {}
+retail_tariffs_by_case = {}
 
 # The source file name which describes were the load data came from for a given case, stored on a case name basis.
 load_file_name_by_case = {}
@@ -152,7 +154,7 @@ def filtered_load_data():
 def get_case_default_name():
     # Default case names are of the format 'Case n'. If 'Case 1' is in use then try 'Case 2' etc until a case default
     # case name that is not in use is found.
-    name = helper_functions.get_unique_default_case_name(results_by_case.keys())
+    name = helper_functions.get_unique_default_case_name(load_by_case.keys())
     return jsonify(name)
 
 
@@ -166,26 +168,26 @@ def add_case():
     case_name = case_details['case_name']
     load_file_name = case_details['load_details']['file_name']
     filter_options = case_details['load_details']['filter_options']
-    requested_tariff = case_details['tariff_name']
-    tariff_panel = case_details['tariff_panel']
+    retail_tariff_name = case_details['retail_tariff_name']
+    network_tariff_name = case_details['network_tariff_name']
 
     # Filter load.
     demo_info_file_name = data_interface.find_loads_demographic_file(load_file_name)
     demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
-    filtered, load_data = helper_functions.filter_load_data(raw_data[load_file_name], demo_info,
-                                                            filter_options)
+    filtered, load_data = helper_functions.filter_load_data(raw_data[load_file_name], demo_info,filter_options)
 
-    # Get the required tariff from storage.
-    selected_tariff = data_interface.get_tariff(tariff_panel, requested_tariff)
-    # Just get a single component for the tariff (need to change this to using all components i.e. 'DUOS' and 'TUOS')
-    selected_tariff = strip_tariff_to_single_component(selected_tariff, case_details['component'])
+    if network_tariff_name != 'None':
+        network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
+        network_results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), network_tariff)
+        network_tariffs_by_case[case_name] = network_tariff
 
-    # Calculate the bills and save results into dict.
-    results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), selected_tariff)
+    if retail_tariff_name != 'None':
+        retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
+        retail_results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), retail_tariff)
+        retail_tariffs_by_case[case_name] = retail_tariff
 
     # Save input data and settings associated with the case.
     load_by_case[case_name] = load_data
-    tariff_by_case[case_name] = selected_tariff
     load_file_name_by_case[case_name] = load_file_name
     load_n_users_by_case[case_name] = helper_functions.n_users(load_data)
     filter_options_by_case[case_name] = filter_options
@@ -195,9 +197,13 @@ def add_case():
 @app.route('/get_case_tariff', methods=['POST'])
 def get_case_tariff():
     # Get the tariff associated with a particular case.
-    case_name = request.get_json()
-    tariff = tariff_by_case[case_name]
-    tariff = format_tariff_data_for_display(tariff)
+    request_details = request.get_json()
+    case_name = request_details['case_name']
+    tariff_type = request_details['tariff_type']
+    tariff = helper_functions.get_tariff_by_case(case_name, tariff_type, network_tariffs_by_case,
+                                                 retail_tariffs_by_case)
+    if tariff != 'None':
+        tariff = format_tariff_data_for_display(tariff)
     return jsonify(tariff)
 
 
@@ -219,9 +225,15 @@ def get_case_demo_options():
 def delete_case():
     # Delete all data associated with a particular case.
     case_name = request.get_json()
-    results_by_case.pop(case_name)
     load_by_case.pop(case_name)
-    tariff_by_case.pop(case_name)
+    if case_name in network_results_by_case.keys():
+        network_results_by_case.pop(case_name)
+    if case_name in retail_results_by_case.keys():
+        retail_results_by_case.pop(case_name)
+    if case_name in retail_tariffs_by_case.keys():
+        retail_tariffs_by_case.pop(case_name)
+    if case_name in network_tariffs_by_case.keys():
+        network_tariffs_by_case.pop(case_name)
     return jsonify('done')
 
 
@@ -230,7 +242,8 @@ def get_single_variable_chart():
     details = request.get_json()
     chart_name = details['chart_name']
     case_names = details['case_names']
-    results_to_plot = dict([(name, results_by_case[name]) for name in case_names])
+    results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
+                                                                  network_results_by_case)
     return singe_variable_chart(chart_name, results_to_plot)
 
 
@@ -240,7 +253,8 @@ def get_dual_variable_chart():
     x_axis = details['x_axis']
     y_axis = details['y_axis']
     case_names = details['case_names']
-    results_to_plot = dict([(name, results_by_case[name]) for name in case_names])
+    results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
+                                                                  network_results_by_case)
     return dual_variable_chart(results_to_plot, x_axis, y_axis)
 
 
@@ -249,7 +263,14 @@ def get_single_case_chart():
     details = request.get_json()
     chart_name = details['chart_name']
     case_name = details['case_name']
-    return single_case_chart(chart_name, results_by_case[case_name])
+    results_to_plot = helper_functions.get_results_subset_to_plot([case_name], retail_results_by_case,
+                                                                  network_results_by_case)
+    if case_name not in results_to_plot.keys():
+        results_to_plot = None
+    else:
+        results_to_plot = results_to_plot[case_name]
+
+    return single_case_chart(chart_name, results_to_plot)
 
 
 @app.route('/get_demo_options/<name>')

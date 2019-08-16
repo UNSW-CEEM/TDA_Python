@@ -193,7 +193,7 @@
         height: 25%;
       }
 
-      #info{
+      #retail_info, #network_info {
         height: 75%;
       }
 
@@ -238,7 +238,7 @@
             height: 50%;
           }
 
-          #info {
+          #retail_info, #network_info {
             height: 50%;
           }
 
@@ -859,7 +859,9 @@
                         <button id="default_case_info_tab" class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'load_info')">Load Info</button>
                         <button class="case_tab_links"
-                                onclick="displayCaseInfoType(event, 'tariff_info')">Tariff Info</button>
+                                onclick="displayCaseInfoType(event, 'network_tariff_info')">Network tariff Info</button>
+                        <button class="case_tab_links"
+                                onclick="displayCaseInfoType(event, 'retail_tariff_info')">Retail tariff Info</button>
                         <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'demog_info')">Demog Info</button>
                     </div>
@@ -879,32 +881,59 @@
                             </div>
                         </div>
                     </div>
-                    <div class="case_info_tab_content" id="tariff_info">
-                        <div id="info_tariff_summary" class="row">
-                            <div id="info_tariff_summary_labels" class="col" style="width: 100%; display: none;">
+                    <div class="case_info_tab_content" id="network_tariff_info">
+                        <div class="info_tariff_summary row">
+                            <div class="info_tariff_summary_labels col" style="width: 100%; display: none;">
                                 <div class="row" style="height: 2.5vh;">
                                     <div class="label_line">Case:&nbsp</div>
-                                    <div id="tariff_info_case" class="label_line"></div>
+                                    <div class="tariff_info_case label_line"></div>
                                 </div>
                                 <div class="row" style="height: 2.5vh;">
                                     <div class="label_line">Name:&nbsp</div>
-                                    <div id="tariff_info_name" class="label_line"></div>
+                                    <div class="tariff_info_name label_line"></div>
                                 </div>
                                 <div class="row" style="height: 2.5vh;">
                                     <div class="label_line">Type:&nbsp</div>
-                                    <div id="tariff_info_type" class="label_line"></div>
+                                    <div class="tariff_info_type label_line"></div>
                                 </div>
                                 <div class="row" style="height: 2.5vh;">
                                     <div class="label_line">State:&nbsp</div>
-                                    <div id="tariff_info_state" class="label_line"></div>
+                                    <div class="tariff_info_state label_line"></div>
                                 </div>
                                 <div class="row" style="height: 2.5vh;">
                                     <div class="label_line">Tariff Component:&nbsp</div>
-                                    <div id="tariff_info_component" class="label_line"></div>
+                                    <div class="tariff_info_component label_line"></div>
                                 </div>
                             </div>
                         </div>
-                        <div id="info" style="width:100%; overflow-x: scroll; overflow-y: scroll"></div>
+                        <div id="network_info" style="width:100%; overflow-x: scroll; overflow-y: scroll"></div>
+                    </div>
+                    <div class="case_info_tab_content" id="retail_tariff_info">
+                        <div class="info_tariff_summary row">
+                            <div class="info_tariff_summary_labels col" style="width: 100%; display: none;">
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Case:&nbsp</div>
+                                    <div class="tariff_info_case label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Name:&nbsp</div>
+                                    <div class="tariff_info_name label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Type:&nbsp</div>
+                                    <div class="tariff_info_type label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">State:&nbsp</div>
+                                    <div class="tariff_info_state label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Tariff Component:&nbsp</div>
+                                    <div class="tariff_info_component label_line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="retail_info" style="width:100%; overflow-x: scroll; overflow-y: scroll"></div>
                     </div>
                     <div class="case_info_tab_content" id="demog_info"></div>
                 </div>

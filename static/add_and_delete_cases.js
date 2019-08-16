@@ -6,15 +6,16 @@ var add_case_to_python = function(parent_id){
     var component = get_active_component(parent_id);
 
     // Get the name of the selected tariff.
-    tariff_name = $('#' + parent_id + ' .select_tariff').val();
+    retail_tariff_name = $('#retail_tariff_selection_panel .select_tariff').val();
+    network_tariff_name = $('#network_tariff_selection_panel .select_tariff').val();
 
     // Get load name
     load_request = get_load_details_from_ui();
 
     // Bundle case details into a single object
     case_details = {'case_name': case_name,
-                    'tariff_name': tariff_name,
-                    'component': component,
+                    'retail_tariff_name': retail_tariff_name,
+                    'network_tariff_name': network_tariff_name,
                     'load_details': load_request,
                     'tariff_panel': parent_id};
 
@@ -30,7 +31,8 @@ var add_case_to_python = function(parent_id){
         dataType:"json",
         success: function(data){
             plot_results();
-            get_and_display_case_tariff_info(case_name);
+            get_and_display_case_tariff_info(case_name, 'retail');
+            get_and_display_case_tariff_info(case_name, 'network');
             get_and_display_case_load_info(case_name);
             get_and_display_case_demo_info(case_name);
             }
