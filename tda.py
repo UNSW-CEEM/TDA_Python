@@ -11,6 +11,9 @@ import data_interface
 import Bill_Calc
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
     get_options_from_tariff_set, strip_tariff_to_single_component
+import requests
+from nemosis import data_fetch_methods
+from make_price_charts import annual_profile
 
 # Dictionaries for storing data associated with the current state of the program.
 raw_data = {}  # Data as loaded from feather files, stored in dict on a file name basis
@@ -22,6 +25,7 @@ raw_charts = {}
 # Results from calculating bill for a set of load profiles with a given tariff. Stored on a case name basis.
 network_results_by_case = {}
 retail_results_by_case = {}
+wholesale_results_by_case = {}
 
 # Load profiles after any filtering, for a given case, stored on a case name basis.
 load_by_case = {}
@@ -170,6 +174,8 @@ def add_case():
     filter_options = case_details['load_details']['filter_options']
     retail_tariff_name = case_details['retail_tariff_name']
     network_tariff_name = case_details['network_tariff_name']
+    wholesale_year = case_details['wholesale_price_details']['year']
+    wholesale_state = case_details['wholesale_price_details']['state']
 
     # Filter load.
     demo_info_file_name = data_interface.find_loads_demographic_file(load_file_name)
@@ -185,6 +191,16 @@ def add_case():
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
         retail_results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), retail_tariff)
         retail_tariffs_by_case[case_name] = retail_tariff
+
+    if (wholesale_year != 'None') & (wholesale_state != 'None'):
+        start_time = "{}/01/01 00:00:00".format(wholesale_year)
+        end_time = "{}/01/01 00:00:00".format(int(wholesale_year) + 1)
+        table = "TRADINGPRICE"
+        raw_data_cache = 'data/aemo_raw_cache/'
+        price_data = data_fetch_methods.dynamic_data_compiler(start_time, end_time, table, raw_data_cache)
+        price_data = price_data[price_data['REGIONID'] == (wholesale_state + '1')]
+        price_data = price_data.loc[:, ['SETTLEMENTDATE', 'RRP']]
+        wholesale_results_by_case[case_name] = helper_functions.calc_wholesale_energy_costs(price_data, load_data)
 
     # Save input data and settings associated with the case.
     load_by_case[case_name] = load_data
@@ -243,7 +259,8 @@ def get_single_variable_chart():
     chart_name = details['chart_name']
     case_names = details['case_names']
     results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
-                                                                  network_results_by_case)
+                                                                  network_results_by_case,
+                                                                  wholesale_results_by_case)
     return singe_variable_chart(chart_name, results_to_plot)
 
 
@@ -254,7 +271,7 @@ def get_dual_variable_chart():
     y_axis = details['y_axis']
     case_names = details['case_names']
     results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
-                                                                  network_results_by_case)
+                                                                  network_results_by_case, wholesale_results_by_case)
     return dual_variable_chart(results_to_plot, x_axis, y_axis)
 
 
@@ -264,7 +281,7 @@ def get_single_case_chart():
     chart_name = details['chart_name']
     case_name = details['case_name']
     results_to_plot = helper_functions.get_results_subset_to_plot([case_name], retail_results_by_case,
-                                                                  network_results_by_case)
+                                                                  network_results_by_case, wholesale_results_by_case)
     if case_name not in results_to_plot.keys():
         results_to_plot = None
     else:
@@ -284,6 +301,42 @@ def get_demo_options(name):
         demo_options = {'actual_names': [], "display_names": {}, "options": {}}
 
     return jsonify(demo_options)
+
+
+@app.route('/wholesale_price_options', methods=['POST'])
+def wholesale_price_options():
+    years = []
+    last_year = 'complete'
+    year = 2012
+    aemo_data_url = 'http://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/{}/MMSDM_{}_{}'
+    month = 12
+    while last_year == 'complete':
+        url_to_check = aemo_data_url.format(year, year, month)
+        r = requests.get(url_to_check)
+        if r.status_code != 404:
+            years.append(year)
+            year += 1
+        else:
+            last_year = 'not complete'
+    states = ['NSW', "VIC", 'TAS', 'QLD', 'SA']
+    return jsonify({'states': states, 'years': years})
+
+
+@app.route('/wholesale_prices', methods=['POST'])
+def wholesale_price_chart_data():
+    request_details = request.json
+    if (request_details['year'] != 'None') & (request_details['state'] != 'None'):
+        start_time = "{}/01/01 00:00:00".format(request_details['year'])
+        end_time = "{}/01/01 00:00:00".format(int(request_details['year']) + 1)
+        table = "TRADINGPRICE"
+        raw_data_cache = 'data/aemo_raw_cache/'
+        price_data = data_fetch_methods.dynamic_data_compiler(start_time, end_time, table, raw_data_cache)
+        price_data = price_data[price_data['REGIONID'] == (request_details['state'] + '1')]
+    else:
+        price_data = pd.DataFrame(columns=['SETTLEMENTDATE', 'RRP'])
+    price_data['SETTLEMENTDATE'] = pd.to_datetime(price_data['SETTLEMENTDATE'])
+    chart_data = annual_profile(price_data)
+    return chart_data
 
 
 @app.route('/tariff_options', methods=['POST'])

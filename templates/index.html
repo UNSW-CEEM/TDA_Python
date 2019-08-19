@@ -630,7 +630,6 @@
   </div>
   <hr class="header_border"/>
   <div class="main">
-
     <div id="left_column" class="tab_button_area" style="height: 100%; width: 14.5%; max-width: 200px; float: left;">
         <script src="static/main_tabs.js"></script>
         <div class="logos">
@@ -643,6 +642,8 @@
                 onclick="displayPanels(event, 'load_panel')" style="width: 100%; height: 50px">Load</button>
         <button id="tariff_panel_button" class="main_tab_links"
                 onclick="displayPanels(event, 'tariff_selection_panel')" style="width: 100%; height: 50px">Tariffs</button>
+        <button class="main_tab_links" style="width: 100%; height: 50px"
+                onclick="displayPanels(event, 'wholesale_energy_costs_selection_panel')">Wholesale prices</button>
         <button id="results_panel_button" class="main_tab_links"
                 onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">Results</button>
     </div>
@@ -949,10 +950,10 @@
         </div>
         <div id="tariff_selection_panel" class="main_tab_content">
             <div id="tariff_type_tabs" class="tab_button_area" style="height: 4.13%">
-                <button class="tariff_type_links"
-                        onclick="displayTariffType(event, 'network_tariff_selection_panel')">Network tariffs</button>
                 <button id="default_tariff_type_tab" class="tariff_type_links"
                         onclick="displayTariffType(event, 'retail_tariff_selection_panel')">Retail tariffs</button>
+                <button class="tariff_type_links"
+                        onclick="displayTariffType(event, 'network_tariff_selection_panel')">Network tariffs</button>
             </div>
             <div id="tariff_type_container" style="height: 95%; width: 100%; overflow: hidden;">
                 <div id="network_tariff_selection_panel" class="tariff_type_tab_content">
@@ -1026,6 +1027,46 @@
 
                         <script>document.getElementById("retail_default_tab").click();</script>
                     </div>
+                </div>
+            </div>
+
+        </div>
+        <div id="wholesale_energy_costs_selection_panel" class="main_tab_content">
+            <div style="height: 4.13%"></div>
+            <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
+                        border-style: solid; border-color: #EEEEEE;">
+                <div class="row" style="height: 55%">
+                    <div class="col" style="width: 35%">
+                        <div class="row" style="height: 10%">
+                            <h4 style="margin: 0;">Historical wholesale prices</h4>
+                            <hr style="width: 80%; float: left;">
+                        </div>
+                        <div class="row" style="height: 45%">
+                            <div class="col" style="width: 30%">
+                                <div class="label_stacked">Year:</div>
+                                <div class="label_stacked">State:</div>
+                            </div>
+                            <div class="col" style="width: 50%">
+                                <select id="select_wholesale_year" class="wholesale_filter">
+                                    <option selected="selected">None</option>
+                                </select>
+                                <select id="select_wholesale_state" class="wholesale_filter">
+                                    <option selected="selected">None</option>
+                                </select>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="height: 2%"><hr></div>
+                <div id="price_inspection" style="height: 40%">
+                    <div style="height: 10%; overflow: hidden;">
+                        <select  id="select_price_graph" style="float: right; width: 30%;">
+                            <option value="Annual Profile"> Annual Profile</option>
+                        </select>
+                        <div class="label_line" style="float: right;">Show:&nbsp</div>
+                    </div>
+                    <div class="chart" id="price_chart" style="height: 100%;"></div>
+                    <script src="static/plot_wholesale_prices.js"></script>
                 </div>
             </div>
         </div>

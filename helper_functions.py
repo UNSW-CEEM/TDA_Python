@@ -1,3 +1,6 @@
+import pandas as pd
+import numpy as np
+
 def get_unique_default_case_name(names_in_use):
     base_name = "Case "
     not_unique = True
@@ -53,11 +56,33 @@ def get_tariff_by_case(case_name, tariff_type, network_tariffs_by_case, retail_t
     return tariff
 
 
-def get_results_subset_to_plot(case_names, retail_results_by_case, network_results_by_case):
+def get_results_subset_to_plot(case_names, retail_results_by_case, network_results_by_case,
+                               wholesale_results_by_case):
     results_to_plot = {}
     for name in case_names:
         if name in retail_results_by_case.keys():
             results_to_plot[name] = retail_results_by_case[name]
         elif name in network_results_by_case.keys():
             results_to_plot[name] = network_results_by_case[name]
+        elif name in wholesale_results_by_case.keys():
+            results_to_plot[name] = wholesale_results_by_case[name]
     return results_to_plot
+
+
+def calc_wholesale_energy_costs(price_data, load_profiles):
+    imports = [np.nansum(load_profiles[col].values[load_profiles[col].values > 0])
+               for col in load_profiles.columns if col != 'Datetime']
+    results = pd.DataFrame(index=[col for col in load_profiles.columns if col != 'Datetime'],
+                           data=imports, columns=['Annual_kWh'])
+    price_data['date_time_no_year'] = price_data['SETTLEMENTDATE'].dt.month.astype(str) + '_' \
+                                      + price_data['SETTLEMENTDATE'].dt.day.astype(str) + '_' \
+                                      + price_data['SETTLEMENTDATE'].dt.time.astype(str)
+    price_data = price_data.drop('SETTLEMENTDATE', axis=1)
+    load_profiles['date_time_no_year'] = load_profiles['Datetime'].dt.month.astype(str) + '_' \
+                                         + load_profiles['Datetime'].dt.day.astype(str) + '_' \
+                                         + load_profiles['Datetime'].dt.time.astype(str)
+    load_profiles = load_profiles.drop('Datetime', axis=1)
+    price_and_load = pd.merge(load_profiles, price_data, how='left', on='date_time_no_year')
+    results['Bill'] = [np.nansum(price_and_load[col] * (price_and_load['RRP'].astype(float)/1000))
+                       for col in load_profiles.columns if col != 'date_time_no_year']
+    return results
