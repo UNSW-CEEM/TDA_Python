@@ -124,11 +124,18 @@ var plot_filtered_load =  function(){
 }
 
 var plot_load = function(response){
-    var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
+
+    console.log("response:",response);
+    console.log("response[layout]:",response['chart_data']['layout']);
+    var layout = {autosize: true,
+                  margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
                   paper_bgcolor: '#EEEEEE',
                   plot_bgcolor: '#c7c7c7',
-                  showlegend: true};
-    Plotly.newPlot('load_chart', response['chart_data'], layout, {responsive: true});
+                  showlegend: true,
+                  xaxis: response['chart_data']['layout'].xaxis,
+                  yaxis: response['chart_data']['layout'].yaxis};
+
+    Plotly.newPlot('load_chart', response['chart_data']['data'], layout);
     var file_name = $('#select').children("option:selected").val();
     print_n_users(response['n_users'])
     $('#dialog').dialog('close');
