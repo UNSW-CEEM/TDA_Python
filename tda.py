@@ -150,9 +150,9 @@ def filtered_load_data():
     #### prepare chart data and n_users
     chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
     if filtered:
-        n_users = data_interface.n_users(filtered_data)
+        n_users = helper_functions.n_users(filtered_data)
     else:
-        n_users = data_interface.n_users(raw_data[load_request['file_name']])
+        n_users = helper_functions.n_users(raw_data[load_request['file_name']])
 
     # If filtering has been applied also create the filtered chart data,
     # if filtered:

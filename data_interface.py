@@ -8,7 +8,6 @@ def get_load_table(folder_path, load_file):
     load_data['Datetime'] = pd.to_datetime(load_data['READING_DATETIME'])
     load_data = load_data.drop('READING_DATETIME', axis=1)
     load_data = load_data.sort_values(by=['Datetime'])
-    del load_data['READING_DATETIME']
     return load_data
 
 
