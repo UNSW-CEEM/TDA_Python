@@ -1,7 +1,7 @@
 var add_demo_selectors = function(response){
-    console.log(response)
     var arraylength = response.actual_names.length
 
+    // Hide existing selectors and remove content
     for (var i = 0; i < 10; i++){
         selector_id = "demo_select_" + i.toString()
         div_id = "demo_" + i.toString()
@@ -12,6 +12,7 @@ var add_demo_selectors = function(response){
         label.innerHTML = ''
     }
 
+    // Show the required selectors and add the new content to them.
     for (var i = 0; i < arraylength; i++){
         selector_id = "demo_select_" + i.toString()
         label_id = "demo_label_" + i.toString()
@@ -25,6 +26,52 @@ var add_demo_selectors = function(response){
         var name = response.display_names[response.actual_names[i]]
         label.innerHTML = name
     }
+}
+
+var get_down_sample_setting = function(){
+    var chosen_down_sample_option
+    var options = $('.down_sample_option')
+    $.each(options, function(i, option){
+        if ($(option).is(":checked")){
+            chosen_down_sample_option = parseFloat($(option).attr('value'))
+        }
+    });
+    return chosen_down_sample_option
+}
+
+var get_missing_data_limit = function(){
+    var chosen_missing_data_limit
+    var options = $('.missing_data_limit')
+    $.each(options, function(i, option){
+        if ($(option).is(":checked")){
+            chosen_missing_data_limit = parseFloat($(option).attr('value'))
+        }
+    });
+    return chosen_missing_data_limit
+}
+
+var get_network_load_setting = function(){
+    // Check which network load type is checked in the drop down menu.
+    var chosen_network_load
+    var options = $('.network_load_option')
+    $.each(options, function(i, option){
+        if ($(option).is(":checked")){
+            chosen_network_load = $(option).attr('value')
+        }
+    });
+
+    // If the synthetic option is chosen then replace the return value with the name of the chosen synthetic load.
+    if (chosen_network_load == 'synthetic'){
+         var synthetic_options = $('.synthetic_network_load_option')
+        $.each(synthetic_options, function(i, option){
+            if ($(option).is(":checked")){
+                chosen_network_load = $(option).attr('value')
+            }
+        });
+    }
+
+    console.log(chosen_network_load)
+    return chosen_network_load
 }
 
 var get_load_details_from_ui = function(){
@@ -45,7 +92,15 @@ var get_load_details_from_ui = function(){
 
     var chart_type = $('#select_graph').children("option:selected").val();
 
-    var load_request = {'file_name': file_name, 'filter_options': filter_options, 'chart_type': chart_type}
+    var down_sample_option = get_down_sample_setting();
+
+    var missing_data_limit = get_missing_data_limit();
+
+    var network_load = get_network_load_setting();
+
+    var load_request = {'file_name': file_name, 'filter_options': filter_options, 'chart_type': chart_type,
+                        'sample_fraction': down_sample_option, 'missing_data_limit': missing_data_limit,
+                        'network_load': network_load};
 
     return load_request
 
@@ -83,7 +138,7 @@ var plot_load = function(response){
     Plotly.newPlot('load_chart', response['chart_data']['data'], layout);
     var file_name = $('#select').children("option:selected").val();
     print_n_users(response['n_users'])
-    $('#get_load').contextMenu('close');
+    $('#dialog').dialog('close');
 }
 
 var print_n_users = function(n_users){
@@ -105,17 +160,32 @@ var make_loading_popup = function(){
   return newWindow
 }
 
-$('#get_load').click(function() {
-  var file_name = $('#select').children("option:selected").val();
-  $.getJSON('/demo_options/' + file_name, add_demo_selectors);
-  plot_filtered_load();
+var perform_plot_load_actions = function(){
+    $('#dialog').dialog({modal: true});
+    var file_name = $('#select').children("option:selected").val();
+    $.getJSON('/get_demo_options/' + file_name, add_demo_selectors);
+    plot_filtered_load();
+}
+
+$('#select').on('change', function() {
+    perform_plot_load_actions();
+});
+
+$('.down_sample_option').on('change', function() {
+    perform_plot_load_actions();
+});
+
+$('.missing_data_limit').on('change', function() {
+    perform_plot_load_actions();
 });
 
 $('.select_demo').on('change', function() {
+    $('#dialog').dialog({modal: true});
     plot_filtered_load();
 });
 
 $('#select_graph').on('change', function() {
+    $('#dialog').dialog({modal: true});
     plot_filtered_load();
 });
 
@@ -123,6 +193,3 @@ window.onresize = function() {
     Plotly.Plots.resize('load_chart');
 };
 
-$('#get_load').contextMenu('popup', '#popupMenu2');
-
-$('.popupClose').on('click', function(e){$('#get_load').contextMenu('close');});
