@@ -48,6 +48,9 @@ load_n_users_by_case = {}
 # The filtering used for a given case, stored on a case name basis.
 filter_options_by_case = {}
 
+# Wholesale price info
+wholesale_price_info_by_case = {}
+
 
 def resource_path(relative_path):
     """ Get absolute path to resource, works for dev and for PyInstaller """
@@ -221,8 +224,11 @@ def add_case():
     if (wholesale_year != 'None') & (wholesale_state != 'None'):
         price_data = get_wholesale_prices(wholesale_year, wholesale_state)
         wholesale_results_by_case[case_name] = calc_wholesale_energy_costs(price_data, load_data)
+        wholesale_price_info_by_case[case_name] = {}
+        wholesale_price_info_by_case[case_name]['year'] = wholesale_year
+        wholesale_price_info_by_case[case_name]['state'] = wholesale_state
 
-    # Save input data and settings associated with the case.
+        # Save input data and settings associated with the case.
     load_by_case[case_name] = load_data
     load_file_name_by_case[case_name] = load_file_name
     load_n_users_by_case[case_name] = helper_functions.n_users(load_data)
@@ -358,6 +364,13 @@ def wholesale_price_chart_data():
         price_data['SETTLEMENTDATE'] = pd.to_datetime(price_data['SETTLEMENTDATE'])
     chart_data = get_price_chart(price_data, request_details['chart_type'])
     return chart_data
+
+
+@app.route('/get_wholesale_price_info', methods=['POST'])
+def get_wholesale_price_info():
+    case_name = request.json
+    return jsonify({'state': wholesale_price_info_by_case[case_name]['state'],
+                    'year': wholesale_price_info_by_case[case_name]['year']})
 
 
 @app.route('/tariff_options', methods=['POST'])

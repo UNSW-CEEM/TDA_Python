@@ -20,6 +20,28 @@ var display_case_load_info = function(case_name, load_info){
     $("#info_load_summary_labels").css("display", "block");
 }
 
+var get_and_display_case_wholesale_price_info = function(case_name){
+    // Get tariff info for case.
+    $.ajax({
+        url: '/get_wholesale_price_info',
+        data: JSON.stringify(case_name),
+        contentType: 'application/json;charset=UTF-8',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        // Call the function to display the selected tariffs info
+        success: function(data){display_case_wholesale_price_info(case_name, data);},
+        error: function(a,b,c){console.log(b); console.log(c);}
+    });
+}
+
+var display_case_wholesale_price_info = function(case_name, wholesale_price_info){
+    $('#wholesale_price_case').text(case_name);
+    $('#wholesale_price_year').text(wholesale_price_info['year'].toString());
+    $('#wholesale_price_state').text(wholesale_price_info['state']);
+    $("#info_wholesale_price_summary_labels").css("display", "block");
+}
+
 var get_and_display_case_demo_info = function(case_name){
     // Get tariff info for case.
     $.ajax({
@@ -65,6 +87,7 @@ var update_info_tabs_on_case_delete = function(case_name){
             // Stop display info summaries
             $("#info_tariff_summary_labels").css("display", "none");
             $("#info_load_summary_labels").css("display", "none");
+            $("#info_wholesale_price_summary_labels").css("display", "none");
             $("#demog_info").empty();
         } else {
             // If there are other cases then display the info for the first one.
@@ -72,17 +95,19 @@ var update_info_tabs_on_case_delete = function(case_name){
             get_and_display_case_tariff_info(case_controllers[0].innerHTML, 'network');
             get_and_display_case_load_info(case_controllers[0].innerHTML);
             get_and_display_demo_info(case_controllers[0].innerHTML);
+            get_and_display_case_wholesale_price_info(case_controllers[0].innerHTML);
         }
     }
 
 }
 
 var reset_case_tariff_info_from_button = function(info_button){
-        var case_name = $(info_button).attr('value');
-        get_and_display_case_tariff_info(case_name, 'retail');
-        get_and_display_case_tariff_info(case_name, 'network');
-        get_and_display_case_load_info(case_name);
-        get_and_display_case_demo_info(case_name);
+    var case_name = $(info_button).attr('value');
+    get_and_display_case_tariff_info(case_name, 'retail');
+    get_and_display_case_tariff_info(case_name, 'network');
+    get_and_display_case_load_info(case_name);
+    get_and_display_case_demo_info(case_name);
+    get_and_display_case_wholesale_price_info(case_name);
 }
 
 var get_and_display_case_tariff_info = function(case_name, tariff_type){

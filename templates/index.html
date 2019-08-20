@@ -872,11 +872,13 @@
                         <button id="default_case_info_tab" class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'load_info')">Load Info</button>
                         <button class="case_tab_links"
-                                onclick="displayCaseInfoType(event, 'network_tariff_info')">Network tariff Info</button>
+                                onclick="displayCaseInfoType(event, 'wholesale_price_info')">Wholesale price info</button>
                         <button class="case_tab_links"
-                                onclick="displayCaseInfoType(event, 'retail_tariff_info')">Retail tariff Info</button>
+                                onclick="displayCaseInfoType(event, 'network_tariff_info')">Network tariff info</button>
                         <button class="case_tab_links"
-                                onclick="displayCaseInfoType(event, 'demog_info')">Demog Info</button>
+                                onclick="displayCaseInfoType(event, 'retail_tariff_info')">Retail tariff info</button>
+                        <button class="case_tab_links"
+                                onclick="displayCaseInfoType(event, 'demog_info')">Demog info</button>
                     </div>
                     <div class="case_info_tab_content" id="load_info">
                         <div id="info_load_summary_labels" class="col" style="width: 100%; display: none;">
@@ -891,6 +893,22 @@
                             <div class="row" style="height: 2.5vh;">
                                 <div class="label_line">Database:&nbsp</div>
                                 <div id="load_info_database" class="label_line"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="case_info_tab_content" id="wholesale_price_info">
+                        <div id="info_wholesale_price_summary_labels" class="col" style="width: 100%; display: none;">
+                            <div class="row" style="height: 2.5vh;">
+                                <div class="label_line">Case:&nbsp</div>
+                                <div id="wholesale_price_case" class="label_line"></div>
+                            </div>
+                            <div class="row" style="height: 2.5vh;">
+                                <div class="label_line">Year:&nbsp</div>
+                                <div id="wholesale_price_state" class="label_line"></div>
+                            </div>
+                            <div class="row" style="height: 2.5vh;">
+                                <div class="label_line">State:&nbsp</div>
+                                <div id="wholesale_price_year" class="label_line"></div>
                             </div>
                         </div>
                     </div>
