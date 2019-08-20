@@ -783,7 +783,15 @@
                         </div>
                         <div class="col" style="width: 80%">
                             <select id="single_variable_chart_type" style="width: 50%">
+                                <option value="Annual Average Profile"> Annual Average Profile</option>
+                                <option value="Daily kWh Histogram">Daily kWh Histogram</option>
+                                <option value="Monthly Average kWh">Monthly Average kWh</option>
+                                <option value="Seasonal Daily Pattern">Seasonal Daily Pattern</option>
+                                <option value="Monthly Peak Time">Monthly Peak Time</option>
+                                <option value="Average Load Duration Curve">Average Load Duration Curve</option>
                                 <option value="Bill Distribution">Bill Distribution</option>
+                                <option value="Bill Box Plot">Bill Box Plot</option>
+
                             </select>
                         </div>
                     </div>
@@ -798,11 +806,27 @@
                         <div class="col" style="width: 40%">
                             <select id="dual_variable_x_axis" style="width: 80%">
                                 <option value="Annual_kWh">Annual kWh</option>
+                                <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
+                                <option value="avg_demand_n_monthly_peaks">Average Demand at 'N' Network Monthly Peaks</option>
+                                <option value="avg_demand_top_n_peaks">Average Demand at Top 'N' Peaks</option>
+                                <option value="avg_demand_top_n_monthly_peaks">Average Demand at Top 'N' Monthly Peaks</option>
+                                <option value="avg_daily_kWh">Average Daily kWh</option>
+                                <option value="avg_daily_peak">Average Daily Peak</option>
+                                <option value="Bill">Bill ($/year)</option>
+                                <option value="unitised_bill_kW">Unitised Bill (kW)</option>
                             </select>
                             <br/>
                             <select id="dual_variable_y_axis" style="width: 80%">
-                                <option value="Bill">Bill ($/year)</option>
                                 <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
+                                <option value="Annual_kWh">Annual kWh</option>
+                                <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
+                                <option value="avg_demand_n_monthly_peaks">Average Demand at 'N' Network Monthly Peaks</option>
+                                <option value="avg_demand_top_n_peaks">Average Demand at Top 'N' Peaks</option>
+                                <option value="avg_demand_top_n_monthly_peaks">Average Demand at Top 'N' Monthly Peaks</option>
+                                <option value="avg_daily_kWh">Average Daily kWh</option>
+                                <option value="avg_daily_peak">Average Daily Peak</option>
+                                <option value="Bill">Bill ($/year)</option>
+                                <option value="unitised_bill_kW">Unitised Bill (kW)</option>
                             </select>
                         </div>
                         <div id="peak_options" class="col" style="width: 49%; display: none;">
