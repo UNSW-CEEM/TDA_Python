@@ -17,7 +17,8 @@ from tariff_processing import format_tariff_data_for_display, format_tariff_data
     get_options_from_tariff_set, strip_tariff_to_single_component
 import requests
 from nemosis import data_fetch_methods
-from make_price_charts import annual_profile
+from make_price_charts import get_price_chart
+from wholesale_energy import get_wholesale_prices, calc_wholesale_energy_costs
 
 # Dictionaries for storing data associated with the current state of the program.
 raw_data = {}  # Data as loaded from feather files, stored in dict on a file name basis
@@ -218,14 +219,8 @@ def add_case():
         retail_tariffs_by_case[case_name] = retail_tariff
 
     if (wholesale_year != 'None') & (wholesale_state != 'None'):
-        start_time = "{}/01/01 00:00:00".format(wholesale_year)
-        end_time = "{}/01/01 00:00:00".format(int(wholesale_year) + 1)
-        table = "TRADINGPRICE"
-        raw_data_cache = 'data/aemo_raw_cache/'
-        price_data = data_fetch_methods.dynamic_data_compiler(start_time, end_time, table, raw_data_cache)
-        price_data = price_data[price_data['REGIONID'] == (wholesale_state + '1')]
-        price_data = price_data.loc[:, ['SETTLEMENTDATE', 'RRP']]
-        wholesale_results_by_case[case_name] = helper_functions.calc_wholesale_energy_costs(price_data, load_data)
+        price_data = get_wholesale_prices(wholesale_year, wholesale_state)
+        wholesale_results_by_case[case_name] = calc_wholesale_energy_costs(price_data, load_data)
 
     # Save input data and settings associated with the case.
     load_by_case[case_name] = load_data
@@ -330,11 +325,16 @@ def get_demo_options(name):
 
 @app.route('/wholesale_price_options', methods=['POST'])
 def wholesale_price_options():
-    years = []
-    last_year = 'complete'
+    # First year to access data from.
     year = 2012
-    aemo_data_url = 'http://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/{}/MMSDM_{}_{}'
+    # Month to check for data.
     month = 12
+    # url to check for data at.
+    aemo_data_url = 'http://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/{}/MMSDM_{}_{}'
+    # Status to keep checking for new data on.
+    last_year = 'complete'
+    # Add years to the list that the user can select from where that year has an AMEO
+    years = []
     while last_year == 'complete':
         url_to_check = aemo_data_url.format(year, year, month)
         r = requests.get(url_to_check)
@@ -343,6 +343,7 @@ def wholesale_price_options():
             year += 1
         else:
             last_year = 'not complete'
+    # Hard coded regions that the user can select from.
     states = ['NSW', "VIC", 'TAS', 'QLD', 'SA']
     return jsonify({'states': states, 'years': years})
 
@@ -351,16 +352,11 @@ def wholesale_price_options():
 def wholesale_price_chart_data():
     request_details = request.json
     if (request_details['year'] != 'None') & (request_details['state'] != 'None'):
-        start_time = "{}/01/01 00:00:00".format(request_details['year'])
-        end_time = "{}/01/01 00:00:00".format(int(request_details['year']) + 1)
-        table = "TRADINGPRICE"
-        raw_data_cache = 'data/aemo_raw_cache/'
-        price_data = data_fetch_methods.dynamic_data_compiler(start_time, end_time, table, raw_data_cache)
-        price_data = price_data[price_data['REGIONID'] == (request_details['state'] + '1')]
+        price_data = get_wholesale_prices(request_details['year'], request_details['state'])
     else:
         price_data = pd.DataFrame(columns=['SETTLEMENTDATE', 'RRP'])
-    price_data['SETTLEMENTDATE'] = pd.to_datetime(price_data['SETTLEMENTDATE'])
-    chart_data = annual_profile(price_data)
+        price_data['SETTLEMENTDATE'] = pd.to_datetime(price_data['SETTLEMENTDATE'])
+    chart_data = get_price_chart(price_data, request_details['chart_type'])
     return chart_data
 
 

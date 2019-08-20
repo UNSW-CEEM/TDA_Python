@@ -1,30 +1,28 @@
 
-var get_default_case_name = function(event, div_that_got_clicked){
-    var parent_id = $(div_that_got_clicked).closest('[id]').attr('id');
-    console.log(parent_id)
+var get_default_case_name = function(){
     // Get a un used case name to put as the default name in the case namer dialog box.
     $.ajax({
         url: '/get_case_default_name',
         contentType: 'application/json;charset=UTF-8',
         async: 'false',
         dataType:"json",
-        success: function(data){launch_case_namer(data, parent_id)}
+        success: function(data){launch_case_namer(data)}
     });
 }
 
 
-var launch_case_namer = function(default_name, parent_id){
+var launch_case_namer = function(default_name){
     $('#case_name').val(default_name)
     $( "#case_namer" ).dialog({
         modal: true,
-        buttons: {"Save case": function(){add_case(parent_id)}}
+        buttons: {"Save case": function(){add_case()}}
     });
 }
 
-var add_case = function(parent_id){
+var add_case = function(){
     case_name = $('#case_name').val();
     add_case_to_gui(case_name)
-    add_case_to_python(parent_id);
+    add_case_to_python();
     update_single_case_selector();
 }
 

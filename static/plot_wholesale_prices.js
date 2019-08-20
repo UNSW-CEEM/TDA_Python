@@ -5,9 +5,11 @@ var get_and_plot_wholesale_prices = function(){
 
     var state = $('#select_wholesale_state').val();
 
+    var chart_type = $('#select_price_graph').val();
+
     $('#dialog').dialog({modal: true});
 
-    var price_request = {'year': year, 'state': state};
+    var price_request = {'year': year, 'state': state, 'chart_type': chart_type};
 
     $.ajax({
         url: '/wholesale_prices',
@@ -24,11 +26,7 @@ var get_and_plot_wholesale_prices = function(){
 }
 
 var plot_wholesale_prices = function(chart_data){
-    var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
-                  paper_bgcolor: '#EEEEEE',
-                  plot_bgcolor: '#c7c7c7',
-                  showlegend: true};
-    Plotly.newPlot('price_chart', chart_data, layout, {responsive: true});
+    Plotly.newPlot('price_chart', chart_data['data'], chart_data['layout'], {responsive: true});
     $('#dialog').dialog('close');
 }
 
@@ -60,3 +58,10 @@ get_wholesale_price_options();
 $('.wholesale_filter').on('change', function() {
     get_and_plot_wholesale_prices();
 });
+
+$('#select_price_graph').on('change', function() {
+    get_and_plot_wholesale_prices();
+});
+
+
+get_and_plot_wholesale_prices();

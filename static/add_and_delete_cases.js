@@ -1,9 +1,6 @@
-var add_case_to_python = function(parent_id){
+var add_case_to_python = function(){
     // Get the name of the selected tariff.
     var case_name = $('#case_name').val();
-
-    // Get the active component tab when the add case button was clicked.
-    var component = get_active_component(parent_id);
 
     // Get the name of the selected tariff.
     var retail_tariff_name = $('#retail_tariff_selection_panel .select_tariff').val();
@@ -22,7 +19,6 @@ var add_case_to_python = function(parent_id){
                         'retail_tariff_name': retail_tariff_name,
                         'network_tariff_name': network_tariff_name,
                         'load_details': load_request,
-                        'tariff_panel': parent_id,
                         'wholesale_price_details': wholesale_price_details};
 
     $('#case_namer').dialog('close');
@@ -43,18 +39,6 @@ var add_case_to_python = function(parent_id){
             get_and_display_case_demo_info(case_name);
             }
     });
-}
-
-var get_active_component = function(parent_id){
-    var component
-    var tablinks = $("#" + parent_id + " .tablinks");
-    $.each(tablinks, function(index, link){
-        if ($(link).hasClass('active')){
-          component = link.value
-        }
-        return component
-    });
-    return component
 }
 
 var delete_case = function(delete_button){

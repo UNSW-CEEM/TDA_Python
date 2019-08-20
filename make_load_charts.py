@@ -252,7 +252,7 @@ def get_seasonal_daily_pattern(load):
     layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
 
-    data = {'data': [trace1, trace2], 'layout':layout}
+    data = {'data': [trace1, trace2], 'layout': layout}
 
     return data
 
