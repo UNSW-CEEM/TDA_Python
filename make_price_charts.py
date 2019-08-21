@@ -2,6 +2,7 @@ import plotly.graph_objs as go
 import json
 import plotly
 
+
 def get_default_layout():
     layout = go.Layout(xaxis=dict(title='', title_font=dict(size=12), tickfont=dict(size=12)),
                        yaxis=dict(title='', title_font=dict(size=12), tickfont=dict(size=12),

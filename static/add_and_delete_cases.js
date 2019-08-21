@@ -33,10 +33,7 @@ var add_case_to_python = function(){
         dataType:"json",
         success: function(data){
             plot_results();
-            get_and_display_case_tariff_info(case_name, 'retail');
-            get_and_display_case_tariff_info(case_name, 'network');
-            get_and_display_case_load_info(case_name);
-            get_and_display_case_demo_info(case_name);
+            reset_case_info(case_name);
             }
     });
 }

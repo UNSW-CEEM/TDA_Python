@@ -79,13 +79,6 @@
         margin: 0;
       }
 
-      .case_info_button, .case_delete_button, .case_visibility_checkbox  {
-            height: 2.25vh;
-            width: 2.25vh;
-            font-size: 1.5vh;
-            margin-top: 0.375vh;
-      }
-
       .tariff_input {
         width: 70%;
         margin-bottom: 1.2vh;
@@ -121,15 +114,6 @@
 
         input {
             height: 18px;
-        }
-
-        .case_info_button, .case_delete_button, .case_visibility_checkbox {
-            height: 18px;
-            width: 18px;
-            font-size: 12px;
-            padding:0;
-            margin-top: 0.375vh;
-            vertical-align: bottom;
         }
 
         .tariff_input {
@@ -213,13 +197,14 @@
           .case_area_top {
             height: 100%;
             float: left;
-            width: 39%;
+            width: 30%;
+            max-width: 200px;
           }
 
           .case_area_bottom {
             height: 100%;
-            float: left;
-            width: 60%;
+            margin-left: 200px;
+            width: auto;
           }
 
           .results_tab_content{
@@ -292,7 +277,7 @@
       }
 
       .tab_button_area {
-        overflow: hidden;
+        overflow-x: auto;
       }
 
       .tab_button_area button {
@@ -406,6 +391,15 @@
         width: 100%;
         height: 50px;
       }
+
+      .case_info_button, .case_delete_button, .case_visibility_checkbox {
+        height: 18px;
+        width: 18px;
+        font-size: 12px;
+        padding:0;
+        vertical-align: top;
+      }
+
   </style>
 
     <div id="message_dialog" title="Update" style="display: none">
@@ -442,18 +436,18 @@
     </div>
 
     <div id="tariff_meta_details_editor" title="Set tariff details" style="display: none;">
-                <label class="label_close_stacked">Name</label>
-                <input type="text" value="" class="text ui-widget-content ui-corner-all name tariff_input">
-                <label class="label_close_stacked">Provider</label>
-                <input type="text" value="" class="text ui-widget-content ui-corner-all provider tariff_input">
-                <label class="label_close_stacked">Type</label>
-                <input type="text"  value="" class="text ui-widget-content ui-corner-all type tariff_input">
-                <label class="label_close_stacked">State</label>
-                <input type="text" value="" class="text ui-widget-content ui-corner-all state tariff_input">
-                <label class="label_close_stacked">Year</label>
-                <input type="text" value="" class="text ui-widget-content ui-corner-all year tariff_input">
-                <label class="label_close_stacked">Info</label>
-                <input type="text" value="" class="text ui-widget-content ui-corner-all info tariff_input">
+        <label class="label_close_stacked">Name</label>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all name tariff_input">
+        <label class="label_close_stacked">Provider</label>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all provider tariff_input">
+        <label class="label_close_stacked">Type</label>
+        <input type="text"  value="" class="text ui-widget-content ui-corner-all type tariff_input">
+        <label class="label_close_stacked">State</label>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all state tariff_input">
+        <label class="label_close_stacked">Year</label>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all year tariff_input">
+        <label class="label_close_stacked">Info</label>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all info tariff_input">
     </div>
 
     <div id="case_namer" title="Basic dialog" style="display: none">
@@ -463,11 +457,11 @@
 
     <div id="case_control_template" class="row case_control"
          style="width: 100%; margin-bottom: 2vh; float: left;">
-        <div class="label_line case_label"></div>
+        <div class="case_label" style="vertical-align: middle; width: 30%; display: inline;"></div>
         <input class="case_visibility_checkbox" type="checkbox" style="width: 10%;"
                checked onclick="on_checkbox_change()">
         <button class='case_info_button' onclick="reset_case_tariff_info_from_button(this)">?</button>
-        <button class='case_delete_button'onclick="delete_case(this)">&#10006</button>
+        <button class='case_delete_button' onclick="delete_case(this)">&#10006</button>
     </div>
 
     <table class="tariff_table display nowrap"
@@ -937,7 +931,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="network_info" style="width:100%; overflow-x: scroll; overflow-y: scroll"></div>
+                        <div id="network_info" style="width:100%; overflow: auto"></div>
                     </div>
                     <div class="case_info_tab_content" id="retail_tariff_info">
                         <div class="info_tariff_summary row">
@@ -964,7 +958,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="retail_info" style="width:100%; overflow-x: scroll; overflow-y: scroll"></div>
+                        <div id="retail_info" style="width:100%; overflow: auto;"></div>
                     </div>
                     <div class="case_info_tab_content" id="demog_info"></div>
                 </div>
@@ -1079,7 +1073,7 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="row" style="height: 12%">
+                        <div class="row" style="height: 10%">
                             <h4 style="margin: 0;">Actions</h4>
                             <hr style="width: 80%; float: left;">
                         </div>

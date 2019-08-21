@@ -59,9 +59,9 @@ var get_and_display_case_demo_info = function(case_name){
 
 var display_case_demo_info = function(case_name, demo_options){
         $("#demog_info").empty();
-        $('#demog_info').append($('<div>').text(case_name));
+        $('#demog_info').append($('<div class="label_close_stacked">').text("Case: " + case_name));
         $.each(demo_options, function(name, option_chosen){
-                $('#demog_info').append($('<div>').text(name + ": " + option_chosen));
+                $('#demog_info').append($('<div class="label_close_stacked">').text(name + ": " + option_chosen));
         });
 }
 
@@ -69,27 +69,12 @@ var update_info_tabs_on_case_delete = function(case_name){
     // If the case being delete had its info displayed, then change the display info to another case.
     // If there are no other cases then clear the info tabs.
 
-    if ($('#tariff_info_case').text() == case_name){
+    if ($('#load_info_case').text() == case_name){
+        // Clear info
+        clear_all_case_info();
         // Get list of cases.
         case_controllers = $("#case_list .case_label")
-
-        if (case_controllers.length < 1){
-            // If there are no case with info to display.
-            // Remove table displaying tariff info.
-            // Get a list of the tables currently on display
-            var current_tables = $('#info .tariff_table')
-            // Tear down all the current tables.
-            $.each(current_tables, function(index, table){
-                tear_down_current_table(table, true)
-            })
-            // Delete remaining html
-             $('#info').empty();
-            // Stop display info summaries
-            $("#info_tariff_summary_labels").css("display", "none");
-            $("#info_load_summary_labels").css("display", "none");
-            $("#info_wholesale_price_summary_labels").css("display", "none");
-            $("#demog_info").empty();
-        } else {
+        if (case_controllers.length >= 1){
             // If there are other cases then display the info for the first one.
             get_and_display_case_tariff_info(case_controllers[0].innerHTML, 'retail');
             get_and_display_case_tariff_info(case_controllers[0].innerHTML, 'network');
@@ -101,8 +86,31 @@ var update_info_tabs_on_case_delete = function(case_name){
 
 }
 
+var clear_all_case_info = function(){
+    // Remove table displaying tariff info.
+    // Get a list of the tables currently on display
+    var current_tables = $('.case_area .tariff_table')
+    // Tear down all the current tables.
+    $.each(current_tables, function(index, table){
+        tear_down_current_table(table, true)
+    })
+    // Delete remaining html
+    $('#retail_info').empty();
+    $('#network_info').empty();
+    // Stop display info summaries
+    $(".info_tariff_summary_labels").css("display", "none");
+    $("#info_load_summary_labels").css("display", "none");
+    $("#info_wholesale_price_summary_labels").css("display", "none");
+    $("#demog_info").empty();
+}
+
 var reset_case_tariff_info_from_button = function(info_button){
     var case_name = $(info_button).attr('value');
+    reset_case_info(case_name);
+}
+
+var reset_case_info = function(case_name){
+    clear_all_case_info();
     get_and_display_case_tariff_info(case_name, 'retail');
     get_and_display_case_tariff_info(case_name, 'network');
     get_and_display_case_load_info(case_name);
