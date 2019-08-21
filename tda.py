@@ -369,8 +369,12 @@ def wholesale_price_chart_data():
 @app.route('/get_wholesale_price_info', methods=['POST'])
 def get_wholesale_price_info():
     case_name = request.json
-    return jsonify({'state': wholesale_price_info_by_case[case_name]['state'],
-                    'year': wholesale_price_info_by_case[case_name]['year']})
+    if case_name in wholesale_price_info_by_case.keys():
+        info = {'state': wholesale_price_info_by_case[case_name]['state'],
+                'year': wholesale_price_info_by_case[case_name]['year']}
+    else:
+        info = 'None'
+    return jsonify(info)
 
 
 @app.route('/tariff_options', methods=['POST'])

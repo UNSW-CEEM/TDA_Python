@@ -30,7 +30,11 @@ var get_and_display_case_wholesale_price_info = function(case_name){
         async: 'false',
         dataType:"json",
         // Call the function to display the selected tariffs info
-        success: function(data){display_case_wholesale_price_info(case_name, data);},
+        success: function(data){
+            if (typeof data !== 'string' &&  !(data instanceof String)){
+                display_case_wholesale_price_info(case_name, data);
+            }
+            },
         error: function(a,b,c){console.log(b); console.log(c);}
     });
 }
