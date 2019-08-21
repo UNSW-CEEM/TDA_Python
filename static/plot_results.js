@@ -33,7 +33,7 @@ var add_case_to_gui = function(case_name){
     // Set the id of the copy equal to the case name.
     $new_case_control.attr('id', case_name_no_spaces);
     // Insert the copy into the case panel
-    $new_case_control.insertAfter($('#case_list').children().last())
+    $('#case_list').append($new_case_control);
     // Make the case control visible
     $new_case_control.css("display", "block");
     // Set the value of the checkbox in the case_control
