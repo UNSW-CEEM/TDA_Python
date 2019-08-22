@@ -21,7 +21,6 @@
     <script src="static/css_trick_dropdown_example/dropdownPlain.js"></script>
     <link rel="stylesheet" href="static/css_trick_dropdown_example/dropdown_menu.css" type="text/css"/>
     <script src="static/results_tabs.js"></script>
-    <script src="static/plot_results.js"></script>
     <script src="static/add_and_delete_cases.js"></script>
     <script src="static/case_info_tab.js"></script>
     <script src="static/control_content_in_case_info_tabs.js"></script>
@@ -94,6 +93,11 @@
         margin-bottom: 1.625vh;
         margin-top: 0.375vh;
         width: 100%;
+      }
+
+      .input_stacked {
+        margin-bottom: 1.2vh;
+        margin-top: 0.375vh;
       }
 
       .label_close_stacked {
@@ -399,6 +403,10 @@
         font-size: 12px;
         padding:0;
         vertical-align: top;
+      }
+
+      .x_peak_options, .y_peak_options {
+        visibility: hidden;
       }
 
   </style>
@@ -786,14 +794,15 @@
                 </div>
                 <div id="dual_variable_tab" class="results_tab_content">
                     <div id="dual_variable_result_chart" class="row" style="height: 80%"></div>
-                    <div class="row" style="height: 20%">
+                    <div class="row" style="height: 20%; overflow: auto;">
                         <div class="col">
                             <div class="label_stacked">X axis:&nbsp</div>
                             <div class="label_stacked">Y axis:&nbsp</div>
                         </div>
-                        <div class="col" style="width: 40%">
+                        <div class="col">
                             <select id="dual_variable_x_axis" style="width: 80%">
                                 <option value="Annual_kWh">Annual kWh</option>
+                                <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
                             </select>
                             <br/>
                             <select id="dual_variable_y_axis" style="width: 80%">
@@ -801,38 +810,53 @@
                                 <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
                             </select>
                         </div>
-                        <div id="peak_options" class="col" style="width: 49%; display: none;">
-                            <div class="row" style="height: 30%;">
-                                <div class="col" style="width: 50%">
-                                    <div class="label_line" style="width: 20%">N =</div>
-                                    <select id="n_peaks_select" style="width: 30%; float: left;"></select>
-                                </div>
-                                <div class="col" style="width: 50%">
-                                    <div class="label_line" style="width: 70%">One Peak/Day</div>
-                                    <input type="checkbox" style="width: 20%;">
-                                </div>
+                        <div class="col" id="peak_options_container"
+                             style="width: 24%; min-width: 270px; display: none;">
+                            <div class="col">
+                                <div class="label_stacked x_peak_options" style="width: 80%">N &nbsp = &nbsp</div>
+                                <div class="label_stacked y_peak_options" style="width: 80%">N &nbsp = &nbsp</div>
+                            </div>
+                            <div class="col">
+                                <select class="x_peak_options" id="x_n_peaks_select" style="width: 80%;"></select>
+                                <select class="y_peak_options" id="y_n_peaks_select" style="width: 80%;"></select>
                                 <script src="static/make_n_peak_options.js"></script>
                             </div>
-                            <div class="row" style="height: 70%;">
-                                <div class="row" style="height: 50%;">
-                                    <div class="col" style="width: 50%">
-                                        <div class="label_line" style="width: 60%">Spring</div>
-                                        <input type="checkbox" style="width: 20%;">
-                                    </div>
-                                    <div class="col" style="width: 50%">
-                                        <div class="label_line" style="width: 60%">Autumn</div>
-                                        <input type="checkbox" style="width: 20%;">
-                                    </div>
+                            <div class="col">
+                                <div class="x_peak_options label_stacked" style="width: 70%; white-space: nowrap;">
+                                    One Peak/Day
                                 </div>
-                                <div class="row" style="height: 50%;">
-                                    <div class="col" style="width: 50%">
-                                        <div class="label_line" style="width: 60%">Summer</div>
-                                        <input type="checkbox" style="width: 20%;">
-                                    </div>
-                                    <div class="col" style="width: 50%">
-                                        <div class="label_line" style="width: 60%">Winter</div>
-                                        <input type="checkbox" style="width: 20%;">
-                                    </div>
+                                <div class="y_peak_options label_stacked" style="width: 70%; white-space: nowrap;">
+                                    One Peak/Day
+                                </div>
+                            </div>
+                            <div class="col" style="width: 10%">
+                                <input class="x_peak_options input_stacked" id="x_one_peak_a_day" type="checkbox">
+                                <input class="y_peak_options input_stacked" id="y_one_peak_a_day" type="checkbox">
+                            </div>
+                        </div>
+                        <div id="select_seasons" class="col" style="width: 24%; float: left; min-width: 200px">
+                            <div class="col" style="width: 50%;">
+                                <div class="col">
+                                    <div class="label_stacked" style="width: 60%">Spring:</div>
+                                    <div class="label_stacked" style="width: 60%">Autumn:</div>
+                                </div>
+                                <div class="col" style="width: 30%">
+                                    <input id="include_spring" class="input_stacked season_option"
+                                           type="checkbox" checked>
+                                    <input id="include_autumn" class="input_stacked season_option"
+                                           type="checkbox" checked>
+                                </div>
+                            </div>
+                            <div class="col" style="width: 50%;">
+                                <div class="col">
+                                    <div class="label_stacked" style="width: 60%">Summer:</div>
+                                    <div class="label_stacked" style="width: 60%">Winter:</div>
+                                </div>
+                                <div class="col" style="width: 30%">
+                                    <input id="include_summer" class="input_stacked season_option"
+                                           type="checkbox" checked>
+                                    <input id="include_winter" class="input_stacked season_option"
+                                           type="checkbox" checked>
                                 </div>
                             </div>
                         </div>
@@ -846,9 +870,7 @@
                             <div class="label_stacked">Select figure:&nbsp</div>
                         </div>
                         <div class="col" style="width: 30%">
-                            <select id="single_case_result_chosen_case" style="width: 100%"
-                                    onchange="plot_single_case_results()">
-                            </select>
+                            <select id="single_case_result_chosen_case" style="width: 100%"></select>
                             <br/>
                             <select id="single_case_chart_type" style="width: 100%;">
                                 <option value="bill_components">Bill Components</option>
@@ -857,7 +879,7 @@
                     </div>
                 </div>
             </div>
-
+            <script src="static/plot_results.js"></script>
             <div class="case_area">
                 <div class="case_area_top" >
                     <h3 id="start_case_list" style="padding: 5%; height: 5%;">List of cases:</h3>
@@ -870,12 +892,12 @@
                         <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'demog_info')">Demog info</button>
                         <button class="case_tab_links"
-                                onclick="displayCaseInfoType(event, 'wholesale_price_info')">Wholesale price info</button>
-                        <button class="case_tab_links"
-                                onclick="displayCaseInfoType(event, 'network_tariff_info')">Network tariff info</button>
+                                onclick="displayCaseInfoType(event, 'wholesale_price_info')">
+                            Wholesale price info</button>
                         <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'retail_tariff_info')">Retail tariff info</button>
-
+                        <button class="case_tab_links"
+                                onclick="displayCaseInfoType(event, 'network_tariff_info')">Network tariff info</button>
                     </div>
                     <div class="case_info_tab_content" id="load_info">
                         <div id="info_load_summary_labels" class="col" style="width: 100%; display: none;">

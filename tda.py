@@ -296,6 +296,17 @@ def get_dual_variable_chart():
     x_axis = details['x_axis']
     y_axis = details['y_axis']
     case_names = details['case_names']
+
+    # Other cool variables we should totally use!
+    include_summer = details['include_summer']  # boolean
+    include_autumn = details['include_autumn']  # boolean
+    include_winter = details['include_winter']  # boolean
+    include_spring = details['include_spring']  # boolean
+    x_axis_n_peaks = details['x_axis_n_peaks']  # string
+    x_axis_n_peaks = details['y_axis_n_peaks']  # string
+    x_axis_one_peak_per_day = details['x_axis_one_peak_per_day']  # boolean
+    y_axis_one_peak_per_day = details['y_axis_one_peak_per_day']  # boolean
+
     results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
                                                                   network_results_by_case, wholesale_results_by_case)
     return dual_variable_chart(results_to_plot, x_axis, y_axis)

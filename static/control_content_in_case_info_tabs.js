@@ -80,11 +80,7 @@ var update_info_tabs_on_case_delete = function(case_name){
         case_controllers = $("#case_list .case_label")
         if (case_controllers.length >= 1){
             // If there are other cases then display the info for the first one.
-            get_and_display_case_tariff_info(case_controllers[0].innerHTML, 'retail');
-            get_and_display_case_tariff_info(case_controllers[0].innerHTML, 'network');
-            get_and_display_case_load_info(case_controllers[0].innerHTML);
-            get_and_display_demo_info(case_controllers[0].innerHTML);
-            get_and_display_case_wholesale_price_info(case_controllers[0].innerHTML);
+            reset_case_info(case_controllers[0].innerHTML);
         }
     }
 
