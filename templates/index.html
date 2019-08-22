@@ -336,6 +336,7 @@
         box-sizing: border-box;
         padding: 1%;
         width: 100%;
+        overflow: auto;
       }
 
       .menu_button{
@@ -867,13 +868,14 @@
                         <button id="default_case_info_tab" class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'load_info')">Load Info</button>
                         <button class="case_tab_links"
+                                onclick="displayCaseInfoType(event, 'demog_info')">Demog info</button>
+                        <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'wholesale_price_info')">Wholesale price info</button>
                         <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'network_tariff_info')">Network tariff info</button>
                         <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'retail_tariff_info')">Retail tariff info</button>
-                        <button class="case_tab_links"
-                                onclick="displayCaseInfoType(event, 'demog_info')">Demog info</button>
+
                     </div>
                     <div class="case_info_tab_content" id="load_info">
                         <div id="info_load_summary_labels" class="col" style="width: 100%; display: none;">
@@ -932,7 +934,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="network_info" style="width:100%; overflow: auto"></div>
+                        <div id="network_info" style="width:100%;"></div>
                     </div>
                     <div class="case_info_tab_content" id="retail_tariff_info">
                         <div class="info_tariff_summary row">
@@ -959,7 +961,7 @@
                                 </div>
                             </div>
                         </div>
-                        <div id="retail_info" style="width:100%; overflow: auto;"></div>
+                        <div id="retail_info" style="width:100%;"></div>
                     </div>
                     <div class="case_info_tab_content" id="demog_info"></div>
                 </div>

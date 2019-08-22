@@ -144,7 +144,11 @@ var get_and_display_case_tariff_info = function(case_name, tariff_type){
 }
 
 var display_case_tariff_info = function(case_name, tariff_data, tariff_type){
-    var component = Object.keys(tariff_data['Parameters'])[0];
+    if (tariff_type == 'network'){
+        var component = 'NUOS';
+    } else {
+        var component = 'Retail';
+    }
     display_tables(tariff_type + '_info', tariff_type + '_info', tariff_data['Parameters'][component], false);
     var tariff_type_id = '#' + tariff_type + '_tariff_info'
     $(tariff_type_id + ' .tariff_info_case').text(case_name);
@@ -153,10 +157,5 @@ var display_case_tariff_info = function(case_name, tariff_data, tariff_type){
     $(tariff_type_id + ' .tariff_info_state').text(tariff_data['State']);
     $(tariff_type_id + ' .tariff_info_component').text(component);
     $(tariff_type_id + ' .tariff_info_daily_charge').text(tariff_data['Parameters'][component]['Daily']['Value']);
-    if ('Energy' in tariff_data['Parameters'][component]){
-        $(tariff_type_id + ' .tariff_info_energy_charge').text(tariff_data['Parameters'][component]['Energy']['Value']);
-    } else {
-        $(tariff_type_id + ' .tariff_info_energy_charge').text('')
-    }
     $(tariff_type_id + " .info_tariff_summary_labels").css("display", "block");
 }
