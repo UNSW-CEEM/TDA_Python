@@ -91,13 +91,16 @@
       .label_stacked {
         height: 2.25vh;
         margin-bottom: 1.625vh;
-        margin-top: 0.375vh;
+        padding-top: 0.375vh;
         width: 100%;
       }
 
       .input_stacked {
-        margin-bottom: 1.2vh;
-        margin-top: 0.375vh;
+        height: 3.0vh;
+        margin-bottom: 1.3vh;
+        font-size: 1.75vh;
+        max-width: 200px;
+        box-sizing: border-box;
       }
 
       .label_close_stacked {
@@ -107,13 +110,18 @@
       }
 
       @media screen and (min-height: 800px) {
-        html, body, select, button {
+        html, body, select, button, input {
             font-size: 14px;
         }
 
         select {
             height: 24px;
-            margin-bottom: 9.px;
+            margin-bottom: 10.4px;
+        }
+
+        .input_stacked {
+            height: 24px;
+            margin-bottom: 10.4px;
         }
 
         input {
@@ -126,12 +134,15 @@
 
         .label_stacked {
             height: 18px;
-            margin-bottom: 16px;
+            margin-bottom: 13px;
+            padding-top: 3px;
         }
 
         .label_close_stacked {
             margin-bottom: 4px;
         }
+
+
       }
 
       .case_area {
@@ -635,7 +646,7 @@
   </div>
   <hr class="header_border"/>
   <div class="main">
-    <div id="left_column" class="tab_button_area" style="height: 100%; width: 14.5%; max-width: 200px; float: left;">
+    <div id="left_column" class="tab_button_area" style="height: 100%; width: 16.5%; max-width: 200px; float: left;">
         <script src="static/main_tabs.js"></script>
         <div class="logos">
             <img src="static/UNSWLogo.png" alt="UNSW Logo" style="width: 100%;">
@@ -777,28 +788,33 @@
             <div style="height: 4.13%"></div>
             <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
                         border-style: solid; border-color: #EEEEEE;">
-                <div class="row" style="height: 55%">
+                <div class="row" style="resize: vertical; overflow: auto; height: 60%;">
                     <div class="col" style="width: 50%">
-                        <div class="row" style="height: 10%">
-                            <h4 style="margin: 0;">Solar</h4>
-                            <hr style="width: 80%; float: left;">
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Solar</h4>
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
                         </div>
-                        <div class="row" style="height: 35%">
-                            <div class="col" style="width: 40%">
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%">
                                 <div class="label_stacked">Penetration (%):</div>
                                 <div class="label_stacked">Mean system size (kW):</div>
                                 <div class="label_stacked">Standard deviation (kW):</div>
                                 <div class="label_stacked">Solar profiles :</div>
                             </div>
-                            <div class="col" style="width: 50%">
+                            <div class="col solar_inputs" style="width: 20%">
+                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
+                                       value="0">
+                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
+                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
+                                <select class="input_stacked" name="profiles"></select>
                             </div>
                         </div>
-                        <div class="row" style="height: 10%">
-                            <h4 style="margin: 0;">Batteries</h4>
-                            <hr style="width: 80%; float: left;">
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Batteries</h4>
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
                         </div>
-                        <div class="row" style="height: 45%">
-                            <div class="col" style="width: 40%">
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%">
                                 <div class="label_stacked">Penetration (%):</div>
                                 <div class="label_stacked">Mean power size (kW):</div>
                                 <div class="label_stacked">Standard deviation (kW):</div>
@@ -806,31 +822,49 @@
                                 <div class="label_stacked">Standard deviation:</div>
                                 <div class="label_stacked">Operational strategy:</div>
                             </div>
-                            <div class="col" style="width: 50%">
+                            <div class="col battery_inputs" style="width: 20%">
+                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
+                                       value="0">
+                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
+                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
+                                <input class="input_stacked" name="mean_power_to_energy" type="number" min="0" value="0">
+                                <input class="input_stacked" name="power_to_energy_standard_dev" type="number" min="0" value="0">
+                                <select class="input_stacked" name="strategy"></select>
                             </div>
                         </div>
                     </div>
                     <div class="col" style="width: 50%">
-                        <div class="row" style="height: 10%">
+                        <div class="row" style="overflow: hidden">
                             <h4 style="margin: 0;">Demand response</h4>
-                            <hr style="width: 80%; float: left;">
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
                         </div>
-                        <div class="row" style="height: 60%;">
-                            <div class="col" style="width: 50%;">
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%;">
                                 <div class="label_stacked">Penetration (%):</div>
                                 <div class="label_stacked">Mean max response size (kW):</div>
                                 <div class="label_stacked">Standard deviation (kW):</div>
                                 <div class="label_stacked">Max response time:</div>
                                 <div class="label_stacked">Response events limit (/year):</div>
-                                <div class="label_stacked">Energy:</div>
+                                <div class="label_stacked">Energy conservation:</div>
                             </div>
-                            <div class="col" style="width: 20%;"></div>
+                            <div class="col demand_response_inputs" style="width: 20%;">
+                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
+                                       value="0">
+                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
+                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
+                                <input class="input_stacked" name="max_response_time" type="number" min="0" value="0">
+                                <input class="input_stacked" name="events_limit" type="number" min="0" value="0">
+                                <select class="input_stacked" name="energy_conservation">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                            </div>
                         </div>
-                        <div class="row" style="height: 10%">
-                            <h4 style="margin: 0;">Actions</h4>
-                            <hr style="width: 80%; float: left;">
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Actions</h4>
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
                         </div>
-                        <div class="row" style="height: 30%">
+                        <div class="row" style="overflow: hidden;">
                             <div class="col" style="width: 40%">
                             </div>
                             <div class="col" style="width: 50%">
@@ -839,7 +873,7 @@
                     </div>
                 </div>
                 <div style="height: 2%"><hr></div>
-                <div id="net_load_inspection" style="height: 40%">
+                <div id="net_load_inspection" style="resize: vertical; overflow: hidden; height: 38%">
                     <div style="height: 10%; overflow: hidden;">
                         <select  id="select_net_graph" style="float: right; width: 30%;">
                             <option value="">Some awesome charts!</option>

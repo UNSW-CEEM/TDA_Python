@@ -388,6 +388,13 @@ def get_wholesale_price_info():
     return jsonify(info)
 
 
+@app.route('/add_end_user_tech', methods=['POST'])
+def add_end_user_tech():
+    details = request.json
+    solar_pen = details['solar_inputs']['penetration']
+    return
+
+
 @app.route('/tariff_options', methods=['POST'])
 def tariff_options():
     request_details = request.get_json()
