@@ -1,7 +1,7 @@
 var add_demo_selectors = function(response){
-    console.log(response)
     var arraylength = response.actual_names.length
 
+    // Hide existing selectors and remove content
     for (var i = 0; i < 10; i++){
         selector_id = "demo_select_" + i.toString()
         div_id = "demo_" + i.toString()
@@ -12,6 +12,7 @@ var add_demo_selectors = function(response){
         label.innerHTML = ''
     }
 
+    // Show the required selectors and add the new content to them.
     for (var i = 0; i < arraylength; i++){
         selector_id = "demo_select_" + i.toString()
         label_id = "demo_label_" + i.toString()
@@ -106,6 +107,11 @@ var get_load_details_from_ui = function(){
 }
 
 var plot_filtered_load =  function(){
+    // Update menu bat status indicator
+    $('#load_status_not_set').show()
+    $('#load_status_set').hide()
+
+    $('#dialog').dialog({modal: true});
 
     load_request = get_load_details_from_ui()
 
@@ -123,14 +129,24 @@ var plot_filtered_load =  function(){
 }
 
 var plot_load = function(response){
-    var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
+
+    console.log("response:",response);
+    console.log("response[layout]:",response['chart_data']['layout']);
+    var layout = {autosize: true,
+                  margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
                   paper_bgcolor: '#EEEEEE',
                   plot_bgcolor: '#c7c7c7',
-                  showlegend: true};
-    Plotly.newPlot('load_chart', response['chart_data'], layout, {responsive: true});
+                  showlegend: true,
+                  xaxis: response['chart_data']['layout'].xaxis,
+                  yaxis: response['chart_data']['layout'].yaxis};
+
+    Plotly.newPlot('load_chart', response['chart_data']['data'], layout);
     var file_name = $('#select').children("option:selected").val();
     print_n_users(response['n_users'])
     $('#dialog').dialog('close');
+    // Update menu bat status indicator
+    $('#load_status_not_set').hide()
+    $('#load_status_set').show()
 }
 
 var print_n_users = function(n_users){
@@ -153,31 +169,40 @@ var make_loading_popup = function(){
 }
 
 var perform_plot_load_actions = function(){
-    $('#dialog').dialog({modal: true});
     var file_name = $('#select').children("option:selected").val();
-    $.getJSON('/demo_options/' + file_name, add_demo_selectors);
+    $.getJSON('/get_demo_options/' + file_name, add_demo_selectors);
     plot_filtered_load();
 }
 
 $('#select').on('change', function() {
     perform_plot_load_actions();
+    // Update menu bat status indicator
+    $('#tech_status_not_set').show()
+    $('#tech_status_set').hide()
 });
 
 $('.down_sample_option').on('change', function() {
     perform_plot_load_actions();
+    // Update menu bat status indicator
+    $('#tech_status_not_set').show()
+    $('#tech_status_set').hide()
 });
 
 $('.missing_data_limit').on('change', function() {
     perform_plot_load_actions();
+    // Update menu bat status indicator
+    $('#tech_status_not_set').show()
+    $('#tech_status_set').hide()
 });
 
 $('.select_demo').on('change', function() {
-    $('#dialog').dialog({modal: true});
     plot_filtered_load();
+    // Update menu bat status indicator
+    $('#tech_status_not_set').show()
+    $('#tech_status_set').hide()
 });
 
 $('#select_graph').on('change', function() {
-    $('#dialog').dialog({modal: true});
     plot_filtered_load();
 });
 

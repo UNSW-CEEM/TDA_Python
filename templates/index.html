@@ -3,7 +3,7 @@
 <html lang="en">
 
 <head>
-  <meta charset="utf-8">
+  <meta  name="viewport" content="width=device-width, initial-scale=1.0">
 
   <title style="background-color: #FFF;">TDA (CEEM, UNSW)</title>
   <meta name="description" content="The HTML5 Herald">
@@ -11,26 +11,16 @@
 
   <!-- This is the 'importing' of external libraries. -->
     <!-- <script src="https://code.jquery.com/jquery-3.3.1.min.js" integrity="sha256-FgpCb/KJQlLNfOu91ta32o/NMZxltwRo8QtmkMRdAu8="crossorigin="anonymous"></script>-->
-    <script src="static/frozen_from_web/jquery-3.3.1.min.js"></script>
-    <!-- <script src="//cdnjs.cloudflare.com/ajax/libs/moment.js/2.7.0/moment.min.js" type="text/javascript"></script> -->
-    <script src="static/frozen_from_web/moment.min.js" type="text/javascript"></script>
-    <!--<script src="https://cdn.plot.ly/plotly-latest.min.js"></script> -->
-    <script src="static/frozen_from_web/plotly-latest.min.js"></script>
-    <!-- <script src="https://cdnjs.cloudflare.com/ajax/libs/d3/3.5.6/d3.min.js"></script> -->
-    <!-- <script src="static/frozen_from_web/d3.min.js"></script> -->
-    <!--<script src="https://cdn.datatables.net/1.10.19/js/jquery.dataTables.min.js"></script> -->
-    <script src="static/frozen_from_web/jquery.dataTables.min.js"></script>
-    <!--<link rel="stylesheet" type="text/css" href="//cdn.datatables.net/1.10.19/css/jquery.dataTables.min.css">-->
-    <link rel="stylesheet" type="text/css" href="static/frozen_from_web/jquery.dataTables.min.css">
-    <!--<script src="https://code.jquery.com/ui/1.12.1/jquery-ui.js"></script>-->
-    <script src="static/frozen_from_web/jquery-ui-1.12.1/jquery-ui.js"></script>
-    <!--<link rel="stylesheet" href="//code.jquery.com/ui/1.12.1/themes/base/jquery-ui.css">-->
-    <link rel="stylesheet" type="text/css" href="static/frozen_from_web/jquery-ui-1.12.1/jquery-ui.css">
-    <script src="static/frozen_from_web/dataTables.cellEdit.js"></script>
-    <script src="static/frozen_from_web/dropdownPlain.js"></script>
-    <link rel="stylesheet" href="static/frozen_from_web/dropdown_menu.css" type="text/css"/>
+    <script src="static/jquery-3.4.1.min.js"></script>
+    <script src="static/plotly-1.49.2.min.js"></script>
+    <script src="static/DataTables/dataTables.min.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/DataTables/dataTables.min.css">
+    <script src="static/jquery-ui-1.12.1/jquery-ui.js"></script>
+    <link rel="stylesheet" type="text/css" href="static/jquery-ui-1.12.1/jquery-ui.css">
+    <script src="static/CellEdit-master/js/dataTables.cellEdit.js"></script>
+    <script src="static/css_trick_dropdown_example/dropdownPlain.js"></script>
+    <link rel="stylesheet" href="static/css_trick_dropdown_example/dropdown_menu.css" type="text/css"/>
     <script src="static/results_tabs.js"></script>
-    <script src="static/plot_results.js"></script>
     <script src="static/add_and_delete_cases.js"></script>
     <script src="static/case_info_tab.js"></script>
     <script src="static/control_content_in_case_info_tabs.js"></script>
@@ -45,6 +35,7 @@
     <script src="static/network_load_options.js"></script>
     <script src="static/tariff_info.js"></script>
     <script src="static/project_menu.js"></script>
+    <script src="static/end_user_tech.js"></script>
 
 
   <style>
@@ -67,12 +58,13 @@
         margin-bottom: 1.2vh;
         width: 100%;
         font-size: 1.75vh;
+        max-width: 200px;
       }
 
       button {
         height: 3.25vh;
         background-color: inherit;
-        float: left;
+        display: inline;
         border-style: solid;
         border-width: 1px;
         margin: 0;
@@ -80,14 +72,10 @@
         padding: 0.25vh;
       }
 
-      button:hover {
-        background-color: #ddd;
-      }
-
       input {
         height: 2.25vh;
         width: 100%;
-        float: left;
+        display: inline;
         margin: 0;
       }
 
@@ -103,8 +91,17 @@
 
       .label_stacked {
         height: 2.25vh;
-        margin-bottom: 2vh;
+        margin-bottom: 1.625vh;
+        padding-top: 0.375vh;
         width: 100%;
+      }
+
+      .input_stacked {
+        height: 3.0vh;
+        margin-bottom: 1.3vh;
+        font-size: 1.75vh;
+        max-width: 200px;
+        box-sizing: border-box;
       }
 
       .label_close_stacked {
@@ -113,9 +110,149 @@
         float: left;
       }
 
-      .label_line {
+      @media screen and (min-height: 800px) {
+        html, body, select, button, input {
+            font-size: 14px;
+        }
+
+        select {
+            height: 24px;
+            margin-bottom: 10.4px;
+        }
+
+        .input_stacked {
+            height: 24px;
+            margin-bottom: 10.4px;
+        }
+
+        input {
+            height: 18px;
+        }
+
+        .tariff_input {
+            margin-bottom: 9.6px;
+        }
+
+        .label_stacked {
+            height: 18px;
+            margin-bottom: 13px;
+            padding-top: 3px;
+        }
+
+        .label_close_stacked {
+            margin-bottom: 4px;
+        }
+
+
+      }
+
+      .case_area {
+        margin-left: 1%;
+        width: 39%;
         height: 100%;
         float: left;
+      }
+
+      .results_area {
+        overflow: hidden;
+        width: 60%;
+        height: 100%;
+        float: left;
+      }
+
+      .case_area_top, .case_area_bottom {
+        width: 100%;
+      }
+
+      .case_area_top {
+        height: 35%;
+      }
+
+      .case_area_bottom {
+        height: 68%;
+      }
+
+      .results_tab_content {
+        border-style: groove;
+        border-width: 2px;
+        height: 95%;
+        box-sizing: border-box;
+        padding: 1%;
+        width: 100%;
+      }
+
+      #results_tab_set {
+        height: 5%;
+      }
+
+      #case_tabs{
+        height: 7.5%;
+      }
+
+      #info_tariff_summary {
+        height: 25%;
+      }
+
+      #retail_info, #network_info {
+        height: 75%;
+      }
+
+      @media screen and (min-height: 620px) {
+          .results_area {
+            width: 100%;
+            height: 60%;
+          }
+
+          .case_area {
+            margin-top: 1%;
+            margin-left: 0%;
+            width: 100%;
+            height: 39%;
+          }
+
+          .case_area_top {
+            height: 100%;
+            float: left;
+            width: 30%;
+            max-width: 200px;
+          }
+
+          .case_area_bottom {
+            height: 100%;
+            margin-left: 200px;
+            width: auto;
+          }
+
+          .results_tab_content{
+            height: 93%;
+          }
+
+          #results_tab_set {
+            height: 7%;
+          }
+
+          #case_tabs{
+            height: 10%;
+          }
+
+          #info_tariff_summary {
+            height: 50%;
+          }
+
+          #retail_info, #network_info {
+            height: 50%;
+          }
+
+      }
+
+      button:hover {
+        background-color: #ddd;
+      }
+
+      .label_line {
+        padding-top: 0.375vh;
+        height: 100%;
+        display: inline;
       }
 
       .row {
@@ -144,19 +281,19 @@
 
       .main {
         height: calc((100vh - (100vh - 100%)) - 27px);
-        width:100%; padding: 0.5%;
+        width:100%;
+        padding: 0.5% 0.5% 0.5% 0%;
         box-sizing: border-box;
         margin: 0;
       }
 
-      #logos{
-        height: 20%;
-        box-sizing: border-box;
-        margin: 0
+      .logos{
+        margin: 10px;
+        display: inline-block;
       }
 
       .tab_button_area {
-        overflow: hidden;
+        overflow-x: auto;
       }
 
       .tab_button_area button {
@@ -189,19 +326,10 @@
         margin-bottom: 0;
       }
 
-      .results_tab_content {
-        border-style: groove;
-        border-width: 2px;
-        height: 95%;
-        box-sizing: border-box;
-        padding: 1%;
-        width: 100%;
-      }
-
       .main_tab_content {
         height: 100%;
         box-sizing: border-box;
-        padding: 1%;
+        padding: padding: 1% 1% 1% 0%;;
         width: 100%;
         overflow: hidden;
       }
@@ -224,6 +352,7 @@
         box-sizing: border-box;
         padding: 1%;
         width: 100%;
+        overflow: auto;
       }
 
       .menu_button{
@@ -265,11 +394,42 @@
       }
 
       .menu_check_list {
-        height: 15px;
+        height: 12px;
         width: 10%;
+        padding-top: 4px;
       }
 
+      .menu_check_list_label {
+        width: 80%;
+        display: inline;
+      }
+
+      .main_tab_links {
+        width: 100%;
+        height: 50px;
+        text-align: left;
+        text-indent: 15px;
+      }
+
+      .case_info_button, .case_delete_button, .case_visibility_checkbox {
+        height: 18px;
+        width: 18px;
+        font-size: 12px;
+        padding:0;
+        vertical-align: top;
+      }
+
+      .x_peak_options, .y_peak_options {
+        visibility: hidden;
+      }
+
+      .input_col {
+        max-width: 500px;
+      }
+
+
   </style>
+
     <div id="message_dialog" title="Update" style="display: none">
         <p></p>
     </div>
@@ -304,18 +464,18 @@
     </div>
 
     <div id="tariff_meta_details_editor" title="Set tariff details" style="display: none;">
-                <label class="label_close_stacked">Name</label>
-                <input type="text" value="" class="text ui-widget-content ui-corner-all name tariff_input">
-                <label class="label_close_stacked">Provider</label>
-                <input type="text" value="" class="text ui-widget-content ui-corner-all provider tariff_input">
-                <label class="label_close_stacked">Type</label>
-                <input type="text"  value="" class="text ui-widget-content ui-corner-all type tariff_input">
-                <label class="label_close_stacked">State</label>
-                <input type="text" value="" class="text ui-widget-content ui-corner-all state tariff_input">
-                <label class="label_close_stacked">Year</label>
-                <input type="text" value="" class="text ui-widget-content ui-corner-all year tariff_input">
-                <label class="label_close_stacked">Info</label>
-                <input type="text" value="" class="text ui-widget-content ui-corner-all info tariff_input">
+        <label class="label_close_stacked">Name</label>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all name tariff_input">
+        <label class="label_close_stacked">Provider</label>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all provider tariff_input">
+        <label class="label_close_stacked">Type</label>
+        <input type="text"  value="" class="text ui-widget-content ui-corner-all type tariff_input">
+        <label class="label_close_stacked">State</label>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all state tariff_input">
+        <label class="label_close_stacked">Year</label>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all year tariff_input">
+        <label class="label_close_stacked">Info</label>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all info tariff_input">
     </div>
 
     <div id="case_namer" title="Basic dialog" style="display: none">
@@ -325,13 +485,11 @@
 
     <div id="case_control_template" class="row case_control"
          style="width: 100%; margin-bottom: 2vh; float: left;">
-        <div class="label_line case_label"></div>
-        <input class="case_visibility_checkbox" type="checkbox" style="width: 15%;"
+        <div class="case_label" style="vertical-align: middle; width: 30%; display: inline;"></div>
+        <input class="case_visibility_checkbox" type="checkbox" style="width: 10%;"
                checked onclick="on_checkbox_change()">
-        <button class='case_info_button' style="float: left; width: 10%;"
-                onclick="reset_case_tariff_info_from_button(this)">?</button>
-        <button class='case_delete_button' style="float: left; width: 10%;"
-                onclick="delete_case(this)">&#10006</button>
+        <button class='case_info_button' onclick="reset_case_tariff_info_from_button(this)">?</button>
+        <button class='case_delete_button' onclick="delete_case(this)">&#10006</button>
     </div>
 
     <table class="tariff_table display nowrap"
@@ -367,37 +525,37 @@
                           <li>
                               <input class="missing_data_limit menu_check_list" type="checkbox" checked value="0"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">0%</div>
+                              <div class="menu_check_list_label">0%</div>
                           </li>
                           <li>
                               <input class="missing_data_limit menu_check_list" type="checkbox" value="0.01"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">1%</div>
+                              <div class="menu_check_list_label">1%</div>
                           </li>
                           <li>
                               <input class="missing_data_limit menu_check_list" type="checkbox" value="0.02"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">2%</div>
+                              <div class="menu_check_list_label">2%</div>
                           </li>
                           <li>
                               <input class="missing_data_limit menu_check_list" type="checkbox" value="0.05"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">5%</div>
+                              <div class="menu_check_list_label">5%</div>
                           </li>
                           <li>
                               <input class="missing_data_limit menu_check_list" type="checkbox" value="0.1"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">10%</div>
+                              <div class="menu_check_list_label">10%</div>
                           </li>
                           <li>
                               <input class="missing_data_limit menu_check_list" type="checkbox" value="0.2"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">20%</div>
+                              <div class="menu_check_list_label">20%</div>
                           </li>
                           <li>
                               <input class="missing_data_limit menu_check_list" type="checkbox" value="0.3"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">30%</div>
+                              <div class="menu_check_list_label">30%</div>
                           </li>
                       </ul>
                   </li>
@@ -406,37 +564,37 @@
                           <li>
                               <input class="down_sample_option menu_check_list" type="checkbox" checked value="1"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">100% (full data)</div>
+                              <div class="menu_check_list_label">100% (full data)</div>
                           </li>
                           <li>
                               <input class="down_sample_option menu_check_list" type="checkbox" value="0.5"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">50%</div>
+                              <div class="menu_check_list_label">50%</div>
                           </li>
                           <li>
                               <input class="down_sample_option menu_check_list" type="checkbox" value="0.2"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">20%</div>
+                              <div class="menu_check_list_label">20%</div>
                           </li>
                           <li>
                               <input class="down_sample_option menu_check_list" type="checkbox" value="0.1"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">10%</div>
+                              <div class="menu_check_list_label">10%</div>
                           </li>
                           <li>
                               <input class="down_sample_option menu_check_list" type="checkbox" value="0.05"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">5%</div>
+                              <div class="menu_check_list_label">5%</div>
                           </li>
                           <li>
                               <input class="down_sample_option menu_check_list" type="checkbox" value="0.05"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">2%</div>
+                              <div class="menu_check_list_label">2%</div>
                           </li>
                           <li>
                               <input class="down_sample_option menu_check_list" type="checkbox" value="0.01"
                               onclick="update_check_list(event, this)">
-                              <div style="width: 80%;">1%</div>
+                              <div class="menu_check_list_label">1%</div>
                           </li>
                       </ul>
                   </li>
@@ -494,38 +652,60 @@
   </div>
   <hr class="header_border"/>
   <div class="main">
-
-    <div id="left_column" class="tab_button_area" style="height: 100%; width: 14.5%; float: left; padding: 0 1% 0 1%">
+    <div id="left_column" class="tab_button_area" style="height: 100%; width: 16.5%; max-width: 200px; float: left;">
         <script src="static/main_tabs.js"></script>
-        <div id="logos">
+        <div class="logos">
             <img src="static/UNSWLogo.png" alt="UNSW Logo" style="width: 100%;">
+        </div>
+        <div class="logos">
             <img src="static/CEEMLogo.png" alt="UNSW Logo" style="float:left; width: 100%;">
         </div>
-        <button id="default_panel" class="main_tab_links" onclick="displayPanels(event, 'load_panel')" style="width: 100%; height: 50px">Load</button>
-        <button id="tariff_panel_button" class="main_tab_links" onclick="displayPanels(event, 'tariff_selection_panel')" style="width: 100%; height: 50px">Tariffs</button>
-        <button id="results_panel_button" class="main_tab_links" onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">Results</button>
+        <button id="default_panel" class="main_tab_links"
+                onclick="displayPanels(event, 'load_panel')" style="width: 100%; height: 50px">
+            <font id="load_status_not_set" color="black" style="display: inline;">&#9675;</font>
+            <font id="load_status_set" color="green" style="display: none;">&#9679;</font> Load
+        </button>
+        <button class="main_tab_links" style="width: 100%; height: 50px"
+                onclick="displayPanels(event, 'end_user_tech')">
+            <font id="tech_status_not_set" color="black" style="display: inline;">&#9675;</font>
+            <font id="tech_status_set" color="green" style="display: none;">&#9679;</font> End user tech
+        </button>
+        <button class="main_tab_links" style="width: 100%; height: 50px"
+                onclick="displayPanels(event, 'wholesale_energy_costs_selection_panel')">
+            <font id="prices_status_not_set" color="black" style="display: inline;">&#9675;</font>
+            <font id="prices_status_set" color="green" style="display: none;">&#9679;</font> Wholesale prices
+        </button>
+        <button id="tariff_panel_button" class="main_tab_links"
+                onclick="displayPanels(event, 'tariff_selection_panel')" style="width: 100%; height: 50px">
+            <font id="tariff_status_not_set" color="black" style="display: inline;">&#9675;</font>
+            <font id="tariff_status_set" color="green" style="display: none;">&#9679;</font> Tariffs
+        </button>
+        <button id="results_panel_button" class="main_tab_links"
+                onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">
+            <font id="results_status_not_set" color="black" style="display: inline;">&#9675;</font>
+            <font id="results_status_set" color="green" style="display: none;">&#9679;</font> Results
+        </button>
     </div>
-
     <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left; overflow: hidden;">
         <div style="z-index: 99; position: absolute; top: 30px; right: 100px;">
             Project name: &nbsp
             <div id="project_name" style="float: right;">N/A</div>
         </div>
         <div id="load_panel" class="main_tab_content">
-            <div style="height: 5%"></div>
+            <div style="height: 4.13%"></div>
             <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
                         border-style: solid; border-color: #EEEEEE;">
                 <div id="load_selection" class="row" style="height: 55%;">
-                    <div class="col" style="width: 35%;">
+                    <div class="col input_col" style="width: 35%;">
                         <div class="row" style="height: 10%">
                             <h4 style="margin: 0;">Select Load</h4>
                             <hr style="width: 80%; float: left;">
                         </div>
                         <div class="row" style="height: 80%">
-                            <div class="col" style="width: 30%;">
+                            <div class="col" style="width: 40%;">
                                 <div class="label_stacked">Selected:</div>
                             </div>
-                            <div class="col" style="width: 50%;">
+                            <div class="col" style="width: 40%;">
                                 <select id="select" name="select">
                                     <option selected="selected">blank</option>
                                 </select>
@@ -539,7 +719,7 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col" style="width: 65%;">
+                    <div class="col input_col" style="width: 65%;">
                         <div class="row" style="height: 10%">
                             <h4 style="margin: 0;">Demographic Filters</h4>
                             <hr style="width: 100%; float: left;">
@@ -608,22 +788,126 @@
                         <div id="sample_size_info" style="float: left; width: 60%; height: 100%;">
                             No. of users: N/A
                         </div>
-                        <div style="float: left; width: 10%; height: 100%;">Show:</div>
-                        <select  id="select_graph" style="float: left; width: 30%;">
+                        <select  id="select_graph" style="float: right; width: 30%;">
                             <option value="Annual Average Profile"> Annual Average Profile</option>
+                            <option value="Daily Profiles">Daily Profiles</option>
+                            <option value="Daily Profile Interquartile Range">Daily Profile Interquartile Range</option>
                             <option value="Daily kWh Histogram">Daily kWh Histogram</option>
+                            <option value="Average Load Duration Curve">Average Load Duration Curve</option>
+                            <option value="Average Peak Day Profile">Average Peak Day Profile</option>
+                            <option value="Monthly Average kWh">Monthly Average kWh</option>
+                            <option value="Seasonal Daily Pattern">Seasonal Daily Pattern</option>
                         </select>
+                        <div class="label_line" style="float: right;">Show:&nbsp</div>
                     </div>
                     <div class="chart" id="load_chart" style="height: 100%;"></div>
                     <script src="static/plot_load.js"></script>
                 </div>
             </div>
-
         </div>
-
+        <div id="end_user_tech" class="main_tab_content">
+            <div style="height: 4.13%"></div>
+            <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
+                        border-style: solid; border-color: #EEEEEE;">
+                <div class="row" style="resize: vertical; overflow: auto; height: 60%;">
+                    <div class="col input_col" style="width: 50%;">
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Solar</h4>
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%">
+                                <div class="label_stacked">Penetration (%):</div>
+                                <div class="label_stacked">Mean system size (kW):</div>
+                                <div class="label_stacked">Standard deviation (kW):</div>
+                                <div class="label_stacked">Solar profiles :</div>
+                            </div>
+                            <div class="col solar_inputs" style="width: 20%">
+                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
+                                       value="0">
+                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
+                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
+                                <select class="input_stacked" name="profiles"></select>
+                            </div>
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Batteries</h4>
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%">
+                                <div class="label_stacked">Penetration (%):</div>
+                                <div class="label_stacked">Mean power size (kW):</div>
+                                <div class="label_stacked">Standard deviation (kW):</div>
+                                <div class="label_stacked">Mean power/energy ratio:</div>
+                                <div class="label_stacked">Standard deviation:</div>
+                                <div class="label_stacked">Operational strategy:</div>
+                            </div>
+                            <div class="col battery_inputs" style="width: 20%">
+                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
+                                       value="0">
+                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
+                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
+                                <input class="input_stacked" name="mean_power_to_energy" type="number" min="0" value="0">
+                                <input class="input_stacked" name="power_to_energy_standard_dev" type="number" min="0" value="0">
+                                <select class="input_stacked" name="strategy"></select>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="col input_col" style="width: 50%;">
+                        <div class="row" style="overflow: hidden">
+                            <h4 style="margin: 0;">Demand response</h4>
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%;">
+                                <div class="label_stacked">Penetration (%):</div>
+                                <div class="label_stacked">Mean max response size (kW):</div>
+                                <div class="label_stacked">Standard deviation (kW):</div>
+                                <div class="label_stacked">Max response time:</div>
+                                <div class="label_stacked">Response events limit (/year):</div>
+                                <div class="label_stacked">Energy conservation:</div>
+                            </div>
+                            <div class="col demand_response_inputs" style="width: 20%;">
+                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
+                                       value="0">
+                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
+                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
+                                <input class="input_stacked" name="max_response_time" type="number" min="0" value="0">
+                                <input class="input_stacked" name="events_limit" type="number" min="0" value="0">
+                                <select class="input_stacked" name="energy_conservation">
+                                    <option>Yes</option>
+                                    <option>No</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Actions</h4>
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 80%">
+                                <button style="width: 80%; text-align: left; height: 3.25vh;"
+                                        onclick="add_end_user_tech()">Add end user tech</button>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+                <div style="height: 2%"><hr></div>
+                <div id="net_load_inspection" style="resize: vertical; overflow: hidden; height: 38%">
+                    <div style="height: 10%; overflow: hidden;">
+                        <select  id="select_net_graph" style="float: right; width: 30%;">
+                            <option value="">Some awesome charts!</option>
+                        </select>
+                        <div class="label_line" style="float: right;">Show:&nbsp</div>
+                    </div>
+                    <div class="chart" id="net_load_chart" style="height: 100%;"></div>
+                </div>
+            </div>
+        </div>
         <div id="results_panel" class="main_tab_content">
-            <div class="col" style="width: 60%; overflow: hidden;">
-                <div id="results_tab_set" class="tab_button_area" style="height: 5%">
+            <div class="results_area">
+                <div id="results_tab_set" class="tab_button_area">
                     <button id="default_results_tab" class="results_tab_links" onclick="displayResults(event, 'single_variable_tab')">Single variable graphs</button>
                     <button id="dual_var_button" class="results_tab_links" onclick="displayResults(event, 'dual_variable_tab')">Dual variable graphs</button>
                     <button id="single_case_button" class="results_tab_links" onclick="displayResults(event, 'single_case_tab')">Single case graphs</button>
@@ -631,8 +915,8 @@
                 <div id="single_variable_tab" class="results_tab_content">
                     <div id="single_variable_result_chart" class="row" style="height: 80%"></div>
                     <div class="row" style="height: 20%">
-                        <div class="col" style="width: 20%">
-                            <div class="label_line">Select figure:</div>
+                        <div class="col">
+                            <div class="label_line">Select figure:&nbsp</div>
                         </div>
                         <div class="col" style="width: 80%">
                             <select id="single_variable_chart_type" style="width: 50%">
@@ -643,52 +927,69 @@
                 </div>
                 <div id="dual_variable_tab" class="results_tab_content">
                     <div id="dual_variable_result_chart" class="row" style="height: 80%"></div>
-                    <div class="row" style="height: 20%">
-                        <div class="col" style="width: 10%">
-                            <div class="label_stacked">X axis:</div>
-                            <div class="label_stacked">Y axis:</div>
+                    <div class="row" style="height: 20%; overflow: auto;">
+                        <div class="col">
+                            <div class="label_stacked">X axis:&nbsp</div>
+                            <div class="label_stacked">Y axis:&nbsp</div>
                         </div>
-                        <div class="col" style="width: 40%">
+                        <div class="col">
                             <select id="dual_variable_x_axis" style="width: 80%">
                                 <option value="Annual_kWh">Annual kWh</option>
+                                <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
                             </select>
+                            <br/>
                             <select id="dual_variable_y_axis" style="width: 80%">
                                 <option value="Bill">Bill ($/year)</option>
                                 <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
                             </select>
                         </div>
-                        <div id="peak_options" class="col" style="width: 49%; display: none;">
-                            <div class="row" style="height: 30%;">
-                                <div class="col" style="width: 50%">
-                                    <div class="label_line" style="width: 20%">N =</div>
-                                    <select id="n_peaks_select" style="width: 30%; float: left;"></select>
-                                </div>
-                                <div class="col" style="width: 50%">
-                                    <div class="label_line" style="width: 70%">One Peak/Day</div>
-                                    <input type="checkbox" style="width: 20%;">
-                                </div>
+                        <div class="col" id="peak_options_container"
+                             style="width: 24%; min-width: 270px; display: none;">
+                            <div class="col">
+                                <div class="label_stacked x_peak_options" style="width: 80%">N &nbsp = &nbsp</div>
+                                <div class="label_stacked y_peak_options" style="width: 80%">N &nbsp = &nbsp</div>
+                            </div>
+                            <div class="col">
+                                <select class="x_peak_options" id="x_n_peaks_select" style="width: 80%;"></select>
+                                <select class="y_peak_options" id="y_n_peaks_select" style="width: 80%;"></select>
                                 <script src="static/make_n_peak_options.js"></script>
                             </div>
-                            <div class="row" style="height: 70%;">
-                                <div class="row" style="height: 50%;">
-                                    <div class="col" style="width: 50%">
-                                        <div class="label_line" style="width: 60%">Spring</div>
-                                        <input type="checkbox" style="width: 20%;">
-                                    </div>
-                                    <div class="col" style="width: 50%">
-                                        <div class="label_line" style="width: 60%">Autumn</div>
-                                        <input type="checkbox" style="width: 20%;">
-                                    </div>
+                            <div class="col">
+                                <div class="x_peak_options label_stacked" style="width: 70%; white-space: nowrap;">
+                                    One Peak/Day
                                 </div>
-                                <div class="row" style="height: 50%;">
-                                    <div class="col" style="width: 50%">
-                                        <div class="label_line" style="width: 60%">Summer</div>
-                                        <input type="checkbox" style="width: 20%;">
-                                    </div>
-                                    <div class="col" style="width: 50%">
-                                        <div class="label_line" style="width: 60%">Winter</div>
-                                        <input type="checkbox" style="width: 20%;">
-                                    </div>
+                                <div class="y_peak_options label_stacked" style="width: 70%; white-space: nowrap;">
+                                    One Peak/Day
+                                </div>
+                            </div>
+                            <div class="col" style="width: 10%">
+                                <input class="x_peak_options input_stacked" id="x_one_peak_a_day" type="checkbox">
+                                <input class="y_peak_options input_stacked" id="y_one_peak_a_day" type="checkbox">
+                            </div>
+                        </div>
+                        <div id="select_seasons" class="col" style="width: 24%; float: left; min-width: 200px">
+                            <div class="col" style="width: 50%;">
+                                <div class="col">
+                                    <div class="label_stacked" style="width: 60%">Spring:</div>
+                                    <div class="label_stacked" style="width: 60%">Autumn:</div>
+                                </div>
+                                <div class="col" style="width: 30%">
+                                    <input id="include_spring" class="input_stacked season_option"
+                                           type="checkbox" checked>
+                                    <input id="include_autumn" class="input_stacked season_option"
+                                           type="checkbox" checked>
+                                </div>
+                            </div>
+                            <div class="col" style="width: 50%;">
+                                <div class="col">
+                                    <div class="label_stacked" style="width: 60%">Summer:</div>
+                                    <div class="label_stacked" style="width: 60%">Winter:</div>
+                                </div>
+                                <div class="col" style="width: 30%">
+                                    <input id="include_summer" class="input_stacked season_option"
+                                           type="checkbox" checked>
+                                    <input id="include_winter" class="input_stacked season_option"
+                                           type="checkbox" checked>
                                 </div>
                             </div>
                         </div>
@@ -697,34 +998,39 @@
                 <div id="single_case_tab" class="results_tab_content">
                     <div id="single_case_result_chart" class="row" style="height: 80%"></div>
                     <div class="row" style="height: 20%">
-                        <div class="col" style="width: 20%">
-                            <div class="label_stacked">Select case:</div>
-                            <div class="label_stacked">Select figure:</div>
+                        <div class="col">
+                            <div class="label_stacked">Select case:&nbsp</div>
+                            <div class="label_stacked">Select figure:&nbsp</div>
                         </div>
-                        <div class="col" style="width: 80%">
-                            <select id="single_case_result_chosen_case" style="width: 50%"
-                                    onchange="plot_single_case_results()">
-                            </select>
-                            <select id="single_case_chart_type" style="width: 50%">
+                        <div class="col" style="width: 30%">
+                            <select id="single_case_result_chosen_case" style="width: 100%"></select>
+                            <br/>
+                            <select id="single_case_chart_type" style="width: 100%;">
                                 <option value="bill_components">Bill Components</option>
                             </select>
                         </div>
                     </div>
                 </div>
             </div>
-
-            <div class="col" style="margin-left: 1%; width: 39%">
-                <div id="case_list" class="row" style="height: 35%">
-                    <h3 id="start_case_list" style="padding: 5%">List of cases:</h3>
+            <script src="static/plot_results.js"></script>
+            <div class="case_area">
+                <div class="case_area_top" >
+                    <h3 id="start_case_list" style="padding: 5%; height: 5%;">List of cases:</h3>
+                    <div id="case_list" style="overflow: auto; height: 75%;"></div>
                 </div>
-                <div class="row" style="height: 68%">
-                    <div id="case_tabs" class="tab_button_area" style="height: 7.4%">
+                <div class="case_area_bottom">
+                    <div id="case_tabs" class="tab_button_area">
                         <button id="default_case_info_tab" class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'load_info')">Load Info</button>
                         <button class="case_tab_links"
-                                onclick="displayCaseInfoType(event, 'tariff_info')">Tariff Info</button>
+                                onclick="displayCaseInfoType(event, 'demog_info')">Demog info</button>
                         <button class="case_tab_links"
-                                onclick="displayCaseInfoType(event, 'demog_info')">Demog Info</button>
+                                onclick="displayCaseInfoType(event, 'wholesale_price_info')">
+                            Wholesale price info</button>
+                        <button class="case_tab_links"
+                                onclick="displayCaseInfoType(event, 'retail_tariff_info')">Retail tariff info</button>
+                        <button class="case_tab_links"
+                                onclick="displayCaseInfoType(event, 'network_tariff_info')">Network tariff info</button>
                     </div>
                     <div class="case_info_tab_content" id="load_info">
                         <div id="info_load_summary_labels" class="col" style="width: 100%; display: none;">
@@ -742,32 +1048,75 @@
                             </div>
                         </div>
                     </div>
-                    <div class="case_info_tab_content" id="tariff_info">
-                        <div id="info_tariff_summary" class="row" style="height: 25%;">
-                            <div id="info_tariff_summary_labels" class="col" style="width: 100%; display: none;">
+                    <div class="case_info_tab_content" id="wholesale_price_info">
+                        <div id="info_wholesale_price_summary_labels" class="col" style="width: 100%; display: none;">
+                            <div class="row" style="height: 2.5vh;">
+                                <div class="label_line">Case:&nbsp</div>
+                                <div id="wholesale_price_case" class="label_line"></div>
+                            </div>
+                            <div class="row" style="height: 2.5vh;">
+                                <div class="label_line">Year:&nbsp</div>
+                                <div id="wholesale_price_state" class="label_line"></div>
+                            </div>
+                            <div class="row" style="height: 2.5vh;">
+                                <div class="label_line">State:&nbsp</div>
+                                <div id="wholesale_price_year" class="label_line"></div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="case_info_tab_content" id="network_tariff_info">
+                        <div class="info_tariff_summary row">
+                            <div class="info_tariff_summary_labels col" style="width: 100%; display: none;">
                                 <div class="row" style="height: 2.5vh;">
                                     <div class="label_line">Case:&nbsp</div>
-                                    <div id="tariff_info_case" class="label_line"></div>
+                                    <div class="tariff_info_case label_line"></div>
                                 </div>
                                 <div class="row" style="height: 2.5vh;">
                                     <div class="label_line">Name:&nbsp</div>
-                                    <div id="tariff_info_name" class="label_line"></div>
+                                    <div class="tariff_info_name label_line"></div>
                                 </div>
                                 <div class="row" style="height: 2.5vh;">
                                     <div class="label_line">Type:&nbsp</div>
-                                    <div id="tariff_info_type" class="label_line"></div>
+                                    <div class="tariff_info_type label_line"></div>
                                 </div>
                                 <div class="row" style="height: 2.5vh;">
                                     <div class="label_line">State:&nbsp</div>
-                                    <div id="tariff_info_state" class="label_line"></div>
+                                    <div class="tariff_info_state label_line"></div>
                                 </div>
                                 <div class="row" style="height: 2.5vh;">
                                     <div class="label_line">Tariff Component:&nbsp</div>
-                                    <div id="tariff_info_component" class="label_line"></div>
+                                    <div class="tariff_info_component label_line"></div>
                                 </div>
                             </div>
                         </div>
-                        <div id="info" style="width:100%; height:70%; overflow-x: scroll; overflow-y: scroll"></div>
+                        <div id="network_info" style="width:100%;"></div>
+                    </div>
+                    <div class="case_info_tab_content" id="retail_tariff_info">
+                        <div class="info_tariff_summary row">
+                            <div class="info_tariff_summary_labels col" style="width: 100%; display: none;">
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Case:&nbsp</div>
+                                    <div class="tariff_info_case label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Name:&nbsp</div>
+                                    <div class="tariff_info_name label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Type:&nbsp</div>
+                                    <div class="tariff_info_type label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">State:&nbsp</div>
+                                    <div class="tariff_info_state label_line"></div>
+                                </div>
+                                <div class="row" style="height: 2.5vh;">
+                                    <div class="label_line">Tariff Component:&nbsp</div>
+                                    <div class="tariff_info_component label_line"></div>
+                                </div>
+                            </div>
+                        </div>
+                        <div id="retail_info" style="width:100%;"></div>
                     </div>
                     <div class="case_info_tab_content" id="demog_info"></div>
                 </div>
@@ -776,11 +1125,11 @@
             <script>document.getElementById("default_case_info_tab").click();</script>
         </div>
         <div id="tariff_selection_panel" class="main_tab_content">
-            <div id="tariff_type_tabs" class="tab_button_area" style="height: 5%">
-                <button class="tariff_type_links"
-                        onclick="displayTariffType(event, 'network_tariff_selection_panel')">Network tariffs</button>
+            <div id="tariff_type_tabs" class="tab_button_area" style="height: 4.13%">
                 <button id="default_tariff_type_tab" class="tariff_type_links"
                         onclick="displayTariffType(event, 'retail_tariff_selection_panel')">Retail tariffs</button>
+                <button class="tariff_type_links"
+                        onclick="displayTariffType(event, 'network_tariff_selection_panel')">Network tariffs</button>
             </div>
             <div id="tariff_type_container" style="height: 95%; width: 100%; overflow: hidden;">
                 <div id="network_tariff_selection_panel" class="tariff_type_tab_content">
@@ -799,7 +1148,7 @@
                     </div>
                     <div class="lower_tariff_section row" style="height: 55%;">
                         <script src="static/tariff_tabs.js"></script>
-                        <div id="tariff_tabs" class="tab_button_area" style="height: 10%">
+                        <div id="tariff_tabs" class="tab_button_area" style="height: 8.35%">
                             <button class="tablinks" value="DUOS"
                                     onclick="displayTariff(event, 'network_tariff_selection_panel', 'DUOS')">DUOS</button>
                             <button class="tablinks" value="TUOS"
@@ -838,7 +1187,7 @@
                              });</script>
                     <div class="lower_tariff_section row" style="height: 55%;">
                         <script src="static/tariff_tabs.js"></script>
-                        <div class="tariff_tabs tab_button_area" style="height: 10%">
+                        <div class="tariff_tabs tab_button_area" style="height: 8.35%">
                             <button id="retail_default_tab" class="tablinks" value="Retail"
                                     onclick="displayTariff(event, 'retail_tariff_selection_panel', 'Retail')">
                                 Retail
@@ -854,6 +1203,55 @@
 
                         <script>document.getElementById("retail_default_tab").click();</script>
                     </div>
+                </div>
+            </div>
+
+        </div>
+        <div id="wholesale_energy_costs_selection_panel" class="main_tab_content">
+            <div style="height: 4.13%"></div>
+            <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
+                        border-style: solid; border-color: #EEEEEE;">
+                <div class="row" style="height: 55%">
+                    <div class="col input_col" style="width: 50%">
+                        <div class="row" style="height: 10%">
+                            <h4 style="margin: 0;">Historical wholesale prices</h4>
+                            <hr style="width: 80%; float: left;">
+                        </div>
+                        <div class="row" style="height: 40%">
+                            <div class="col" style="width: 30%">
+                                <div class="label_stacked">Year:</div>
+                                <div class="label_stacked">State:</div>
+                            </div>
+                            <div class="col" style="width: 50%">
+                                <select id="select_wholesale_year" class="wholesale_filter">
+                                    <option selected="selected">None</option>
+                                </select>
+                                <select id="select_wholesale_state" class="wholesale_filter">
+                                    <option selected="selected">None</option>
+                                </select>
+                            </div>
+                        </div>
+                        <div class="row" style="height: 10%">
+                            <h4 style="margin: 0;">Actions</h4>
+                            <hr style="width: 80%; float: left;">
+                        </div>
+                        <div class="row" style="height: 40%">
+                            <button style="width: 80%; text-align: left; height: 3.25vh;"
+                                    onclick="get_default_case_name()">Create case</button>
+                        </div>
+                    </div>
+                </div>
+                <div style="height: 2%"><hr></div>
+                <div id="price_inspection" style="height: 40%">
+                    <div style="height: 10%; overflow: hidden;">
+                        <select  id="select_price_graph" style="float: right; width: 30%;">
+                            <option value="Annual Profile">Annual Profile</option>
+                            <option value="Price Duration Curve">Price Duration Curve</option>
+                        </select>
+                        <div class="label_line" style="float: right;">Show:&nbsp</div>
+                    </div>
+                    <div class="chart" id="price_chart" style="height: 100%;"></div>
+                    <script src="static/plot_wholesale_prices.js"></script>
                 </div>
             </div>
         </div>

@@ -1,22 +1,25 @@
-var add_case_to_python = function(parent_id){
+var add_case_to_python = function(){
     // Get the name of the selected tariff.
-    case_name = $('#case_name').val();
-
-    // Get the active component tab when the add case button was clicked.
-    var component = get_active_component(parent_id);
+    var case_name = $('#case_name').val();
 
     // Get the name of the selected tariff.
-    tariff_name = $('#' + parent_id + ' .select_tariff').val();
+    var retail_tariff_name = $('#retail_tariff_selection_panel .select_tariff').val();
+    var network_tariff_name = $('#network_tariff_selection_panel .select_tariff').val();
 
     // Get load name
-    load_request = get_load_details_from_ui();
+    var load_request = get_load_details_from_ui();
+
+    // Get wholesale price details
+    var year = $('#select_wholesale_year').val();
+    var state = $('#select_wholesale_state').val();
+    wholesale_price_details = {'year': year, 'state': state}
 
     // Bundle case details into a single object
-    case_details = {'case_name': case_name,
-                    'tariff_name': tariff_name,
-                    'component': component,
-                    'load_details': load_request,
-                    'tariff_panel': parent_id};
+    var case_details = {'case_name': case_name,
+                        'retail_tariff_name': retail_tariff_name,
+                        'network_tariff_name': network_tariff_name,
+                        'load_details': load_request,
+                        'wholesale_price_details': wholesale_price_details};
 
     $('#case_namer').dialog('close');
     $('#dialog').dialog({modal: true});
@@ -30,23 +33,12 @@ var add_case_to_python = function(parent_id){
         dataType:"json",
         success: function(data){
             plot_results();
-            get_and_display_case_tariff_info(case_name);
-            get_and_display_case_load_info(case_name);
-            get_and_display_case_demo_info(case_name);
+            reset_case_info(case_name);
+            // Update menu bar status indicator
+            $('#results_status_not_set').hide()
+            $('#results_status_set').show()
             }
     });
-}
-
-var get_active_component = function(parent_id){
-    var component
-    var tablinks = $("#" + parent_id + " .tablinks");
-    $.each(tablinks, function(index, link){
-        if ($(link).hasClass('active')){
-          component = link.value
-        }
-        return component
-    });
-    return component
 }
 
 var delete_case = function(delete_button){

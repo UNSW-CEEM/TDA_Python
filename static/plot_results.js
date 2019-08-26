@@ -1,30 +1,28 @@
 
-var get_default_case_name = function(event, div_that_got_clicked){
-    var parent_id = $(div_that_got_clicked).closest('[id]').attr('id');
-    console.log(parent_id)
+var get_default_case_name = function(){
     // Get a un used case name to put as the default name in the case namer dialog box.
     $.ajax({
         url: '/get_case_default_name',
         contentType: 'application/json;charset=UTF-8',
         async: 'false',
         dataType:"json",
-        success: function(data){launch_case_namer(data, parent_id)}
+        success: function(data){launch_case_namer(data)}
     });
 }
 
 
-var launch_case_namer = function(default_name, parent_id){
+var launch_case_namer = function(default_name){
     $('#case_name').val(default_name)
     $( "#case_namer" ).dialog({
         modal: true,
-        buttons: {"Save case": function(){add_case(parent_id)}}
+        buttons: {"Save case": function(){add_case()}}
     });
 }
 
-var add_case = function(parent_id){
+var add_case = function(){
     case_name = $('#case_name').val();
     add_case_to_gui(case_name)
-    add_case_to_python(parent_id);
+    add_case_to_python();
     update_single_case_selector();
 }
 
@@ -35,7 +33,7 @@ var add_case_to_gui = function(case_name){
     // Set the id of the copy equal to the case name.
     $new_case_control.attr('id', case_name_no_spaces);
     // Insert the copy into the case panel
-    $new_case_control.insertAfter($('#case_list').children().last())
+    $('#case_list').append($new_case_control);
     // Make the case control visible
     $new_case_control.css("display", "block");
     // Set the value of the checkbox in the case_control
@@ -117,17 +115,27 @@ var plot_single_variable_results = function(){
 
 }
 
-
 var plot_dual_variable_results = function(){
+    var case_details = {}
+
     // Get cases to plot
-    cases_to_plot = get_cases_to_plot_from_ui();
+    case_details['case_names'] = get_cases_to_plot_from_ui();
 
     // Get the x and y axis for the dual variable chart.
-    var x_axis = $('#dual_variable_x_axis').children("option:selected").val();
-    var y_axis = $('#dual_variable_y_axis').children("option:selected").val();
+    case_details['x_axis'] = $('#dual_variable_x_axis').children("option:selected").val();
+    case_details['y_axis'] = $('#dual_variable_y_axis').children("option:selected").val();
 
-    // Package request details into a single object.
-    var case_details = {'x_axis': x_axis, 'y_axis': y_axis, 'case_names': cases_to_plot}
+    // Get the season to include
+    case_details['include_spring'] = $('#include_spring').is(":checked");
+    case_details['include_autumn'] = $('#include_autumn').is(":checked");
+    case_details['include_winter'] = $('#include_winter').is(":checked");
+    case_details['include_summer'] = $('#include_summer').is(":checked");
+
+    // Get peak options
+    case_details['x_axis_n_peaks'] = $('#x_n_peaks_select').children("option:selected").text();
+    case_details['y_axis_n_peaks'] = $('#y_n_peaks_select').children("option:selected").text();
+    case_details['x_axis_one_peak_per_day'] = $('#x_one_peak_a_day').is(":checked");
+    case_details['y_axis_one_peak_per_day'] = $('#y_one_peak_a_day').is(":checked");
 
     // Define the chart layout
     var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
@@ -139,16 +147,15 @@ var plot_dual_variable_results = function(){
     $.ajax({
         url: '/get_dual_variable_chart',
         data: JSON.stringify(case_details),
-        contentType: 'application/json;charset=UTF-8',
+        contentType: 'application/json',
         type : 'POST',
         async: 'false',
         dataType:"json",
         success: function(data){
             // Draw chart.
             Plotly.newPlot('dual_variable_result_chart', data, layout, {responsive: true});
-        ;}
+        }
     });
-
 }
 
 
@@ -183,3 +190,32 @@ var plot_single_case_results = function(){
         ;}
     });
 }
+
+
+$('#plot_single_variable_results').on('change', function() {
+    plot_single_variable_results();
+});
+
+$('.x_peak_options').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#dual_variable_x_axis').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#dual_variable_y_axis').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('.season_option').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#single_case_result_chosen_case').on('change', function() {
+    plot_single_case_results();
+});
+
+$('#single_case_chart_type').on('change', function() {
+    plot_single_case_results();
+});

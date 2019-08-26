@@ -55,6 +55,17 @@ def get_options_from_tariff_set(tariffs, tariff_filter_state):
     return options
 
 
+def strip_tariff_to_single_component(tariff, component_name):
+    if component_name != "Retail":
+        components_to_delete = []
+        for parameter_name, parameter in tariff['Parameters'].items():
+            if parameter_name != component_name:
+                components_to_delete.append(parameter_name)
+        for component in components_to_delete:
+            tariff['Parameters'].pop(component)
+    return tariff
+
+
 def _add_tables(parameter):
     table_set = {}
     for component_name, component in parameter.items():
