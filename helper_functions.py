@@ -1,5 +1,8 @@
 import pandas as pd
 import numpy as np
+import tkinter as tk
+from tkinter import filedialog
+
 
 def get_unique_default_case_name(names_in_use):
     base_name = "Case "
@@ -67,3 +70,25 @@ def get_results_subset_to_plot(case_names, retail_results_by_case, network_resul
         elif name in wholesale_results_by_case.keys():
             results_to_plot[name] = wholesale_results_by_case[name]
     return results_to_plot
+
+
+def get_file_to_load_from_user():
+    root = tk.Tk()
+    root.geometry('0x0+0+0')
+    root.lift()
+    root.attributes('-topmost', True)
+    root.after_idle(root.attributes, '-topmost', False)
+    root.overrideredirect(True)
+    file_path = filedialog.askopenfilename(parent=root)
+    return file_path
+
+
+def get_save_name_from_user():
+    root = tk.Tk()
+    root.geometry('0x0+0+0')
+    root.lift()
+    root.attributes('-topmost', True)
+    root.after_idle(root.attributes, '-topmost', False)
+    root.overrideredirect(True)
+    file_path = filedialog.asksaveasfilename(parent=root)
+    return file_path
