@@ -31,6 +31,17 @@ var get_tariff = function(tariff_type_panel){
        // If the tariff option is None then reset the tariff panel to its default state
        reset_tariff_options(tariff_type_panel);
     }
+
+    // Update status indicator on side menu.
+    var retail_tariff_name = $('#retail_tariff_selection_panel .select_tariff').val();
+    var network_tariff_name = $('#network_tariff_selection_panel .select_tariff').val();
+    if (retail_tariff_name != 'None' || network_tariff_name != 'None'){
+        $('#tariff_status_not_set').hide()
+        $('#tariff_status_set').show()
+    } else {
+        $('#tariff_status_not_set').show()
+        $('#tariff_status_set').hide()
+    }
 }
 
 var tear_down_tables_in_tariff_type_panel = function(parent_id){

@@ -81,6 +81,9 @@ var update_info_tabs_on_case_delete = function(case_name){
         if (case_controllers.length >= 1){
             // If there are other cases then display the info for the first one.
             reset_case_info(case_controllers[0].innerHTML);
+        } else {
+            $('#results_status_not_set').show()
+            $('#results_status_set').hide()
         }
     }
 

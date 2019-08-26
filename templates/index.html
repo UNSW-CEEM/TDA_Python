@@ -35,6 +35,7 @@
     <script src="static/network_load_options.js"></script>
     <script src="static/tariff_info.js"></script>
     <script src="static/project_menu.js"></script>
+    <script src="static/end_user_tech.js"></script>
 
 
   <style>
@@ -660,15 +661,30 @@
             <img src="static/CEEMLogo.png" alt="UNSW Logo" style="float:left; width: 100%;">
         </div>
         <button id="default_panel" class="main_tab_links"
-                onclick="displayPanels(event, 'load_panel')" style="width: 100%; height: 50px">&#9675; Load</button>
+                onclick="displayPanels(event, 'load_panel')" style="width: 100%; height: 50px">
+            <font id="load_status_not_set" color="black" style="display: inline;">&#9675;</font>
+            <font id="load_status_set" color="green" style="display: none;">&#9679;</font> Load
+        </button>
         <button class="main_tab_links" style="width: 100%; height: 50px"
-                onclick="displayPanels(event, 'end_user_tech')">&#9675; End user tech</button>
+                onclick="displayPanels(event, 'end_user_tech')">
+            <font id="tech_status_not_set" color="black" style="display: inline;">&#9675;</font>
+            <font id="tech_status_set" color="green" style="display: none;">&#9679;</font> End user tech
+        </button>
         <button class="main_tab_links" style="width: 100%; height: 50px"
-                onclick="displayPanels(event, 'wholesale_energy_costs_selection_panel')">&#9675; Wholesale prices</button>
+                onclick="displayPanels(event, 'wholesale_energy_costs_selection_panel')">
+            <font id="prices_status_not_set" color="black" style="display: inline;">&#9675;</font>
+            <font id="prices_status_set" color="green" style="display: none;">&#9679;</font> Wholesale prices
+        </button>
         <button id="tariff_panel_button" class="main_tab_links"
-                onclick="displayPanels(event, 'tariff_selection_panel')" style="width: 100%; height: 50px">&#9675; Tariffs</button>
+                onclick="displayPanels(event, 'tariff_selection_panel')" style="width: 100%; height: 50px">
+            <font id="tariff_status_not_set" color="black" style="display: inline;">&#9675;</font>
+            <font id="tariff_status_set" color="green" style="display: none;">&#9679;</font> Tariffs
+        </button>
         <button id="results_panel_button" class="main_tab_links"
-                onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">&#9675; Results</button>
+                onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">
+            <font id="results_status_not_set" color="black" style="display: inline;">&#9675;</font>
+            <font id="results_status_set" color="green" style="display: none;">&#9679;</font> Results
+        </button>
     </div>
     <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left; overflow: hidden;">
         <div style="z-index: 99; position: absolute; top: 30px; right: 100px;">
@@ -870,9 +886,9 @@
                             <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
                         </div>
                         <div class="row" style="overflow: hidden;">
-                            <div class="col" style="width: 40%">
-                            </div>
-                            <div class="col" style="width: 50%">
+                            <div class="col" style="width: 80%">
+                                <button style="width: 80%; text-align: left; height: 3.25vh;"
+                                        onclick="add_end_user_tech()">Add end user tech</button>
                             </div>
                         </div>
                     </div>

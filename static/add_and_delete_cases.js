@@ -34,6 +34,8 @@ var add_case_to_python = function(){
         success: function(data){
             plot_results();
             reset_case_info(case_name);
+            $('#results_status_not_set').hide()
+            $('#results_status_set').show()
             }
     });
 }
