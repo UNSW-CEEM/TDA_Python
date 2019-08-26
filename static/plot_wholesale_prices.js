@@ -23,6 +23,7 @@ var get_and_plot_wholesale_prices = function(){
         }
     });
 
+    // Update menu bat status indicator
     if (year != 'None' && state != 'None'){
         $('#prices_status_not_set').hide()
         $('#prices_status_set').show()
