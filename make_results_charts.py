@@ -10,15 +10,21 @@ def _bill_distribution(results, name):
     chart = go.Histogram(x=results['Bill'], histnorm='probability', name=name)
     return chart
 
+def _bill_box_plot(results, name):
+    chart = go.Box(y=results['Bill'], name=name)
+    return chart
+
 
 _single_variable_chart_methods = {'Bill Distribution': _bill_distribution,
-                                  'Average Annual Profile': _average_annual_profile,
-                                  'Daily kWh Histogram':_daily_kWh_histogram,
-                                  'Average Load Duration Curve':_average_load_duration_curve,
-                                  'Monthly Average kWh':_monthly_average_kWh,
-                                  'Seasonal Daily Pattern':_seasonal_daily_pattern,
-                                  'Monthly Peak Time':_monthly_peak_time,
-                                  'Bill Box Plot': _bill_box_plot}
+                                  'Bill Box Plot': _bill_box_plot
+
+                                #   'Average Annual Profile': _average_annual_profile,
+                                #   'Daily kWh Histogram':_daily_kWh_histogram,
+                                #   'Average Load Duration Curve':_average_load_duration_curve,
+                                #   'Monthly Average kWh':_monthly_average_kWh,
+                                #   'Seasonal Daily Pattern':_seasonal_daily_pattern,
+                                #   'Monthly Peak Time':_monthly_peak_time
+                                  }
 
 
 def singe_variable_chart(chart_name, results_by_case):
