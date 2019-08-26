@@ -243,7 +243,8 @@ def get_case_demo_options():
 def delete_case():
     # Delete all data associated with a particular case.
     case_name = request.get_json()
-    current_session.project_data.load_by_case.pop(case_name)
+    if case_name in current_session.load_by_case.keys():
+        current_session.load_by_case.pop(case_name)
     if case_name in current_session.project_data.network_results_by_case.keys():
         current_session.project_data.network_results_by_case.pop(case_name)
     if case_name in current_session.project_data.retail_results_by_case.keys():
@@ -252,6 +253,10 @@ def delete_case():
         current_session.project_data.retail_tariffs_by_case.pop(case_name)
     if case_name in current_session.project_data.network_tariffs_by_case.keys():
         current_session.project_data.network_tariffs_by_case.pop(case_name)
+    if case_name in current_session.project_data.load_file_name_by_case.keys():
+        current_session.project_data.load_file_name_by_case.pop(case_name)
+    if case_name in current_session.project_data.load_n_users_by_case.keys():
+        current_session.project_data.load_n_users_by_case.pop(case_name)
     return jsonify('done')
 
 

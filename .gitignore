@@ -193,3 +193,4 @@ data/~$SGSC.xlsx
 data/SGSC.xlsx
 data/load/SGSC.feather
 data/aemo_raw_cache/*
+*.pkl
