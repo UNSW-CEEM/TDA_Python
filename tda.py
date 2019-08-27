@@ -493,7 +493,7 @@ def load_project():
     with open(file_path, "rb") as f:
         current_session.project_data = pickle.load(f)
     message = "Done!"
-    current_session.project_data.name = file_path.split('/')[-1][:-4]
+    current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
     also_return_a_list_of_cases_loaded = list(current_session.project_data.load_file_name_by_case.keys())
     return jsonify({'message': message, 'name': current_session.project_data.name, 'cases': also_return_a_list_of_cases_loaded})
 
@@ -502,8 +502,7 @@ def load_project():
 def save_project():
     if current_session.project_data.name == '':
         file_path = helper_functions.get_save_name_from_user()
-        if file_path[-4:] != '.pkl':
-            file_path = file_path + '.pkl'
+        file_path = helper_functions.add_file_extension_if_needed(file_path)
     else:
         file_path = current_session.project_data.name + '.pkl'
     with open(file_path, "wb") as f:
@@ -514,9 +513,8 @@ def save_project():
 @app.route('/save_project_as', methods=['POST'])
 def save_project_as():
     file_path = helper_functions.get_save_name_from_user()
-    if file_path[-4:] != '.pkl':
-        file_path = file_path + '.pkl'
-    current_session.project_data.name = file_path.split('/')[-1][:-4]
+    file_path = helper_functions.add_file_extension_if_needed(file_path)
+    current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
     with open(file_path, "wb") as f:
         pickle.dump(current_session.project_data, f)
     return jsonify({'message': 'Done!', 'name': current_session.project_data.name})
