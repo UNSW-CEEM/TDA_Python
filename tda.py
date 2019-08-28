@@ -105,17 +105,20 @@ def filtered_load_data():
 
     # Get raw load data.
     if load_request['file_name'] not in current_session.raw_data:
-        current_session.raw_data[load_request['file_name']] = data_interface.get_load_table('data/load/', load_request['file_name'])
+        current_session.raw_data[load_request['file_name']] = \
+            data_interface.get_load_table('data/load/', load_request['file_name'])
 
     # Filter data
     demo_info_file_name = data_interface.find_loads_demographic_file(load_request['file_name'])
     demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
-    current_session.is_filtered, current_session.filtered_data = helper_functions.filter_load_data(current_session.raw_data[load_request['file_name']],
-                                                                                                   demo_info,
-                                                                                                   load_request['filter_options'])
+    current_session.filtered_demo_info, current_session.is_filtered = \
+        helper_functions.filter_demo_info(demo_info, load_request['filter_options'])
+    current_session.filtered_data = helper_functions.filter_load_data(
+        current_session.raw_data[load_request['file_name']], current_session.filtered_demo_info)
+
     print(current_session.is_filtered)
     if not current_session.is_filtered:
-        filtered_data = current_session.raw_data[load_request['file_name']]
+        current_session.filtered_data = current_session.raw_data[load_request['file_name']]
 
     # Create the requested chart data if it does not already exist.
     if load_request['file_name'] not in current_session.raw_charts:
@@ -124,8 +127,8 @@ def filtered_load_data():
 
     if load_request['chart_type'] in ['Annual Average Profile', 'Daily kWh Histogram']:
         current_session.raw_charts[load_request['file_name']][load_request['chart_type']] = \
-            chart_methods[load_request['chart_type']](current_session.raw_data[load_request['file_name']], current_session.filtered_data,
-                                                      series_name=['All', 'Selected'])
+            chart_methods[load_request['chart_type']](current_session.raw_data[load_request['file_name']],
+                                                      current_session.filtered_data, series_name=['All', 'Selected'])
     else:
         current_session.raw_charts[load_request['file_name']][load_request['chart_type']] = \
             chart_methods[load_request['chart_type']](current_session.filtered_data)
@@ -180,6 +183,9 @@ def add_case():
     network_tariff_name = case_details['network_tariff_name']
     wholesale_year = case_details['wholesale_price_details']['year']
     wholesale_state = case_details['wholesale_price_details']['state']
+
+    # Save demographic info for case
+    current_session.project_data.demographic_info_by_case[case_name] = current_session.filtered_demo_info
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
@@ -525,6 +531,12 @@ def delete_project():
     return jsonify("No python code for deleting projects as yet!")
 
 
+@app.route('/export_results', methods=['POST'])
+def export_results():
+    x = 1
+    return jsonify("Done!")
+
+
 @app.route('/restart_tool', methods=['POST'])
 def restart_tool():
     current_session.__init__()
@@ -541,7 +553,7 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    #shutdown_server()
+    shutdown_server()
     return 'Server shutting down...'
 
 

@@ -28,11 +28,10 @@ def get_demographic_options_from_demo_file(demo_file):
     return {'actual_names': actual_names, "display_names": display_names_dict, "options": options}
 
 
-def filter_load_data(raw_data, demo_info, filter_options):
-    filtered_demo_info, filtered = filter_demo_info(demo_info, filter_options)
-    customer_id = [c_id for c_id in list(demo_info['CUSTOMER_KEY']) if c_id in raw_data.columns]
+def filter_load_data(raw_data, filtered_demo_info):
+    customer_id = [c_id for c_id in list(filtered_demo_info['CUSTOMER_KEY']) if c_id in raw_data.columns]
     filtered_data = raw_data.loc[:, ['Datetime'] + customer_id]
-    return filtered, filtered_data
+    return filtered_data
 
 
 def filter_demo_info(demo_info, filter_options):

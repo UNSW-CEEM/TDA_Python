@@ -36,6 +36,7 @@
     <script src="static/tariff_info.js"></script>
     <script src="static/project_menu.js"></script>
     <script src="static/end_user_tech.js"></script>
+    <script src="static/export.js"></script>
 
 
   <style>
@@ -642,7 +643,7 @@
           <li>
               <div>Export</div>
               <ul>
-                  <li><div>Export Results</div></li>
+                  <li><div onclick="export_results()">Export Results</div></li>
               </ul>
           </li>
       </ul>
@@ -709,12 +710,6 @@
                                     <option selected="selected">blank</option>
                                 </select>
                                 <script src="static/build_load_selector.js"></script>
-                                <script>$(document).ready(
-                                            function(){
-                                                $('#select').find('option:contains("test_data")').attr("selected",true);
-                                                perform_plot_load_actions();
-                                            })
-                                </script>
                             </div>
                         </div>
                     </div>
