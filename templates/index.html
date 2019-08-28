@@ -35,6 +35,9 @@
     <script src="static/network_load_options.js"></script>
     <script src="static/tariff_info.js"></script>
     <script src="static/project_menu.js"></script>
+    <script src="static/css-element-queries-1.0.0/src/ResizeSensor.js"></script>
+    <script src="static/css-element-queries-1.0.0/src/ElementQueries.js"></script>
+    <script src="static/resize_plots.js"></script>
 
 
   <style>
@@ -679,8 +682,8 @@
             <div style="height: 4.13%"></div>
             <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
                         border-style: solid; border-color: #EEEEEE;">
-                <div id="load_selection" class="row" style="height: 55%;">
-                    <div class="col input_col" style="width: 35%;">
+                <div id="load_selection" class="row" style="resize: vertical; overflow: auto; height: 60%;">
+                    <div class="col input_col" style="width: 50%;">
                         <div class="row" style="height: 10%">
                             <h4 style="margin: 0;">Select Load</h4>
                             <hr style="width: 80%; float: left;">
@@ -703,12 +706,12 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col input_col" style="width: 65%;">
+                    <div class="col input_col" style="width: 49%;">
                         <div class="row" style="height: 10%">
                             <h4 style="margin: 0;">Demographic Filters</h4>
                             <hr style="width: 100%; float: left;">
                         </div>
-                        <div id="demograhphic_selection" class="row" style="height: 100%">
+                        <div id="demograhphic_selection" class="row" style="height: 90%">
                             <div id="demo_label_col" class="col" style="width: 75%;">
                                 <div id="demo_label_0" class="label_stacked"></div>
                                 <div id="demo_label_1"  class="label_stacked"></div>
@@ -767,7 +770,7 @@
                     </div>
                 </div>
                 <div style="height: 2%"><hr></div>
-                <div id="load_inspection" style="height: 40%">
+                <div id="load_inspection" style="resize: vertical; overflow: hidden; height: 38%">
                     <div style="height: 10%; overflow: hidden;">
                         <div id="sample_size_info" style="float: left; width: 60%; height: 100%;">
                             No. of users: N/A
@@ -784,7 +787,7 @@
                         </select>
                         <div class="label_line" style="float: right;">Show:&nbsp</div>
                     </div>
-                    <div class="chart" id="load_chart" style="height: 100%;"></div>
+                    <div class="chart" id="load_chart" style="height: 100%; width: 90%;"></div>
                     <script src="static/plot_load.js"></script>
                 </div>
             </div>
@@ -1195,18 +1198,18 @@
             <div style="height: 4.13%"></div>
             <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
                         border-style: solid; border-color: #EEEEEE;">
-                <div class="row" style="height: 55%">
+                <div class="row" style="resize: vertical; overflow: auto; height: 60%;">
                     <div class="col input_col" style="width: 50%">
                         <div class="row" style="height: 10%">
                             <h4 style="margin: 0;">Historical wholesale prices</h4>
                             <hr style="width: 80%; float: left;">
                         </div>
                         <div class="row" style="height: 40%">
-                            <div class="col" style="width: 30%">
+                            <div class="col" style="width: 40%">
                                 <div class="label_stacked">Year:</div>
                                 <div class="label_stacked">State:</div>
                             </div>
-                            <div class="col" style="width: 50%">
+                            <div class="col" style="width: 40%">
                                 <select id="select_wholesale_year" class="wholesale_filter">
                                     <option selected="selected">None</option>
                                 </select>
@@ -1226,7 +1229,7 @@
                     </div>
                 </div>
                 <div style="height: 2%"><hr></div>
-                <div id="price_inspection" style="height: 40%">
+                <div id="price_inspection" style="resize: vertical; overflow: hidden; height: 38%">
                     <div style="height: 10%; overflow: hidden;">
                         <select  id="select_price_graph" style="float: right; width: 30%;">
                             <option value="Annual Profile">Annual Profile</option>
@@ -1234,7 +1237,7 @@
                         </select>
                         <div class="label_line" style="float: right;">Show:&nbsp</div>
                     </div>
-                    <div class="chart" id="price_chart" style="height: 100%;"></div>
+                    <div class="chart" id="price_chart" style="height: 80%;"></div>
                     <script src="static/plot_wholesale_prices.js"></script>
                 </div>
             </div>
