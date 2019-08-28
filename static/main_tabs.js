@@ -11,4 +11,13 @@ function displayPanels(evt, panelName) {
   // Show the current tab, and add an "active" class to the button that opened the tab
   $("#" + panelName).insertBefore($('.main_tab_content').first());
   evt.currentTarget.className += " active";
+
+  if (panelName == 'load_panel'){
+    setup_vertical_resizing_pair('#load_selection', '#load_inspection', 'load_chart');
+  }
+
+  if (panelName == 'wholesale_energy_costs_selection_panel'){
+    //setup_vertical_resizing_pair('#wholesale_price_selection', '#price_inspection', 'price_chart');
+  }
+
 }

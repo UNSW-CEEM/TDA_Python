@@ -803,9 +803,9 @@
         </div>
         <div id="end_user_tech" class="main_tab_content">
             <div style="height: 4.13%"></div>
-            <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
+            <div id="tech_con" style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
                         border-style: solid; border-color: #EEEEEE;">
-                <div class="row" style="resize: vertical; overflow: auto; height: 60%;">
+                <div id="end_user_tech_inputs" class="row" style="resize: vertical; overflow: auto; height: 60%;">
                     <div class="col input_col" style="width: 50%;">
                         <div class="row" style="overflow: hidden;">
                             <h4 style="margin-bottom: 0;">Solar</h4>
@@ -1205,9 +1205,9 @@
         </div>
         <div id="wholesale_energy_costs_selection_panel" class="main_tab_content">
             <div style="height: 4.13%"></div>
-            <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
+            <div id="wholesale_con" style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
                         border-style: solid; border-color: #EEEEEE;">
-                <div class="row" style="resize: vertical; overflow: auto; height: 60%;">
+                <div id="wholesale_price_selection"  class="row" style="resize: vertical; overflow: auto; height: 60%;">
                     <div class="col input_col" style="width: 50%">
                         <div class="row" style="height: 10%">
                             <h4 style="margin: 0;">Historical wholesale prices</h4>
@@ -1238,7 +1238,7 @@
                     </div>
                 </div>
                 <div style="height: 2%"><hr></div>
-                <div id="price_inspection" style="resize: vertical; overflow: hidden; height: 38%">
+                <div id="price_inspection" style="overflow: hidden; height: 38%">
                     <div style="height: 10%; overflow: hidden;">
                         <select  id="select_price_graph" style="float: right; width: 30%;">
                             <option value="Annual Profile">Annual Profile</option>
@@ -1254,8 +1254,10 @@
     </div>
     <script>document.getElementById("default_tariff_type_tab").click();</script>
   </div>
-  <script>document.getElementById("default_panel").click();</script>
     <script src="static/resize_plots.js"></script>
+    <script>document.getElementById("default_panel").click();</script>
+    <script></script>
+
 
 </div>
 </body>
