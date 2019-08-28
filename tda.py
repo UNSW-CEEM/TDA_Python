@@ -19,37 +19,11 @@ import requests
 from nemosis import data_fetch_methods
 from make_price_charts import get_price_chart
 from wholesale_energy import get_wholesale_prices, calc_wholesale_energy_costs
+import pickle
+from session_data import InMemoryData, ProjectData
 
-# Dictionaries for storing data associated with the current state of the program.
-raw_data = {}  # Data as loaded from feather files, stored in dict on a file name basis
-
-# Chart data for the load plots, only storing data for non filtered data as filtering can change between plot updates.
-# Stored on a file name basis.
-raw_charts = {}
-
-# Results from calculating bill for a set of load profiles with a given tariff. Stored on a case name basis.
-network_results_by_case = {}
-retail_results_by_case = {}
-wholesale_results_by_case = {}
-
-# Load profiles after any filtering, for a given case, stored on a case name basis.
-load_by_case = {}
-
-# Tariff for a given case, stored on a case name basis.
-network_tariffs_by_case = {}
-retail_tariffs_by_case = {}
-
-# The source file name which describes were the load data came from for a given case, stored on a case name basis.
-load_file_name_by_case = {}
-
-# Number of users for a given case.
-load_n_users_by_case = {}
-
-# The filtering used for a given case, stored on a case name basis.
-filter_options_by_case = {}
-
-# Wholesale price info
-wholesale_price_info_by_case = {}
+# Initialise object for holding the current session/project's data.
+current_session = InMemoryData()
 
 
 def resource_path(relative_path):
@@ -130,37 +104,41 @@ def filtered_load_data():
     print('hi the down sample option is {}'.format(load_request['sample_fraction']))
 
     # Get raw load data.
-    if load_request['file_name'] not in raw_data:
-        raw_data[load_request['file_name']] = data_interface.get_load_table('data/load/', load_request['file_name'])
+    if load_request['file_name'] not in current_session.raw_data:
+        current_session.raw_data[load_request['file_name']] = \
+            data_interface.get_load_table('data/load/', load_request['file_name'])
 
     # Filter data
     demo_info_file_name = data_interface.find_loads_demographic_file(load_request['file_name'])
     demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
-    filtered, filtered_data = helper_functions.filter_load_data(raw_data[load_request['file_name']],
-                                                              demo_info,
-                                                              load_request['filter_options'])
-    print(filtered)
-    if not filtered:
-        filtered_data = raw_data[load_request['file_name']]
+    current_session.filtered_demo_info, current_session.is_filtered = \
+        helper_functions.filter_demo_info(demo_info, load_request['filter_options'])
+    current_session.filtered_data = helper_functions.filter_load_data(
+        current_session.raw_data[load_request['file_name']], current_session.filtered_demo_info)
+
+    print(current_session.is_filtered)
+    if not current_session.is_filtered:
+        current_session.filtered_data = current_session.raw_data[load_request['file_name']]
 
     # Create the requested chart data if it does not already exist.
-    if load_request['file_name'] not in raw_charts:
-        raw_charts[load_request['file_name']] = {}
+    if load_request['file_name'] not in current_session.raw_charts:
+        current_session.raw_charts[load_request['file_name']] = {}
     # if load_request['chart_type'] not in raw_charts[load_request['file_name']]:
 
-    if load_request['chart_type'] in ['Annual Average Profile','Daily kWh Histogram']:
-        raw_charts[load_request['file_name']][load_request['chart_type']] = \
-            chart_methods[load_request['chart_type']](raw_data[load_request['file_name']], filtered_data, series_name=['All', 'Selected'])
+    if load_request['chart_type'] in ['Annual Average Profile', 'Daily kWh Histogram']:
+        current_session.raw_charts[load_request['file_name']][load_request['chart_type']] = \
+            chart_methods[load_request['chart_type']](current_session.raw_data[load_request['file_name']],
+                                                      current_session.filtered_data, series_name=['All', 'Selected'])
     else:
-        raw_charts[load_request['file_name']][load_request['chart_type']] = \
-            chart_methods[load_request['chart_type']](filtered_data)
+        current_session.raw_charts[load_request['file_name']][load_request['chart_type']] = \
+            chart_methods[load_request['chart_type']](current_session.filtered_data)
 
     #### prepare chart data and n_users
-    chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
-    if filtered:
-        n_users = helper_functions.n_users(filtered_data)
+    chart_data = current_session.raw_charts[load_request['file_name']][load_request['chart_type']]
+    if current_session.is_filtered:
+        n_users = helper_functions.n_users(current_session.filtered_data)
     else:
-        n_users = helper_functions.n_users(raw_data[load_request['file_name']])
+        n_users = helper_functions.n_users(current_session.raw_data[load_request['file_name']])
 
     # If filtering has been applied also create the filtered chart data,
     # if filtered:
@@ -187,7 +165,7 @@ def filtered_load_data():
 def get_case_default_name():
     # Default case names are of the format 'Case n'. If 'Case 1' is in use then try 'Case 2' etc until a case default
     # case name that is not in use is found.
-    name = helper_functions.get_unique_default_case_name(load_by_case.keys())
+    name = helper_functions.get_unique_default_case_name(current_session.load_by_case.keys())
     return jsonify(name)
 
 
@@ -206,33 +184,35 @@ def add_case():
     wholesale_year = case_details['wholesale_price_details']['year']
     wholesale_state = case_details['wholesale_price_details']['state']
 
-    # Filter load.
-    demo_info_file_name = data_interface.find_loads_demographic_file(load_file_name)
-    demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
-    filtered, load_data = helper_functions.filter_load_data(raw_data[load_file_name], demo_info,filter_options)
+    # Save demographic info for case
+    current_session.project_data.demographic_info_by_case[case_name] = current_session.filtered_demo_info
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
-        network_results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), network_tariff)
-        network_tariffs_by_case[case_name] = network_tariff
+        current_session.project_data.network_results_by_case[case_name] = Bill_Calc.bill_calculator(
+            current_session.filtered_data.set_index('Datetime'), network_tariff)
+        current_session.project_data.network_tariffs_by_case[case_name] = network_tariff
 
     if retail_tariff_name != 'None':
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
-        retail_results_by_case[case_name] = Bill_Calc.bill_calculator(load_data.set_index('Datetime'), retail_tariff)
-        retail_tariffs_by_case[case_name] = retail_tariff
+        current_session.project_data.retail_results_by_case[case_name] = Bill_Calc.bill_calculator(
+            current_session.filtered_data.set_index('Datetime'), retail_tariff)
+        current_session.project_data.retail_tariffs_by_case[case_name] = retail_tariff
 
     if (wholesale_year != 'None') & (wholesale_state != 'None'):
         price_data = get_wholesale_prices(wholesale_year, wholesale_state)
-        wholesale_results_by_case[case_name] = calc_wholesale_energy_costs(price_data, load_data)
-        wholesale_price_info_by_case[case_name] = {}
-        wholesale_price_info_by_case[case_name]['year'] = wholesale_year
-        wholesale_price_info_by_case[case_name]['state'] = wholesale_state
+        current_session.project_data.wholesale_results_by_case[case_name] = calc_wholesale_energy_costs(
+            price_data,  current_session.filtered_data.copy())
+        current_session.project_data.wholesale_price_info_by_case[case_name] = {}
+        current_session.project_data.wholesale_price_info_by_case[case_name]['year'] = wholesale_year
+        current_session.project_data.wholesale_price_info_by_case[case_name]['state'] = wholesale_state
 
-        # Save input data and settings associated with the case.
-    load_by_case[case_name] = load_data
-    load_file_name_by_case[case_name] = load_file_name
-    load_n_users_by_case[case_name] = helper_functions.n_users(load_data)
-    filter_options_by_case[case_name] = filter_options
+    # Save input data and settings associated with the case.
+    current_session.load_by_case[case_name] = current_session.filtered_data
+    current_session.project_data.load_file_name_by_case[case_name] = load_file_name
+    current_session.project_data.load_n_users_by_case[case_name] = \
+        helper_functions.n_users(current_session.filtered_data)
+    current_session.project_data.filter_options_by_case[case_name] = filter_options
     return jsonify('done')
 
 
@@ -242,8 +222,9 @@ def get_case_tariff():
     request_details = request.get_json()
     case_name = request_details['case_name']
     tariff_type = request_details['tariff_type']
-    tariff = helper_functions.get_tariff_by_case(case_name, tariff_type, network_tariffs_by_case,
-                                                 retail_tariffs_by_case)
+    tariff = helper_functions.get_tariff_by_case(case_name, tariff_type,
+                                                 current_session.project_data.network_tariffs_by_case,
+                                                 current_session.project_data.retail_tariffs_by_case)
     if tariff != 'None':
         tariff = format_tariff_data_for_display(tariff)
     return jsonify(tariff)
@@ -253,29 +234,35 @@ def get_case_tariff():
 def get_case_load():
     # Get the set of load profiles associated with a particular case.
     case_name = request.get_json()
-    return jsonify({'n_users': load_n_users_by_case[case_name], 'database': load_file_name_by_case[case_name]})
+    return jsonify({'n_users': current_session.project_data.load_n_users_by_case[case_name],
+                    'database': current_session.project_data.load_file_name_by_case[case_name]})
 
 
 @app.route('/get_case_demo_options', methods=['POST'])
 def get_case_demo_options():
     # Get the demographic filtering options associated with a particular case.
     case_name = request.get_json()
-    return jsonify(filter_options_by_case[case_name])
+    return jsonify(current_session.project_data.filter_options_by_case[case_name])
 
 
 @app.route('/delete_case', methods=['POST'])
 def delete_case():
     # Delete all data associated with a particular case.
     case_name = request.get_json()
-    load_by_case.pop(case_name)
-    if case_name in network_results_by_case.keys():
-        network_results_by_case.pop(case_name)
-    if case_name in retail_results_by_case.keys():
-        retail_results_by_case.pop(case_name)
-    if case_name in retail_tariffs_by_case.keys():
-        retail_tariffs_by_case.pop(case_name)
-    if case_name in network_tariffs_by_case.keys():
-        network_tariffs_by_case.pop(case_name)
+    if case_name in current_session.load_by_case.keys():
+        current_session.load_by_case.pop(case_name)
+    if case_name in current_session.project_data.network_results_by_case.keys():
+        current_session.project_data.network_results_by_case.pop(case_name)
+    if case_name in current_session.project_data.retail_results_by_case.keys():
+        current_session.project_data.retail_results_by_case.pop(case_name)
+    if case_name in current_session.project_data.retail_tariffs_by_case.keys():
+        current_session.project_data.retail_tariffs_by_case.pop(case_name)
+    if case_name in current_session.project_data.network_tariffs_by_case.keys():
+        current_session.project_data.network_tariffs_by_case.pop(case_name)
+    if case_name in current_session.project_data.load_file_name_by_case.keys():
+        current_session.project_data.load_file_name_by_case.pop(case_name)
+    if case_name in current_session.project_data.load_n_users_by_case.keys():
+        current_session.project_data.load_n_users_by_case.pop(case_name)
     return jsonify('done')
 
 
@@ -284,9 +271,11 @@ def get_single_variable_chart():
     details = request.get_json()
     chart_name = details['chart_name']
     case_names = details['case_names']
-    results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
-                                                                  network_results_by_case,
-                                                                  wholesale_results_by_case)
+    results_to_plot = helper_functions.get_results_subset_to_plot(
+        case_names,
+        current_session.project_data.retail_results_by_case,
+        current_session.project_data.network_results_by_case,
+        current_session.project_data.wholesale_results_by_case)
     return singe_variable_chart(chart_name, results_to_plot)
 
 
@@ -307,8 +296,10 @@ def get_dual_variable_chart():
     x_axis_one_peak_per_day = details['x_axis_one_peak_per_day']  # boolean
     y_axis_one_peak_per_day = details['y_axis_one_peak_per_day']  # boolean
 
-    results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
-                                                                  network_results_by_case, wholesale_results_by_case)
+    results_to_plot = helper_functions.get_results_subset_to_plot(case_names,
+                                                                  current_session.project_data.retail_results_by_case,
+                                                                  current_session.project_data.network_results_by_case,
+                                                                  current_session.project_data.wholesale_results_by_case)
     return dual_variable_chart(results_to_plot, x_axis, y_axis)
 
 
@@ -317,8 +308,12 @@ def get_single_case_chart():
     details = request.get_json()
     chart_name = details['chart_name']
     case_name = details['case_name']
-    results_to_plot = helper_functions.get_results_subset_to_plot([case_name], retail_results_by_case,
-                                                                  network_results_by_case, wholesale_results_by_case)
+    results_to_plot = helper_functions.get_results_subset_to_plot(
+        [case_name],
+        current_session.project_data.retail_results_by_case,
+        current_session.project_data.network_results_by_case,
+        current_session.project_data.wholesale_results_by_case)
+
     if case_name not in results_to_plot.keys():
         results_to_plot = None
     else:
@@ -380,9 +375,9 @@ def wholesale_price_chart_data():
 @app.route('/get_wholesale_price_info', methods=['POST'])
 def get_wholesale_price_info():
     case_name = request.json
-    if case_name in wholesale_price_info_by_case.keys():
-        info = {'state': wholesale_price_info_by_case[case_name]['state'],
-                'year': wholesale_price_info_by_case[case_name]['year']}
+    if case_name in current_session.project_data.wholesale_price_info_by_case.keys():
+        info = {'state': current_session.project_data.wholesale_price_info_by_case[case_name]['state'],
+                'year': current_session.project_data.wholesale_price_info_by_case[case_name]['year']}
     else:
         info = 'None'
     return jsonify(info)
@@ -392,7 +387,7 @@ def get_wholesale_price_info():
 def add_end_user_tech():
     details = request.json
     solar_pen = details['solar_inputs']['penetration']
-    return
+    return jsonify('done')
 
 
 @app.route('/tariff_options', methods=['POST'])
@@ -500,20 +495,35 @@ def open_sample():
 
 @app.route('/load_project', methods=['POST'])
 def load_project():
-    message = "No python code for loading projects yet! But we have returned a dummy name to add!"
-    dummy_name_to_add_in_ui = "not a real project"
-    also_return_a_list_of_cases_loaded = ['Case 1', 'Case 2', 'Some other case']
-    return jsonify({'message': message, 'name': dummy_name_to_add_in_ui, 'cases': also_return_a_list_of_cases_loaded})
+    file_path = helper_functions.get_file_to_load_from_user()
+    with open(file_path, "rb") as f:
+        current_session.project_data = pickle.load(f)
+    message = "Done!"
+    current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
+    also_return_a_list_of_cases_loaded = list(current_session.project_data.load_file_name_by_case.keys())
+    return jsonify({'message': message, 'name': current_session.project_data.name, 'cases': also_return_a_list_of_cases_loaded})
 
 
 @app.route('/save_project', methods=['POST'])
 def save_project():
-    return jsonify("No python code for saving projects yet!")
+    if current_session.project_data.name == '':
+        file_path = helper_functions.get_save_name_from_user()
+        file_path = helper_functions.add_file_extension_if_needed(file_path)
+    else:
+        file_path = current_session.project_data.name + '.pkl'
+    with open(file_path, "wb") as f:
+        pickle.dump(current_session.project_data, f)
+    return jsonify("Done!")
 
 
 @app.route('/save_project_as', methods=['POST'])
 def save_project_as():
-    return jsonify("No python code for saving projects as yet!")
+    file_path = helper_functions.get_save_name_from_user()
+    file_path = helper_functions.add_file_extension_if_needed(file_path)
+    current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
+    with open(file_path, "wb") as f:
+        pickle.dump(current_session.project_data, f)
+    return jsonify({'message': 'Done!', 'name': current_session.project_data.name})
 
 
 @app.route('/delete_project', methods=['POST'])
@@ -521,9 +531,16 @@ def delete_project():
     return jsonify("No python code for deleting projects as yet!")
 
 
+@app.route('/export_results', methods=['POST'])
+def export_results():
+    x = 1
+    return jsonify("Done!")
+
+
 @app.route('/restart_tool', methods=['POST'])
 def restart_tool():
-    return jsonify("No python code for restarting yet!")
+    current_session.__init__()
+    return jsonify("Done!")
 
 
 def shutdown_server():
@@ -536,7 +553,7 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    #shutdown_server()
+    shutdown_server()
     return 'Server shutting down...'
 
 
