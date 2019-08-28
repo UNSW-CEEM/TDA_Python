@@ -37,7 +37,6 @@
     <script src="static/project_menu.js"></script>
     <script src="static/css-element-queries-1.0.0/src/ResizeSensor.js"></script>
     <script src="static/css-element-queries-1.0.0/src/ElementQueries.js"></script>
-    <script src="static/resize_plots.js"></script>
     <script src="static/end_user_tech.js"></script>
     <script src="static/export.js"></script>
 
@@ -696,7 +695,7 @@
         </div>
         <div id="load_panel" class="main_tab_content">
             <div style="height: 4.13%"></div>
-            <div style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
+            <div id="load_con" style="padding: 1%; width: 100%; height: 95%; border-width: 2px; box-sizing: border-box;
                         border-style: solid; border-color: #EEEEEE;">
                 <div id="load_selection" class="row" style="resize: vertical; overflow: auto; height: 60%;">
                     <div class="col input_col" style="width: 50%;">
@@ -780,7 +779,7 @@
                     </div>
                 </div>
                 <div style="height: 2%"><hr></div>
-                <div id="load_inspection" style="resize: vertical; overflow: hidden; height: 38%">
+                <div id="load_inspection" style="overflow: hidden; height: 38%">
                     <div style="height: 10%; overflow: hidden;">
                         <div id="sample_size_info" style="float: left; width: 60%; height: 100%;">
                             No. of users: N/A
@@ -797,7 +796,7 @@
                         </select>
                         <div class="label_line" style="float: right;">Show:&nbsp</div>
                     </div>
-                    <div class="chart" id="load_chart" style="height: 100%; width: 90%;"></div>
+                    <div class="chart" id="load_chart" style="height: 90%; width: 90%;"></div>
                     <script src="static/plot_load.js"></script>
                 </div>
             </div>
@@ -1256,6 +1255,8 @@
     <script>document.getElementById("default_tariff_type_tab").click();</script>
   </div>
   <script>document.getElementById("default_panel").click();</script>
+    <script src="static/resize_plots.js"></script>
+
 </div>
 </body>
 </html>
