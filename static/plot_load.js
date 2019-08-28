@@ -131,7 +131,7 @@ var plot_load = function(response){
                   margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
                   paper_bgcolor: '#EEEEEE',
                   plot_bgcolor: '#c7c7c7',
-                  showlegend: true,
+                  showlegend: false,
                   xaxis: response['chart_data']['layout'].xaxis,
                   yaxis: response['chart_data']['layout'].yaxis};
 

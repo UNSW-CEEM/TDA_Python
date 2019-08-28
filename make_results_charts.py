@@ -11,6 +11,7 @@ def _bill_distribution(results, name):
     return chart
 
 def _bill_box_plot(results, name):
+    print(results.head())
     chart = go.Box(y=results['Bill'], name=name)
     return chart
 
