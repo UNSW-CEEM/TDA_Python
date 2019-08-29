@@ -335,6 +335,10 @@
         padding: padding: 1% 1% 1% 0%;;
         width: 100%;
         overflow: hidden;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        z-index: -1;
       }
 
       .tariff_type_tab_content {
@@ -345,6 +349,11 @@
         padding: 1%;
         width: 100%;
         overflow: hidden;
+        position: absolute;
+        left: 0px;
+        top: 0px;
+        z-index: -2;
+        background-color: #EEEEEE;
       }
 
        .case_info_tab_content {
@@ -688,8 +697,8 @@
             <font id="results_status_set" color="green" style="display: none;">&#9679;</font> Results
         </button>
     </div>
-    <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left; overflow: hidden;">
-        <div style="z-index: 99; position: absolute; top: 30px; right: 100px;">
+    <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left; overflow: hidden; position: relative;">
+        <div style="z-index: 99; position: absolute; top: 10px; right: 100px;">
             Project name: &nbsp
             <div id="project_name" style="float: right;">N/A</div>
         </div>
@@ -699,11 +708,11 @@
                         border-style: solid; border-color: #EEEEEE;">
                 <div id="load_selection" class="row" style="resize: vertical; overflow: auto; height: 60%;">
                     <div class="col input_col" style="width: 50%;">
-                        <div class="row" style="height: 10%">
+                        <div class="row" style="overflow: hidden;">
                             <h4 style="margin: 0;">Select Load</h4>
-                            <hr style="width: 80%; float: left;">
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
                         </div>
-                        <div class="row" style="height: 80%">
+                        <div class="row" style="overflow: hidden;">
                             <div class="col" style="width: 40%;">
                                 <div class="label_stacked">Selected:</div>
                             </div>
@@ -716,11 +725,11 @@
                         </div>
                     </div>
                     <div class="col input_col" style="width: 49%;">
-                        <div class="row" style="height: 10%">
+                        <div class="row">
                             <h4 style="margin: 0;">Demographic Filters</h4>
-                            <hr style="width: 100%; float: left;">
+                            <hr style="width: 100%; float: left; margin-bottom: 1.5vh;">
                         </div>
-                        <div id="demograhphic_selection" class="row" style="height: 90%">
+                        <div id="demograhphic_selection" class="row" style="overflow: hidden">
                             <div id="demo_label_col" class="col" style="width: 75%;">
                                 <div id="demo_label_0" class="label_stacked"></div>
                                 <div id="demo_label_1"  class="label_stacked"></div>
@@ -890,7 +899,7 @@
                     </div>
                 </div>
                 <div style="height: 2%"><hr></div>
-                <div id="net_load_inspection" style="resize: vertical; overflow: hidden; height: 38%">
+                <div id="net_load_inspection" style="overflow: hidden; height: 38%">
                     <div style="height: 10%; overflow: hidden;">
                         <select  id="select_net_graph" style="float: right; width: 30%;">
                             <option value="">Some awesome charts!</option>
@@ -1127,9 +1136,9 @@
                 <button class="tariff_type_links"
                         onclick="displayTariffType(event, 'network_tariff_selection_panel')">Network tariffs</button>
             </div>
-            <div id="tariff_type_container" style="height: 95%; width: 100%; overflow: hidden;">
+            <div id="tariff_type_container" style="height: 95%; width: 100%; overflow: hidden; position: relative;">
                 <div id="network_tariff_selection_panel" class="tariff_type_tab_content">
-                    <div class="upper_tariff_section row" style="height: 45%;">
+                    <div id="network_upper" class="upper_tariff_section row" style="resize: vertical; overflow: auto; height: 45%;">
                         <script>$("#network_tariff_selection_panel .upper_tariff_section").load("tariff_selectors",
                                     function(){
                                         get_tariff_options("network_tariff_selection_panel");
@@ -1142,9 +1151,9 @@
                               });
                         </script>
                     </div>
-                    <div class="lower_tariff_section row" style="height: 55%;">
+                    <div id="network_lower" class="lower_tariff_section row" style="overflow: hidden; height: 55%;">
                         <script src="static/tariff_tabs.js"></script>
-                        <div id="tariff_tabs" class="tab_button_area" style="height: 8.35%">
+                        <div id="tariff_tabs" class="tab_button_area" style="height: 4vh;">
                             <button class="tablinks" value="DUOS"
                                     onclick="displayTariff(event, 'network_tariff_selection_panel', 'DUOS')">DUOS</button>
                             <button class="tablinks" value="TUOS"
@@ -1170,7 +1179,8 @@
                     </div>
                 </div>
                 <div id="retail_tariff_selection_panel" class="tariff_type_tab_content">
-                    <div class="upper_tariff_section row" style="height: 45%;"></div>
+                    <div id="retail_upper" class="upper_tariff_section row"
+                         style="resize: vertical; overflow: auto; height: 45%;"></div>
                     <script>$("#retail_tariff_selection_panel .upper_tariff_section").load("tariff_selectors",
                                 function(){
                                     get_tariff_options("retail_tariff_selection_panel")
@@ -1181,9 +1191,9 @@
                                         get_tariff_options('retail_tariff_selection_panel');
                                     });
                              });</script>
-                    <div class="lower_tariff_section row" style="height: 55%;">
+                    <div id="retail_lower" class="lower_tariff_section row" style="overflow: hidden; height: 55%;">
                         <script src="static/tariff_tabs.js"></script>
-                        <div class="tariff_tabs tab_button_area" style="height: 8.35%">
+                        <div class="tariff_tabs tab_button_area" style="height: 4vh;">
                             <button id="retail_default_tab" class="tablinks" value="Retail"
                                     onclick="displayTariff(event, 'retail_tariff_selection_panel', 'Retail')">
                                 Retail
@@ -1209,11 +1219,11 @@
                         border-style: solid; border-color: #EEEEEE;">
                 <div id="wholesale_price_selection"  class="row" style="resize: vertical; overflow: auto; height: 60%;">
                     <div class="col input_col" style="width: 50%">
-                        <div class="row" style="height: 10%">
+                        <div class="row">
                             <h4 style="margin: 0;">Historical wholesale prices</h4>
-                            <hr style="width: 80%; float: left;">
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
                         </div>
-                        <div class="row" style="height: 40%">
+                        <div class="row" style="overflow: hidden;">
                             <div class="col" style="width: 40%">
                                 <div class="label_stacked">Year:</div>
                                 <div class="label_stacked">State:</div>
@@ -1227,11 +1237,11 @@
                                 </select>
                             </div>
                         </div>
-                        <div class="row" style="height: 10%">
+                        <div class="row">
                             <h4 style="margin: 0;">Actions</h4>
-                            <hr style="width: 80%; float: left;">
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
                         </div>
-                        <div class="row" style="height: 40%">
+                        <div class="row" style="overflow: hidden;">
                             <button style="width: 80%; text-align: left; height: 3.25vh;"
                                     onclick="get_default_case_name()">Create case</button>
                         </div>
@@ -1252,11 +1262,11 @@
             </div>
         </div>
     </div>
-    <script>document.getElementById("default_tariff_type_tab").click();</script>
+
   </div>
-    <script src="static/resize_plots.js"></script>
+    <script>document.getElementById("default_tariff_type_tab").click();</script>
     <script>document.getElementById("default_panel").click();</script>
-    <script></script>
+    <script src="static/resize_plots.js"></script>
 
 
 </div>
