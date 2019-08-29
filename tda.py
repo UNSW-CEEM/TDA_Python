@@ -165,7 +165,7 @@ def filtered_load_data():
 def get_case_default_name():
     # Default case names are of the format 'Case n'. If 'Case 1' is in use then try 'Case 2' etc until a case default
     # case name that is not in use is found.
-    name = helper_functions.get_unique_default_case_name(current_session.load_by_case.keys())
+    name = helper_functions.get_unique_default_case_name(current_session.project_data.load_file_name_by_case.keys())
     return jsonify(name)
 
 
