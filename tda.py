@@ -261,22 +261,13 @@ def delete_case():
 @app.route('/get_single_variable_chart', methods=['POST'])
 def get_single_variable_chart():
     details = request.get_json()
-    print('=============================')
-    print(details)
-
     chart_name = details['chart_name']
     case_names = details['case_names']
-
-    print('******************')
-    print(load_by_case)
 
     results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
                                                                   network_results_by_case)
 
     load_and_results_to_plot = {'results': results_to_plot, 'load': load_by_case}
-
-    print(load_and_results_to_plot)
-
     return singe_variable_chart(chart_name, load_and_results_to_plot)
 
 
