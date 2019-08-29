@@ -69,11 +69,25 @@ var get_cases_to_plot_from_ui = function(){
   return cases_to_plot
 }
 
-
 var on_checkbox_change = function(){
-  update_single_case_selector();
+  //update_single_case_selector();
+  console.log('=========== on check')
+  cases_to_plot = get_cases_to_plot_from_ui();
+  console.log(cases_to_plot);
   plot_results();
 }
+
+
+
+
+$('#single_variable_chart_type').on('change', function() {
+    //$('#dialog').dialog({modal: true});
+    //update_single_case_selector();
+    console.log('###################')
+    cases_to_plot = get_cases_to_plot_from_ui();
+    console.log(cases_to_plot);
+    plot_results();
+});
 
 var plot_results = function(){
     // Plot results for each results tab.
@@ -85,6 +99,8 @@ var plot_results = function(){
     document.getElementById('results_panel_button').click();
 }
 
+
+
 var plot_single_variable_results = function(){
     // Get cases to plot
     cases_to_plot = get_cases_to_plot_from_ui();
@@ -95,11 +111,6 @@ var plot_single_variable_results = function(){
     // Package request details into a single object.
     var case_details = {'chart_name': chart_type, 'case_names': cases_to_plot}
 
-    // Define the chart layout
-    var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
-                  paper_bgcolor: '#EEEEEE',
-                  plot_bgcolor: '#c7c7c7',
-                  showlegend: true};
 
     // Get chart data
     $.ajax({
@@ -111,7 +122,18 @@ var plot_single_variable_results = function(){
         dataType:"json",
         success: function(data){
             // Draw chart.
-            Plotly.newPlot('single_variable_result_chart', data, layout, {responsive: true});
+             // Define the chart layout
+
+            console.log("data:",data);
+            console.log("data[layout]:",data['layout']);
+            var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
+                            paper_bgcolor: '#EEEEEE',
+                            plot_bgcolor: '#c7c7c7',
+                            showlegend: data['layout'].showlegend,
+                            xaxis: data['layout'].xaxis,
+                            yaxis: data['layout'].yaxis};
+
+            Plotly.newPlot('single_variable_result_chart', data['data'], layout, {responsive: true});
         ;}
     });
 

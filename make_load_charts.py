@@ -71,7 +71,10 @@ def get_daily_kWh_hist(load, load_filtered, series_name):
 
         # no filtered data
 
-        trace1 = go.Histogram(x=list(load_sum),histnorm='probability',name=series_name[0])
+        trace1 = go.Histogram(x=list(load_sum),histnorm='probability',name=series_name[0], xbins=dict(
+        start=min(load_sum),
+        end=max(load_sum),
+        size=(max(load_sum)-min(load_sum))/50))
 
         data ={'data': [trace1], 'layout':layout}
         return data

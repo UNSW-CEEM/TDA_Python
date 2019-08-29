@@ -18,6 +18,7 @@ from tariff_processing import format_tariff_data_for_display, format_tariff_data
 
 # Dictionaries for storing data associated with the current state of the program.
 raw_data = {}  # Data as loaded from feather files, stored in dict on a file name basis
+save_filtered_data = {}
 
 # Chart data for the load plots, only storing data for non filtered data as filtering can change between plot updates.
 # Stored on a file name basis.
@@ -260,11 +261,23 @@ def delete_case():
 @app.route('/get_single_variable_chart', methods=['POST'])
 def get_single_variable_chart():
     details = request.get_json()
+    print('=============================')
+    print(details)
+
     chart_name = details['chart_name']
     case_names = details['case_names']
+
+    print('******************')
+    print(load_by_case)
+
     results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
                                                                   network_results_by_case)
-    return singe_variable_chart(chart_name, results_to_plot)
+
+    load_and_results_to_plot = {'results': results_to_plot, 'load': load_by_case}
+
+    print(load_and_results_to_plot)
+
+    return singe_variable_chart(chart_name, load_and_results_to_plot)
 
 
 @app.route('/get_dual_variable_chart', methods=['POST'])
@@ -275,7 +288,8 @@ def get_dual_variable_chart():
     case_names = details['case_names']
     results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
                                                                   network_results_by_case)
-    return dual_variable_chart(results_to_plot, x_axis, y_axis)
+    load_and_results_to_plot = {'results': results_to_plot, 'load': load_by_case}
+    return dual_variable_chart(load_and_results_to_plot, x_axis, y_axis)
 
 
 @app.route('/get_single_case_chart', methods=['POST'])
