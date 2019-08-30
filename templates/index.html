@@ -918,7 +918,7 @@
                     <button id="single_case_button" class="results_tab_links" onclick="displayResults(event, 'single_case_tab')">Single case graphs</button>
                 </div>
                 <div id="single_variable_tab" class="results_tab_content">
-                    <div id="single_variable_result_chart" class="row" style="height: 80%"></div>
+                    <div id="single_variable_result_chart" class="row chart" style="height: 80%"></div>
                     <div class="row" style="height: 20%">
                         <div class="col">
                             <div class="label_line">Select figure:&nbsp</div>
@@ -931,7 +931,7 @@
                     </div>
                 </div>
                 <div id="dual_variable_tab" class="results_tab_content">
-                    <div id="dual_variable_result_chart" class="row" style="height: 80%"></div>
+                    <div id="dual_variable_result_chart" class="row chart" style="height: 80%"></div>
                     <div class="row" style="height: 20%; overflow: auto;">
                         <div class="col">
                             <div class="label_stacked">X axis:&nbsp</div>
@@ -1001,7 +1001,7 @@
                     </div>
                 </div>
                 <div id="single_case_tab" class="results_tab_content">
-                    <div id="single_case_result_chart" class="row" style="height: 80%"></div>
+                    <div id="single_case_result_chart" class="row chart" style="height: 80%"></div>
                     <div class="row" style="height: 20%">
                         <div class="col">
                             <div class="label_stacked">Select case:&nbsp</div>
@@ -1267,6 +1267,7 @@
     <script>document.getElementById("default_tariff_type_tab").click();</script>
     <script>document.getElementById("default_panel").click();</script>
     <script src="static/resize_plots.js"></script>
+    <script src="static/export_chart_data.js"></script>
 
 
 </div>
