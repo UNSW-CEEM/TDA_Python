@@ -22,7 +22,7 @@ class TestAddingItem(unittest.TestCase):
 
 
 class TestAddingDict(unittest.TestCase):
-    def testAddingItemToNonEmpty(self):
+    def testAddingDictToNonEmpty(self):
         non_empty = [['random', 'pre-existing', 'data']]
         dict_to_add = {'year': 2017, 'state': 'NSW'}
         expected_result = [['random', 'pre-existing', 'data'],
@@ -35,7 +35,7 @@ class TestAddingDict(unittest.TestCase):
 
 
 class TestAddingDataFrame(unittest.TestCase):
-    def testAddingItemToNonEmpty(self):
+    def testAddingDFToNonEmpty(self):
         non_empty = [['random', 'pre-existing', 'data']]
         customers = [1, 2, 5]
         bill = [11.4, -1, 8]

@@ -83,14 +83,14 @@ def get_file_to_load_from_user():
     return file_path
 
 
-def get_save_name_from_user():
+def get_save_name_from_user(type_name, extension):
     root = tk.Tk()
     root.geometry('0x0+0+0')
     root.lift()
     root.attributes('-topmost', True)
     root.after_idle(root.attributes, '-topmost', False)
     root.overrideredirect(True)
-    file_path = filedialog.asksaveasfilename(parent=root, filetypes=(('pickle file', '.pkl'),))
+    file_path = filedialog.asksaveasfilename(parent=root, filetypes=((type_name, extension),))
     return file_path
 
 
@@ -98,7 +98,7 @@ def get_project_name_from_file_path(file_path):
     return file_path.split('/')[-1][:-4]
 
 
-def add_file_extension_if_needed(file_path):
-    if file_path[-4:] != '.pkl':
-        file_path = file_path + '.pkl'
+def add_file_extension_if_needed(file_path, extension):
+    if file_path[-4:] != extension:
+        file_path = file_path + extension
     return file_path

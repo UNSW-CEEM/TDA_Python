@@ -10,6 +10,7 @@ from make_load_charts import chart_methods
 from make_results_charts import singe_variable_chart, dual_variable_chart, single_case_chart
 import data_interface
 import Bill_Calc
+import format_case_for_export
 from time import time
 from datetime import datetime, timedelta
 
@@ -21,7 +22,8 @@ from make_price_charts import get_price_chart
 from wholesale_energy import get_wholesale_prices, calc_wholesale_energy_costs
 import pickle
 from session_data import InMemoryData, ProjectData
-
+import csv
+from openpyxl import Workbook
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
 
@@ -189,20 +191,26 @@ def add_case():
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
-        current_session.project_data.network_results_by_case[case_name] = Bill_Calc.bill_calculator(
-            current_session.filtered_data.set_index('Datetime'), network_tariff)
+        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), network_tariff)
+        retail_results.index.name = 'CUSTOMER_KEY'
+        retail_results = retail_results.reset_index()
+        current_session.project_data.network_results_by_case[case_name] = retail_results
         current_session.project_data.network_tariffs_by_case[case_name] = network_tariff
 
     if retail_tariff_name != 'None':
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
-        current_session.project_data.retail_results_by_case[case_name] = Bill_Calc.bill_calculator(
-            current_session.filtered_data.set_index('Datetime'), retail_tariff)
+        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), retail_tariff)
+        retail_results.index.name = 'CUSTOMER_KEY'
+        retail_results = retail_results.reset_index()
+        current_session.project_data.retail_results_by_case[case_name] = retail_results
         current_session.project_data.retail_tariffs_by_case[case_name] = retail_tariff
 
     if (wholesale_year != 'None') & (wholesale_state != 'None'):
         price_data = get_wholesale_prices(wholesale_year, wholesale_state)
-        current_session.project_data.wholesale_results_by_case[case_name] = calc_wholesale_energy_costs(
-            price_data,  current_session.filtered_data.copy())
+        wholesale_results = calc_wholesale_energy_costs(price_data,  current_session.filtered_data.copy())
+        wholesale_results.index.name = 'CUSTOMER_KEY'
+        wholesale_results = wholesale_results.reset_index()
+        current_session.project_data.wholesale_results_by_case[case_name] = wholesale_results
         current_session.project_data.wholesale_price_info_by_case[case_name] = {}
         current_session.project_data.wholesale_price_info_by_case[case_name]['year'] = wholesale_year
         current_session.project_data.wholesale_price_info_by_case[case_name]['state'] = wholesale_state
@@ -518,8 +526,8 @@ def save_project():
 
 @app.route('/save_project_as', methods=['POST'])
 def save_project_as():
-    file_path = helper_functions.get_save_name_from_user()
-    file_path = helper_functions.add_file_extension_if_needed(file_path)
+    file_path = helper_functions.get_save_name_from_user('pickle file', '.pkl')
+    file_path = helper_functions.add_file_extension_if_needed(file_path, '.pkl')
     current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
     with open(file_path, "wb") as f:
         pickle.dump(current_session.project_data, f)
@@ -533,7 +541,15 @@ def delete_project():
 
 @app.route('/export_results', methods=['POST'])
 def export_results():
-    x = 1
+    file_path = helper_functions.get_save_name_from_user('excel file', '.xlsx')
+    file_path = helper_functions.add_file_extension_if_needed(file_path, '.xlsx')
+    wb = Workbook()
+    for case_name in current_session.project_data.load_file_name_by_case.keys():
+        data_to_export = format_case_for_export.process_case(case_name, current_session.project_data)
+        ws = wb.create_sheet(case_name)
+        for row in data_to_export:
+            ws.append(row,)
+    wb.save(file_path)
     return jsonify("Done!")
 
 
