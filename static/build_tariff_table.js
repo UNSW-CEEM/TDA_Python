@@ -72,7 +72,8 @@ var display_tariff_info = function(tariff_type_panel, tariff_data){
 
     // display info by nuos, duos etc
     for (var key in tariff_data['Parameters']) {
-        if (tariff_data['Parameters'].hasOwnProperty(key)) {
+        if (tariff_data['Parameters'].hasOwnProperty(key) &&
+            ['Retail', 'DUOS', 'TUOS', 'NUOS'].includes(key)) {
             display_tables(tariff_type_panel, key, tariff_data['Parameters'][key], true);
         }
     }
@@ -292,7 +293,6 @@ var columns_to_edit = function(table_data, multi_row){
 var nuos_equals_duos_plus_tuos = function(){
     var duos_tables = $('#DUOS .tariff_table')
     var tuos_tables = $('#TUOS .tariff_table')
-    var dtuos_tables = $('#DTUOS .tariff_table')
     var nuos_tables = $('#NUOS .tariff_table')
 
     $.each(duos_tables, function(i, duos_table){
@@ -302,7 +302,6 @@ var nuos_equals_duos_plus_tuos = function(){
             var duos_value = parseFloat($(duos_tables[i]).DataTable().cell(j, column_index).data());
             var tuos_value = parseFloat($(tuos_tables[i]).DataTable().cell(j, column_index).data());
             var new_value = (duos_value + tuos_value).toFixed(4)
-            $(dtuos_tables[i]).DataTable().cell(j, column_index).data(new_value);
             $(nuos_tables[i]).DataTable().cell(j, column_index).data(new_value);
         }
     });

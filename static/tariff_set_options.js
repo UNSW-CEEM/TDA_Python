@@ -50,7 +50,7 @@ var update_tariff_data_sets = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
-            $('#updating_tariffs p').text(data)
+            $('#updating_tariffs p').text(data['message'])
         }
     });
 };

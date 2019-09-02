@@ -23,7 +23,7 @@ def get_tariff(tariff_type, requested_tariff):
 def get_tariffs(tariff_type):
     if tariff_type == 'network_tariff_selection_panel':
         with open('data/NetworkTariffs.json') as json_file:
-            tariffs = json.load(json_file)
+            tariffs = json.load(json_file)[0]['Tariffs']
         with open('data/UserDefinedNetworkTariffs.json') as json_file:
             user_tariffs = json.load(json_file)
     else:

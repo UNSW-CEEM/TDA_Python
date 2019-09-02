@@ -14,7 +14,7 @@ import format_case_for_export
 import format_chart_data_for_export
 from time import time
 from datetime import datetime, timedelta
-
+import start_up_procedures
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
     get_options_from_tariff_set, strip_tariff_to_single_component
 import requests
@@ -25,6 +25,12 @@ import pickle
 from session_data import InMemoryData, ProjectData
 import csv
 from openpyxl import Workbook
+import errors
+import logging
+
+logging.basicConfig(filename='tda_log_file.txt', filemode='a', level=logging.DEBUG)
+logger = logging.getLogger(__name__)
+
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
 
@@ -351,15 +357,14 @@ def wholesale_price_options():
     # Month to check for data.
     month = 12
     # url to check for data at.
-    aemo_data_url = 'http://www.nemweb.com.au/Data_Archive/Wholesale_Electricity/MMSDM/{}/MMSDM_{}_{}'
+    aemo_name = 'data/aemo_raw_cache/PUBLIC_DVD_TRADINGPRICE_{}{}010000.csv'
     # Status to keep checking for new data on.
     last_year = 'complete'
     # Add years to the list that the user can select from where that year has an AMEO
     years = []
     while last_year == 'complete':
-        url_to_check = aemo_data_url.format(year, year, month)
-        r = requests.get(url_to_check)
-        if r.status_code != 404:
+        name_to_check = aemo_name.format(year, month)
+        if os.path.isfile(name_to_check):
             years.append(year)
             year += 1
         else:
@@ -480,8 +485,14 @@ def restore_original_data_set():
 
 
 @app.route('/update_tariffs', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def update_tariffs():
-    return jsonify("No python code for updating tariffs yet!")
+    network_version, retail_version = start_up_procedures.update_tariffs()
+    message = '''We have attempted to download the latest tariff version. Versions downloaded; Network: {}, Retail: {}. 
+                 To use these versions please reset the active tariff database.'''.\
+        format(network_version, retail_version)
+    data = {'message': message}
+    return jsonify(data)
 
 
 @app.route('/open_tariff_info', methods=['POST'])
@@ -588,6 +599,6 @@ def shutdown():
 
 
 if __name__ == '__main__':
+    start_up_procedures.update_nemosis_cache()
+    start_up_procedures.update_tariffs()
     app.run()
-
-    # init_gui(app, width=1200, height=800, window_title='TDA')  # This one runs it as a standalone app
