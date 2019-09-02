@@ -81,11 +81,18 @@ var on_checkbox_change = function(){
 
 
 $('#single_variable_chart_type').on('change', function() {
-    //$('#dialog').dialog({modal: true});
-    //update_single_case_selector();
-    console.log('###################')
-    cases_to_plot = get_cases_to_plot_from_ui();
-    console.log(cases_to_plot);
+    plot_results();
+});
+
+$('#dual_variable_x_axis').on('change', function() {
+    plot_results();
+});
+
+$('#dual_variable_y_axis').on('change', function() {
+    plot_results();
+});
+
+$('#single_case_chart_type').on('change', function() {
     plot_results();
 });
 
@@ -107,6 +114,7 @@ var plot_single_variable_results = function(){
 
     // Get the chart type to be drawn from the GUI.
     var chart_type = $('#single_variable_chart_type').children("option:selected").val();
+    console.log("chart_type:",chart_type);
 
     // Package request details into a single object.
     var case_details = {'chart_name': chart_type, 'case_names': cases_to_plot}
@@ -143,19 +151,22 @@ var plot_single_variable_results = function(){
 var plot_dual_variable_results = function(){
     // Get cases to plot
     cases_to_plot = get_cases_to_plot_from_ui();
+    // Get the load details
+    load_request = get_load_details_from_ui();
+
+    console.log("cases_to_plot:",cases_to_plot);
+    console.log("load_request:",load_request);
+
+    var n_peaks_selected = $('#n_peaks_select').children("option:selected").val();
+    console.log("n_peaks_selected:",n_peaks_selected);
 
     // Get the x and y axis for the dual variable chart.
     var x_axis = $('#dual_variable_x_axis').children("option:selected").val();
     var y_axis = $('#dual_variable_y_axis').children("option:selected").val();
 
     // Package request details into a single object.
-    var case_details = {'x_axis': x_axis, 'y_axis': y_axis, 'case_names': cases_to_plot}
+    var case_details = {'x_axis': x_axis, 'y_axis': y_axis, 'case_names': cases_to_plot, 'load_details': load_request}
 
-    // Define the chart layout
-    var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
-                  paper_bgcolor: '#EEEEEE',
-                  plot_bgcolor: '#c7c7c7',
-                  showlegend: true};
 
     // Get chart data
     $.ajax({
@@ -166,8 +177,18 @@ var plot_dual_variable_results = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
+            console.log("data:",data);
+            console.log("data[layout]:",data['layout']);
+            // Define the chart layout
+            var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
+            paper_bgcolor: '#EEEEEE',
+            plot_bgcolor: '#c7c7c7',
+            showlegend: true,
+            xaxis: data['layout'].xaxis,
+            yaxis: data['layout'].yaxis};
+
             // Draw chart.
-            Plotly.newPlot('dual_variable_result_chart', data, layout, {responsive: true});
+            Plotly.newPlot('dual_variable_result_chart', data['data'], layout, {responsive: true});
         ;}
     });
 
@@ -200,8 +221,15 @@ var plot_single_case_results = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
+            // Define the chart layout
+            var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
+            paper_bgcolor: '#EEEEEE',
+            plot_bgcolor: '#c7c7c7',
+            showlegend: true,
+            xaxis: data['layout'].xaxis,
+            yaxis: data['layout'].yaxis};
             // Draw chart.
-            Plotly.newPlot('single_case_result_chart', data, layout, {responsive: true});
+            Plotly.newPlot('single_case_result_chart', data['data'], layout, {responsive: true});
         ;}
     });
 }

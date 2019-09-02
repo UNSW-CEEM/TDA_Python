@@ -11,6 +11,7 @@ var add_case_to_python = function(parent_id){
 
     // Get load name
     load_request = get_load_details_from_ui();
+    console.log("load_request:",load_request);
 
     // Bundle case details into a single object
     case_details = {'case_name': case_name,

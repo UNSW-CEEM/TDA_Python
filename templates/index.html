@@ -816,10 +816,10 @@
                                 <option value="Bill">Bill ($/year)</option>
                                 <option value="unitised_bill_kW">Unitised Bill (kW)</option>
                             </select>
+                            <script src="static/plot_results.js"></script>
                             <br/>
                             <select id="dual_variable_y_axis" style="width: 80%">
                                 <option value="Annual_kWh">Annual kWh</option>
-                                <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
                                 <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
                                 <option value="avg_demand_n_monthly_peaks">Average Demand at 'N' Network Monthly Peaks</option>
                                 <option value="avg_demand_top_n_peaks">Average Demand at Top 'N' Peaks</option>
@@ -829,6 +829,7 @@
                                 <option value="Bill">Bill ($/year)</option>
                                 <option value="unitised_bill_kW">Unitised Bill (kW)</option>
                             </select>
+                            <script src="static/plot_results.js"></script>
                         </div>
                         <div id="peak_options" class="col" style="width: 49%; display: none;">
                             <div class="row" style="height: 30%;">
@@ -864,6 +865,7 @@
                                     </div>
                                 </div>
                             </div>
+                            <script src="static/plot_results.js"></script>
                         </div>
                     </div>
                 </div>
@@ -881,7 +883,10 @@
                             <br/>
                             <select id="single_case_chart_type" style="width: 100%;">
                                 <option value="bill_components">Bill Components</option>
+                                <option value="bill_components_pie_chart">Bill Components Pie Chart</option>
+                                <option value="daily_profile_interquartile_range">Daily Profile Interquartile Range</option>
                             </select>
+                            <script src="static/plot_results.js"></script>
                         </div>
                     </div>
                 </div>

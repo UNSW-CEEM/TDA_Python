@@ -8,9 +8,14 @@ for (i = 1; i <= 150; i++) {
 // Update the visibility of the n peaks options.
 var control_options_display = function(){
     var options = document.getElementById("peak_options");
+    console.log('options:',options)
+
     var x_axis = $('#dual_variable_x_axis').children("option:selected").val();
     var y_axis = $('#dual_variable_y_axis').children("option:selected").val();
-    if ( x_axis == 'avg_demand_n_peaks'|| y_axis == 'avg_demand_n_peaks'){
+    if ( x_axis == 'avg_demand_n_peaks'|| y_axis == 'avg_demand_n_peaks' || 
+         x_axis == 'avg_demand_n_monthly_peaks' || y_axis == 'avg_demand_n_monthly_peaks' || 
+         x_axis == 'avg_demand_top_n_peaks'|| y_axis == 'avg_demand_top_n_peaks' || 
+         x_axis == 'avg_demand_top_n_monthly_peaks' || y_axis == 'avg_demand_top_n_monthly_peaks'){
       options.style.display = "block";
     } else {
       options.style.display = "none";
