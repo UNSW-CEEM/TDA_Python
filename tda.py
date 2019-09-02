@@ -11,6 +11,7 @@ from make_results_charts import singe_variable_chart, dual_variable_chart, singl
 import data_interface
 import Bill_Calc
 import format_case_for_export
+import format_chart_data_for_export
 from time import time
 from datetime import datetime, timedelta
 
@@ -551,6 +552,19 @@ def export_results():
             ws.append(row,)
     wb.save(file_path)
     return jsonify("Done!")
+
+
+@app.route('/export_chart_data', methods=['POST'])
+def export_chart_data():
+    request_details = request.get_json()
+    export_data = format_chart_data_for_export.plot_ly_to_pandas(request_details)
+    if request_details['export_type'] == 'csv':
+        file_path = helper_functions.get_save_name_from_user('csv file', '.csv')
+        file_path = helper_functions.add_file_extension_if_needed(file_path, '.csv')
+        export_data.to_csv(file_path, index=False)
+    elif request_details['export_type'] == 'clipboard':
+        export_data.to_clipboard(index=False)
+    return jsonify("Your export is done!")
 
 
 @app.route('/restart_tool', methods=['POST'])
