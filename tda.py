@@ -22,7 +22,7 @@ from openpyxl import Workbook
 import errors
 import logging
 
-enable_logging = False
+enable_logging = True
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
@@ -106,7 +106,7 @@ def set_tariff_set_in_use():
     # Write contents to the file in the 'data' folder that acts as the active tariff data set.
     with open('data/{}Tariffs.json'.format(request_details['type']), 'wt') as json_file:
         json.dump(tariffs, json_file)
-    return jsonify('done')
+    return jsonify({'message': 'done'})
 
 
 @app.route('/filtered_load_data', methods=['POST'])
@@ -205,10 +205,10 @@ def add_case():
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
-        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), network_tariff)
-        retail_results.index.name = 'CUSTOMER_KEY'
-        retail_results = retail_results.reset_index()
-        current_session.project_data.network_results_by_case[case_name] = retail_results
+        network_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), network_tariff)
+        network_results.index.name = 'CUSTOMER_KEY'
+        network_results = network_results.reset_index()
+        current_session.project_data.network_results_by_case[case_name] = network_results
         current_session.project_data.network_tariffs_by_case[case_name] = network_tariff
 
     if retail_tariff_name != 'None':
@@ -478,11 +478,16 @@ def delete_tariff():
 
     for file_type in ['', 'UserDefined']:
         with open('data/{}{}.json'.format(file_type, file_name), 'rt') as json_file:
-            tariffs = json.load(json_file)
-
-        for i, tariff in enumerate(tariffs):
-            if request_details['tariff_name'] == tariff['Name']:
-                del tariffs[i]
+            if file_type == '' and file_name == 'NetworkTariffs':
+                tariffs = json.load(json_file)
+                for i, tariff in enumerate(tariffs[0]['Tariffs']):
+                    if request_details['tariff_name'] == tariff['Name']:
+                        del tariffs[0]['Tariffs'][i]
+            else:
+                tariffs = json.load(json_file)
+                for i, tariff in enumerate(tariffs):
+                    if request_details['tariff_name'] == tariff['Name']:
+                        del tariffs[i]
 
         with open('data/{}{}.json'.format(file_type, file_name), 'wt') as json_file:
             json.dump(tariffs, json_file)

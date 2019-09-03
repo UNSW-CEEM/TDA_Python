@@ -50,10 +50,12 @@ var load_listener = {'div': '', 'window':''}
 setup_vertical_resizing_pair('#load_selection', '#load_inspection', 'load_chart', load_listener);
 var tech_listener = {'div': '', 'window':''}
 setup_vertical_resizing_pair('#end_user_tech_inputs', '#net_load_inspection', 'none', tech_listener);
-var retail_listener = {'div': '', 'window':''}
-setup_vertical_resizing_pair('#retail_upper', '#retail_lower', 'none', retail_listener);
 var network_listener = {'div': '', 'window':''}
-setup_vertical_resizing_pair('#network_upper', '#network_lower', 'none', network_listener);
+setup_vertical_resizing_pair('#network_tariff_selection_panel .upper_tariff_section',
+                             '#network_tariff_selection_panel .lower_tariff_section', 'none', network_listener);
+var retail_listener = {'div': '', 'window':''}
+setup_vertical_resizing_pair('#retail_tariff_selection_panel .upper_tariff_section',
+                             '#retail_tariff_selection_panel .lower_tariff_section', 'none', retail_listener);
 
 window.onresize = function(event){
       for (i = 0; i < window_resize_events.length; i++) {

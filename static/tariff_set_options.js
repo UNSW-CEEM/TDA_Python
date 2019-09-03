@@ -43,6 +43,7 @@ var update_tariff_data_sets = function(){
         modal: true,
         buttons: {"OK": function(){$('#updating_tariffs').dialog('close')}}
     });
+    $('#updating_tariffs p').text("Please wait . . .")
     // Get the server to check the ceem tariff api for a more recent set of tariffs.
     $.ajax({
         url: '/update_tariffs',

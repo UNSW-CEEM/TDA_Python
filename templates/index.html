@@ -1147,7 +1147,7 @@
             </div>
             <div id="tariff_type_container" style="height: 95%; width: 100%; overflow: hidden; position: relative;">
                 <div id="network_tariff_selection_panel" class="tariff_type_tab_content">
-                    <div id="network_upper" class="upper_tariff_section row" style="resize: vertical; overflow: auto; height: 45%;">
+                    <div class="upper_tariff_section row" style="resize: vertical; overflow: auto; height: 45%;">
                         <script>$("#network_tariff_selection_panel .upper_tariff_section").load("tariff_selectors",
                                     function(){
                                         get_tariff_options("network_tariff_selection_panel");
@@ -1160,7 +1160,7 @@
                               });
                         </script>
                     </div>
-                    <div id="network_lower" class="lower_tariff_section row" style="overflow: hidden; height: 55%;">
+                    <div class="lower_tariff_section row" style="overflow: hidden; height: 55%;">
                         <script src="static/tariff_tabs.js"></script>
                         <div id="tariff_tabs" class="tab_button_area" style="height: 4vh;">
                             <button class="tablinks" value="DUOS"
@@ -1185,7 +1185,7 @@
                     </div>
                 </div>
                 <div id="retail_tariff_selection_panel" class="tariff_type_tab_content">
-                    <div id="retail_upper" class="upper_tariff_section row"
+                    <div class="upper_tariff_section row"
                          style="resize: vertical; overflow: auto; height: 45%;"></div>
                     <script>$("#retail_tariff_selection_panel .upper_tariff_section").load("tariff_selectors",
                                 function(){
@@ -1197,7 +1197,7 @@
                                         get_tariff_options('retail_tariff_selection_panel');
                                     });
                              });</script>
-                    <div id="retail_lower" class="lower_tariff_section row" style="overflow: hidden; height: 55%;">
+                    <div class="lower_tariff_section row" style="overflow: hidden; height: 55%;">
                         <script src="static/tariff_tabs.js"></script>
                         <div class="tariff_tabs tab_button_area" style="height: 4vh;">
                             <button id="retail_default_tab" class="tablinks" value="Retail"
@@ -1249,7 +1249,7 @@
                         </div>
                         <div class="row" style="overflow: hidden;">
                             <button style="width: 80%; text-align: left; height: 3.25vh;"
-                                    onclick="get_default_case_name()">Create case</button>
+                                    onclick="check_that_a_case_can_be_added()">Create case</button>
                         </div>
                     </div>
                 </div>

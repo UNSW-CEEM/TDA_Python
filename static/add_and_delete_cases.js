@@ -144,3 +144,31 @@ var on_checkbox_change = function(){
   update_single_case_selector();
   plot_results();
 }
+
+var check_that_a_case_can_be_added = function(){
+    var retail_tariff_set = $('#retail_tariff_selection_panel .select_tariff').val() != 'None';
+    var network_tariff_set = $('#network_tariff_selection_panel .select_tariff').val() != 'None';
+    var file_name_set = $('#select').children("option:selected").val() != 'Select one';
+    var year_set = $('#select_wholesale_year').val() != 'None';
+    var state_set = $('#select_wholesale_state').val() != 'None';
+
+    var are_costs_set = (retail_tariff_set || network_tariff_set || (year_set && state_set));
+
+    var message = ""
+
+    if (!are_costs_set && !file_name_set){
+        message = "Please select load profiles and a tariff or wholesale energy costs before attempting to create a case."
+    } else if (!file_name_set){
+        message = "Please select load profiles before attempting to create a case."
+    } else if (!are_costs_set){
+        message = "Please select a tariff or wholesale energy costs before attempting to create a case."
+    }
+
+    if (message != ""){
+        $("#message_dialog").dialog({ modal: true});
+        $("#message_dialog p").text(message)
+    } else  {
+        get_default_case_name();
+    }
+
+}

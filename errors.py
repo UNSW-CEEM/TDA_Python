@@ -1,5 +1,6 @@
 import functools
 from flask import jsonify
+import traceback
 
 
 def parse_to_user_and_log(logger):
@@ -10,7 +11,7 @@ def parse_to_user_and_log(logger):
                 try:
                     return func(*args, **kwargs)
                 except Exception as e:
-                    data = {'error': str(e)}
+                    data = {'error': traceback.format_exc()}
                     logger.exception(e)
                     return jsonify(data)
             else:
@@ -27,7 +28,6 @@ def log(logger):
                 try:
                     return func(*args, **kwargs)
                 except Exception as e:
-                    data = {'message': str(e)}
                     logger.exception(e)
             else:
                 func(*args, **kwargs)
