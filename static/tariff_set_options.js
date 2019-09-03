@@ -2,16 +2,16 @@
 $.getJSON("/tariff_set_options/network", function(json){
         $('#network_tariff_sets').empty();
         $.each(json, function(i, obj){
-                $('#network_tariff_sets').append($('<li><div id=' + obj +
-                    ' onclick=reset_tariff_set("Network","' + obj +'")>' + obj + '</div></li>'));
+            $('#network_tariff_sets').append($('<li><div id=' + obj +
+                ' onclick=reset_tariff_set("Network","' + obj +'")>' + obj + '</div></li>'));
         });
 });
 
 $.getJSON("/tariff_set_options/retail", function(json){
         $('#retail_tariff_sets').empty();
         $.each(json, function(i, obj){
-                $('#retail_tariff_sets').append($('<li><div id=' + obj +
-                    ' onclick=reset_tariff_set("Retail","' + obj +'")>' + obj + '</div></li>'));
+            $('#retail_tariff_sets').append($('<li><div id=' + obj +
+                ' onclick=reset_tariff_set("Retail","' + obj +'")>' + obj + '</div></li>'));
         });
 });
 
