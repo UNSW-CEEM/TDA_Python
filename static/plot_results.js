@@ -71,9 +71,7 @@ var get_cases_to_plot_from_ui = function(){
 
 var on_checkbox_change = function(){
   //update_single_case_selector();
-  console.log('=========== on check')
   cases_to_plot = get_cases_to_plot_from_ui();
-  console.log(cases_to_plot);
   plot_results();
 }
 
@@ -96,6 +94,30 @@ $('#single_case_chart_type').on('change', function() {
     plot_results();
 });
 
+$('#n_peaks_select').on('change',function() {
+    plot_results();
+});
+
+$('#spring_check_box').on('change',function(){
+    plot_results();
+})
+
+$('#summer_check_box').on('change',function(){
+    plot_results();
+})
+$('#autumn_check_box').on('change',function(){
+    plot_results();
+})
+$('#winter_check_box').on('change',function(){
+    plot_results();
+})
+$('#one_peak_per_day').on('change',function(){
+    plot_results();
+})
+
+
+
+
 var plot_results = function(){
     // Plot results for each results tab.
     plot_single_variable_results();
@@ -114,7 +136,6 @@ var plot_single_variable_results = function(){
 
     // Get the chart type to be drawn from the GUI.
     var chart_type = $('#single_variable_chart_type').children("option:selected").val();
-    console.log("chart_type:",chart_type);
 
     // Package request details into a single object.
     var case_details = {'chart_name': chart_type, 'case_names': cases_to_plot}
@@ -131,9 +152,6 @@ var plot_single_variable_results = function(){
         success: function(data){
             // Draw chart.
              // Define the chart layout
-
-            console.log("data:",data);
-            console.log("data[layout]:",data['layout']);
             var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
                             paper_bgcolor: '#EEEEEE',
                             plot_bgcolor: '#c7c7c7',
@@ -154,19 +172,22 @@ var plot_dual_variable_results = function(){
     // Get the load details
     load_request = get_load_details_from_ui();
 
-    console.log("cases_to_plot:",cases_to_plot);
-    console.log("load_request:",load_request);
 
     var n_peaks_selected = $('#n_peaks_select').children("option:selected").val();
-    console.log("n_peaks_selected:",n_peaks_selected);
+    var one_peak_per_day = $("#one_peak_per_day").is(':checked');
+    var spring_Ckb = $("#spring_check_box").is(':checked');
+    var summer_Ckb = $("#summer_check_box").is(':checked');
+    var autumn_Ckb = $("#autumn_check_box").is(':checked');
+    var winter_Ckb = $("#winter_check_box").is(':checked');
 
     // Get the x and y axis for the dual variable chart.
     var x_axis = $('#dual_variable_x_axis').children("option:selected").val();
     var y_axis = $('#dual_variable_y_axis').children("option:selected").val();
 
     // Package request details into a single object.
-    var case_details = {'x_axis': x_axis, 'y_axis': y_axis, 'case_names': cases_to_plot, 'load_details': load_request}
-
+    var case_details = {'x_axis': x_axis, 'y_axis': y_axis, 'case_names': cases_to_plot, 'load_details': load_request,
+                        'n_peaks_selected': n_peaks_selected, 'one_peak_per_day_status': one_peak_per_day,
+                        'spring_status': spring_Ckb, 'summer_status': summer_Ckb, 'autumn_status': autumn_Ckb, 'winter_status': winter_Ckb,}
 
     // Get chart data
     $.ajax({
@@ -177,8 +198,6 @@ var plot_dual_variable_results = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
-            console.log("data:",data);
-            console.log("data[layout]:",data['layout']);
             // Define the chart layout
             var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
             paper_bgcolor: '#EEEEEE',

@@ -235,44 +235,111 @@ def singe_variable_chart(chart_name, load_and_results_by_case):
 #################################################################################################
 # dual variable
 
-def _get_annual_kWh(results, load, network_load):
-    axis_name = "Annual kWh"
-    print(results)
-    axis_data = results['Annual_kWh']
-    return {'axis_name':axis_name, 'axis_data':axis_data}
-
-
-def _get_avg_demand_n_peaks(results, load, network_load):
+def _get_annual_kWh(results, load, network_load, details):
     axis_name = "Annual kWh"
     axis_data = results['Annual_kWh']
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
-def _get_avg_demand_n_monthly_peaks(results, load, network_load):
+def _get_avg_demand_n_peaks(results, load, network_load, details):
+
+    print('******************* geting N peaks')
+
+    axis_name = "Average Demand at " + details['n_peaks_selected'] + " Network Peaks"
+
+    if details['one_peak_per_day_status'] == False:
+        N_peaks = int(details['n_peaks_selected'])
+        print(N_peaks)
+
+        network_load2=network_load.copy()
+        network_load2.set_index('Datetime',inplace=True)
+            
+        network_load_average = network_load2.mean(axis=1)
+        network_load_average_sort = network_load_average.sort_values(ascending = False, inplace = False, na_position ='last')
+        print('sorted network load')
+        print(network_load_average_sort)
+
+        selected_datetime = network_load_average_sort.index[0:N_peaks]
+        print('selected datatime')
+        print(selected_datetime)
+
+        load2 = load.copy()
+        load2.set_index('Datetime',inplace=True)
+
+        selected_load = load2.loc[selected_datetime]
+        print('selected load based on the selected datetime')
+        print(selected_load)
+
+        selected_load_average = selected_load.mean(axis=0)
+        axis_data = list(selected_load_average)
+        print('axis data')
+        print(axis_data)
+        return {'axis_name':axis_name, 'axis_data':axis_data}
+    else:
+        N_peaks = int(details['n_peaks_selected'])
+        print(N_peaks)
+
+        network_load2=network_load.copy()
+        network_load2.set_index('Datetime',inplace=True)
+            
+        network_load_average = network_load2.mean(axis=1)
+
+        # find peak for each day
+        network_daily_peak = network_load_average.resample('D').max()
+        print('resample daily peak')
+        print(network_daily_peak)
+
+        network_daily_peak_sort = network_daily_peak.sort_values(ascending = False, inplace = False, na_position ='last')
+        print('sorted network daily peak')
+        print(network_daily_peak_sort)
+
+        selected_datetime = network_daily_peak_sort.index[0:N_peaks]
+        print('selected datatime')
+        print(selected_datetime)
+
+        load2 = load.copy()
+        load2.set_index('Datetime',inplace=True)
+
+        load_daily_peak = load2.resample('D').max()
+        print('load2 resample daily peak')
+        print(load_daily_peak)
+
+        selected_load = load_daily_peak.loc[selected_datetime]
+        print('selected load based on the selected datetime')
+        print(selected_load)
+
+        selected_load_average = selected_load.mean(axis=0)
+        axis_data = list(selected_load_average)
+        print('axis data')
+        print(axis_data)
+        return {'axis_name':axis_name, 'axis_data':axis_data}    
+
+
+
+def _get_avg_demand_n_monthly_peaks(results, load, network_load, details):
     axis_name = "Annual kWh"
     axis_data = results['Annual_kWh']
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
-def _get_avg_demand_top_n_peaks(results, load, network_load):
+def _get_avg_demand_top_n_peaks(results, load, network_load, details):
     axis_name = "Annual kWh"
     axis_data = results['Annual_kWh']
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
-def _get_avg_demand_top_n_monthly_peaks(results, load, network_load):
+def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details):
     axis_name = "Annual kWh"
     axis_data = results['Annual_kWh']
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
-def _get_avg_daily_kWh(results, load, network_load):
+def _get_avg_daily_kWh(results, load, network_load, details):
     axis_name = "Average Daily kWh"
     axis_data = []
     load2 = load.copy()
     del load2['Datetime']
 
     axis_data = []
-    print(load2.shape)
     for i in range(load2.shape[1]):
         load_id_array = np.array(load2.iloc[:,i]).reshape((-1,48))
         load_id_daily_kWh = np.sum(load_id_array,axis=1)
@@ -281,7 +348,7 @@ def _get_avg_daily_kWh(results, load, network_load):
 
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
-def _get_avg_daily_peak(results, load, network_load):
+def _get_avg_daily_peak(results, load, network_load, details):
     axis_name = "Average Daily Peaks"
     axis_data = []
     load2 = load.copy()
@@ -297,13 +364,13 @@ def _get_avg_daily_peak(results, load, network_load):
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
-def _get_bill(results, load, network_load):
+def _get_bill(results, load, network_load, details):
     axis_name = "Bill (AUD)"
     axis_data = results['Bill']
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
-def _get_unitised_bill(results, load, network_load):
+def _get_unitised_bill(results, load, network_load, details):
     axis_name = "Unitised Bill (kW)"
     axis_data = results['Bill']
     return {'axis_name':axis_name, 'axis_data':axis_data}
@@ -319,19 +386,16 @@ _dual_variable_axis_methods = {'Annual_kWh': _get_annual_kWh,
                                'Bill':_get_bill,
                                'unitised_bill_kW':_get_unitised_bill}
 
-def dual_variable_chart(load_and_results_by_case, x_axis_name, y_axis_name):
+def dual_variable_chart(load_and_results_by_case, details):
+
     results_by_case = load_and_results_by_case['results']
     load_by_case = load_and_results_by_case['load']
     network_load = load_and_results_by_case['network_load']
-    print('============== network load')
-    print(network_load.head())
 
     trace = []
     for case_name, results in results_by_case.items():
-        x_axis_data = _dual_variable_axis_methods[x_axis_name](results,load_by_case[case_name],network_load)
-        y_axis_data = _dual_variable_axis_methods[y_axis_name](results,load_by_case[case_name],network_load)
-        print(x_axis_data)
-        print(y_axis_data)
+        x_axis_data = _dual_variable_axis_methods[details['x_axis']](results,load_by_case[case_name],network_load, details)
+        y_axis_data = _dual_variable_axis_methods[details['y_axis']](results,load_by_case[case_name],network_load, details)
         
         dual_data = go.Scattergl(x=x_axis_data['axis_data'], y=y_axis_data['axis_data'], mode='markers', name=case_name)
         
@@ -357,7 +421,6 @@ def is_component(suffixes, name_to_check):
 
 
 def _get_bill_components(data, load_to_plot):
-    print('============= here is geting the bill components')
 
     Xaxis = "Users (sorted by total bill)"
     Yaxis = "Bill (AUD)"
@@ -379,7 +442,6 @@ def _get_bill_components(data, load_to_plot):
     return {'data':traces, 'layout': layout}
 
 def _get_bill_components_pie_chart(data, load_by_case):
-    print('============= here is geting the pie chart')
 
     Xaxis = "Users (sorted by total bill)"
     Yaxis = "Bill (AUD)"
@@ -405,8 +467,6 @@ def get_daily_average_profile(x):
     return np.nanmean(x_array,axis=0)
 
 def _get_daily_profile_interquartile_range(results_to_plot, load_to_plot):
-
-    print('============= here is geting the interquartile charts')
     
     Xaxis = "30 Minutes Interval"
     Yaxis = "kWh"
@@ -441,10 +501,6 @@ _single_case_chart_methods = {'bill_components': _get_bill_components,
 def single_case_chart(chart_name, load_and_results_to_plot):
     results_to_plot = load_and_results_to_plot['results']
     load_to_plot = load_and_results_to_plot['load']
-
-    print('========= single case chart')
-    print(results_to_plot)
-    print(load_to_plot)
 
     if results_to_plot is not None:
         chart_data = _single_case_chart_methods[chart_name](results_to_plot, load_to_plot)

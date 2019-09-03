@@ -274,17 +274,16 @@ def get_single_variable_chart():
 @app.route('/get_dual_variable_chart', methods=['POST'])
 def get_dual_variable_chart():
     details = request.get_json()
-    x_axis = details['x_axis']
-    y_axis = details['y_axis']
     case_names = details['case_names']
-    print('=============')
+    print('============= tda dual variable')
     print(details)
+
     file_name = details['load_details']['file_name']
     results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
                                                                   network_results_by_case)
     load_and_results_to_plot = {'results': results_to_plot, 'load': load_by_case,'network_load':raw_data[file_name]}
 
-    return dual_variable_chart(load_and_results_to_plot, x_axis, y_axis)
+    return dual_variable_chart(load_and_results_to_plot, details)
 
 
 @app.route('/get_single_case_chart', methods=['POST'])

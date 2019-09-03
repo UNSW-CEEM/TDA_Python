@@ -1,6 +1,6 @@
 // Add the possible number of peaks to the n= drop down menu
 for (i = 1; i <= 150; i++) {
-  var o = new Option("option text", "value");
+  var o = new Option("option text", i);
   $(o).html(i.toString());
   $("#n_peaks_select").append(o);
 }
