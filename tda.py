@@ -22,7 +22,7 @@ from openpyxl import Workbook
 import errors
 import logging
 
-enable_logging = True
+enable_logging = False
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
