@@ -7,7 +7,8 @@ var open_tariff_info = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
-            $('#message_dialog p').text(data)
+            alert_user_if_error(data);
+            $('#message_dialog p').text(data['message'])
         }
     });
 };

@@ -14,8 +14,9 @@ var add_end_user_tech = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
-            $('#tech_status_not_set').hide()
-            $('#tech_status_set').show()
+            alert_user_if_error(data);
+            $('#tech_status_not_set').hide();
+            $('#tech_status_set').show();
         }
     });
 

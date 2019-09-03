@@ -6,7 +6,10 @@ var get_default_case_name = function(){
         contentType: 'application/json;charset=UTF-8',
         async: 'false',
         dataType:"json",
-        success: function(data){launch_case_namer(data)}
+        success: function(data){
+            alert_user_if_error(data);
+            launch_case_namer(data['name']);
+            }
     });
 }
 
@@ -108,6 +111,7 @@ var plot_single_variable_results = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
+            alert_user_if_error(data)
             // Draw chart.
             Plotly.newPlot('single_variable_result_chart', data, layout, {responsive: true});
         ;}
@@ -152,6 +156,7 @@ var plot_dual_variable_results = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
+            alert_user_if_error(data)
             // Draw chart.
             Plotly.newPlot('dual_variable_result_chart', data, layout, {responsive: true});
         }
@@ -185,6 +190,7 @@ var plot_single_case_results = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
+            alert_user_if_error(data)
             // Draw chart.
             Plotly.newPlot('single_case_result_chart', data, layout, {responsive: true});
         ;}

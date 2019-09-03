@@ -19,6 +19,7 @@ var get_and_plot_wholesale_prices = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
+            alert_user_if_error(data)
             plot_wholesale_prices(data);
         }
     });
@@ -48,8 +49,9 @@ var get_wholesale_price_options = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
-            add_option('#select_wholesale_year', data['years'])
-            add_option('#select_wholesale_state', data['states'])
+            alert_user_if_error(data);
+            add_option('#select_wholesale_year', data['years']);
+            add_option('#select_wholesale_state', data['states']);
         }
     });
 }

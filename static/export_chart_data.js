@@ -33,9 +33,10 @@ var export_chart = function(chart_id, export_type){
     async: 'false',
     dataType:"json",
     success: function(data){
+        alert_user_if_error(data);
         $("#export_dialog").dialog('close');
         $('#message_dialog').dialog({modal: true});
-        $('#message_dialog p').text(data);
+        $('#message_dialog p').text(data['message']);
     }
     });
 }

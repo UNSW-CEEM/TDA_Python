@@ -196,3 +196,4 @@ data/aemo_raw_cache/*
 *.pkl
 *.xlsx
 
+tda_log_file.txt

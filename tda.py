@@ -2,7 +2,6 @@ from flask import Flask, render_template, request, jsonify
 import os
 import sys
 import pandas as pd
-import numpy as np
 import helper_functions
 import plotly
 import json
@@ -12,24 +11,18 @@ import data_interface
 import Bill_Calc
 import format_case_for_export
 import format_chart_data_for_export
-from time import time
-from datetime import datetime, timedelta
 import start_up_procedures
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
-    get_options_from_tariff_set, strip_tariff_to_single_component
-import requests
-from nemosis import data_fetch_methods
+    get_options_from_tariff_set
 from make_price_charts import get_price_chart
 from wholesale_energy import get_wholesale_prices, calc_wholesale_energy_costs
 import pickle
-from session_data import InMemoryData, ProjectData
-import csv
+from session_data import InMemoryData
 from openpyxl import Workbook
 import errors
 import logging
 
-logging.basicConfig(filename='tda_log_file.txt', filemode='a', level=logging.DEBUG)
-logger = logging.getLogger(__name__)
+enable_logging = True
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
@@ -55,6 +48,14 @@ def index():
     return render_template('index.html')
 
 
+# Start logging
+if enable_logging:
+    logging.basicConfig(filename='tda_log_file.txt', filemode='w', level=logging.DEBUG)
+    logger = logging.getLogger(__name__)
+else:
+    logger = None
+
+
 @app.route('/tariff_selectors')
 def tariff_selectors():
     return render_template('tariff_selectors.html')
@@ -66,6 +67,7 @@ def tariff_table():
 
 
 @app.route('/load_names')
+@errors.parse_to_user_and_log(logger)
 def load_names():
     # Get the list of load files for the user to choose from.
     names = []
@@ -75,6 +77,7 @@ def load_names():
 
 
 @app.route('/get_tariff_set_options/<tariff_type>')
+@errors.parse_to_user_and_log(logger)
 def get_tariff_set_options(tariff_type):
     # Get the versions of the tariff data base for the user to choose from.
     tariff_set_options = []
@@ -86,6 +89,7 @@ def get_tariff_set_options(tariff_type):
 
 
 @app.route('/set_tariff_set_in_use', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def set_tariff_set_in_use():
     # Replace the network or retail data sets in the main 'data' folder with a set from the 'tariff_set_versions' folder
     # Allows the user to continue using older versions of the tariff data base.
@@ -106,6 +110,7 @@ def set_tariff_set_in_use():
 
 
 @app.route('/filtered_load_data', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def filtered_load_data():
 
     load_request = request.get_json()
@@ -171,14 +176,16 @@ def filtered_load_data():
 
 
 @app.route('/get_case_default_name', methods=['GET'])
+@errors.parse_to_user_and_log(logger)
 def get_case_default_name():
     # Default case names are of the format 'Case n'. If 'Case 1' is in use then try 'Case 2' etc until a case default
     # case name that is not in use is found.
     name = helper_functions.get_unique_default_case_name(current_session.project_data.load_file_name_by_case.keys())
-    return jsonify(name)
+    return jsonify({'name': name})
 
 
 @app.route('/add_case', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def add_case():
     # Using the currently active tariff (network tariff by default at the moment) calculate the bill for all load
     # profiles and save the results. Also save the other details associated with the case.
@@ -228,10 +235,11 @@ def add_case():
     current_session.project_data.load_n_users_by_case[case_name] = \
         helper_functions.n_users(current_session.filtered_data)
     current_session.project_data.filter_options_by_case[case_name] = filter_options
-    return jsonify('done')
+    return jsonify({'message': 'done'})
 
 
 @app.route('/get_case_tariff', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def get_case_tariff():
     # Get the tariff associated with a particular case.
     request_details = request.get_json()
@@ -246,6 +254,7 @@ def get_case_tariff():
 
 
 @app.route('/get_case_load', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def get_case_load():
     # Get the set of load profiles associated with a particular case.
     case_name = request.get_json()
@@ -254,6 +263,7 @@ def get_case_load():
 
 
 @app.route('/get_case_demo_options', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def get_case_demo_options():
     # Get the demographic filtering options associated with a particular case.
     case_name = request.get_json()
@@ -261,6 +271,7 @@ def get_case_demo_options():
 
 
 @app.route('/delete_case', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def delete_case():
     # Delete all data associated with a particular case.
     case_name = request.get_json()
@@ -278,10 +289,11 @@ def delete_case():
         current_session.project_data.load_file_name_by_case.pop(case_name)
     if case_name in current_session.project_data.load_n_users_by_case.keys():
         current_session.project_data.load_n_users_by_case.pop(case_name)
-    return jsonify('done')
+    return jsonify({'message': 'done'})
 
 
 @app.route('/get_single_variable_chart', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def get_single_variable_chart():
     details = request.get_json()
     chart_name = details['chart_name']
@@ -295,6 +307,7 @@ def get_single_variable_chart():
 
 
 @app.route('/get_dual_variable_chart', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def get_dual_variable_chart():
     details = request.get_json()
     x_axis = details['x_axis']
@@ -319,6 +332,7 @@ def get_dual_variable_chart():
 
 
 @app.route('/get_single_case_chart', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def get_single_case_chart():
     details = request.get_json()
     chart_name = details['chart_name']
@@ -338,6 +352,7 @@ def get_single_case_chart():
 
 
 @app.route('/get_demo_options/<name>')
+@errors.parse_to_user_and_log(logger)
 def get_demo_options(name):
     demo_file_name = data_interface.find_loads_demographic_file(name)
 
@@ -351,6 +366,7 @@ def get_demo_options(name):
 
 
 @app.route('/wholesale_price_options', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def wholesale_price_options():
     # First year to access data from.
     year = 2012
@@ -375,6 +391,7 @@ def wholesale_price_options():
 
 
 @app.route('/wholesale_prices', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def wholesale_price_chart_data():
     request_details = request.json
     if (request_details['year'] != 'None') & (request_details['state'] != 'None'):
@@ -387,6 +404,7 @@ def wholesale_price_chart_data():
 
 
 @app.route('/get_wholesale_price_info', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def get_wholesale_price_info():
     case_name = request.json
     if case_name in current_session.project_data.wholesale_price_info_by_case.keys():
@@ -398,13 +416,15 @@ def get_wholesale_price_info():
 
 
 @app.route('/add_end_user_tech', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def add_end_user_tech():
     details = request.json
     solar_pen = details['solar_inputs']['penetration']
-    return jsonify('done')
+    return jsonify({'message': 'done'})
 
 
 @app.route('/tariff_options', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def tariff_options():
     request_details = request.get_json()
     tariff_filter_state = request_details['current_options']
@@ -413,10 +433,11 @@ def tariff_options():
     tariffs = data_interface.get_tariffs(tariff_panel)
     # Given the tariff set and the current state of the filter find the remain options for the gui filters
     options = get_options_from_tariff_set(tariffs, tariff_filter_state)
-    return jsonify(options)
+    return jsonify({'tariff_options': options})
 
 
 @app.route('/tariff_json', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def tariff_json():
     request_details = request.get_json()
     selected_tariff = data_interface.get_tariff(request_details['tariff_panel'],
@@ -426,6 +447,7 @@ def tariff_json():
 
 
 @app.route('/save_tariff', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def save_tariff():
     tariff_to_save = format_tariff_data_for_storage(request.get_json())
     # Open the tariff data set.
@@ -441,10 +463,11 @@ def save_tariff():
         tariffs.append(tariff_to_save)
         with open('data/UserDefinedRetailTariffs.json', 'wt') as json_file:
             json.dump(tariffs, json_file)
-    return jsonify("saved")
+    return jsonify({'message': 'done'})
 
 
 @app.route('/delete_tariff', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def delete_tariff():
     request_details = request.get_json()
     # Open the tariff data set.
@@ -464,24 +487,27 @@ def delete_tariff():
         with open('data/{}{}.json'.format(file_type, file_name), 'wt') as json_file:
             json.dump(tariffs, json_file)
 
-    return jsonify("deleted")
+    return jsonify({'message': 'done'})
 
 
 @app.route('/import_load_data', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def import_load_data():
-    return jsonify("No python code for importing data yet!")
+    return jsonify({'message': "No python code for importing data yet!"})
 
 
 @app.route('/delete_load_data', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def delete_load_data():
     request_details = request.get_json()
     print('I know you want to delete {}'.format(request_details['name']))
-    return jsonify("No python code for deleting data yet!")
+    return jsonify({'message': "No python code for deleting data yet!"})
 
 
 @app.route('/restore_original_data_set', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def restore_original_data_set():
-    return jsonify("No python code for restoring data yet!")
+    return jsonify({'message': "No python code for restoring data yet!"})
 
 
 @app.route('/update_tariffs', methods=['POST'])
@@ -496,8 +522,9 @@ def update_tariffs():
 
 
 @app.route('/open_tariff_info', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def open_tariff_info():
-    return jsonify("No python code for opening tariff info yet!")
+    return jsonify({'message': "No python code for opening tariff info yet!"})
 
 
 @app.route('/create_synthetic_network_load', methods=['POST'])
@@ -508,12 +535,14 @@ def create_synthetic_network_load():
 
 
 @app.route('/open_sample', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def open_sample():
     print('open sample for data: {}'.format(request.get_json()))
-    return jsonify("No python code for opening sample {} data yet!".format(request.get_json()))
+    return jsonify({'message': "No python code for opening sample {} data yet!".format(request.get_json())})
 
 
 @app.route('/load_project', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def load_project():
     file_path = helper_functions.get_file_to_load_from_user()
     with open(file_path, "rb") as f:
@@ -525,6 +554,7 @@ def load_project():
 
 
 @app.route('/save_project', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def save_project():
     if current_session.project_data.name == '':
         file_path = helper_functions.get_save_name_from_user()
@@ -533,10 +563,11 @@ def save_project():
         file_path = current_session.project_data.name + '.pkl'
     with open(file_path, "wb") as f:
         pickle.dump(current_session.project_data, f)
-    return jsonify("Done!")
+    return jsonify({'message': "Done!"})
 
 
 @app.route('/save_project_as', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def save_project_as():
     file_path = helper_functions.get_save_name_from_user('pickle file', '.pkl')
     file_path = helper_functions.add_file_extension_if_needed(file_path, '.pkl')
@@ -547,11 +578,13 @@ def save_project_as():
 
 
 @app.route('/delete_project', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def delete_project():
-    return jsonify("No python code for deleting projects as yet!")
+    return jsonify({'message': "No python code for deleting projects as yet!"})
 
 
 @app.route('/export_results', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def export_results():
     file_path = helper_functions.get_save_name_from_user('excel file', '.xlsx')
     file_path = helper_functions.add_file_extension_if_needed(file_path, '.xlsx')
@@ -562,10 +595,11 @@ def export_results():
         for row in data_to_export:
             ws.append(row,)
     wb.save(file_path)
-    return jsonify("Done!")
+    return jsonify({'message': "Done!"})
 
 
 @app.route('/export_chart_data', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def export_chart_data():
     request_details = request.get_json()
     export_data = format_chart_data_for_export.plot_ly_to_pandas(request_details)
@@ -575,10 +609,11 @@ def export_chart_data():
         export_data.to_csv(file_path, index=False)
     elif request_details['export_type'] == 'clipboard':
         export_data.to_clipboard(index=False)
-    return jsonify("Your export is done!")
+    return jsonify({'message': "Your export is done!"})
 
 
 @app.route('/restart_tool', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
 def restart_tool():
     current_session.__init__()
     return jsonify("Done!")
@@ -598,7 +633,13 @@ def shutdown():
     return 'Server shutting down...'
 
 
-if __name__ == '__main__':
+@errors.log(logger)
+def on_start_up():
     start_up_procedures.update_nemosis_cache()
     start_up_procedures.update_tariffs()
+    return None
+
+
+if __name__ == '__main__':
+    on_start_up()
     app.run()

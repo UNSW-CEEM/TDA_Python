@@ -19,8 +19,10 @@ var get_tariff_then_save = function(div_that_got_clicked){
             async: 'false',
             dataType:"json",
             // Call the function to display the selected tariffs info
-            success: function(data){get_tariff_details_from_user(data, tariff_type_tab_id);},
-            error: function(a,b,c){console.log(b); console.log(c);}
+            success: function(data){
+                alert_user_if_error(data);
+                get_tariff_details_from_user(data, tariff_type_tab_id);
+            }
         });
     } else {
       get_tariff_details_from_user({}, tariff_type_tab_id);
@@ -84,8 +86,10 @@ var save_tariff = function(current_tariff, tariff_type_tab_id){
         async: 'false',
         dataType:"json",
         // Update tariff options so the user can select the new tariff.
-        success: function(){get_tariff_options(tariff_type_tab_id);},
-        error: function(){console.log("Update tariffs not called")}
+        success: function(){
+            alert_user_if_error(data);
+            get_tariff_options(tariff_type_tab_id);
+        }
         });
 
     $('#tariff_meta_details_editor').dialog('close');

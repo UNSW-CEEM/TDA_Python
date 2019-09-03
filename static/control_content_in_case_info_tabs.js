@@ -8,8 +8,10 @@ var get_and_display_case_load_info = function(case_name){
         async: 'false',
         dataType:"json",
         // Call the function to display the selected tariffs info
-        success: function(data){display_case_load_info(case_name, data);},
-        error: function(a,b,c){console.log(b); console.log(c);}
+        success: function(data){
+            alert_user_if_error(data);
+            display_case_load_info(case_name, data);
+            }
     });
 }
 
@@ -31,11 +33,11 @@ var get_and_display_case_wholesale_price_info = function(case_name){
         dataType:"json",
         // Call the function to display the selected tariffs info
         success: function(data){
-            if (typeof data !== 'string' &&  !(data instanceof String)){
-                display_case_wholesale_price_info(case_name, data);
+                if (typeof data !== 'string' &&  !(data instanceof String)){
+                    alert_user_if_error(data)
+                    display_case_wholesale_price_info(case_name, data);
+                }
             }
-            },
-        error: function(a,b,c){console.log(b); console.log(c);}
     });
 }
 
@@ -56,8 +58,10 @@ var get_and_display_case_demo_info = function(case_name){
         async: 'false',
         dataType:"json",
         // Call the function to display the selected tariffs info
-        success: function(data){display_case_demo_info(case_name, data);},
-        error: function(a,b,c){console.log(b); console.log(c);}
+        success: function(data){
+            alert_user_if_error(data);
+            display_case_demo_info(case_name, data);
+            }
     });
 }
 
@@ -136,10 +140,10 @@ var get_and_display_case_tariff_info = function(case_name, tariff_type){
             // If the tariff data is just a string that means no tariff of the correct type was found.
             // There for do not try and display data for this tariff
             if (typeof data !== 'string' &&  !(data instanceof String)){
+                alert_user_if_error(data)
                 display_case_tariff_info(case_name, data, tariff_type);
             }
-        },
-        error: function(a,b,c){console.log(b); console.log(c);}
+        }
     });
 }
 

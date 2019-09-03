@@ -33,9 +33,9 @@ var save_project = function(){
         type : 'POST',
         async: 'false',
         dataType:"json",
-        success: function(message){
+        success: function(data){
             $('#message_dialog').dialog({modal: true});
-            $('#message_dialog p').text(message);
+            $('#message_dialog p').text(data['message']);
 
         }
     });
@@ -63,15 +63,14 @@ var delete_project = function(){
         type : 'POST',
         async: 'false',
         dataType:"json",
-        success: function(message){
+        success: function(data){
             $('#message_dialog').dialog({modal: true});
-            $('#message_dialog p').text(message);
+            $('#message_dialog p').text(data['message']);
         }
     });
 };
 
 var restart_tool = function(){
-
     $.ajax({
         url: '/restart_tool',
         contentType: 'application/json;',

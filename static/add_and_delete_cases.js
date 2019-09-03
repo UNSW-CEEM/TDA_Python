@@ -32,6 +32,7 @@ var add_case_to_python = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
+            alert_user_if_error(data)
             plot_results();
             reset_case_info(case_name);
             // Update menu bar status indicator
@@ -55,7 +56,8 @@ var delete_case = function(delete_button){
         contentType: 'application/json;charset=UTF-8',
         type : 'POST',
         async: 'false',
-        dataType:"json"
+        dataType:"json",
+        success: function(data){alert_user_if_error(data)}
     });
 
     // Re plot charts

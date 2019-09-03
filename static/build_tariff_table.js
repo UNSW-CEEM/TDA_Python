@@ -20,8 +20,10 @@ var get_tariff = function(tariff_type_panel){
             async: 'false',
             dataType:"json",
             // Call the function to display the selected tariffs info
-            success: function(data){display_tariff_info(tariff_type_panel, data);},
-            error: function(a,b,c){console.log(b); console.log(c);}
+            success: function(data){
+                alert_user_if_error(data);
+                display_tariff_info(tariff_type_panel, data);
+            }
         });
 
         //$(tariff_save_option).css('display', "none")

@@ -122,8 +122,10 @@ var plot_filtered_load =  function(){
     type : 'POST',
     async: 'false',
     dataType:"json",
-    success: function(data, n_users){
-    plot_load(data);}
+    success: function(data){
+            alert_user_if_error(data)
+            plot_load(data);
+        }
     });
 
 }
