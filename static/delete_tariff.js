@@ -1,5 +1,5 @@
-var delete_tariff = function(evt, tariff_type_tab_id){
-    console.log('tried to delete')
+var delete_tariff = function(div_that_got_clicked){
+    var tariff_type_tab_id = $(div_that_got_clicked).closest('[id]').attr('id');
     // Get the name of the selected tariff.
     var tariff_name = $('#' + tariff_type_tab_id + ' .select_tariff').val();
 
@@ -16,7 +16,10 @@ var delete_tariff = function(evt, tariff_type_tab_id){
         type : 'POST',
         async: 'false',
         dataType:"json",
-        success: function(){get_tariff_options(tariff_type_tab_id);},
-        error: function(){console.log('failed to delete');}
+        success: function(data){
+            alert_user_if_error(data);
+            reset_tariff_options(tariff_type_tab_id);
+            tear_down_tables_in_tariff_type_panel(tariff_type_tab_id);
+            }
     });
 }

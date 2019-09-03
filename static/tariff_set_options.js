@@ -1,5 +1,5 @@
 // This script gets the different tariff set options and puts them in the tariff menu
-$.getJSON("/tariff_set_options/network", function(json){
+$.getJSON("/get_tariff_set_options/network", function(json){
         $('#network_tariff_sets').empty();
         $.each(json, function(i, obj){
             $('#network_tariff_sets').append($('<li><div id=' + obj +
@@ -7,7 +7,7 @@ $.getJSON("/tariff_set_options/network", function(json){
         });
 });
 
-$.getJSON("/tariff_set_options/retail", function(json){
+$.getJSON("/get_tariff_set_options/retail", function(json){
         $('#retail_tariff_sets').empty();
         $.each(json, function(i, obj){
             $('#retail_tariff_sets').append($('<li><div id=' + obj +
@@ -27,7 +27,34 @@ var reset_tariff_set = function(type, version){
         type : 'POST',
         async: 'false',
         dataType:"json",
-        success: function(data){}
+        success: function(data){
+            alert_user_if_error(data)
+            if(type == 'Retail'){
+                reset_tariff_options('retail_tariff_selection_panel');
+            } else {
+                reset_tariff_options('network_tariff_selection_panel');
+            }
+        }
+    });
+};
+
+var update_tariff_data_sets = function(){
+    $('#updating_tariffs').dialog({
+        modal: true,
+        buttons: {"OK": function(){$('#updating_tariffs').dialog('close')}}
+    });
+    $('#updating_tariffs p').text("Please wait . . .")
+    // Get the server to check the ceem tariff api for a more recent set of tariffs.
+    $.ajax({
+        url: '/update_tariffs',
+        contentType: 'application/json;charset=UTF-8',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        success: function(data){
+            alert_user_if_error(data)
+            $('#updating_tariffs p').text(data['message'])
+        }
     });
 };
 

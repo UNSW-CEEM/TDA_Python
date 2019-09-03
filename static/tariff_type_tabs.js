@@ -9,7 +9,9 @@ function displayTariffType(evt, tariffType) {
   }
 
   // Show the current tab, and add an "active" class to the button that opened the tab
-  $("#" + tariffType).insertBefore($('.tariff_type_tab_content').first());
+  //$("#" + tariffType).insertBefore($('.tariff_type_tab_content').first());
+  $(".tariff_type_tab_content").css('z-index', -2)
+  $("#" + tariffType).css('z-index', 2)
   evt.currentTarget.className += " active";
 
 }
