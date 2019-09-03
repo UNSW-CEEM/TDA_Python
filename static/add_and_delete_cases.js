@@ -67,3 +67,80 @@ var delete_case = function(delete_button){
     update_info_tabs_on_case_delete(case_name);
 
 }
+
+var get_default_case_name = function(){
+    // Get a un used case name to put as the default name in the case namer dialog box.
+    $.ajax({
+        url: '/get_case_default_name',
+        contentType: 'application/json;charset=UTF-8',
+        async: 'false',
+        dataType:"json",
+        success: function(data){
+            alert_user_if_error(data);
+            launch_case_namer(data['name']);
+            }
+    });
+}
+
+
+var launch_case_namer = function(default_name){
+    $('#case_name').val(default_name)
+    $( "#case_namer" ).dialog({
+        modal: true,
+        buttons: {"Save case": function(){add_case()}}
+    });
+}
+
+var add_case = function(){
+    case_name = $('#case_name').val();
+    add_case_to_gui(case_name)
+    add_case_to_python();
+    update_single_case_selector();
+}
+
+var add_case_to_gui = function(case_name){
+    case_name_no_spaces = case_name.replace(/\s/g, '');
+    // Get a copy of the case control template.
+    var $new_case_control = $('#case_control_template').clone();
+    // Set the id of the copy equal to the case name.
+    $new_case_control.attr('id', case_name_no_spaces);
+    // Insert the copy into the case panel
+    $('#case_list').append($new_case_control);
+    // Make the case control visible
+    $new_case_control.css("display", "block");
+    // Set the value of the checkbox in the case_control
+    $('#' + case_name_no_spaces + ' ' + '.case_visibility_checkbox').attr('value', case_name);
+    $('#' + case_name_no_spaces + ' ' + '.case_delete_button').attr('value', case_name);
+    $('#' + case_name_no_spaces + ' ' + '.case_info_button').attr('value', case_name);
+    // Set label in case control equal to case name.
+    $('#' + case_name_no_spaces + ' ' + '.case_label').html(case_name)
+}
+
+var update_single_case_selector = function(){
+    var cases = get_cases_to_plot_from_ui();
+    $('#single_case_result_chosen_case').empty();
+    $.each(cases, function (i, case_name) {
+        $('#single_case_result_chosen_case').append($('<option>', {
+            value: case_name,
+            text : case_name
+        }));
+    });
+}
+
+
+var get_cases_to_plot_from_ui = function(){
+  case_controls = $("#case_list .case_visibility_checkbox");
+  cases_to_plot = []
+  $.each(case_controls, function(index, checkbox){
+    if (checkbox.checked == true){
+       cases_to_plot.push(checkbox.value)
+    }
+  })
+  return cases_to_plot
+}
+
+
+var on_checkbox_change = function(){
+  update_single_case_selector();
+  plot_results();
+}
