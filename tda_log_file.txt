@@ -1,136 +1,4 @@
 DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_02/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201402010000.zip HTTP/1.1" 200 109238
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_03/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201403010000.zip HTTP/1.1" 200 123314
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_04/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201404010000.zip HTTP/1.1" 200 118272
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_05/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201405010000.zip HTTP/1.1" 200 127153
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_06/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201406010000.zip HTTP/1.1" 200 121286
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201407010000.zip HTTP/1.1" 200 130028
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_08/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201408010000.zip HTTP/1.1" 200 128059
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201409010000.zip HTTP/1.1" 200 125128
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_10/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201410010000.zip HTTP/1.1" 200 129718
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_11/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201411010000.zip HTTP/1.1" 200 121644
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2014/MMSDM_2014_12/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201412010000.zip HTTP/1.1" 200 127692
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201501010000.zip HTTP/1.1" 200 127946
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_02/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201502010000.zip HTTP/1.1" 200 109655
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_03/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201503010000.zip HTTP/1.1" 200 120546
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_04/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201504010000.zip HTTP/1.1" 200 123393
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_05/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201505010000.zip HTTP/1.1" 200 126769
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_06/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201506010000.zip HTTP/1.1" 200 117846
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201507010000.zip HTTP/1.1" 200 123929
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_08/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201508010000.zip HTTP/1.1" 200 121473
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201509010000.zip HTTP/1.1" 200 122960
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_10/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201510010000.zip HTTP/1.1" 200 131730
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_11/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201511010000.zip HTTP/1.1" 200 121007
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2015/MMSDM_2015_12/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201512010000.zip HTTP/1.1" 200 121408
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201601010000.zip HTTP/1.1" 200 122227
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_02/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201602010000.zip HTTP/1.1" 200 114734
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_03/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201603010000.zip HTTP/1.1" 200 127329
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_04/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201604010000.zip HTTP/1.1" 200 126794
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_05/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201605010000.zip HTTP/1.1" 200 134347
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_06/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201606010000.zip HTTP/1.1" 200 127918
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201607010000.zip HTTP/1.1" 200 128114
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_08/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201608010000.zip HTTP/1.1" 200 157855
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201609010000.zip HTTP/1.1" 200 137078
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_10/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201610010000.zip HTTP/1.1" 200 138832
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_11/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201611010000.zip HTTP/1.1" 200 131458
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2016/MMSDM_2016_12/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201612010000.zip HTTP/1.1" 200 136942
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201701010000.zip HTTP/1.1" 200 137444
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_02/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201702010000.zip HTTP/1.1" 200 127852
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_03/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201703010000.zip HTTP/1.1" 200 146603
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_04/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201704010000.zip HTTP/1.1" 200 134495
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_05/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201705010000.zip HTTP/1.1" 200 140403
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_06/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201706010000.zip HTTP/1.1" 200 136403
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201707010000.zip HTTP/1.1" 200 144103
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_08/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201708010000.zip HTTP/1.1" 200 139148
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201709010000.zip HTTP/1.1" 200 128006
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_10/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201710010000.zip HTTP/1.1" 200 140415
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_11/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201711010000.zip HTTP/1.1" 200 141369
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2017/MMSDM_2017_12/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201712010000.zip HTTP/1.1" 200 141374
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201801010000.zip HTTP/1.1" 200 142756
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_02/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201802010000.zip HTTP/1.1" 200 128976
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_03/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201803010000.zip HTTP/1.1" 200 141567
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_04/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201804010000.zip HTTP/1.1" 200 137433
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_05/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201805010000.zip HTTP/1.1" 200 138065
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_06/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201806010000.zip HTTP/1.1" 200 135621
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201807010000.zip HTTP/1.1" 200 138918
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_08/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201808010000.zip HTTP/1.1" 200 139959
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201809010000.zip HTTP/1.1" 200 140443
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_10/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201810010000.zip HTTP/1.1" 200 148684
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_11/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201811010000.zip HTTP/1.1" 200 144687
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2018/MMSDM_2018_12/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201812010000.zip HTTP/1.1" 200 145500
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2019/MMSDM_2019_01/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201901010000.zip HTTP/1.1" 200 150115
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2019/MMSDM_2019_02/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201902010000.zip HTTP/1.1" 200 132875
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2019/MMSDM_2019_03/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201903010000.zip HTTP/1.1" 200 151248
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2019/MMSDM_2019_04/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201904010000.zip HTTP/1.1" 200 149382
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2019/MMSDM_2019_05/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201905010000.zip HTTP/1.1" 200 152480
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2019/MMSDM_2019_06/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201906010000.zip HTTP/1.1" 200 143212
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
-DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2019/MMSDM_2019_07/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201907010000.zip HTTP/1.1" 200 149165
-DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
 DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2019/MMSDM_2019_08/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201908010000.zip HTTP/1.1" 404 1245
 DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): www.nemweb.com.au:80
 DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Wholesale_Electricity/MMSDM/2019/MMSDM_2019_09/MMSDM_Historical_Data_SQLLoader/DATA/PUBLIC_DVD_TRADINGPRICE_201909010000.zip HTTP/1.1" 404 1245
@@ -145,66 +13,62 @@ DEBUG:urllib3.connectionpool:http://www.nemweb.com.au:80 "GET /Data_Archive/Whol
 DEBUG:urllib3.connectionpool:Starting new HTTP connection (1): api.ceem.org.au:80
 DEBUG:urllib3.connectionpool:http://api.ceem.org.au:80 "GET /elec-tariffs/network HTTP/1.1" 200 132961
 INFO:werkzeug: * Running on http://127.0.0.1:5000/ (Press CTRL+C to quit)
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET / HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/plotly-1.49.2.min.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/css_trick_dropdown_example/dropdown_menu.css HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/jquery-ui-1.12.1/jquery-ui.css HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/DataTables/dataTables.min.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/DataTables/dataTables.min.css HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/css_trick_dropdown_example/dropdownPlain.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/results_tabs.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/jquery-3.4.1.min.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/CellEdit-master/js/dataTables.cellEdit.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/case_info_tab.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/add_and_delete_cases.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/control_content_in_case_info_tabs.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/build_tariff_selectors.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/build_tariff_table.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/save_tariff.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/tariff_type_tabs.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/check_list.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/delete_tariff.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/manage_data.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/create_new_tariff.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/tariff_info.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/network_load_options.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/project_menu.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/css-element-queries-1.0.0/src/ResizeSensor.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/css-element-queries-1.0.0/src/ElementQueries.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/jquery-ui-1.12.1/jquery-ui.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/end_user_tech.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/export.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/errors.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/tariff_set_options.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/shut_down.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/UNSWLogo.png HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/CEEMLogo.png HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/main_tabs.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/build_load_selector.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/plot_load.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/make_n_peak_options.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:44] "GET /static/plot_results.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /static/tariff_tabs.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /static/plot_wholesale_prices.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /static/resize_plots.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /static/export_chart_data.js HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /get_tariff_set_options/network HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /get_tariff_set_options/retail HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /load_names HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /tariff_selectors HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "POST /wholesale_price_options HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /tariff_selectors HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /static/jquery-ui-1.12.1/images/ui-icons_444444_256x240.png HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /static/jquery-ui-1.12.1/images/ui-icons_777777_256x240.png HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /static/jquery-ui-1.12.1/images/ui-icons_555555_256x240.png HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "POST /tariff_options HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "POST /tariff_options HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:45] "GET /favicon.ico HTTP/1.1" 404 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:46] "POST /wholesale_prices HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:30:58] "GET /get_demo_options/test_data HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:31:03] "POST /filtered_load_data HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 08:31:24] "GET /static/jquery-ui-1.12.1/images/ui-icons_ffffff_256x240.png HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 09:01:54] "POST /wholesale_prices HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 09:01:58] "POST /wholesale_prices HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 09:02:24] "POST /wholesale_prices HTTP/1.1" 200 -
-INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 09:02:28] "POST /wholesale_prices HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "POST /shutdown HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET / HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/plotly-1.49.2.min.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/jquery-3.4.1.min.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/DataTables/dataTables.min.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/jquery-ui-1.12.1/jquery-ui.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/DataTables/dataTables.min.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/jquery-ui-1.12.1/jquery-ui.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/css_trick_dropdown_example/dropdown_menu.css HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/CellEdit-master/js/dataTables.cellEdit.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/css_trick_dropdown_example/dropdownPlain.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/results_tabs.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/add_and_delete_cases.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/case_info_tab.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/control_content_in_case_info_tabs.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/build_tariff_selectors.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/build_tariff_table.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/save_tariff.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/tariff_type_tabs.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/delete_tariff.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/check_list.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/manage_data.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/create_new_tariff.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/network_load_options.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/tariff_info.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/project_menu.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/css-element-queries-1.0.0/src/ResizeSensor.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/css-element-queries-1.0.0/src/ElementQueries.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/end_user_tech.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/export.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/errors.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/tariff_set_options.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/shut_down.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/main_tabs.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/UNSWLogo.png HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/CEEMLogo.png HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/build_load_selector.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/plot_load.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/make_n_peak_options.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/plot_results.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/tariff_tabs.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/plot_wholesale_prices.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/resize_plots.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:38] "GET /static/export_chart_data.js HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:39] "GET /get_tariff_set_options/network HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:39] "GET /get_tariff_set_options/retail HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:39] "GET /load_names HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:39] "GET /tariff_selectors HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:39] "POST /wholesale_price_options HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:39] "GET /tariff_selectors HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:39] "GET /static/jquery-ui-1.12.1/images/ui-icons_444444_256x240.png HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:39] "GET /static/jquery-ui-1.12.1/images/ui-icons_777777_256x240.png HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:39] "GET /static/jquery-ui-1.12.1/images/ui-icons_555555_256x240.png HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:39] "POST /tariff_options HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:39] "POST /tariff_options HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:06:40] "POST /wholesale_prices HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:07:28] "POST /tariff_options HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:07:30] "POST /tariff_options HTTP/1.1" 200 -
+INFO:werkzeug:127.0.0.1 - - [04/Sep/2019 12:07:31] "POST /tariff_options HTTP/1.1" 200 -
