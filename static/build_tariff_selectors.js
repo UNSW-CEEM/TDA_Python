@@ -29,7 +29,7 @@ var get_tariff_options =  function(parent_id){
 
     for (var key in current_options) {
         if (current_options.hasOwnProperty(key)) {
-            current_options[key] = $(key).val();
+            current_options[key] = $('#' + parent_id + ' ' + key).val();
         }
     }
 

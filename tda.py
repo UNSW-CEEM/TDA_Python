@@ -22,7 +22,7 @@ from openpyxl import Workbook
 import errors
 import logging
 
-enable_logging = True
+enable_logging = False
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
@@ -466,6 +466,23 @@ def save_tariff():
     return jsonify({'message': 'done'})
 
 
+@app.route('/get_active_tariff_version', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def get_active_tariff_version():
+    # Get the demographic filtering options associated with a particular case.
+    details = request.get_json()
+    tariff_type = details['type']
+    if tariff_type == 'Network':
+        with open('data/NetworkTariffs.json', 'rt') as json_file:
+            tariffs = json.load(json_file)
+            version = tariffs[0]['Version']
+    else:
+        with open('data/RetailTariffs.json', 'rt') as json_file:
+            tariffs = json.load(json_file)
+            version = tariffs[0]['Version']
+    return jsonify({'version': version})
+
+
 @app.route('/delete_tariff', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def delete_tariff():
@@ -478,7 +495,7 @@ def delete_tariff():
 
     for file_type in ['', 'UserDefined']:
         with open('data/{}{}.json'.format(file_type, file_name), 'rt') as json_file:
-            if file_type == '' and file_name == 'NetworkTariffs':
+            if file_type == '':
                 tariffs = json.load(json_file)
                 for i, tariff in enumerate(tariffs[0]['Tariffs']):
                     if request_details['tariff_name'] == tariff['Name']:

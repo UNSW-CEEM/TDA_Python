@@ -1,1 +1,1 @@
-[]
+[{"Parameters": {"DUOS": {"Daily": {"Unit": "$/kWh", "Value": 1.0}}, "TUOS": {"Daily": {"Unit": "$/kWh", "Value": 1.0}}, "NUOS": {"Daily": {"Unit": "$/kWh", "Value": 1.0}}}, "Name": "new tariff", "Provider": "", "Type": "", "State": "", "Year": "", "Info": "", "ProviderType": "Network"}]
