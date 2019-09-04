@@ -275,8 +275,6 @@ def get_single_variable_chart():
 def get_dual_variable_chart():
     details = request.get_json()
     case_names = details['case_names']
-    print('============= tda dual variable')
-    print(details)
 
     file_name = details['load_details']['file_name']
     results_to_plot = helper_functions.get_results_subset_to_plot(case_names, retail_results_by_case,
