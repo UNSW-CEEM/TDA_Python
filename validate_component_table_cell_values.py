@@ -6,6 +6,9 @@ def time_window(given_string):
         check_answer = check(given_string)
         if check_answer != '':
             return check_answer
+    check_answer = _elements_comma_separated(given_string)
+    if check_answer != '':
+        return check_answer
     given_string = given_string[1:-1].replace('],', ']],')
     for element in given_string.split('],'):
         for check in element_level_checks:
@@ -23,13 +26,14 @@ def time_window(given_string):
 
 def _elements_comma_separated(given_string):
     if ']' not in given_string:
-        return 'Time window not enclosed in brackets'
+        return 'Time window not enclosed in brackets.'
     if '[' not in given_string:
-        return 'Time window not enclosed in brackets'
+        return 'Time window not enclosed in brackets.'
     if given_string.count('[') != given_string.count(']') :
-        return 'Time window not enclosed in brackets'
+        return 'Time window not enclosed in brackets.'
     if given_string.count(']') - 1 != given_string.count('],'):
-        return 'Time windows not comma separated'
+        return 'Time windows not comma separated.'
+    return ''
 
 
 def _not_empty_string(test_string):

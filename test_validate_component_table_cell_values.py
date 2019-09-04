@@ -15,6 +15,12 @@ class TestValidateTimeWindows(unittest.TestCase):
         answer = validate_component_table_cell_values.time_window(test_string)
         self.assertEqual(answer, expect_answer)
 
+    def testFailTimeWindowTwoSlotMissingComma(self):
+        test_string = "{\'T1\' : ['22:00', '23:00'] \'T1\' : ['22:00', '23:00']}"
+        expect_answer = 'Time windows not comma separated.'
+        answer = validate_component_table_cell_values.time_window(test_string)
+        self.assertEqual(answer, expect_answer)
+
 
 class TestTimeWindowChecks(unittest.TestCase):
     def testFailOnBlankInput(self):
