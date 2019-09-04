@@ -20,8 +20,7 @@ def _bill_distribution(load_and_results_by_case):
     for case_name, results in results_by_case.items():
         trace.append(go.Histogram(x=results['Bill'], histnorm='probability', name=case_name))
 
-    data ={'data': trace, 'layout':layout}
-    return data
+    return {'data': trace, 'layout':layout}
 
 def _bill_box_plot(load_and_results_by_case):
 
@@ -37,8 +36,7 @@ def _bill_box_plot(load_and_results_by_case):
     for case_name, results in results_by_case.items():
         trace.append(go.Box(y=results['Bill'], name=case_name))
 
-    data ={'data': trace, 'layout':layout}
-    return data
+    return {'data': trace, 'layout':layout}
 
 def _average_annual_profile(load_and_results_by_case):
 
@@ -57,8 +55,7 @@ def _average_annual_profile(load_and_results_by_case):
         load_mean = load.mean(axis=1)
         trace.append(go.Scattergl(x=load_mean.index, y=load_mean.values, name=case_name))
 
-    data ={'data': trace, 'layout':layout}
-    return data
+    return {'data': trace, 'layout':layout}
 
 def _daily_kWh_histogram(load_and_results_by_case):
 
@@ -81,9 +78,8 @@ def _daily_kWh_histogram(load_and_results_by_case):
         start=min(load_sum),
         end=max(load_sum),
         size=(max(load_sum)-min(load_sum))/50)))
-
-    data ={'data': trace, 'layout':layout}
-    return data
+    
+    return {'data': trace, 'layout':layout}
 
 def _average_load_duration_curve(load_and_results_by_case):
 
@@ -102,11 +98,11 @@ def _average_load_duration_curve(load_and_results_by_case):
         load2.drop(['Datetime'], axis=1, inplace=True)
         load_average = load2.mean(axis=1)
         load_average_sort = load_average.sort_values(ascending = False, inplace = False, na_position ='last')
+        load_average_sort = load_average_sort.reset_index(drop = True) 
 
-        trace.append(go.Scatter(x=list(range(0,17520)),y=list(load_average_sort), name=case_name))
+        trace.append(go.Scatter(x=load_average_sort.index,y=load_average_sort.values, name=case_name))
 
-    data ={'data': trace, 'layout':layout}
-    return data
+    return {'data': trace, 'layout':layout}
 
 
 def _monthly_average_kWh(load_and_results_by_case):
@@ -132,8 +128,7 @@ def _monthly_average_kWh(load_and_results_by_case):
 
         trace.append(go.Bar(x=month_name,y=monthly_mean.values, name=case_name))
 
-    data ={'data': trace, 'layout':layout}
-    return data
+    return {'data': trace, 'layout':layout}
 
 
 def _seasonal_daily_pattern(load_and_results_by_case):
@@ -174,8 +169,7 @@ def _seasonal_daily_pattern(load_and_results_by_case):
         load_winter_daily = np.nanmean(load_winter_reshape,axis=0)
         trace.append(go.Scatter(x=list(range(0,48)), y=load_winter_daily, name= case_name + ' Winter', mode='lines'))
 
-    data ={'data': trace, 'layout':layout}
-    return data
+    return {'data': trace, 'layout':layout}
 
 def _monthly_peak_time(load_and_results_by_case):
     load_by_case = load_and_results_by_case['load']
@@ -210,8 +204,7 @@ def _monthly_peak_time(load_and_results_by_case):
         month_name = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
         trace.append(go.Scatter(x=month_name, y=peak_hour_month, name= case_name, mode='markers', marker=dict(size=20)))       
 
-    data ={'data': trace, 'layout':layout}
-    return data
+    return {'data': trace, 'layout':layout}
 
 
 ########################### charts dict: _single_variable_chart_methods

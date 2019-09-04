@@ -183,8 +183,9 @@ def get_average_load_duration_curve(load):
         
         load_average = load2.mean(axis=1)
         load_average_sort = load_average.sort_values(ascending = False, inplace = False, na_position ='last')
+        load_average_sort = load_average_sort.reset_index(drop = True) 
 
-        trace = go.Scatter(x=list(range(0,17520)),y=list(load_average_sort))
+        trace = go.Scatter(x=load_average_sort.index,y=load_average_sort.values)
         data = {'data': [trace], 'layout':layout}
         return data
 
