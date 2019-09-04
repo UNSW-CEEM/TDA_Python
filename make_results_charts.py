@@ -243,94 +243,262 @@ def _get_annual_kWh(results, load, network_load, details):
 
 def _get_avg_demand_n_peaks(results, load, network_load, details):
 
-    print('******************* geting N peaks')
-
     axis_name = "Average Demand at " + details['n_peaks_selected'] + " Network Peaks"
+    
+    network_load2 = network_load.copy()
+    network_load2['Month_Number'] = network_load2['Datetime'].dt.month
+
+    network_load_filtered = network_load2.copy()
+
+    if details['spring_status'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
+    if details['summer_status'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
+    if details['autumn_status'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
+    if details['winter_status'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
+    
+    del network_load_filtered['Month_Number']
 
     if details['one_peak_per_day_status'] == False:
         N_peaks = int(details['n_peaks_selected'])
-        print(N_peaks)
 
-        network_load2=network_load.copy()
-        network_load2.set_index('Datetime',inplace=True)
+        network_load_filtered2=network_load_filtered.copy()
+        network_load_filtered2.set_index('Datetime',inplace=True)
             
-        network_load_average = network_load2.mean(axis=1)
+        network_load_average = network_load_filtered2.mean(axis=1)
         network_load_average_sort = network_load_average.sort_values(ascending = False, inplace = False, na_position ='last')
-        print('sorted network load')
-        print(network_load_average_sort)
 
         selected_datetime = network_load_average_sort.index[0:N_peaks]
-        print('selected datatime')
-        print(selected_datetime)
 
         load2 = load.copy()
         load2.set_index('Datetime',inplace=True)
 
         selected_load = load2.loc[selected_datetime]
-        print('selected load based on the selected datetime')
-        print(selected_load)
 
         selected_load_average = selected_load.mean(axis=0)
+
         axis_data = list(selected_load_average)
-        print('axis data')
-        print(axis_data)
+
         return {'axis_name':axis_name, 'axis_data':axis_data}
     else:
         N_peaks = int(details['n_peaks_selected'])
-        print(N_peaks)
 
-        network_load2=network_load.copy()
-        network_load2.set_index('Datetime',inplace=True)
+        network_load_filtered2=network_load_filtered.copy()
+        network_load_filtered2.set_index('Datetime',inplace=True)
             
-        network_load_average = network_load2.mean(axis=1)
+        network_load_average = network_load_filtered2.mean(axis=1)
 
         # find peak for each day
         network_daily_peak = network_load_average.resample('D').max()
-        print('resample daily peak')
-        print(network_daily_peak)
 
         network_daily_peak_sort = network_daily_peak.sort_values(ascending = False, inplace = False, na_position ='last')
-        print('sorted network daily peak')
-        print(network_daily_peak_sort)
 
         selected_datetime = network_daily_peak_sort.index[0:N_peaks]
-        print('selected datatime')
-        print(selected_datetime)
 
         load2 = load.copy()
         load2.set_index('Datetime',inplace=True)
 
         load_daily_peak = load2.resample('D').max()
-        print('load2 resample daily peak')
-        print(load_daily_peak)
 
         selected_load = load_daily_peak.loc[selected_datetime]
-        print('selected load based on the selected datetime')
-        print(selected_load)
 
         selected_load_average = selected_load.mean(axis=0)
         axis_data = list(selected_load_average)
-        print('axis data')
-        print(axis_data)
         return {'axis_name':axis_name, 'axis_data':axis_data}    
 
 
 
 def _get_avg_demand_n_monthly_peaks(results, load, network_load, details):
-    axis_name = "Annual kWh"
-    axis_data = results['Annual_kWh']
-    return {'axis_name':axis_name, 'axis_data':axis_data}
+
+    axis_name = "Average Demand at " + details['n_peaks_selected'] + " Network Monthly Peaks"
+    
+    network_load2 = network_load.copy()
+    network_load2['Month_Number'] = network_load2['Datetime'].dt.month
+
+    network_load_filtered = network_load2.copy()
+
+    if details['spring_status'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
+    if details['summer_status'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
+    if details['autumn_status'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
+    if details['winter_status'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
+
+    network_load_filtered_by_month = []
+    for i in range(12):
+        monthly_data = network_load_filtered[network_load_filtered['Month_Number'].isin([i+1])]
+        del monthly_data['Month_Number']
+        network_load_filtered_by_month.append(monthly_data)
+
+    if details['one_peak_per_day_status'] == False:
+        N_peaks = int(details['n_peaks_selected'])
+
+        selected_datetime = []
+        for i in range(12):
+            network_load_filtered_by_month_i=network_load_filtered_by_month[i].copy()
+            network_load_filtered_by_month_i.set_index('Datetime',inplace=True)
+                
+            network_load_average = network_load_filtered_by_month_i.mean(axis=1)
+            network_load_average_sort = network_load_average.sort_values(ascending = False, inplace = False, na_position ='last')
+
+            selected_datetime = selected_datetime + list(network_load_average_sort.index[0:N_peaks])
+
+        load2 = load.copy()
+        load2.set_index('Datetime',inplace=True)
+
+        selected_load = load2.loc[selected_datetime]
+
+        selected_load_average = selected_load.mean(axis=0)
+
+        axis_data = list(selected_load_average)
+
+        return {'axis_name':axis_name, 'axis_data':axis_data}
+    else:
+        N_peaks = int(details['n_peaks_selected'])
+
+        selected_datetime = []
+        for i in range(12):
+            network_load_filtered_by_month_i=network_load_filtered_by_month[i].copy()
+            network_load_filtered_by_month_i.set_index('Datetime',inplace=True)
+                
+            network_load_average = network_load_filtered_by_month_i.mean(axis=1)
+
+            network_daily_peak = network_load_average.resample('D').max()
+
+            network_daily_peak_sort = network_daily_peak.sort_values(ascending = False, inplace = False, na_position ='last')
+
+            selected_datetime = selected_datetime + list(network_daily_peak_sort.index[0:N_peaks])
+
+        load2 = load.copy()
+        load2.set_index('Datetime',inplace=True)
+
+        load_daily_peak = load2.resample('D').max()
+
+        selected_load = load_daily_peak.loc[selected_datetime]
+
+        selected_load_average = selected_load.mean(axis=0)
+        axis_data = list(selected_load_average)
+        return {'axis_name':axis_name, 'axis_data':axis_data}    
+
 
 def _get_avg_demand_top_n_peaks(results, load, network_load, details):
-    axis_name = "Annual kWh"
-    axis_data = results['Annual_kWh']
-    return {'axis_name':axis_name, 'axis_data':axis_data}
+    axis_name = "Average Demand at Top " + details['n_peaks_selected'] + " Peaks"
+
+    load2 = load.copy()    
+    load2['Month_Number'] = load2['Datetime'].dt.month
+
+    load_filtered = load2.copy()
+
+    if details['spring_status'] == False:
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([3,4,5])]
+    if details['summer_status'] == False:
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([6,7,8])]
+    if details['autumn_status'] == False:
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([9,10,11])]
+    if details['winter_status'] == False:
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([1,2,12])]
+    
+    del load_filtered['Month_Number']
+    
+
+    if details['one_peak_per_day_status'] == False:
+        N_peaks = int(details['n_peaks_selected'])
+
+        del load_filtered['Datetime']
+        load_filtered2=load_filtered.copy()
+
+        load_filtered_sort = pd.concat([load_filtered2[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered2], axis=1, ignore_index=True)
+
+        selected_load = load_filtered_sort.iloc[0:N_peaks,:]
+
+        selected_load_average = selected_load.mean(axis=0)
+
+        axis_data = list(selected_load_average)
+        return {'axis_name':axis_name, 'axis_data':axis_data}
+
+    else:
+        N_peaks = int(details['n_peaks_selected'])
+
+        load_filtered2=load_filtered.copy()
+        load_filtered2.set_index('Datetime',inplace=True)
+
+        # find peak for each day
+        load_filtered_daily_peak = load_filtered2.resample('D').max()
+
+        load_filtered_daily_peak_sort = pd.concat([load_filtered_daily_peak[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered_daily_peak], axis=1, ignore_index=True)
+        selected_load = load_filtered_daily_peak_sort.iloc[0:N_peaks,:]
+
+        selected_load_average = selected_load.mean(axis=0)
+
+        axis_data = list(selected_load_average)  
+        return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
 def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details):
-    axis_name = "Annual kWh"
-    axis_data = results['Annual_kWh']
-    return {'axis_name':axis_name, 'axis_data':axis_data}
+    axis_name = "Average Demand at Top " + details['n_peaks_selected'] + " Monthly Peaks"
+    
+    load2 = load.copy()    
+    load2['Month_Number'] = load2['Datetime'].dt.month
+
+    load_filtered = load2.copy()
+
+    if details['spring_status'] == False:
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([3,4,5])]
+    if details['summer_status'] == False:
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([6,7,8])]
+    if details['autumn_status'] == False:
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([9,10,11])]
+    if details['winter_status'] == False:
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([1,2,12])]
+
+    load_filtered_by_month = []
+    for i in range(12):
+        monthly_data = load_filtered[load_filtered['Month_Number'].isin([i+1])]
+        del monthly_data['Month_Number']
+        load_filtered_by_month.append(monthly_data)
+
+    if details['one_peak_per_day_status'] == False:
+        N_peaks = int(details['n_peaks_selected'])
+
+        selected_load = []
+        for i in range(12):
+            load_filtered_by_month_i=load_filtered_by_month[i].copy()
+            del load_filtered_by_month_i['Datetime']
+
+            load_filtered_by_month_i_sort = pd.concat([load_filtered_by_month_i[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered_by_month_i], axis=1, ignore_index=True)
+            selected_load_by_month = load_filtered_by_month_i_sort.iloc[0:N_peaks,:]
+
+            selected_load.append(list(selected_load_by_month.mean(axis=0)))
+
+        selected_load_average = np.nanmean(np.array(selected_load),axis=0)
+
+        axis_data = list(selected_load_average)
+
+        return {'axis_name':axis_name, 'axis_data':axis_data}
+    else:
+        N_peaks = int(details['n_peaks_selected'])
+
+        selected_load = []
+        for i in range(12):
+            load_filtered_by_month_i=load_filtered_by_month[i].copy()
+            load_filtered_by_month_i.set_index('Datetime',inplace=True)
+
+            load_filtered_daily_peak_by_month = load_filtered_by_month_i.resample('D').max()
+
+            load_filtered_daily_peak_by_month_sort = pd.concat([load_filtered_daily_peak_by_month[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered_daily_peak_by_month], axis=1, ignore_index=True)
+            selected_load_by_month = load_filtered_daily_peak_by_month_sort.iloc[0:N_peaks,:]
+
+            selected_load.append(list(selected_load_by_month.mean(axis=0)))
+
+        selected_load_average = np.nanmean(np.array(selected_load),axis=0)
+
+        axis_data = list(selected_load_average)
+
+        return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
 def _get_avg_daily_kWh(results, load, network_load, details):
@@ -443,24 +611,22 @@ def _get_bill_components(data, load_to_plot):
 
 def _get_bill_components_pie_chart(data, load_by_case):
 
-    Xaxis = "Users (sorted by total bill)"
-    Yaxis = "Bill (AUD)"
+    Xaxis = ""
+    Yaxis = ""
     layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
 
-    data = data.sort_values('Bill', ascending=False)
-    data = data.reset_index(drop=True)
-    traces = []
-    compenent_suffixes = ['Retailer', 'DUOS', 'NUOS', 'TUOS', 'DTOUS']
-    potential_components = [col for col in data.columns if is_component(compenent_suffixes, col)]
-    for component in potential_components:
-        trace = dict(name=component,
-                     x=data.index.values,
-                     y=data[component],
-                     mode='lines',
-                     stackgroup='one')
-        traces.append(trace)
-    return {'data':traces, 'layout': layout}
+    selected_columns = [col for col in data.columns if col.endswith('Charge')]
+
+    selected_data = data[selected_columns]
+
+    percentage = []
+    for col in selected_data.columns:
+        percentage.append(selected_data[col].sum(axis=0)/data['Bill'].sum(axis=0))
+
+    trace = [go.Pie(labels=selected_columns, values=percentage)]
+
+    return {'data':trace, 'layout': layout}
 
 def get_daily_average_profile(x):
     x_array = np.array(x).reshape((-1,48))
