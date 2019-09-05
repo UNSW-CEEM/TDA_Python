@@ -639,7 +639,7 @@ def export_chart_data():
 def validate_tariff_cell():
     request_details = request.get_json()
     cell_value = request_details['cell_value']
-    column_name = request_details['column']
+    column_name = request_details['column_name']
     return jsonify({'message': ''})
 
 

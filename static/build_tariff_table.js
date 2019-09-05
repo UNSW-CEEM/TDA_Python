@@ -320,5 +320,25 @@ var get_value_index_in_header = function(table_name){
 }
 
 var edit_validate = function(cell, row){
- console.log('Validate me!')
+    var edited_table_id = row.table().node().id
+    var edited_table = $('#' + edited_table_id)
+    console.log('Validate me!')
+    valid = false
+    request_details = {'cell_value': cell.data(),
+                       'column_name': cell.index()['column']}
+     // Ask for the corresponding json.
+    $.ajax({
+        url: '/validate_tariff_input',
+        data: JSON.stringify(request_details),
+        contentType: 'application/json;charset=UTF-8',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        // Call the function to display the selected tariffs info
+        success: function(data){
+            alert_user_if_error(data);
+            valid = data['valid']
+        }
+    });
+ return valid
 }
