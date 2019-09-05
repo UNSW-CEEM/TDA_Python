@@ -350,19 +350,19 @@ def get_single_case_chart():
     details = request.get_json()
     print(details)
     chart_name = details['chart_name']
-    case_names = details['case_names']
+    case_name = details['case_name']
     results_to_plot = helper_functions.get_results_subset_to_plot(
-        case_names,
+        case_name,
         current_session.project_data.retail_results_by_case,
         current_session.project_data.network_results_by_case,
         current_session.project_data.wholesale_results_by_case)
 
-    if case_names not in results_to_plot.keys():
+    if case_name not in results_to_plot.keys():
         results_to_plot = None
     else:
-        results_to_plot = results_to_plot[case_names]
+        results_to_plot = results_to_plot[case_name]
 
-    load_and_results_to_plot = {'results': results_to_plot, 'load': load_by_case[case_names]}
+    load_and_results_to_plot = {'results': results_to_plot, 'load': load_by_case[case_name]}
 
     return single_case_chart(chart_name, load_and_results_to_plot)
 
