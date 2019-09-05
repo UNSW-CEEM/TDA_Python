@@ -29,8 +29,10 @@ def _elements_comma_separated(given_string):
         return 'Time window not enclosed in brackets.'
     if '[' not in given_string:
         return 'Time window not enclosed in brackets.'
-    if given_string.count('[') != given_string.count(']') :
+    if given_string.count('[') != given_string.count(']'):
         return 'Time window not enclosed in brackets.'
+    if '],}' in given_string:
+        return 'Incorrect trailing comma.'
     if given_string.count(']') - 1 != given_string.count('],'):
         return 'Time windows not comma separated.'
     return ''
@@ -62,6 +64,13 @@ top_level_time_window_checks = [_not_empty_string, _closed_curly_braces,
                                 _non_blank_inside_curly_braces]
 
 
+def _colon_separated(test_string):
+    if ':[' in test_string:
+        return ''
+    else:
+        return 'Time window names and values should be separated by a colon (:).'
+
+
 def _time_window_inside_square_brackets(element_string):
     if '[' not in element_string:
         return 'Time window not inside square brackets.'
@@ -71,13 +80,6 @@ def _time_window_inside_square_brackets(element_string):
         return ''
     else:
         return 'Time window not inside square brackets.'
-
-
-def _colon_separated(test_string):
-    if ':[' in test_string:
-        return ''
-    else:
-        return 'Time window names and values should be separated by a colon (:).'
 
 
 def _time_window_has_name(element_string):
@@ -95,7 +97,7 @@ def _window_name_quoted(element_string):
     if name_with_quotes[0] == '\'' and name_with_quotes[-1] == '\'':
         return ''
     else:
-        return 'Time window not quoted'
+        return 'Time window name not quoted.'
 
 
 def _window_name_not_blank_inside_quotes(element_string):
@@ -116,7 +118,7 @@ def _time_window_has_two_elements(element_string):
         return 'Time window should have two times, separated by a comma.'
 
 
-element_level_checks = [_time_window_inside_square_brackets, _colon_separated,
+element_level_checks = [_colon_separated, _time_window_inside_square_brackets,
                         _time_window_has_name, _window_name_quoted,
                         _window_name_not_blank_inside_quotes,
                         _time_window_has_two_elements]

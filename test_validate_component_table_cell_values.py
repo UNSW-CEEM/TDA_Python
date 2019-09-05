@@ -21,6 +21,42 @@ class TestValidateTimeWindows(unittest.TestCase):
         answer = validate_component_table_cell_values.time_window(test_string)
         self.assertEqual(answer, expect_answer)
 
+    def testFailTimeWindowTwoSlotMissingQuotesOnName(self):
+        test_string = "{T1 : ['22:00', '23:00'], \'T1\' : ['22:00', '23:00']}"
+        expect_answer = 'Time window name not quoted.'
+        answer = validate_component_table_cell_values.time_window(test_string)
+        self.assertEqual(answer, expect_answer)
+
+    def testFailTimeWindowTwoSlotCommaInWrongPosition(self):
+        test_string = "{\'T1\' : ['22:00', '23:00'], \'T1\' : ['22:00', '23:00'],}"
+        expect_answer = 'Incorrect trailing comma.'
+        answer = validate_component_table_cell_values.time_window(test_string)
+        self.assertEqual(answer, expect_answer)
+
+    def testFailTimeWindowTwoSlotForgotFirstColon(self):
+        test_string = "{\'T1\' ['22:00', '23:00'], \'T1\' : ['22:00', '23:00']}"
+        expect_answer = 'Time window names and values should be separated by a colon (:).'
+        answer = validate_component_table_cell_values.time_window(test_string)
+        self.assertEqual(answer, expect_answer)
+
+    def testFailTimeWindowTwoSlotSecondTimeWindowNotCommaSeparated(self):
+        test_string = "{\'T1\' : ['22:00', '23:00'], \'T1\' : ['22:00'| '23:00']}"
+        expect_answer = 'Time window should have two times, separated by a comma.'
+        answer = validate_component_table_cell_values.time_window(test_string)
+        self.assertEqual(answer, expect_answer)
+
+    def testFailTimeWindowTwoSlotSecondTimeWindowOK(self):
+        test_string = "{\'T1\' : ['22:00', '23:00'], \'T1\' : ['22:00', '25:00']}"
+        expect_answer = 'The hour provided is not an integer between 0 and 23.'
+        answer = validate_component_table_cell_values.time_window(test_string)
+        self.assertEqual(answer, expect_answer)
+
+    def testFailTimeWindowTwoSlotMissingSquareBrackets(self):
+        test_string = "{\'T1\' : ['22:00', '23:00', \'T1\' : '22:00', '25:00']}"
+        expect_answer = 'Time window should have two times, separated by a comma.'
+        answer = validate_component_table_cell_values.time_window(test_string)
+        self.assertEqual(answer, expect_answer)
+
 
 class TestTimeWindowChecks(unittest.TestCase):
     def testFailOnBlankInput(self):
@@ -37,19 +73,19 @@ class TestTimeWindowChecks(unittest.TestCase):
 
     def testFailOnNoCurlyBraces(self):
         test_string = "\"T1\" : ['22:00', '23:00']"
-        expect_answer = 'Input not inclosed in curly braces.'
+        expect_answer = 'Input not enclosed in curly braces.'
         answer = validate_component_table_cell_values._closed_curly_braces(test_string)
         self.assertEqual(answer, expect_answer)
 
     def testFailOnJustFirstCurlyBrace(self):
         test_string = "{\"T1\" : ['22:00', '23:00']"
-        expect_answer = 'Input not inclosed in curly braces.'
+        expect_answer = 'Input not enclosed in curly braces.'
         answer = validate_component_table_cell_values._closed_curly_braces(test_string)
         self.assertEqual(answer, expect_answer)
 
     def testFailOnJustSecondCurlyBrace(self):
         test_string = "\"T1\" : ['22:00', '23:00']}"
-        expect_answer = 'Input not inclosed in curly braces.'
+        expect_answer = 'Input not enclosed in curly braces.'
         answer = validate_component_table_cell_values._closed_curly_braces(test_string)
         self.assertEqual(answer, expect_answer)
 
@@ -97,7 +133,7 @@ class TestTimeWindowChecks(unittest.TestCase):
 
     def testFailElementIfTimeWindowNameNotQuoted(self):
         test_string = "hi: there"
-        expect_answer = 'Time window not quoted'
+        expect_answer = 'Time window name not quoted.'
         answer = validate_component_table_cell_values._window_name_quoted(test_string)
         self.assertEqual(answer, expect_answer)
 

@@ -634,6 +634,15 @@ def export_chart_data():
     return jsonify({'message': "Your export is done!"})
 
 
+@app.route('/validate_tariff_cell', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def validate_tariff_cell():
+    request_details = request.get_json()
+    cell_value = request_details['cell_value']
+    column_name = request_details['column']
+    return jsonify({'message': ''})
+
+
 @app.route('/restart_tool', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def restart_tool():

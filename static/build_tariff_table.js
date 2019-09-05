@@ -183,7 +183,8 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
     // If turned on add editing functionality.
     if (editable){
         table.MakeCellsEditable({"onUpdate": update_table_structures_after_edit,
-                                 "columns": columns_to_edit(table_data, multi_row)});
+                                 "columns": columns_to_edit(table_data, multi_row),
+                                 "onValidate": edit_validate});
     }
 }
 
@@ -265,7 +266,6 @@ var user_delete_row = function(row, tariff_type_panel){
     $.each(tables_to_edit, function(i, table_to_edit){
         $(table_to_edit).DataTable().row(row_index).remove().draw();
     });
-    //table.DataTable().row($(row).parents('tr')).remove().draw();
 }
 
 var user_delete_table = function(tariff_type_panel, table_name){
@@ -317,4 +317,8 @@ var get_value_index_in_header = function(table_name){
         }
     }
     return value_index
+}
+
+var edit_validate = function(cell, row){
+ console.log('Validate me!')
 }
