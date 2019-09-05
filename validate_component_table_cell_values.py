@@ -1,5 +1,12 @@
 
 
+def validate_data(value, column_name):
+    validation_message = ''
+    if column_name in validation_types.keys():
+        validation_message = validation_types[column_name](value)
+    return validation_message
+
+
 def time_window(given_string):
     given_string = given_string.replace(' ', '')
     for check in top_level_time_window_checks:
@@ -158,3 +165,5 @@ def _minutes_int_less_than_60(time_string):
 
 time_string_checks = [_time_is_quoted, _hours_and_minutes_colon_separated,
                       _hours_int_less_than_24, _minutes_int_less_than_60]
+
+validation_types = {"TimeIntervals": time_window}

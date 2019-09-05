@@ -319,16 +319,17 @@ var get_value_index_in_header = function(table_name){
     return value_index
 }
 
-var edit_validate = function(cell, row){
+async function edit_validate(cell, row){
     var edited_table_id = row.table().node().id
     var edited_table = $('#' + edited_table_id)
     console.log('Validate me!')
     valid = false
     request_details = {'cell_value': cell.data(),
-                       'column_name': cell.index()['column']}
+                       'column_name': $(edited_table).DataTable().column(cell.index()['column']).header().innerHTML}
      // Ask for the corresponding json.
+
     $.ajax({
-        url: '/validate_tariff_input',
+        url: '/validate_tariff_cell',
         data: JSON.stringify(request_details),
         contentType: 'application/json;charset=UTF-8',
         type : 'POST',
@@ -337,8 +338,13 @@ var edit_validate = function(cell, row){
         // Call the function to display the selected tariffs info
         success: function(data){
             alert_user_if_error(data);
-            valid = data['valid']
+            if (validation_data['message'] == ''){
+                valid = true
+            } else {
+                valid = true
+            }
         }
     });
- return valid
+
+    return valid
 }

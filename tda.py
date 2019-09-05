@@ -21,6 +21,7 @@ from session_data import InMemoryData
 from openpyxl import Workbook
 import errors
 import logging
+import validate_component_table_cell_values
 
 enable_logging = False
 
@@ -640,7 +641,8 @@ def validate_tariff_cell():
     request_details = request.get_json()
     cell_value = request_details['cell_value']
     column_name = request_details['column_name']
-    return jsonify({'message': ''})
+    message = validate_component_table_cell_values.validate_data(cell_value, column_name)
+    return jsonify({'message': message})
 
 
 @app.route('/restart_tool', methods=['POST'])
