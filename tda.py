@@ -23,30 +23,6 @@ from openpyxl import Workbook
 import errors
 import logging
 
-# Dictionaries for storing data associated with the current state of the program.
-raw_data = {}  # Data as loaded from feather files, stored in dict on a file name basis
-save_filtered_data = {}
-
-# Chart data for the load plots, only storing data for non filtered data as filtering can change between plot updates.
-# Stored on a file name basis.
-raw_charts = {}
-
-# Results from calculating bill for a set of load profiles with a given tariff. Stored on a case name basis.
-network_results_by_case = {}
-retail_results_by_case = {}
-
-# Load profiles after any filtering, for a given case, stored on a case name basis.
-load_by_case = {}
-
-# Tariff for a given case, stored on a case name basis.
-network_tariffs_by_case = {}
-retail_tariffs_by_case = {}
-
-# The source file name which describes were the load data came from for a given case, stored on a case name basis.
-load_file_name_by_case = {}
-
-
-
 enable_logging = False
 
 # Initialise object for holding the current session/project's data.
@@ -324,7 +300,7 @@ def get_single_variable_chart():
                                                                   current_session.project_data.network_results_by_case,
                                                                   current_session.project_data.wholesale_results_by_case)
 
-    load_and_results_to_plot = {'results': results_to_plot, 'load': load_by_case}
+    load_and_results_to_plot = {'results': results_to_plot, 'load': current_session.load_by_case}
     return singe_variable_chart(chart_name, load_and_results_to_plot)
 
 
@@ -338,7 +314,8 @@ def get_dual_variable_chart():
                                                                   current_session.project_data.retail_results_by_case,
                                                                   current_session.project_data.network_results_by_case,
                                                                   current_session.project_data.wholesale_results_by_case)
-    load_and_results_to_plot = {'results': results_to_plot, 'load': load_by_case,'network_load':raw_data[file_name]}
+    load_and_results_to_plot = {'results': results_to_plot, 'load': current_session.load_by_case,
+                                'network_load': current_session.raw_data[file_name]}
 
     return dual_variable_chart(load_and_results_to_plot, details)
 
@@ -352,7 +329,7 @@ def get_single_case_chart():
     chart_name = details['chart_name']
     case_name = details['case_name']
     results_to_plot = helper_functions.get_results_subset_to_plot(
-        case_name,
+        [case_name],
         current_session.project_data.retail_results_by_case,
         current_session.project_data.network_results_by_case,
         current_session.project_data.wholesale_results_by_case)
@@ -362,7 +339,7 @@ def get_single_case_chart():
     else:
         results_to_plot = results_to_plot[case_name]
 
-    load_and_results_to_plot = {'results': results_to_plot, 'load': load_by_case[case_name]}
+    load_and_results_to_plot = {'results': results_to_plot, 'load': current_session.load_by_case[case_name]}
 
     return single_case_chart(chart_name, load_and_results_to_plot)
 
