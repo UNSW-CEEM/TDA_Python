@@ -182,9 +182,8 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
 
     // If turned on add editing functionality.
     if (editable){
-        table.MakeCellsEditable({"onUpdate": update_table_structures_after_edit,
-                                 "columns": columns_to_edit(table_data, multi_row),
-                                 "onValidate": edit_validate});
+        table.MakeCellsEditable({"onUpdate": edit_validate,
+                                 "columns": columns_to_edit(table_data, multi_row)});
     }
 }
 
@@ -319,32 +318,31 @@ var get_value_index_in_header = function(table_name){
     return value_index
 }
 
-async function edit_validate(cell, row){
+var edit_validate  = async function(cell, row, oldValue){
     var edited_table_id = row.table().node().id
     var edited_table = $('#' + edited_table_id)
-    console.log('Validate me!')
     valid = false
     request_details = {'cell_value': cell.data(),
                        'column_name': $(edited_table).DataTable().column(cell.index()['column']).header().innerHTML}
-     // Ask for the corresponding json.
+    let data = await get_validation_message(request_details);
 
-    $.ajax({
+    if (data['message'] == ''){
+        update_table_structures_after_edit(cell, row)
+    } else {
+        $('#error_dialog').dialog({modal: true})
+        $('#error_dialog p').text(data['message'])
+        cell.data(oldValue)
+    }
+
+}
+
+async function get_validation_message(request_details){
+    return Promise.resolve($.ajax({
         url: '/validate_tariff_cell',
         data: JSON.stringify(request_details),
         contentType: 'application/json;charset=UTF-8',
         type : 'POST',
         async: 'false',
         dataType:"json",
-        // Call the function to display the selected tariffs info
-        success: function(data){
-            alert_user_if_error(data);
-            if (validation_data['message'] == ''){
-                valid = true
-            } else {
-                valid = true
-            }
-        }
-    });
-
-    return valid
+    }));
 }
