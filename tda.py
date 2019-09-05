@@ -47,7 +47,7 @@ load_file_name_by_case = {}
 
 
 
-enable_logging = True
+enable_logging = False
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
@@ -182,8 +182,8 @@ def filtered_load_data():
             current_session.filtered_charts[load_request['file_name']][load_request['chart_type']] = \
                 chart_methods[load_request['chart_type']](current_session.filtered_data)
 
-        chart_data = filtered_charts[load_request['file_name']][load_request['chart_type']]
-        n_users = helper_functions.n_users(filtered_data)
+        chart_data = current_session.filtered_charts[load_request['file_name']][load_request['chart_type']]
+        n_users = helper_functions.n_users(current_session.filtered_data)
     else:
         
         chart_data = current_session.raw_charts[load_request['file_name']][load_request['chart_type']]
@@ -348,20 +348,21 @@ def get_dual_variable_chart():
 @errors.parse_to_user_and_log(logger)
 def get_single_case_chart():
     details = request.get_json()
+    print(details)
     chart_name = details['chart_name']
-    case_name = details['case_name']
+    case_names = details['case_names']
     results_to_plot = helper_functions.get_results_subset_to_plot(
-        [case_name],
+        case_names,
         current_session.project_data.retail_results_by_case,
         current_session.project_data.network_results_by_case,
         current_session.project_data.wholesale_results_by_case)
 
-    if case_name not in results_to_plot.keys():
+    if case_names not in results_to_plot.keys():
         results_to_plot = None
     else:
-        results_to_plot = results_to_plot[case_name]
+        results_to_plot = results_to_plot[case_names]
 
-    load_and_results_to_plot = {'results': results_to_plot, 'load': load_by_case[case_name]}
+    load_and_results_to_plot = {'results': results_to_plot, 'load': load_by_case[case_names]}
 
     return single_case_chart(chart_name, load_and_results_to_plot)
 

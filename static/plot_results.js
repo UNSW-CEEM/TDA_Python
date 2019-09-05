@@ -132,6 +132,7 @@ var plot_results = function(){
 var plot_single_variable_results = function(){
     // Get cases to plot
     cases_to_plot = get_cases_to_plot_from_ui();
+    console.log('cases_to_plot:',cases_to_plot)
 
     // Get the chart type to be drawn from the GUI.
     var chart_type = $('#single_variable_chart_type').children("option:selected").val();

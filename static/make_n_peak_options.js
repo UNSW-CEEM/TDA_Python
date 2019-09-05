@@ -6,19 +6,6 @@ for (i = 1; i <= 150; i++) {
   $("#y_n_peaks_select").append($(o).clone());
 }
 
-// Update the visibility of the n peaks options.
-
-var control_options_display = function(){
-    var options = document.getElementById("peak_options");
-
-    var x_axis = $('#dual_variable_x_axis').children("option:selected").val();
-    var y_axis = $('#dual_variable_y_axis').children("option:selected").val();
-    if ( x_axis == 'avg_demand_n_peaks'|| y_axis == 'avg_demand_n_peaks' || 
-         x_axis == 'avg_demand_n_monthly_peaks' || y_axis == 'avg_demand_n_monthly_peaks' || 
-         x_axis == 'avg_demand_top_n_peaks'|| y_axis == 'avg_demand_top_n_peaks' || 
-         x_axis == 'avg_demand_top_n_monthly_peaks' || y_axis == 'avg_demand_top_n_monthly_peaks'){
-      options.style.display = "block";
-
 
 // Update the visibility of the n peaks options.
 var control_options_block_display = function(){
