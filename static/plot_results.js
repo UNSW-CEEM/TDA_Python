@@ -142,7 +142,7 @@ var plot_single_case_results = function(){
 }
 
 
-$('#plot_single_variable_results').on('change', function() {
+$('#single_variable_chart_type').on('change', function() {
     plot_single_variable_results();
 });
 
