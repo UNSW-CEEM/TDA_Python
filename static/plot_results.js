@@ -146,9 +146,22 @@ $('#single_variable_chart_type').on('change', function() {
     plot_single_variable_results();
 });
 
-$('.x_peak_options').on('change', function() {
+$('#x_n_peaks_select').on('change', function() {
     plot_dual_variable_results();
 });
+
+$('#y_n_peaks_select').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#x_one_peak_a_day').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#y_one_peak_a_day').on('change', function() {
+    plot_dual_variable_results();
+});
+
 
 $('#dual_variable_x_axis').on('change', function() {
     plot_dual_variable_results();

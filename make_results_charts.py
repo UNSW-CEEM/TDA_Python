@@ -228,34 +228,41 @@ def singe_variable_chart(chart_name, load_and_results_by_case):
 #################################################################################################
 # dual variable
 
-def _get_annual_kWh(results, load, network_load, details):
+def _get_annual_kWh(results, load, network_load, details, axis):
     axis_name = "Annual kWh"
     axis_data = results['Annual_kWh']
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
-def _get_avg_demand_n_peaks(results, load, network_load, details):
+def _get_avg_demand_n_peaks(results, load, network_load, details, axis):
 
-    axis_name = "Average Demand at " + details['n_peaks_selected'] + " Network Peaks"
+    if axis == 'x_axis':
+        N_peaks = int(details['x_axis_n_peaks'])
+        one_peak_per_day_status = details['x_axis_one_peak_per_day']
+    if axis == 'y_axis':
+        N_peaks = int(details['y_axis_n_peaks'])
+        one_peak_per_day_status = details['y_axis_one_peak_per_day']
+
+    axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
     network_load2 = network_load.copy()
     network_load2['Month_Number'] = network_load2['Datetime'].dt.month
 
     network_load_filtered = network_load2.copy()
 
-    if details['spring_status'] == False:
+    if details['include_spring'] == False:
         network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
-    if details['summer_status'] == False:
+    if details['include_summer'] == False:
         network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
-    if details['autumn_status'] == False:
+    if details['include_autumn'] == False:
         network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
-    if details['winter_status'] == False:
+    if details['include_winter'] == False:
         network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
     
     del network_load_filtered['Month_Number']
 
-    if details['one_peak_per_day_status'] == False:
-        N_peaks = int(details['n_peaks_selected'])
+
+    if one_peak_per_day_status == False:
 
         network_load_filtered2=network_load_filtered.copy()
         network_load_filtered2.set_index('Datetime',inplace=True)
@@ -275,9 +282,8 @@ def _get_avg_demand_n_peaks(results, load, network_load, details):
         axis_data = list(selected_load_average)
 
         return {'axis_name':axis_name, 'axis_data':axis_data}
+        
     else:
-        N_peaks = int(details['n_peaks_selected'])
-
         network_load_filtered2=network_load_filtered.copy()
         network_load_filtered2.set_index('Datetime',inplace=True)
             
@@ -303,22 +309,29 @@ def _get_avg_demand_n_peaks(results, load, network_load, details):
 
 
 
-def _get_avg_demand_n_monthly_peaks(results, load, network_load, details):
+def _get_avg_demand_n_monthly_peaks(results, load, network_load, details, axis):
 
-    axis_name = "Average Demand at " + details['n_peaks_selected'] + " Network Monthly Peaks"
+    if axis == 'x_axis':
+        N_peaks = int(details['x_axis_n_peaks'])
+        one_peak_per_day_status = details['x_axis_one_peak_per_day']
+    if axis == 'y_axis':
+        N_peaks = int(details['y_axis_n_peaks'])
+        one_peak_per_day_status = details['y_axis_one_peak_per_day']
+
+    axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
     network_load2 = network_load.copy()
     network_load2['Month_Number'] = network_load2['Datetime'].dt.month
 
     network_load_filtered = network_load2.copy()
 
-    if details['spring_status'] == False:
+    if details['include_spring'] == False:
         network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
-    if details['summer_status'] == False:
+    if details['include_summer'] == False:
         network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
-    if details['autumn_status'] == False:
+    if details['include_autumn'] == False:
         network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
-    if details['winter_status'] == False:
+    if details['include_winter'] == False:
         network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
 
     network_load_filtered_by_month = []
@@ -327,8 +340,7 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details):
         del monthly_data['Month_Number']
         network_load_filtered_by_month.append(monthly_data)
 
-    if details['one_peak_per_day_status'] == False:
-        N_peaks = int(details['n_peaks_selected'])
+    if one_peak_per_day_status == False:
 
         selected_datetime = []
         for i in range(12):
@@ -351,7 +363,6 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details):
 
         return {'axis_name':axis_name, 'axis_data':axis_data}
     else:
-        N_peaks = int(details['n_peaks_selected'])
 
         selected_datetime = []
         for i in range(12):
@@ -378,28 +389,35 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details):
         return {'axis_name':axis_name, 'axis_data':axis_data}    
 
 
-def _get_avg_demand_top_n_peaks(results, load, network_load, details):
-    axis_name = "Average Demand at Top " + details['n_peaks_selected'] + " Peaks"
+def _get_avg_demand_top_n_peaks(results, load, network_load, details, axis):
 
+    if axis == 'x_axis':
+        N_peaks = int(details['x_axis_n_peaks'])
+        one_peak_per_day_status = details['x_axis_one_peak_per_day']
+    if axis == 'y_axis':
+        N_peaks = int(details['y_axis_n_peaks'])
+        one_peak_per_day_status = details['y_axis_one_peak_per_day']
+
+    axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
+    
     load2 = load.copy()    
     load2['Month_Number'] = load2['Datetime'].dt.month
 
     load_filtered = load2.copy()
 
-    if details['spring_status'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([3,4,5])]
-    if details['summer_status'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([6,7,8])]
-    if details['autumn_status'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([9,10,11])]
-    if details['winter_status'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([1,2,12])]
+    if details['include_spring'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
+    if details['include_summer'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
+    if details['include_autumn'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
+    if details['include_winter'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
     
     del load_filtered['Month_Number']
     
 
-    if details['one_peak_per_day_status'] == False:
-        N_peaks = int(details['n_peaks_selected'])
+    if one_peak_per_day_status == False:
 
         del load_filtered['Datetime']
         load_filtered2=load_filtered.copy()
@@ -414,7 +432,6 @@ def _get_avg_demand_top_n_peaks(results, load, network_load, details):
         return {'axis_name':axis_name, 'axis_data':axis_data}
 
     else:
-        N_peaks = int(details['n_peaks_selected'])
 
         load_filtered2=load_filtered.copy()
         load_filtered2.set_index('Datetime',inplace=True)
@@ -431,22 +448,30 @@ def _get_avg_demand_top_n_peaks(results, load, network_load, details):
         return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
-def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details):
-    axis_name = "Average Demand at Top " + details['n_peaks_selected'] + " Monthly Peaks"
+def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details, axis):
+
+    if axis == 'x_axis':
+        N_peaks = int(details['x_axis_n_peaks'])
+        one_peak_per_day_status = details['x_axis_one_peak_per_day']
+    if axis == 'y_axis':
+        N_peaks = int(details['y_axis_n_peaks'])
+        one_peak_per_day_status = details['y_axis_one_peak_per_day']
+
+    axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
     load2 = load.copy()    
     load2['Month_Number'] = load2['Datetime'].dt.month
 
     load_filtered = load2.copy()
 
-    if details['spring_status'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([3,4,5])]
-    if details['summer_status'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([6,7,8])]
-    if details['autumn_status'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([9,10,11])]
-    if details['winter_status'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([1,2,12])]
+    if details['include_spring'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
+    if details['include_summer'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
+    if details['include_autumn'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
+    if details['include_winter'] == False:
+        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
 
     load_filtered_by_month = []
     for i in range(12):
@@ -454,8 +479,7 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details):
         del monthly_data['Month_Number']
         load_filtered_by_month.append(monthly_data)
 
-    if details['one_peak_per_day_status'] == False:
-        N_peaks = int(details['n_peaks_selected'])
+    if one_peak_per_day_status == False:
 
         selected_load = []
         for i in range(12):
@@ -473,7 +497,6 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details):
 
         return {'axis_name':axis_name, 'axis_data':axis_data}
     else:
-        N_peaks = int(details['n_peaks_selected'])
 
         selected_load = []
         for i in range(12):
@@ -494,7 +517,7 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details):
         return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
-def _get_avg_daily_kWh(results, load, network_load, details):
+def _get_avg_daily_kWh(results, load, network_load, details, axis):
     axis_name = "Average Daily kWh"
     axis_data = []
     load2 = load.copy()
@@ -509,7 +532,7 @@ def _get_avg_daily_kWh(results, load, network_load, details):
 
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
-def _get_avg_daily_peak(results, load, network_load, details):
+def _get_avg_daily_peak(results, load, network_load, details, axis):
     axis_name = "Average Daily Peaks"
     axis_data = []
     load2 = load.copy()
@@ -525,13 +548,13 @@ def _get_avg_daily_peak(results, load, network_load, details):
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
-def _get_bill(results, load, network_load, details):
+def _get_bill(results, load, network_load, details, axis):
     axis_name = "Bill (AUD)"
     axis_data = results['Bill']
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
-def _get_unitised_bill(results, load, network_load, details):
+def _get_unitised_bill(results, load, network_load, details, axis):
     axis_name = "Unitised Bill (kW)"
     axis_data = results['Bill']
     return {'axis_name':axis_name, 'axis_data':axis_data}
@@ -555,8 +578,8 @@ def dual_variable_chart(load_and_results_by_case, details):
 
     trace = []
     for case_name, results in results_by_case.items():
-        x_axis_data = _dual_variable_axis_methods[details['x_axis']](results,load_by_case[case_name],network_load, details)
-        y_axis_data = _dual_variable_axis_methods[details['y_axis']](results,load_by_case[case_name],network_load, details)
+        x_axis_data = _dual_variable_axis_methods[details['x_axis']](results,load_by_case[case_name],network_load, details, axis = 'x_axis')
+        y_axis_data = _dual_variable_axis_methods[details['y_axis']](results,load_by_case[case_name],network_load, details, axis = 'y_axis')
         
         dual_data = go.Scattergl(x=x_axis_data['axis_data'], y=y_axis_data['axis_data'], mode='markers', name=case_name)
         
