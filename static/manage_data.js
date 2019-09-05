@@ -29,9 +29,10 @@ var delete_data = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
+            alert_user_if_error(data);
             $('#delete_dialog').dialog('close');
             $('#message_dialog').dialog({modal: true})
-            $('#message_dialog p').text(data)
+            $('#message_dialog p').text(data['message'])
         }
     });
 };
@@ -47,6 +48,7 @@ var import_data = function(data_type, call_back){
             async: 'false',
             dataType:"json",
             success: function(data){
+                alert_user_if_error(data);
                 $('#import_dialog').dialog('close');
                 $('#message_dialog').dialog({modal: true});
                 $('#message_dialog p').text(data['message']);
@@ -66,10 +68,11 @@ var import_data = function(data_type, call_back){
             type : 'POST',
             async: 'false',
             dataType:"json",
-            success: function(message){
+            success: function(data){
+                alert_user_if_error(message)
                 $('#import_dialog').dialog('close');
                 $('#message_dialog').dialog({modal: true});
-                $('#message_dialog p').text(message);
+                $('#message_dialog p').text(data['message']);
             }
         });
     }
@@ -98,7 +101,8 @@ var restore_original_data_set = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
-            $('#message_dialog p').text(data)
+            alert_user_if_error(data)
+            $('#message_dialog p').text(data['message'])
         }
     });
 };

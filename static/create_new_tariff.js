@@ -52,8 +52,7 @@ var add_component = function(tariff_type_panel){
 }
 
 var component_templates = function(){
-    var daily = {'table_header': ['Unit', 'Value'],
-                 'table_rows': [['$/kWh', '1.0']]}
+    var daily = {'table_header': ['Unit', 'Value'], 'table_rows': [['$/kWh', '1.0']]}
     var templates = {'Daily': daily}
     return templates
 }

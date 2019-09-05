@@ -1,16 +1,16 @@
-<div class="col" style="width: 50%">
-    <div class="row" style="height: 12%">
+<div class="col input_col" style="width: 50%">
+    <div class="row" style="overflow: hidden;">
         <h4 style="margin: 0;">Filter tariffs</h4>
-        <hr style="width: 80%; float: left;">
+        <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
     </div>
-    <div class="row" style="height: 45%">
-        <div id="left_tariff_col"  class="col" style="width: 30%">
+    <div class="row" style="overflow: hidden;">
+        <div id="left_tariff_col"  class="col" style="width: 40%">
             <div class="label_stacked">Type:</div>
             <div class="label_stacked">State:</div>
             <div class="label_stacked">Provider:</div>
             <div class="label_stacked">Year:</div>
         </div>
-        <div id="middle_tariff_col" class="col" style="width: 50%">
+        <div id="middle_tariff_col" class="col" style="width: 40%">
             <select class="select_tariff_type tariff_filter">
                 <option selected="selected">Any</option>
             </select>
@@ -25,27 +25,27 @@
             </select>
         </div>
     </div>
-    <div class="row" style="height: 12%">
+    <div class="row" style="overflow: hidden;">
         <h4 style="margin: 0;">Select tariff</h4>
-        <hr style="width: 80%; float: left;">
+        <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
     </div>
-    <div class="row" style="height: 40%">
-        <div class="col" style="width: 30%">
+    <div class="row" style="overflow: hidden;">
+        <div class="col" style="width: 40%">
             <div class="label_stacked">Tariff:</div>
         </div>
-        <div class="col" style="width: 50%">
+        <div class="col" style="width: 40%">
             <select class="select_tariff">
                 <option selected="selected">None</option>
             </select>
         </div>
     </div>
 </div>
-<div class="col" style="width: 50%">
-    <div class="row" style="height: 12%">
+<div class="col input_col" style="width: 50%">
+    <div class="row" style="overflow: hidden;">
         <h4 style="margin: 0;">Tariff Details</h4>
-        <hr style="width: 80%; float: left;">
+        <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
     </div>
-    <div class="row" style="height: 45%">
+    <div class="row" style="overflow: hidden;">
         <div class="tariff_panel_header col" style="width: 30%;">
             <div class="name_label label_stacked">Name:&nbsp</div>
             <div class="type_label label_stacked">Type:&nbsp</div>
@@ -57,17 +57,17 @@
             <div class="state_value label_stacked tariff_label">N/A</div>
         </div>
     </div>
-    <div class="row" style="height: 12%">
+    <div class="row" style="overflow: hidden;">
         <h4 style="margin: 0;">Actions</h4>
-        <hr style="width: 80%; float: left;">
+        <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
     </div>
-    <div class="row" style="height: 40%">
+    <div class="row" style="overflow: hidden;">
         <button style="width: 80%; text-align: left; height: 3.25vh;"
-                onclick="get_default_case_name(event, this)">Apply tariff to load and create case</button>
+                onclick="check_that_a_case_can_be_added()">Apply tariff to load and create case</button>
         <button style="width: 80%; text-align: left; height: 3.25vh;"
-                onclick="delete_tariff(event, this)">Delete from active database</button>
+                onclick="delete_tariff(this)">Delete from active database</button>
         <button class="save_mod_button" style="width: 80%; text-align: left; height: 3.25vh;"
-                    onclick="get_tariff_then_save(event, this)">Save new version of tariff</button>
+                    onclick="check_there_are_parameters_to_save(this)">Save new version of tariff</button>
     </div>
 </div>
 

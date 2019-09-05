@@ -192,3 +192,10 @@ data/SGSC.feather
 data/~$SGSC.xlsx
 data/SGSC.xlsx
 data/load/SGSC.feather
+data/aemo_raw_cache/*
+*.pkl
+*.xlsx
+
+tda_log_file.txt
+tda_log_file.txt
+tda_log_file.txt

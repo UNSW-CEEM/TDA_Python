@@ -1,6 +1,5 @@
-var get_tariff_then_save = function(evt, div_that_got_clicked){
+var get_tariff_then_save = function(tariff_type_tab_id){
 
-    var tariff_type_tab_id = $(div_that_got_clicked).closest('[id]').attr('id');
     // Get the name of the selected tariff.
     var tariff_name = $('#' + tariff_type_tab_id + ' .select_tariff').val();
 
@@ -19,8 +18,10 @@ var get_tariff_then_save = function(evt, div_that_got_clicked){
             async: 'false',
             dataType:"json",
             // Call the function to display the selected tariffs info
-            success: function(data){get_tariff_details_from_user(data, tariff_type_tab_id);},
-            error: function(a,b,c){console.log(b); console.log(c);}
+            success: function(data){
+                alert_user_if_error(data);
+                get_tariff_details_from_user(data, tariff_type_tab_id);
+            }
         });
     } else {
       get_tariff_details_from_user({}, tariff_type_tab_id);
@@ -54,7 +55,15 @@ var get_tariff_details_from_user = function(current_tariff, tariff_type_tab_id){
     $( "#tariff_meta_details_editor" ).dialog({
         modal: true,
         width: 500,
-        buttons: {"Save": function(){save_tariff(current_tariff, tariff_type_tab_id);},
+        buttons: {"Save": function(){
+                                     if ($('#tariff_meta_details_editor .name').prop('value') != ''){
+                                        save_tariff(current_tariff, tariff_type_tab_id);
+                                     } else {
+                                        message = "Please provide a name for the tariff."
+                                        $("#message_dialog").dialog({ modal: true});
+                                        $("#message_dialog p").text(message)
+                                     }
+                            },
                   "Cancel": function(){$('#tariff_meta_details_editor').dialog('close');}}
     });
 }
@@ -84,8 +93,10 @@ var save_tariff = function(current_tariff, tariff_type_tab_id){
         async: 'false',
         dataType:"json",
         // Update tariff options so the user can select the new tariff.
-        success: function(){get_tariff_options(tariff_type_tab_id);},
-        error: function(){console.log("Update tariffs not called")}
+        success: function(data){
+            alert_user_if_error(data);
+            get_tariff_options(tariff_type_tab_id);
+        }
         });
 
     $('#tariff_meta_details_editor').dialog('close');
@@ -160,4 +171,22 @@ var get_tariff_table_data = function(parameter, table_name){
    // Consolidate table data into a single object to return.
    var table_data = {table_header: header, table_rows: rows_arr}
    return table_data
+}
+
+var check_there_are_parameters_to_save = function(div_that_got_clicked){
+    var tariff_type_tab_id = $(div_that_got_clicked).closest('[id]').attr('id');
+
+    if (tariff_type_tab_id == 'network_tariff_selection_panel'){
+        component_tab_to_check = '#NUOS'
+    } else {
+        component_tab_to_check = '#Retail'
+    }
+
+    if($(component_tab_to_check).is(':empty')){
+        message = "Please add at least one component to the tariff before attempting to save."
+        $("#message_dialog").dialog({ modal: true});
+        $("#message_dialog p").text(message)
+    } else (
+        get_tariff_then_save(tariff_type_tab_id)
+    )
 }

@@ -27,7 +27,8 @@ var reset_tariff_set = function(type, version){
         type : 'POST',
         async: 'false',
         dataType:"json",
-        success: function(){
+        success: function(data){
+            alert_user_if_error(data)
             if(type == 'Retail'){
                 reset_tariff_options('retail_tariff_selection_panel');
             } else {
@@ -42,6 +43,7 @@ var update_tariff_data_sets = function(){
         modal: true,
         buttons: {"OK": function(){$('#updating_tariffs').dialog('close')}}
     });
+    $('#updating_tariffs p').text("Please wait . . .")
     // Get the server to check the ceem tariff api for a more recent set of tariffs.
     $.ajax({
         url: '/update_tariffs',
@@ -50,7 +52,8 @@ var update_tariff_data_sets = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
-            $('#updating_tariffs p').text(data)
+            alert_user_if_error(data)
+            $('#updating_tariffs p').text(data['message'])
         }
     });
 };

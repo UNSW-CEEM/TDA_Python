@@ -77,7 +77,6 @@ var on_checkbox_change = function(){
 
 
 
-
 $('#single_variable_chart_type').on('change', function() {
     plot_results();
 });
@@ -150,6 +149,7 @@ var plot_single_variable_results = function(){
         async: 'false',
         dataType:"json",
         success: function(data){
+            alert_user_if_error(data)
             // Draw chart.
              // Define the chart layout
             var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
@@ -165,39 +165,41 @@ var plot_single_variable_results = function(){
 
 }
 
-
 var plot_dual_variable_results = function(){
-    // Get cases to plot
-    cases_to_plot = get_cases_to_plot_from_ui();
+    var case_details = {}
+
     // Get the load details
-    load_request = get_load_details_from_ui();
+    case_details['load_details'] = get_load_details_from_ui();
 
-
-    var n_peaks_selected = $('#n_peaks_select').children("option:selected").val();
-    var one_peak_per_day = $("#one_peak_per_day").is(':checked');
-    var spring_Ckb = $("#spring_check_box").is(':checked');
-    var summer_Ckb = $("#summer_check_box").is(':checked');
-    var autumn_Ckb = $("#autumn_check_box").is(':checked');
-    var winter_Ckb = $("#winter_check_box").is(':checked');
+    // Get cases to plot
+    case_details['case_names'] = get_cases_to_plot_from_ui();
 
     // Get the x and y axis for the dual variable chart.
-    var x_axis = $('#dual_variable_x_axis').children("option:selected").val();
-    var y_axis = $('#dual_variable_y_axis').children("option:selected").val();
+    case_details['x_axis'] = $('#dual_variable_x_axis').children("option:selected").val();
+    case_details['y_axis'] = $('#dual_variable_y_axis').children("option:selected").val();
 
-    // Package request details into a single object.
-    var case_details = {'x_axis': x_axis, 'y_axis': y_axis, 'case_names': cases_to_plot, 'load_details': load_request,
-                        'n_peaks_selected': n_peaks_selected, 'one_peak_per_day_status': one_peak_per_day,
-                        'spring_status': spring_Ckb, 'summer_status': summer_Ckb, 'autumn_status': autumn_Ckb, 'winter_status': winter_Ckb,}
+    // Get the season to include
+    case_details['include_spring'] = $('#include_spring').is(":checked");
+    case_details['include_autumn'] = $('#include_autumn').is(":checked");
+    case_details['include_winter'] = $('#include_winter').is(":checked");
+    case_details['include_summer'] = $('#include_summer').is(":checked");
+
+    // Get peak options
+    case_details['x_axis_n_peaks'] = $('#x_n_peaks_select').children("option:selected").text();
+    case_details['y_axis_n_peaks'] = $('#y_n_peaks_select').children("option:selected").text();
+    case_details['x_axis_one_peak_per_day'] = $('#x_one_peak_a_day').is(":checked");
+    case_details['y_axis_one_peak_per_day'] = $('#y_one_peak_a_day').is(":checked");
 
     // Get chart data
     $.ajax({
         url: '/get_dual_variable_chart',
         data: JSON.stringify(case_details),
-        contentType: 'application/json;charset=UTF-8',
+        contentType: 'application/json',
         type : 'POST',
         async: 'false',
         dataType:"json",
         success: function(data){
+
             // Define the chart layout
             var layout = {margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
             paper_bgcolor: '#EEEEEE',
@@ -206,11 +208,12 @@ var plot_dual_variable_results = function(){
             xaxis: data['layout'].xaxis,
             yaxis: data['layout'].yaxis};
 
+            alert_user_if_error(data)
+
             // Draw chart.
             Plotly.newPlot('dual_variable_result_chart', data['data'], layout, {responsive: true});
-        ;}
+        }
     });
-
 }
 
 
@@ -247,8 +250,39 @@ var plot_single_case_results = function(){
             showlegend: true,
             xaxis: data['layout'].xaxis,
             yaxis: data['layout'].yaxis};
+
+            alert_user_if_error(data)
             // Draw chart.
             Plotly.newPlot('single_case_result_chart', data['data'], layout, {responsive: true});
         ;}
     });
 }
+
+
+$('#plot_single_variable_results').on('change', function() {
+    plot_single_variable_results();
+});
+
+$('.x_peak_options').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#dual_variable_x_axis').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#dual_variable_y_axis').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('.season_option').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#single_case_result_chosen_case').on('change', function() {
+    plot_single_case_results();
+});
+
+$('#single_case_chart_type').on('change', function() {
+    plot_single_case_results();
+});

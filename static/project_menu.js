@@ -9,9 +9,19 @@ var load_project = function(){
             $('#message_dialog').dialog({modal: true});
             $('#message_dialog p').text(data['message']);
             $('#project_name').text(data['name']);
+            $('#case_list').empty();
+            clear_all_case_info();
+            $('#results_status_not_set').show()
+            $('#results_status_set').hide()
             $.each(data['cases'], function(i, case_name){
                 add_case_to_gui(case_name);
+                update_single_case_selector();
+                reset_case_info(case_name);
+                // Update menu bar status indicator
+                $('#results_status_not_set').hide()
+                $('#results_status_set').show()
             });
+            plot_results();
         }
     });
 };
@@ -23,9 +33,9 @@ var save_project = function(){
         type : 'POST',
         async: 'false',
         dataType:"json",
-        success: function(message){
+        success: function(data){
             $('#message_dialog').dialog({modal: true});
-            $('#message_dialog p').text(message);
+            $('#message_dialog p').text(data['message']);
 
         }
     });
@@ -38,10 +48,10 @@ var save_project_as = function(){
         type : 'POST',
         async: 'false',
         dataType:"json",
-        success: function(message){
+        success: function(data){
             $('#message_dialog').dialog({modal: true});
-            $('#message_dialog p').text(message);
-
+            $('#message_dialog p').text(data['message']);
+            $('#project_name').text(data['name']);
         }
     });
 };
@@ -53,9 +63,9 @@ var delete_project = function(){
         type : 'POST',
         async: 'false',
         dataType:"json",
-        success: function(message){
+        success: function(data){
             $('#message_dialog').dialog({modal: true});
-            $('#message_dialog p').text(message);
+            $('#message_dialog p').text(data['message']);
         }
     });
 };
@@ -68,9 +78,9 @@ var restart_tool = function(){
         async: 'false',
         dataType:"json",
         success: function(message){
-            $('#message_dialog').dialog({modal: true});
-            $('#message_dialog p').text(message);
+            window.onbeforeunload = function(){}
             location.reload();
+            window.onbeforeunload = closingCode;
         }
     });
 };

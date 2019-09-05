@@ -20,8 +20,10 @@ var get_tariff = function(tariff_type_panel){
             async: 'false',
             dataType:"json",
             // Call the function to display the selected tariffs info
-            success: function(data){display_tariff_info(tariff_type_panel, data);},
-            error: function(a,b,c){console.log(b); console.log(c);}
+            success: function(data){
+                alert_user_if_error(data);
+                display_tariff_info(tariff_type_panel, data);
+            }
         });
 
         //$(tariff_save_option).css('display', "none")
@@ -30,6 +32,17 @@ var get_tariff = function(tariff_type_panel){
     } else {
        // If the tariff option is None then reset the tariff panel to its default state
        reset_tariff_options(tariff_type_panel);
+    }
+
+    // Update status indicator on side menu.
+    var retail_tariff_name = $('#retail_tariff_selection_panel .select_tariff').val();
+    var network_tariff_name = $('#network_tariff_selection_panel .select_tariff').val();
+    if (retail_tariff_name != 'None' || network_tariff_name != 'None'){
+        $('#tariff_status_not_set').hide()
+        $('#tariff_status_set').show()
+    } else {
+        $('#tariff_status_not_set').show()
+        $('#tariff_status_set').hide()
     }
 }
 
@@ -61,7 +74,8 @@ var display_tariff_info = function(tariff_type_panel, tariff_data){
 
     // display info by nuos, duos etc
     for (var key in tariff_data['Parameters']) {
-        if (tariff_data['Parameters'].hasOwnProperty(key)) {
+        if (tariff_data['Parameters'].hasOwnProperty(key) &&
+            ['Retail', 'DUOS', 'TUOS', 'NUOS'].includes(key)) {
             display_tables(tariff_type_panel, key, tariff_data['Parameters'][key], true);
         }
     }
@@ -109,15 +123,15 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables,
             // Insert a button for adding a row to the table
             if (editable){
                 if (multi_row){
-                    $("<div class='{c}' style='width: 100%; height: 15%'><button onclick=\"user_add_row('{a}', '{b}', '{c}')\">&#10010;</button><button onclick=\"user_delete_table('{a}', '{c}')\">&#10006</button></div>"
+                    $("<div class='{c}' style='width: 100%; height: 5vh'><button onclick=\"user_add_row('{a}', '{b}', '{c}')\">&#10010;</button><button onclick=\"user_delete_table('{a}', '{c}')\">&#10006</button></div>"
                     .replace(/{a}/g, tariff_type_panel).replace(/{b}/g, parameter_type).replace(/{c}/g, table_name)).appendTo($("#" + parameter_type))
                 } else {
-                    $("<div class='{b}' style='width: 100%; height: 15%'><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
+                    $("<div class='{b}' style='width: 100%; height: 5vh'><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
                     .replace(/{a}/g, tariff_type_panel).replace(/{b}/g, table_name)).appendTo($("#" + parameter_type))
                 }
             } else {
                 // Spacer to keep layout consistent even if there is no button.
-                $("<div class='{}' style='width: 100%; height: 10%'></div>".replace(/{}/g, table_name)).appendTo($("#" + parameter_type))
+                $("<div class='{}' style='width: 100%; height: 3vh%'></div>".replace(/{}/g, table_name)).appendTo($("#" + parameter_type))
             }
 
         }
@@ -281,7 +295,6 @@ var columns_to_edit = function(table_data, multi_row){
 var nuos_equals_duos_plus_tuos = function(){
     var duos_tables = $('#DUOS .tariff_table')
     var tuos_tables = $('#TUOS .tariff_table')
-    var dtuos_tables = $('#DTUOS .tariff_table')
     var nuos_tables = $('#NUOS .tariff_table')
 
     $.each(duos_tables, function(i, duos_table){
@@ -291,7 +304,6 @@ var nuos_equals_duos_plus_tuos = function(){
             var duos_value = parseFloat($(duos_tables[i]).DataTable().cell(j, column_index).data());
             var tuos_value = parseFloat($(tuos_tables[i]).DataTable().cell(j, column_index).data());
             var new_value = (duos_value + tuos_value).toFixed(4)
-            $(dtuos_tables[i]).DataTable().cell(j, column_index).data(new_value);
             $(nuos_tables[i]).DataTable().cell(j, column_index).data(new_value);
         }
     });

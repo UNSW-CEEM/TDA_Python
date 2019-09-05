@@ -9,6 +9,9 @@ function displayPanels(evt, panelName) {
   }
 
   // Show the current tab, and add an "active" class to the button that opened the tab
-  $("#" + panelName).insertBefore($('.main_tab_content').first());
+  //$("#" + panelName).insertBefore($('.main_tab_content').first());
+  $(".main_tab_content").css('z-index', -1)
+  $("#" + panelName).css('z-index', 1)
   evt.currentTarget.className += " active";
+
 }

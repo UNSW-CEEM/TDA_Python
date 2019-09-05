@@ -45,7 +45,10 @@ var get_tariff_options =  function(parent_id){
         async: 'false',
         dataType:"json",
         // Call the function to update the drop downs with the new options.
-        success: function(data){update_tariff_options(parent_id, data, current_options);}
+        success: function(data){
+            alert_user_if_error(data);
+            update_tariff_options(parent_id, data['tariff_options'], current_options);
+            }
     });
 };
 
