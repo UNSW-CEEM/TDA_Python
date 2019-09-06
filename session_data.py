@@ -35,6 +35,7 @@ class InMemoryData:
         self.raw_data = {}  # Data as loaded from feather files, stored in dict on a file name basis
 
         self.downsample_data = {}
+        self.filter_missing_data = {}
         self.filtered_data = None  # Data after applying user specified filtering
         self.is_filtered = False  # Flag to indicate if filtering has been applied
 

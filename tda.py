@@ -116,20 +116,32 @@ def filtered_load_data():
 
     load_request = request.get_json()
 
-    print('hi the down sample option is {}'.format(load_request['sample_fraction']))
+    # print(load_request)
+    #
+    # print('hi the down sample option is {}'.format(load_request['sample_fraction']))
+    #
+    # print('hi the missing data filter is {}'.format(load_request['missing_data_limit']))
 
     # Get raw load data.
     if load_request['file_name'] not in current_session.raw_data:
         current_session.raw_data[load_request['file_name']] = \
             data_interface.get_load_table('data/load/', load_request['file_name'])
 
+    # Filter by missing data
+    raw_data = current_session.raw_data[load_request['file_name']]
+    missing_data_limit = load_request['missing_data_limit']
+
+    current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() < missing_data_limit]]
+
+    # print('current_session.filter_missing_data', current_session.filter_missing_data)
+
     # Down sample data randomly
-    number_of_households = len(current_session.raw_data[load_request['file_name']].columns)
+    number_of_households = len(current_session.filter_missing_data.columns)
     down_sample_percentage = load_request['sample_fraction']
     number_of_households_after_down_sample = math.ceil(number_of_households * down_sample_percentage)
 
     current_session.downsample_data = \
-        current_session.raw_data[load_request['file_name']].sample(n = number_of_households_after_down_sample, axis=1)
+        current_session.filter_missing_data.sample(n = number_of_households_after_down_sample, axis=1)
 
     # print('current_session.downsample_data', current_session.downsample_data)
 
@@ -141,7 +153,7 @@ def filtered_load_data():
     current_session.filtered_data = helper_functions.filter_load_data(
         current_session.downsample_data, current_session.filtered_demo_info)
 
-    print(current_session.is_filtered)
+    # print(current_session.is_filtered)
     if not current_session.is_filtered:
         current_session.filtered_data = current_session.raw_data[load_request['file_name']]
 
