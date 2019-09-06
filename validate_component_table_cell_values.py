@@ -1,3 +1,4 @@
+import math
 
 
 def validate_data(value, column_name):
@@ -7,7 +8,7 @@ def validate_data(value, column_name):
     return validation_message
 
 
-def time_window(given_string):
+def _time_intervals(given_string):
     given_string = given_string.replace(' ', '')
     for check in top_level_time_window_checks:
         check_answer = check(given_string)
@@ -29,6 +30,92 @@ def time_window(given_string):
                 if check_answer != '':
                     return check_answer
     return ''
+
+
+def _real_value(given_string):
+    try:
+        float(given_string)
+        if math.isinf(float(given_string)) | math.isnan(float(given_string)):
+            return 'Value should be a real number.'
+        else:
+            return ''
+    except:
+        return 'Could not convert the given value to a float.'
+
+
+def _boolean(given_string):
+    if given_string in ['True', 'False']:
+        return ''
+    else:
+        return 'Value should be True or False.'
+
+
+def _non_negative_int(given_string):
+    try:
+        int(given_string)
+        if int(given_string) < 0:
+            return 'Value should be an integer greater than or equal to zero.'
+        else:
+            return ''
+    except:
+        return 'Could not convert the given value to an integer.'
+
+
+def _real_non_negative_value(given_string):
+    try:
+        float(given_string)
+        if math.isinf(float(given_string)) | math.isnan(float(given_string)):
+            return 'Value should be a real number.'
+        else:
+            if float(given_string) >= 0:
+                return ''
+            else:
+                return 'Value should be greater than or equal to zero.'
+    except:
+        return 'Could not convert the given value to a float.'
+
+
+def _real_non_negative_value_allow_inf(given_string):
+    if given_string == 'inf':
+        return ''
+    else:
+        try:
+            float(given_string)
+            if math.isnan(float(given_string)):
+                return 'Value should not be nan.'
+            elif float(given_string) < 0:
+                return 'Value should be greater than or equal to zero.'
+            elif math.isinf(float(given_string)):
+                return 'Inf should be defined as \'inf\' (no quotes).'
+            else:
+                return ''
+        except:
+            return 'Could not convert the given value to a float.'
+
+
+def _list_of_ints(given_string):
+    if given_string[0] != '[' or given_string[-1] != ']':
+        return 'Inputs should be a list of integers enclosed in square brackets.'
+    if len(given_string) > 4 and ',' not in given_string:
+        return 'Integers should be comma separated.'
+    given_string = given_string.replace(' ', '')
+    for month in given_string[1:-1].split(','):
+        try:
+            int(month)
+            if '\'' in month or '\"' in month:
+                return 'Integers should not be quotes'
+            if int(month) < 1 or int(month) > 12:
+                return 'Each month should be an integer between 1 and 12.'
+        except:
+            return 'Each month should be an integer between 1 and 12.'
+    return ''
+
+
+validation_types = {"TimeIntervals": _time_intervals, 'Value': _real_value, "Weekend": _boolean, "Weekday": _boolean,
+                    "Based on Network Peak": _boolean, "Day Average": _boolean,
+                    "Demand Window Length": _non_negative_int, "Number of Peaks": _non_negative_int,
+                    "Min Demand (kW)": _real_non_negative_value, "Min Demand Charge ($)": _real_non_negative_value,
+                    "HighBound": _real_non_negative_value_allow_inf, "Month": _list_of_ints}
 
 
 def _elements_comma_separated(given_string):
@@ -166,4 +253,4 @@ def _minutes_int_less_than_60(time_string):
 time_string_checks = [_time_is_quoted, _hours_and_minutes_colon_separated,
                       _hours_int_less_than_24, _minutes_int_less_than_60]
 
-validation_types = {"TimeIntervals": time_window}
+
