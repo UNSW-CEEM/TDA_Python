@@ -21,8 +21,9 @@ from session_data import InMemoryData
 from openpyxl import Workbook
 import errors
 import logging
+import math
 
-enable_logging = True
+enable_logging = False
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
@@ -122,13 +123,23 @@ def filtered_load_data():
         current_session.raw_data[load_request['file_name']] = \
             data_interface.get_load_table('data/load/', load_request['file_name'])
 
+    # Down sample data randomly
+    number_of_households = len(current_session.raw_data[load_request['file_name']].columns)
+    down_sample_percentage = load_request['sample_fraction']
+    number_of_households_after_down_sample = math.ceil(number_of_households * down_sample_percentage)
+
+    current_session.downsample_data = \
+        current_session.raw_data[load_request['file_name']].sample(n = number_of_households_after_down_sample, axis=1)
+
+    # print('current_session.downsample_data', current_session.downsample_data)
+
     # Filter data
     demo_info_file_name = data_interface.find_loads_demographic_file(load_request['file_name'])
     demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
     current_session.filtered_demo_info, current_session.is_filtered = \
         helper_functions.filter_demo_info(demo_info, load_request['filter_options'])
     current_session.filtered_data = helper_functions.filter_load_data(
-        current_session.raw_data[load_request['file_name']], current_session.filtered_demo_info)
+        current_session.downsample_data, current_session.filtered_demo_info)
 
     print(current_session.is_filtered)
     if not current_session.is_filtered:
