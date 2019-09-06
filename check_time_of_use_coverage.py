@@ -3,6 +3,7 @@ import datetime
 
 def compile_set_of_overlapping_components_on_yearly_basis(tariff_component):
     overlaps = []
+    gaps = []
     for month in [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]:
         for week_time in ['Weekday', 'Weekend']:
             for hour in range(0, 24):
@@ -16,7 +17,8 @@ def compile_set_of_overlapping_components_on_yearly_basis(tariff_component):
                     elif len(active_components) < 1:
                         message = 'No component for Month: {}, Week time: {}, Half hour ending: {}:{}'.\
                             format(month, week_time, hour, half_hour)
-                        overlaps.append(message)
+                        gaps.append(message)
+    overlaps = '\n'.join(overlaps + gaps)
     return overlaps
 
 

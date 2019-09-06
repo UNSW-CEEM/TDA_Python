@@ -121,11 +121,23 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables,
             // Put contents in table.
             display_table_data(parameter_type, table_name, table_data, editable, multi_row, tariff_type_panel);
 
+            // If the tariff is time dependent then add the time of use analysis button.
+            if (table_data['table_header'].includes("TimeIntervals")){
+                var tou_analysis_button =  "<button onclick=\"launch_tou_analysis('{a}', '{b}', '{c}')\">&#x1F550;</button>"
+            } else {
+                var tou_analysis_button = ""
+            }
+
             // Insert a button for adding a row to the table
             if (editable){
                 if (multi_row){
-                    $("<div class='{c}' style='width: 100%; height: 5vh'><button onclick=\"user_add_row('{a}', '{b}', '{c}')\">&#10010;</button><button onclick=\"user_delete_table('{a}', '{c}')\">&#10006</button></div>"
-                    .replace(/{a}/g, tariff_type_panel).replace(/{b}/g, parameter_type).replace(/{c}/g, table_name)).appendTo($("#" + parameter_type))
+                    html_to_add = "<div class='{c}' style='width: 100%; height: 5vh'>" +
+                                    "<button onclick=\"user_add_row('{a}', '{b}', '{c}')\">&#10010;</button>" +
+                                    "<button onclick=\"user_delete_table('{a}', '{c}')\">&#10006;</button>" +
+                                    tou_analysis_button +
+                                  "</div>"
+                    html_to_add = html_to_add.replace(/{a}/g, tariff_type_panel).replace(/{b}/g, parameter_type).replace(/{c}/g, table_name)
+                    $(html_to_add).appendTo($("#" + parameter_type))
                 } else {
                     $("<div class='{b}' style='width: 100%; height: 5vh'><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
                     .replace(/{a}/g, tariff_type_panel).replace(/{b}/g, table_name)).appendTo($("#" + parameter_type))

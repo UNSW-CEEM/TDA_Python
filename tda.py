@@ -13,7 +13,7 @@ import format_case_for_export
 import format_chart_data_for_export
 import start_up_procedures
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
-    get_options_from_tariff_set
+    get_options_from_tariff_set, _add_dicts
 from make_price_charts import get_price_chart
 from wholesale_energy import get_wholesale_prices, calc_wholesale_energy_costs
 import pickle
@@ -22,6 +22,7 @@ from openpyxl import Workbook
 import errors
 import logging
 import validate_component_table_cell_values
+import check_time_of_use_coverage
 
 enable_logging = False
 
@@ -482,6 +483,16 @@ def get_active_tariff_version():
             tariffs = json.load(json_file)
             version = tariffs[0]['Version']
     return jsonify({'version': version})
+
+
+@app.route('/get_tou_analysis', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def get_tou_analysis():
+    # Get the demographic filtering options associated with a particular case.
+    tariff_table_data = request.get_json()
+    tariff_table_data = _add_dicts(tariff_table_data)
+    analysis_result = check_time_of_use_coverage.compile_set_of_overlapping_components_on_yearly_basis(tariff_table_data)
+    return jsonify({'message': analysis_result})
 
 
 @app.route('/delete_tariff', methods=['POST'])

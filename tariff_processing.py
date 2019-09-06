@@ -106,10 +106,12 @@ def _add_dicts(parameter):
         if 'Name' in component['table_header']:
             sub_dict = {}
             for row in component['table_rows']:
-                sub_dict[row[0]] = dict(zip(component['table_header'][1:], [_try_convert_to_object(el) for el in row[1:]]))
+                sub_dict[row[0]] = dict(zip(component['table_header'][1:],
+                                            [_try_convert_to_object(el) for el in row[1:]]))
             dict_set[component_name] = sub_dict
         else:
-            dict_set[component_name] = dict(zip(component['table_header'], [_try_convert_to_object(el) for el in component['table_rows'][0]]))
+            dict_set[component_name] = dict(zip(component['table_header'],
+                                                [_try_convert_to_object(el) for el in component['table_rows'][0]]))
     return dict_set
 
 
