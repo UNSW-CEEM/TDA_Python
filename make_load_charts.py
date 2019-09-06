@@ -13,7 +13,6 @@ def get_average_annual_profile(load, load_filtered, series_name):
 
     ### load mean
     load2 = load.copy()
-    load2.set_index('Datetime',inplace=True)
     
     # print(load2.head())
     load_mean = load2.mean(axis=1)
@@ -26,7 +25,6 @@ def get_average_annual_profile(load, load_filtered, series_name):
     # print('=================== filtered')
     # print(load_filtered.head())
     load_filtered2 = load_filtered.copy()
-    load_filtered2.set_index('Datetime',inplace=True)
 
     # print(load_filtered2.head())
     load_filtered_mean = load_filtered2.mean(axis=1)
@@ -45,15 +43,12 @@ def get_average_annual_profile(load, load_filtered, series_name):
 
 
 def get_daily_kWh_hist(load, load_filtered, series_name):
-    # print(load.head())
     load2 = load.copy()
-    del load2['Datetime']
     load_sum = load2.sum(axis=0)/2/365
     # print(load2.head())
 
     # print(load_filtered.head())
     load_filtered2 = load_filtered.copy()
-    del load_filtered2['Datetime']
     load_filtered_sum = load_filtered2.sum(axis=0)/2/365
     # print(load_filtered2.head())
 
@@ -78,7 +73,6 @@ def get_daily_average_profile(x):
 def get_daily_profiles(load):
     load2=load.copy()
     # print(load2.head())
-    del load2['Datetime']
     # print(load2.head())
 
     load_daily_average = load2.apply(get_daily_average_profile)
@@ -103,7 +97,6 @@ def get_daily_profiles(load):
 def get_daily_profile_interquartile(load):
     load2=load.copy()
     # print(load2.head())
-    del load2['Datetime']
     # print(load2.head())
 
     load_daily_average = load2.apply(get_daily_average_profile)
@@ -135,7 +128,6 @@ def get_daily_profile_interquartile(load):
 
 def get_average_load_duration_curve(load):
     load2=load.copy()
-    load2.drop(['Datetime'], axis=1, inplace=True)
     
     load_average = load2.mean(axis=1)
     # print(load_average.head())
@@ -156,7 +148,6 @@ def get_average_load_duration_curve(load):
 def get_average_peak_day_profile(load):
 
     load2=load.copy()
-    load2.set_index('Datetime',inplace=True)
         
     load_average = load2.mean(axis=1)
     # print(load_average.head())
@@ -193,7 +184,6 @@ def get_average_peak_day_profile(load):
 def get_monthly_average_kWh(load):
 
     load2=load.copy()
-    load2.set_index('Datetime',inplace=True)
         
     load_average = load2.mean(axis=1)
     # print(load_average.head())
@@ -219,7 +209,6 @@ def get_monthly_average_kWh(load):
 def get_seasonal_daily_pattern(load):
 
     load2=load.copy()
-    load2.set_index('Datetime',inplace=True)
         
     load_average = load2.mean(axis=1)
     # print(load_average.head())
