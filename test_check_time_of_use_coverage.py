@@ -18,9 +18,18 @@ class TestCompilingOverlaps(unittest.TestCase):
                                        'Weekend': True
                                        }
                        }
-        expect_answer = ['first_comp T1', 'second_comp T1']
+        expect_answer = \
+        '''Overlaps on Month: 1, Week time: Weekday, Half hour ending: 11:30 are, first_comp T1, second_comp T1
+Overlaps on Month: 1, Week time: Weekday, Half hour ending: 12:00 are, first_comp T1, second_comp T1
+Overlaps on Month: 1, Week time: Weekend, Half hour ending: 11:30 are, first_comp T1, second_comp T1
+Overlaps on Month: 1, Week time: Weekend, Half hour ending: 12:00 are, first_comp T1, second_comp T1
+Overlaps on Month: 2, Week time: Weekday, Half hour ending: 11:30 are, first_comp T1, second_comp T1
+Overlaps on Month: 2, Week time: Weekday, Half hour ending: 12:00 are, first_comp T1, second_comp T1
+Overlaps on Month: 2, Week time: Weekend, Half hour ending: 11:30 are, first_comp T1, second_comp T1
+Overlaps on Month: 2, Week time: Weekend, Half hour ending: 12:00 are, first_comp T1, second_comp T1
+No gaps in the component time intervals were found.'''
         answer = check_time_of_use_coverage.compile_set_of_overlapping_components_on_yearly_basis(test_tariff)
-        self.assertListEqual(answer, expect_answer)
+        self.assertEqual(answer, expect_answer)
 
 
 class TestCheckForOverlap(unittest.TestCase):
@@ -42,7 +51,7 @@ class TestCheckForOverlap(unittest.TestCase):
                        }
         expect_answer = ['first_comp T1', 'second_comp T1']
         answer = check_time_of_use_coverage._overlapping_components(test_tariff, month=1, hour=11,
-                                                                   minute=30, week_time='Weekend')
+                                                                    minute=30, week_time='Weekend')
         self.assertListEqual(answer, expect_answer)
 
     def testSimpleOverlappingWithinComponent(self):

@@ -259,38 +259,44 @@ class TestTimeWindowChecks(unittest.TestCase):
 
     def testFailIfMinuteStringALetter(self):
         test_string = "\'00:a\'"
-        expect_answer = 'The minute provided is not an integer between 0 and 59.'
-        answer = validate_component_table_cell_values._minutes_int_less_than_60(test_string)
+        expect_answer = 'The minute provided is not 0 or 30 min.'
+        answer = validate_component_table_cell_values._minutes_int_0_or_30(test_string)
         self.assertEqual(answer, expect_answer)
 
     def testFailIfMinuteStringNegative(self):
-        test_string = "\'11:-1\'"
-        expect_answer = 'The minute provided is not an integer between 0 and 59.'
-        answer = validate_component_table_cell_values._minutes_int_less_than_60(test_string)
+        test_string = "\'11:-30\'"
+        expect_answer = 'The minute provided is not 0 or 30 min.'
+        answer = validate_component_table_cell_values._minutes_int_0_or_30(test_string)
         self.assertEqual(answer, expect_answer)
 
     def testFailIfMinuteString60(self):
         test_string = "\'23:60\'"
-        expect_answer = 'The minute provided is not an integer between 0 and 59.'
-        answer = validate_component_table_cell_values._minutes_int_less_than_60(test_string)
+        expect_answer = 'The minute provided is not 0 or 30 min.'
+        answer = validate_component_table_cell_values._minutes_int_0_or_30(test_string)
         self.assertEqual(answer, expect_answer)
 
-    def testPassIfMinuteString59(self):
-        test_string = "\'23:59\'"
+    def testFailIfMinuteString3(self):
+        test_string = "\'23:3\'"
+        expect_answer = 'The minute provided is not 0 or 30 min.'
+        answer = validate_component_table_cell_values._minutes_int_0_or_30(test_string)
+        self.assertEqual(answer, expect_answer)
+
+    def testPassIfMinuteString30(self):
+        test_string = "\'23:30\'"
         expect_answer = ''
-        answer = validate_component_table_cell_values._minutes_int_less_than_60(test_string)
+        answer = validate_component_table_cell_values._minutes_int_0_or_30(test_string)
+        self.assertEqual(answer, expect_answer)
+
+    def testPassIfMinuteString0(self):
+        test_string = "\'00:0\'"
+        expect_answer = ''
+        answer = validate_component_table_cell_values._minutes_int_0_or_30(test_string)
         self.assertEqual(answer, expect_answer)
 
     def testPassIfMinuteString00(self):
         test_string = "\'00:00\'"
         expect_answer = ''
-        answer = validate_component_table_cell_values._minutes_int_less_than_60(test_string)
-        self.assertEqual(answer, expect_answer)
-
-    def testPassIfMinuteString12(self):
-        test_string = "\'12:12\'"
-        expect_answer = ''
-        answer = validate_component_table_cell_values._minutes_int_less_than_60(test_string)
+        answer = validate_component_table_cell_values._minutes_int_0_or_30(test_string)
         self.assertEqual(answer, expect_answer)
 
 

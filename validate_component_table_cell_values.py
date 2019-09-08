@@ -242,15 +242,15 @@ def _hours_int_less_than_24(time_string):
         return 'The hour provided is not an integer between 0 and 23.'
 
 
-def _minutes_int_less_than_60(time_string):
+def _minutes_int_0_or_30(time_string):
     hour_string = time_string.strip()[1:-1].split(':')[1]
-    if hour_string.isdigit() and 0 <= int(hour_string) <= 59:
+    if hour_string.isdigit() and int(hour_string) in [0, 30]:
         return ''
     else:
-        return 'The minute provided is not an integer between 0 and 59.'
+        return 'The minute provided is not 0 or 30 min.'
 
 
 time_string_checks = [_time_is_quoted, _hours_and_minutes_colon_separated,
-                      _hours_int_less_than_24, _minutes_int_less_than_60]
+                      _hours_int_less_than_24, _minutes_int_0_or_30]
 
 

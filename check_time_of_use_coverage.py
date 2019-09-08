@@ -11,17 +11,17 @@ def compile_set_of_overlapping_components_on_yearly_basis(tariff_component):
                     active_components = _overlapping_components(tariff_component, month, hour, half_hour, week_time)
                     if len(active_components) > 1:
                         message = 'Overlaps on Month: {}, Week time: {}, Half hour ending: {}:{} are'.\
-                            format(month, week_time, hour, half_hour)
+                            format(month, week_time, str(hour).zfill(2), str(half_hour).zfill(2))
                         overlaps.append(', '.join([message] + active_components))
                     elif len(active_components) < 1:
                         message = 'No component for Month: {}, Week time: {}, Half hour ending: {}:{}'.\
-                            format(month, week_time, hour, half_hour)
+                            format(month, week_time, str(hour).zfill(2), str(half_hour).zfill(2))
                         gaps.append(message)
     if len(overlaps) == 0:
         overlaps = ['No overlapping components were found in the tariff.']
     if len(gaps) == 0:
         gaps = ['No gaps in the component time intervals were found.']
-    overlaps = '<br />'.join(overlaps + gaps)
+    overlaps = '\n'.join(overlaps + gaps)
     return overlaps
 
 
@@ -41,7 +41,7 @@ def _is_right_time(interval, hour, minute):
     start_time = _interpret_user_time_string(interval[0])
     end_time = _interpret_user_time_string(interval[1])
     now_time = datetime.time(hour=hour, minute=minute)
-    if start_time <= end_time:
+    if start_time < end_time:
         right_time = start_time < now_time <= end_time
     else:
         right_time = (now_time > start_time) or (now_time <= end_time)
