@@ -95,7 +95,8 @@ var save_tariff = function(current_tariff, tariff_type_tab_id){
         // Update tariff options so the user can select the new tariff.
         success: function(data){
             alert_user_if_error(data);
-            get_tariff_options(tariff_type_tab_id);
+            set_save_button_to_normal_state(tariff_type_tab_id);
+            get_tariff_options(tariff_type_tab_id, current_tariff['Name']);
         }
         });
 
@@ -189,4 +190,8 @@ var check_there_are_parameters_to_save = function(div_that_got_clicked){
     } else (
         get_tariff_then_save(tariff_type_tab_id)
     )
+}
+
+var set_save_button_to_normal_state = function(tariff_type_tab_id){
+    $('#' + tariff_type_tab_id + ' .save_mod_button').css('color', 'black');
 }

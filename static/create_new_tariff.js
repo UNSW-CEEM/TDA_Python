@@ -48,7 +48,7 @@ var add_component = function(tariff_type_panel){
         var parameter_type_id = $(parameter_type).prop('id')
         display_tables(tariff_type_panel, parameter_type_id, to_insert, true, false);
     })
-
+    set_save_button_to_alert_state(tariff_type_panel);
 }
 
 var component_templates = function(){

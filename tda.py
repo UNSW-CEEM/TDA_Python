@@ -13,8 +13,7 @@ import format_case_for_export
 import format_chart_data_for_export
 import start_up_procedures
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
-    get_options_from_tariff_set, strip_tariff_to_single_component
-
+    get_options_from_tariff_set, _make_dict
 from make_price_charts import get_price_chart
 from wholesale_energy import get_wholesale_prices, calc_wholesale_energy_costs
 import pickle
@@ -22,6 +21,8 @@ from session_data import InMemoryData
 from openpyxl import Workbook
 import errors
 import logging
+import validate_component_table_cell_values
+import check_time_of_use_coverage
 
 enable_logging = False
 
@@ -459,6 +460,33 @@ def save_tariff():
     return jsonify({'message': 'done'})
 
 
+@app.route('/get_active_tariff_version', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def get_active_tariff_version():
+    # Get the demographic filtering options associated with a particular case.
+    details = request.get_json()
+    tariff_type = details['type']
+    if tariff_type == 'Network':
+        with open('data/NetworkTariffs.json', 'rt') as json_file:
+            tariffs = json.load(json_file)
+            version = tariffs[0]['Version']
+    else:
+        with open('data/RetailTariffs.json', 'rt') as json_file:
+            tariffs = json.load(json_file)
+            version = tariffs[0]['Version']
+    return jsonify({'version': version})
+
+
+@app.route('/get_tou_analysis', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def get_tou_analysis():
+    # Get the demographic filtering options associated with a particular case.
+    tariff_table_data = request.get_json()
+    tariff_table_data = _make_dict(tariff_table_data)
+    analysis_result = check_time_of_use_coverage.compile_set_of_overlapping_components_on_yearly_basis(tariff_table_data)
+    return jsonify({'message': analysis_result})
+
+
 @app.route('/delete_tariff', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def delete_tariff():
@@ -471,7 +499,7 @@ def delete_tariff():
 
     for file_type in ['', 'UserDefined']:
         with open('data/{}{}.json'.format(file_type, file_name), 'rt') as json_file:
-            if file_type == '' and file_name == 'NetworkTariffs':
+            if file_type == '':
                 tariffs = json.load(json_file)
                 for i, tariff in enumerate(tariffs[0]['Tariffs']):
                     if request_details['tariff_name'] == tariff['Name']:
@@ -608,6 +636,16 @@ def export_chart_data():
     elif request_details['export_type'] == 'clipboard':
         export_data.to_clipboard(index=False)
     return jsonify({'message': "Your export is done!"})
+
+
+@app.route('/validate_tariff_cell', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def validate_tariff_cell():
+    request_details = request.get_json()
+    cell_value = request_details['cell_value']
+    column_name = request_details['column_name']
+    message = validate_component_table_cell_values.validate_data(cell_value, column_name)
+    return jsonify({'message': message})
 
 
 @app.route('/restart_tool', methods=['POST'])
