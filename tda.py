@@ -13,7 +13,7 @@ import format_case_for_export
 import format_chart_data_for_export
 import start_up_procedures
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
-    get_options_from_tariff_set, _add_dicts
+    get_options_from_tariff_set, _make_dict
 from make_price_charts import get_price_chart
 from wholesale_energy import get_wholesale_prices, calc_wholesale_energy_costs
 import pickle
@@ -490,7 +490,7 @@ def get_active_tariff_version():
 def get_tou_analysis():
     # Get the demographic filtering options associated with a particular case.
     tariff_table_data = request.get_json()
-    tariff_table_data = _add_dicts(tariff_table_data)
+    tariff_table_data = _make_dict(tariff_table_data)
     analysis_result = check_time_of_use_coverage.compile_set_of_overlapping_components_on_yearly_basis(tariff_table_data)
     return jsonify({'message': analysis_result})
 

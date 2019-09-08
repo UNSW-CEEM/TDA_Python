@@ -13,8 +13,8 @@ var launch_tou_analysis = function(tariff_type_panel, parameter_type, table_name
         // Call the function to display the selected tariffs info
         success: function(data){
             alert_user_if_error(data);
-            $('#message_dialog').dialogue({modal: true});
-            $('#message_dialog p').text(data['message'])
+            $('#message_dialog').dialog({modal: true});
+            $('#message_dialog p').html(data['message'])
         }
     });
 }

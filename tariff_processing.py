@@ -103,16 +103,20 @@ def _contains_sub_dict(test_dict):
 def _add_dicts(parameter):
     dict_set = {}
     for component_name, component in parameter.items():
-        if 'Name' in component['table_header']:
-            sub_dict = {}
-            for row in component['table_rows']:
-                sub_dict[row[0]] = dict(zip(component['table_header'][1:],
-                                            [_try_convert_to_object(el) for el in row[1:]]))
-            dict_set[component_name] = sub_dict
-        else:
-            dict_set[component_name] = dict(zip(component['table_header'],
-                                                [_try_convert_to_object(el) for el in component['table_rows'][0]]))
+        dict_set[component_name] = _make_dict(component)
     return dict_set
+
+
+def _make_dict(component):
+    if 'Name' in component['table_header']:
+        sub_dict = {}
+        for row in component['table_rows']:
+            sub_dict[row[0]] = dict(zip(component['table_header'][1:],
+                                        [_try_convert_to_object(el) for el in row[1:]]))
+    else:
+        sub_dict = dict(zip(component['table_header'],
+                                            [_try_convert_to_object(el) for el in component['table_rows'][0]]))
+    return sub_dict
 
 
 def _try_convert_to_object(string):

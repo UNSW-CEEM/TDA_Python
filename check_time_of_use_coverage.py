@@ -9,7 +9,6 @@ def compile_set_of_overlapping_components_on_yearly_basis(tariff_component):
             for hour in range(0, 24):
                 for half_hour in [0, 30]:
                     active_components = _overlapping_components(tariff_component, month, hour, half_hour, week_time)
-
                     if len(active_components) > 1:
                         message = 'Overlaps on Month: {}, Week time: {}, Half hour ending: {}:{} are'.\
                             format(month, week_time, hour, half_hour)
@@ -18,7 +17,11 @@ def compile_set_of_overlapping_components_on_yearly_basis(tariff_component):
                         message = 'No component for Month: {}, Week time: {}, Half hour ending: {}:{}'.\
                             format(month, week_time, hour, half_hour)
                         gaps.append(message)
-    overlaps = '\n'.join(overlaps + gaps)
+    if len(overlaps) == 0:
+        overlaps = ['No overlapping components were found in the tariff.']
+    if len(gaps) == 0:
+        gaps = ['No gaps in the component time intervals were found.']
+    overlaps = '<br />'.join(overlaps + gaps)
     return overlaps
 
 
