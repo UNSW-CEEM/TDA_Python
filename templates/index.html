@@ -60,10 +60,17 @@
 
       select {
         height: 3.0vh;
-        margin-bottom: 1.2vh;
+        margin-bottom: 1.25vh;
         width: 100%;
         font-size: 1.75vh;
         max-width: 200px;
+      }
+
+      .label_stacked {
+        height: 2.25vh;
+        padding-bottom: 1.625vh;
+        padding-top: 0.375vh;
+        width: 100%;
       }
 
       button {
@@ -94,13 +101,6 @@
         float: left;
       }
 
-      .label_stacked {
-        height: 2.25vh;
-        margin-bottom: 1.625vh;
-        padding-top: 0.375vh;
-        width: 100%;
-      }
-
       .input_stacked {
         height: 3.0vh;
         margin-bottom: 1.3vh;
@@ -122,7 +122,7 @@
 
         select {
             height: 24px;
-            margin-bottom: 10.4px;
+            margin-bottom: 10px;
         }
 
         .input_stacked {
@@ -140,7 +140,7 @@
 
         .label_stacked {
             height: 18px;
-            margin-bottom: 13px;
+            padding-bottom: 13px;
             padding-top: 3px;
         }
 
@@ -740,59 +740,8 @@
                             <hr style="width: 100%; float: left; margin-bottom: 1.5vh;">
                         </div>
                         <div id="demograhphic_selection" class="row" style="overflow: hidden">
-                            <div id="demo_label_col" class="col" style="width: 75%;">
-                                <div id="demo_label_0" class="label_stacked"></div>
-                                <div id="demo_label_1"  class="label_stacked"></div>
-                                <div id="demo_label_2" class="label_stacked"></div>
-                                <div id="demo_label_3"  class="label_stacked"></div>
-                                <div id="demo_label_4"  class="label_stacked"></div>
-                                <div id="demo_label_5" class="label_stacked"></div>
-                                <div id="demo_label_6" class="label_stacked"></div>
-                                <div id="demo_label_7" class="label_stacked"></div>
-                                <div id="demo_label_8"  class="label_stacked"></div>
-                                <div id="demo_label_9"  class="label_stacked"></div>
-                            </div>
+                            <div id="demo_label_col" class="col" style="width: 75%;"></div>
                             <div id="demo_selector_col" class="col" style="width: 25%;">
-                                <div id="demo_0" class="demo_select_container">
-                                    <select  id="demo_select_0" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_0').hide() </script>
-                                <div id="demo_1" class="demo_select_container">
-                                    <select class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_1').hide() </script>
-                                <div id="demo_2" class="demo_select_container">
-                                    <select  id="demo_select_2" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_2').hide() </script>
-                                <div id="demo_3" class="demo_select_container">
-                                    <select  id="demo_select_3" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_3').hide() </script>
-                                <div id="demo_4" class="demo_select_container">
-                                    <select  id="demo_select_4" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_4').hide() </script>
-                                <div id="demo_5" class="demo_select_container">
-                                    <select  id="demo_select_5" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_5').hide() </script>
-                                <div id="demo_6" class="demo_select_container">
-                                    <select  id="demo_select_6" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_6').hide() </script>
-                                <div id="demo_7" class="demo_select_container">
-                                    <select  id="demo_select_7" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_7').hide() </script>
-                                <div id="demo_8" class="demo_select_container">
-                                    <select  id="demo_select_8" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_8').hide() </script>
-                                <div id="demo_9" class="demo_select_container">
-                                    <select  id="demo_select_9" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_9').hide() </script>
                             </div>
                         </div>
                     </div>
@@ -959,7 +908,6 @@
                             <select id="dual_variable_x_axis" style="width: 80%">
                                 <option value="Annual_kWh">Annual kWh</option>
                                 <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
-
                                 <option value="avg_demand_n_monthly_peaks">Average Demand at 'N' Network Monthly Peaks</option>
                                 <option value="avg_demand_top_n_peaks">Average Demand at Top 'N' Peaks</option>
                                 <option value="avg_demand_top_n_monthly_peaks">Average Demand at Top 'N' Monthly Peaks</option>
@@ -967,7 +915,6 @@
                                 <option value="avg_daily_peak">Average Daily Peak</option>
                                 <option value="Bill">Bill ($/year)</option>
                                 <option value="unitised_bill_kW">Unitised Bill (kW)</option>
-
                             </select>
                             <script src="static/plot_results.js"></script>
                             <br/>

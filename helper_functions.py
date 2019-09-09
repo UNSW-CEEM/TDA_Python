@@ -17,9 +17,8 @@ def get_unique_default_case_name(names_in_use):
 
 
 def get_demographic_options_from_demo_file(demo_file):
-    n = len(demo_file.columns) if len(demo_file.columns) < 11 else 11
-    actual_names = list(demo_file.columns[1:n])
-    display_names = list(demo_file.columns[1:n])
+    actual_names = list(demo_file.columns[1:])
+    display_names = list(demo_file.columns[1:])
     options = {}
     display_names_dict = {}
     for name, display_name in zip(actual_names, display_names):

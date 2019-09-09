@@ -1,31 +1,29 @@
 var add_demo_selectors = function(response){
     var arraylength = response.actual_names.length
 
-    // Hide existing selectors and remove content
-    for (var i = 0; i < 10; i++){
-        selector_id = "demo_select_" + i.toString()
-        div_id = "demo_" + i.toString()
-        label_id = "demo_label_" + i.toString()
-        var label = document.getElementById(label_id);
-        $('#'+div_id).hide()
-        $('#'+selector_id).find('option').remove()
-        label.innerHTML = ''
+    // Delete the existing selectors and remove content
+    $("#demo_label_col").empty();
+    $("#demo_selector_col").empty();
+
+
+    // Add the required selectors and add the content to them.
+    for (var i = 0; i < arraylength; i++){
+        var name = response.display_names[response.actual_names[i]]
+        $("#demo_label_col").append("<div class=\"label_stacked\">{}</div>".replace(/{}/g, name))
+        $("#demo_selector_col").append("<select id=\"{}\" class=\"select_demo\"></select>".replace(/{}/g, name))
+        $.each(response.options[response.actual_names[i]], function(i, obj){
+                $('#'+name).append($('<option>').text(obj));
+        });
+        $('#'+name).val('All')
     }
 
-    // Show the required selectors and add the new content to them.
-    for (var i = 0; i < arraylength; i++){
-        selector_id = "demo_select_" + i.toString()
-        label_id = "demo_label_" + i.toString()
-        div_id = "demo_" + i.toString()
-        $.each(response.options[response.actual_names[i]], function(i, obj){
-                $('#'+selector_id).append($('<option>').text(obj));
-        });
-        var label = document.getElementById(label_id);
-        $('#'+selector_id).val('All')
-        $('#'+div_id).show()
-        var name = response.display_names[response.actual_names[i]]
-        label.innerHTML = name
-    }
+    // Bind plotting of load to newly created selectors.
+    $('.select_demo').on('change', function() {
+        plot_filtered_load();
+        // Update menu bat status indicator
+        $('#tech_status_not_set').show()
+        $('#tech_status_set').hide()
+    });
 }
 
 var get_down_sample_setting = function(){
@@ -78,15 +76,9 @@ var get_load_details_from_ui = function(){
 
     var filter_options = {}
 
-    for (var i = 0; i < 10; i++){
-        selector_id = "demo_select_" + i.toString()
-        label_id = "demo_label_" + i.toString()
-        var label = document.getElementById(label_id);
-        var values = $('#' + selector_id).val();
-        if (label.innerHTML !== ''){
-                filter_options[label.innerHTML] = values;
-                }
-    }
+    $.each($(".select_demo"), function(i, selector){
+        filter_options[$(selector).attr('id')] = $(selector).val();
+    });
 
     var file_name = $('#select').children("option:selected").val();
 
@@ -158,18 +150,6 @@ var print_n_users = function(n_users){
     label.innerHTML = 'No. of users: ' + n_users ;
 }
 
-var make_loading_popup = function(){
-  let params = `scrollbars=no, resizable=no, status=no, location=no, toolbar=no, menubar=no,
-  width=300,height=50,left=500,top=500`;
-  let newWindow = open(',', 'example', params)
-  newWindow.focus();
-
-  newWindow.onload = function() {
-    let html = `<div style="font-size:20px, background-color: #EEEEEE; text-align: center;">Please Wait! Loading data.</div>`;
-    newWindow.document.write(html);
-  };
-  return newWindow
-}
 
 var perform_plot_load_actions = function(){
     var file_name = $('#select').children("option:selected").val();
@@ -200,13 +180,6 @@ $('.down_sample_option').on('change', function() {
 
 $('.missing_data_limit').on('change', function() {
     perform_plot_load_actions();
-    // Update menu bat status indicator
-    $('#tech_status_not_set').show()
-    $('#tech_status_set').hide()
-});
-
-$('.select_demo').on('change', function() {
-    plot_filtered_load();
     // Update menu bat status indicator
     $('#tech_status_not_set').show()
     $('#tech_status_set').hide()
