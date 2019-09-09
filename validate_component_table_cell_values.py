@@ -234,12 +234,18 @@ def _hours_and_minutes_colon_separated(time_string):
         return 'Hours and minutes should be colon separated.'
 
 
-def _hours_int_less_than_24(time_string):
+def _hours_int_less_than_or_equal_to_24(time_string):
     hour_string = time_string.strip()[1:-1].split(':')[0]
+    minute_string = time_string.strip()[1:-1].split(':')[1]
     if hour_string.isdigit() and 0 <= int(hour_string) <= 23:
         return ''
+    elif hour_string.isdigit() and int(hour_string) == 24:
+        if minute_string in ['0', '00']:
+            return ''
+        else:
+            return 'The max input time should be 24:00.'
     else:
-        return 'The hour provided is not an integer between 0 and 23.'
+        return 'The hour provided is not an integer between 0 and 24.'
 
 
 def _minutes_int_0_or_30(time_string):
@@ -251,6 +257,6 @@ def _minutes_int_0_or_30(time_string):
 
 
 time_string_checks = [_time_is_quoted, _hours_and_minutes_colon_separated,
-                      _hours_int_less_than_24, _minutes_int_0_or_30]
+                      _minutes_int_0_or_30, _hours_int_less_than_or_equal_to_24]
 
 

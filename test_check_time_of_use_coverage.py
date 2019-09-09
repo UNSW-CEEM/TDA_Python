@@ -151,3 +151,9 @@ class TestInterpretUserTimeString(unittest.TestCase):
         answer = check_time_of_use_coverage._interpret_user_time_string(test_string)
         self.assertEqual(answer, expected_answer)
 
+    def test2400WrapsTo0000(self):
+        test_string = '24:00'
+        expected_answer = datetime.time(hour=0, minute=0)
+        answer = check_time_of_use_coverage._interpret_user_time_string(test_string)
+        self.assertEqual(answer, expected_answer)
+

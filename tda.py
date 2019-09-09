@@ -321,7 +321,6 @@ def get_dual_variable_chart():
     return dual_variable_chart(load_and_results_to_plot, details)
 
 
-
 @app.route('/get_single_case_chart', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def get_single_case_chart():

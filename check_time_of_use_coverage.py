@@ -49,5 +49,7 @@ def _is_right_time(interval, hour, minute):
 
 
 def _interpret_user_time_string(string):
+    if string.split(':')[0] == '24':
+        string = string.replace('24', '00')
     time_object = datetime.datetime.strptime(string, '%H:%M').time()
     return time_object

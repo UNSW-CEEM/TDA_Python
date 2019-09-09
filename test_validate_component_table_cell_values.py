@@ -47,7 +47,7 @@ class TestValidateTimeWindows(unittest.TestCase):
 
     def testFailTimeWindowTwoSlotSecondTimeWindowOK(self):
         test_string = "{\'T1\' : ['22:00', '23:00'], \'T1\' : ['22:00', '25:00']}"
-        expect_answer = 'The hour provided is not an integer between 0 and 23.'
+        expect_answer = 'The hour provided is not an integer between 0 and 24.'
         answer = validate_component_table_cell_values._time_intervals(test_string)
         self.assertEqual(answer, expect_answer)
 
@@ -223,38 +223,44 @@ class TestTimeWindowChecks(unittest.TestCase):
 
     def testFailIfHourStringALetter(self):
         test_string = "\'a:00\'"
-        expect_answer = 'The hour provided is not an integer between 0 and 23.'
-        answer = validate_component_table_cell_values._hours_int_less_than_24(test_string)
+        expect_answer = 'The hour provided is not an integer between 0 and 24.'
+        answer = validate_component_table_cell_values._hours_int_less_than_or_equal_to_24(test_string)
         self.assertEqual(answer, expect_answer)
 
     def testFailIfHourStringNegative(self):
         test_string = "\'-1:00\'"
-        expect_answer = 'The hour provided is not an integer between 0 and 23.'
-        answer = validate_component_table_cell_values._hours_int_less_than_24(test_string)
+        expect_answer = 'The hour provided is not an integer between 0 and 24.'
+        answer = validate_component_table_cell_values._hours_int_less_than_or_equal_to_24(test_string)
         self.assertEqual(answer, expect_answer)
 
-    def testFailIfHourString24(self):
+    def testPassIfHourString24(self):
         test_string = "\'24:00\'"
-        expect_answer = 'The hour provided is not an integer between 0 and 23.'
-        answer = validate_component_table_cell_values._hours_int_less_than_24(test_string)
+        expect_answer = ''
+        answer = validate_component_table_cell_values._hours_int_less_than_or_equal_to_24(test_string)
+        self.assertEqual(answer, expect_answer)
+
+    def testFailIfHourString2430(self):
+        test_string = "\'24:30\'"
+        expect_answer = 'The max input time should be 24:00.'
+        answer = validate_component_table_cell_values._hours_int_less_than_or_equal_to_24(test_string)
         self.assertEqual(answer, expect_answer)
 
     def testPassIfHourString23(self):
         test_string = "\'23:00\'"
         expect_answer = ''
-        answer = validate_component_table_cell_values._hours_int_less_than_24(test_string)
+        answer = validate_component_table_cell_values._hours_int_less_than_or_equal_to_24(test_string)
         self.assertEqual(answer, expect_answer)
 
     def testPassIfHourString00(self):
         test_string = "\'00:00\'"
         expect_answer = ''
-        answer = validate_component_table_cell_values._hours_int_less_than_24(test_string)
+        answer = validate_component_table_cell_values._hours_int_less_than_or_equal_to_24(test_string)
         self.assertEqual(answer, expect_answer)
 
     def testPassIfHourString12(self):
         test_string = "\'12:00\'"
         expect_answer = ''
-        answer = validate_component_table_cell_values._hours_int_less_than_24(test_string)
+        answer = validate_component_table_cell_values._hours_int_less_than_or_equal_to_24(test_string)
         self.assertEqual(answer, expect_answer)
 
     def testFailIfMinuteStringALetter(self):
