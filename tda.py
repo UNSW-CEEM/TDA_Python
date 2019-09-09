@@ -111,6 +111,18 @@ def set_tariff_set_in_use():
     return jsonify({'message': 'done'})
 
 
+@app.route('/put_load_profiles_in_memory', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def put_load_profiles_in_memory():
+    load_request = request.get_json()
+    current_session.raw_data_name = load_request['file_name']
+    # Get raw load data.
+    if load_request['file_name'] not in current_session.raw_data:
+        current_session.raw_data[load_request['file_name']] = \
+            data_interface.get_load_table('data/load/', load_request['file_name'])
+    return jsonify({'message': 'done'})
+
+
 @app.route('/filtered_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def filtered_load_data():
@@ -119,14 +131,11 @@ def filtered_load_data():
 
     print('hi the down sample option is {}'.format(load_request['sample_fraction']))
 
-    # Get raw load data.
-    if load_request['file_name'] not in current_session.raw_data:
-        current_session.raw_data[load_request['file_name']] = \
-            data_interface.get_load_table('data/load/', load_request['file_name'])
-
     # Filter data
     demo_info_file_name = data_interface.find_loads_demographic_file(load_request['file_name'])
     demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
+    demo_info = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
+        current_session.raw_data[load_request['file_name']], demo_info)
 
     current_session.filtered_demo_info, current_session.is_filtered = \
         helper_functions.filter_demo_info(demo_info, load_request['filter_options'])
@@ -146,15 +155,15 @@ def filtered_load_data():
             current_session.raw_charts[load_request['file_name']][load_request['chart_type']] = \
                 chart_methods[load_request['chart_type']](current_session.raw_data[load_request['file_name']])
 
-    #### prepare chart data and n_users
-    current_session.filtered_charts = {}
-    current_session.filtered_charts[load_request['file_name']] = {}
+    # prepare chart data and n_users
+    current_session.filtered_charts = {load_request['file_name']: {}}
 
     if current_session.is_filtered:
-
-        if load_request['chart_type'] in ['Annual Average Profile','Daily kWh Histogram']:
+        if load_request['chart_type'] in ['Annual Average Profile', 'Daily kWh Histogram']:
             current_session.filtered_charts[load_request['file_name']][load_request['chart_type']] = \
-                chart_methods[load_request['chart_type']](current_session.raw_data[load_request['file_name']], current_session.filtered_data, series_name=['All', 'Selected'])
+                chart_methods[load_request['chart_type']](current_session.raw_data[load_request['file_name']],
+                                                          current_session.filtered_data,
+                                                          series_name=['All', 'Selected'])
         else:
             current_session.filtered_charts[load_request['file_name']][load_request['chart_type']] = \
                 chart_methods[load_request['chart_type']](current_session.filtered_data)
@@ -162,7 +171,6 @@ def filtered_load_data():
         chart_data = current_session.filtered_charts[load_request['file_name']][load_request['chart_type']]
         n_users = helper_functions.n_users(current_session.filtered_data)
     else:
-        
         chart_data = current_session.raw_charts[load_request['file_name']][load_request['chart_type']]
         n_users = helper_functions.n_users(current_session.raw_data[load_request['file_name']])
 
@@ -350,7 +358,9 @@ def get_demo_options(name):
     demo_file_name = data_interface.find_loads_demographic_file(name)
 
     if demo_file_name != '' and demo_file_name in os.listdir('data/demographics/'):
-        demo = pd.read_csv('data/demographics/' + demo_file_name)
+        demo = pd.read_csv('data/demographics/' + demo_file_name, dtype=str)
+        demo = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
+            current_session.raw_data[current_session.raw_data_name], demo)
         demo_options = helper_functions.get_demographic_options_from_demo_file(demo)
     else:
         demo_options = {'actual_names': [], "display_names": {}, "options": {}}

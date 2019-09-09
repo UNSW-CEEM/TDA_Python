@@ -19,11 +19,15 @@ var add_demo_selectors = function(response){
 
     // Bind plotting of load to newly created selectors.
     $('.select_demo').on('change', function() {
+        $('#dialog').dialog({modal: true});
         plot_filtered_load();
         // Update menu bat status indicator
         $('#tech_status_not_set').show()
         $('#tech_status_set').hide()
     });
+
+    plot_filtered_load();
+
 }
 
 var get_down_sample_setting = function(){
@@ -104,8 +108,6 @@ var plot_filtered_load =  function(){
     $('#load_status_not_set').show()
     $('#load_status_set').hide()
 
-    $('#dialog').dialog({modal: true});
-
         load_request = get_load_details_from_ui()
 
         $.ajax({
@@ -153,18 +155,29 @@ var print_n_users = function(n_users){
 
 var perform_plot_load_actions = function(){
     var file_name = $('#select').children("option:selected").val();
-    if (file_name != 'Select one'){
-        $.getJSON('/get_demo_options/' + file_name, add_demo_selectors);
-        plot_filtered_load();
-    } else {
-        $("#message_dialog").dialog({ modal: true});
-        $("#message_dialog p").text('Please select a load file.')
-        $('#load_status_not_set').show()
-        $('#load_status_set').hide()
-    }
+    $.ajax({
+        url: '/put_load_profiles_in_memory',
+        data: JSON.stringify({'file_name': file_name}),
+        contentType: 'application/json',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        success: function(data){
+            alert_user_if_error(data)
+            if (file_name != 'Select one'){
+                $.getJSON('/get_demo_options/' + file_name, add_demo_selectors);
+            } else {
+                $("#message_dialog").dialog({ modal: true});
+                $("#message_dialog p").text('Please select a load file.')
+                $('#load_status_not_set').show()
+                $('#load_status_set').hide()
+            }
+        }
+    });
 }
 
 $('#select').on('change', function() {
+    $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
     $('#tech_status_not_set').show()
@@ -172,6 +185,7 @@ $('#select').on('change', function() {
 });
 
 $('.down_sample_option').on('change', function() {
+    $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
     $('#tech_status_not_set').show()
@@ -179,6 +193,7 @@ $('.down_sample_option').on('change', function() {
 });
 
 $('.missing_data_limit').on('change', function() {
+    $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
     $('#tech_status_not_set').show()
@@ -186,6 +201,7 @@ $('.missing_data_limit').on('change', function() {
 });
 
 $('#select_graph').on('change', function() {
+    $('#dialog').dialog({modal: true});
     plot_filtered_load();
 });
 
