@@ -58,12 +58,20 @@
         font-size: 1.75vh;
       }
 
-      select {
+      select, input {
         height: 3.0vh;
         margin-bottom: 1.25vh;
         width: 100%;
         font-size: 1.75vh;
         max-width: 200px;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      input {
+        width: 100%;
+        display: inline;
+        max-width: 600px;
       }
 
       .label_stacked {
@@ -84,29 +92,9 @@
         padding: 0.25vh;
       }
 
-      input {
-        height: 2.25vh;
-        width: 100%;
-        display: inline;
-        margin: 0;
-      }
-
-      .tariff_input {
-        width: 70%;
-        margin-bottom: 1.2vh;
-      }
-
       .tariff_label {
         width: 100%;
         float: left;
-      }
-
-      .input_stacked {
-        height: 3.0vh;
-        margin-bottom: 1.3vh;
-        font-size: 1.75vh;
-        max-width: 200px;
-        box-sizing: border-box;
       }
 
       .label_close_stacked {
@@ -120,22 +108,9 @@
             font-size: 14px;
         }
 
-        select {
+        select, input {
             height: 24px;
             margin-bottom: 10px;
-        }
-
-        .input_stacked {
-            height: 24px;
-            margin-bottom: 10.4px;
-        }
-
-        input {
-            height: 18px;
-        }
-
-        .tariff_input {
-            margin-bottom: 9.6px;
         }
 
         .label_stacked {
@@ -147,7 +122,6 @@
         .label_close_stacked {
             margin-bottom: 4px;
         }
-
 
       }
 
@@ -487,17 +461,28 @@
 
     <div id="tariff_meta_details_editor" title="Set tariff details" style="display: none;">
         <label class="label_close_stacked">Name</label>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all name tariff_input">
+        <br/>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all name">
+        <br/>
         <label class="label_close_stacked">Provider</label>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all provider tariff_input">
+        <br/>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all provider">
+        <br/>
         <label class="label_close_stacked">Type</label>
-        <input type="text"  value="" class="text ui-widget-content ui-corner-all type tariff_input">
+        <br/>
+        <input type="text"  value="" class="text ui-widget-content ui-corner-all type">
+        <br/>
         <label class="label_close_stacked">State</label>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all state tariff_input">
+        <br/>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all state">
+        <br/>
         <label class="label_close_stacked">Year</label>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all year tariff_input">
+        <br/>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all year ">
+        <br/>
         <label class="label_close_stacked">Info</label>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all info tariff_input">
+        <br/>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all info">
     </div>
 
     <div id="case_namer" title="Basic dialog" style="display: none">
@@ -787,11 +772,11 @@
                                 <div class="label_stacked">Solar profiles :</div>
                             </div>
                             <div class="col solar_inputs" style="width: 20%">
-                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
+                                <input name="penetration" type="number" min="0" max="100"
                                        value="0">
-                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
-                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
-                                <select class="input_stacked" name="profiles"></select>
+                                <input name="mean_size" type="number" min="0" value="0">
+                                <input name="standard_dev" type="number" min="0" value="0">
+                                <select name="profiles"></select>
                             </div>
                         </div>
                         <div class="row" style="overflow: hidden;">
@@ -808,13 +793,12 @@
                                 <div class="label_stacked">Operational strategy:</div>
                             </div>
                             <div class="col battery_inputs" style="width: 20%">
-                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
-                                       value="0">
-                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
-                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
-                                <input class="input_stacked" name="mean_power_to_energy" type="number" min="0" value="0">
-                                <input class="input_stacked" name="power_to_energy_standard_dev" type="number" min="0" value="0">
-                                <select class="input_stacked" name="strategy"></select>
+                                <input name="penetration" type="number" min="0" max="100" value="0">
+                                <input name="mean_size" type="number" min="0" value="0">
+                                <input name="standard_dev" type="number" min="0" value="0">
+                                <input name="mean_power_to_energy" type="number" min="0" value="0">
+                                <input name="power_to_energy_standard_dev" type="number" min="0" value="0">
+                                <select name="strategy"></select>
                             </div>
                         </div>
                     </div>
@@ -833,13 +817,12 @@
                                 <div class="label_stacked">Energy conservation:</div>
                             </div>
                             <div class="col demand_response_inputs" style="width: 20%;">
-                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
-                                       value="0">
-                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
-                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
-                                <input class="input_stacked" name="max_response_time" type="number" min="0" value="0">
-                                <input class="input_stacked" name="events_limit" type="number" min="0" value="0">
-                                <select class="input_stacked" name="energy_conservation">
+                                <input name="penetration" type="number" min="0" max="100"value="0">
+                                <input name="mean_size" type="number" min="0" value="0">
+                                <input name="standard_dev" type="number" min="0" value="0">
+                                <input name="max_response_time" type="number" min="0" value="0">
+                                <input name="events_limit" type="number" min="0" value="0">
+                                <select name="energy_conservation">
                                     <option>Yes</option>
                                     <option>No</option>
                                 </select>
@@ -953,8 +936,8 @@
                                 </div>
                             </div>
                             <div class="col" style="width: 10%">
-                                <input class="x_peak_options input_stacked" id="x_one_peak_a_day" type="checkbox">
-                                <input class="y_peak_options input_stacked" id="y_one_peak_a_day" type="checkbox">
+                                <input class="x_peak_options" id="x_one_peak_a_day" type="checkbox">
+                                <input class="y_peak_options" id="y_one_peak_a_day" type="checkbox">
                             </div>
                             <script src="static/plot_results.js"></script>
                         </div>
@@ -965,10 +948,8 @@
                                     <div class="label_stacked" style="width: 60%">Autumn:</div>
                                 </div>
                                 <div class="col" style="width: 30%">
-                                    <input id="include_spring" class="input_stacked season_option"
-                                           type="checkbox" checked>
-                                    <input id="include_autumn" class="input_stacked season_option"
-                                           type="checkbox" checked>
+                                    <input id="include_spring" class="season_option" type="checkbox" checked>
+                                    <input id="include_autumn" class="season_option"type="checkbox" checked>
                                 </div>
                             </div>
                             <div class="col" style="width: 50%;">
@@ -977,10 +958,8 @@
                                     <div class="label_stacked" style="width: 60%">Winter:</div>
                                 </div>
                                 <div class="col" style="width: 30%">
-                                    <input id="include_summer" class="input_stacked season_option"
-                                           type="checkbox" checked>
-                                    <input id="include_winter" class="input_stacked season_option"
-                                           type="checkbox" checked>
+                                    <input id="include_summer" class="season_option" type="checkbox" checked>
+                                    <input id="include_winter" class="season_option" type="checkbox" checked>
                                 </div>
                             </div>
                         </div>
@@ -1021,7 +1000,7 @@
                                 onclick="displayCaseInfoType(event, 'demog_info')">Demog info</button>
                         <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'wholesale_price_info')">
-                            Wholesale price info</button>
+                                Wholesale price info</button>
                         <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'retail_tariff_info')">Retail tariff info</button>
                         <button class="case_tab_links"
