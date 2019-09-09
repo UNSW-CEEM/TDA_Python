@@ -25,11 +25,7 @@ var disable_tariff_creation = function(){
 
 
 var get_component_type = function(tariff_type_panel){
-    templates = component_templates();
-    for (var component_name in templates){
-        if (component_name)
-        $('#choose_component_type select').append(new Option(component_name, component_name));
-    }
+    build_component_template_option();
     $( "#choose_component_type" ).dialog({
         modal: true,
         buttons: {"Continue": function(){add_component(tariff_type_panel)},
@@ -40,7 +36,6 @@ var get_component_type = function(tariff_type_panel){
 var add_component = function(tariff_type_panel){
     var component_type = $('#choose_component_type select');
     templates = component_templates();
-    console.log(component_type.val());
     $('#choose_component_type').dialog('close');
     parameter_types = $('#' + tariff_type_panel + ' .table_set')
     var to_insert = {[component_type.val()]: templates[component_type.val()]}
@@ -52,7 +47,32 @@ var add_component = function(tariff_type_panel){
 }
 
 var component_templates = function(){
-    var daily = {'table_header': ['Unit', 'Value'], 'table_rows': [['$/kWh', '1.0']]}
-    var templates = {'Daily': daily}
+    var daily = {'table_header': ['Unit', 'Value'], 'table_rows': [['$/day', '1.0']]}
+    var seasonal_tou = {'table_header': ['Name', 'Month', 'Unit' ,'Value'],
+                        'table_rows': [['Summer', '[12, 1, 2]', '$/kWh', '1.0']]}
+    var tou = {'table_header': ['Name', 'Month', 'TimeIntervals', 'Unit' ,'Value', 'Weekday', 'Weekend'],
+               'table_rows': [['Summer peak workdays', '[12, 1, 2]', '{\'T1\': [\'15:00\', \'23:00\']}', '$/kWh', '1.0',
+                               'true', 'false']]}
+    var demand = {'table_header': ['Name', 'Day Average', 'Demand Window Length', 'Min Demand Window (kW)',
+                                   'Min Demand Charge ($)', 'Month', 'Number of Peaks', 'TimeIntervals', 'Unit'
+                                   ,'Value', 'Weekday', 'Weekend'],
+                  'table_rows': [['Summer peak workdays', 'true', '1', '0', '0', '[12, 1, 2]', '1',
+                                  '{\'T1\': [\'15:00\', \'23:00\']}', '$/kW/Day', '1.0', 'true', 'false']]}
+    var flat_rate = {'table_header': ['Unit', 'Value'], 'table_rows': [['$/kWh', '1.0']]}
+    var block_annual = {'table_header': ['Name', 'HighBound', 'Unit' ,'Value'],
+                        'table_rows': [['Summer', '1000', '$/kWh', '1.0']]}
+    var block_quarterly = {'table_header': ['Name', 'HighBound', 'Unit' ,'Value'],
+                           'table_rows': [['Summer', '1000', '$/kWh', '1.0']]}
+    var templates = {'Daily': daily, 'FlatRate': flat_rate, 'FlatRateSeasonal': seasonal_tou, 'TOU': tou,
+                     'Demand': demand, 'BlockAnnual': block_annual, 'BlockQuarterly': block_quarterly}
     return templates
 }
+
+var build_component_template_option = function(){
+    templates = component_templates();
+    $('#choose_component_type select').empty()
+    for (var component_name in templates){
+            $('#choose_component_type select').append(new Option(component_name, component_name));
+    }
+}
+
