@@ -154,7 +154,7 @@ def filtered_load_data():
     if chart_type not in current_session.raw_charts[file_name]:
         if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
             current_session.raw_charts[file_name][chart_type] = \
-                chart_methods[chart_type](current_session.raw_data[file_name], 
+                chart_methods[chart_type](current_session.raw_data[file_name],
                                           current_session.filtered_data, series_name=['All'])
         else:
             current_session.raw_charts[file_name][chart_type] = \
