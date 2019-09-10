@@ -23,6 +23,7 @@ import errors
 import logging
 import validate_component_table_cell_values
 import check_time_of_use_coverage
+import end_user_tech
 
 enable_logging = False
 
@@ -419,11 +420,38 @@ def get_wholesale_price_info():
     return jsonify(info)
 
 
-@app.route('/add_end_user_tech', methods=['POST'])
+@app.route('/add_end_user_tech_from_gui', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def add_end_user_tech():
+def add_end_user_tech_from_gui():
     details = request.json
-    solar_pen = details['solar_inputs']['penetration']
+    current_session.end_user_tech_sample = end_user_tech.create_sample(details, current_session.filtered_data)
+    current_session.filtered_data = \
+        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.end_user_tech_sample)
+    return jsonify({'message': 'done'})
+
+
+@app.route('/save_end_user_tech_sample', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def save_end_user_tech_sample():
+    details = request.json
+    file_path = helper_functions.get_save_name_from_user('pickle file', '.pkl')
+    file_path = helper_functions.add_file_extension_if_needed(file_path, '.pkl')
+    with open(file_path, "wb") as f:
+        pickle.dump(current_session.end_user_tech_sample, f)
+    return jsonify({'message': 'done'})
+
+
+@app.route('/add_end_user_tech_from_file', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def add_end_user_tech_from_file():
+    details = request.json
+    file_path = helper_functions.get_file_to_load_from_user()
+    with open(file_path, "rb") as f:
+        current_session.end_user_tech_sample = pickle.load(f)
+    current_session.filtered_data = \
+        end_user_tech.set_filtered_data_to_match_saved_sample(current_session.end_user_tech_sample)
+    current_session.filtered_data = \
+        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.end_user_tech_sample)
     return jsonify({'message': 'done'})
 
 

@@ -4,6 +4,7 @@ var add_end_user_tech = function(){
     tech_details['solar_inputs'] = get_input_set_from_gui('solar');
     tech_details['battery_inputs'] = get_input_set_from_gui('battery');
     tech_details['demand_response_inputs'] = get_input_set_from_gui('demand_response');
+    tech_details['load_details'] = get_load_details_from_ui();
 
     // Get chart data
     $.ajax({
