@@ -32,12 +32,11 @@ var get_input_set_from_gui = function(type){
     return input_object
 }
 
-var add_end_user_tech_from_gui = function(){
+var add_end_user_tech_from_file = function(){
+    $('#select').val('Select one').change();
     // Get chart data
     $.ajax({
         url: '/add_end_user_tech_from_file',
-        data: JSON.stringify(tech_details),
-        contentType: 'application/json',
         type : 'POST',
         async: 'false',
         dataType:"json",
@@ -53,8 +52,6 @@ var save_end_user_tech_sample = function(){
     // Get chart data
     $.ajax({
         url: '/save_end_user_tech_sample',
-        data: JSON.stringify(tech_details),
-        contentType: 'application/json',
         type : 'POST',
         async: 'false',
         dataType:"json",

@@ -451,8 +451,9 @@ def add_end_user_tech_from_file():
     file_path = helper_functions.get_file_to_load_from_user()
     with open(file_path, "rb") as f:
         current_session.end_user_tech_sample = pickle.load(f)
-    raw_data = data_interface.get_load_table('data/load/', end_user_tech['load_details']['file_name'])
-    filtered_data = raw_data.loc[:, ['Datetime'] + end_user_tech['customer_keys']]
+    raw_data = data_interface.get_load_table('data/load/',
+                                             current_session.end_user_tech_sample['load_details']['file_name'])
+    filtered_data = raw_data.loc[:, ['Datetime'] + current_session.end_user_tech_sample['customer_keys']]
     current_session.filtered_data = end_user_tech.calc_net_profiles(filtered_data, current_session.end_user_tech_sample)
     return jsonify({'message': 'done'})
 
