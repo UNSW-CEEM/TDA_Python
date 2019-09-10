@@ -117,10 +117,13 @@ def set_tariff_set_in_use():
 def put_load_profiles_in_memory():
     load_request = request.get_json()
     file_name = load_request['file_name']
-    current_session.raw_data_name = file_name
-    # Get raw load data.
-    if file_name not in current_session.raw_data:
-        current_session.raw_data[file_name] = data_interface.get_load_table('data/load/', load_request['file_name'])
+    if file_name != 'Select one':
+        current_session.raw_data_name = file_name
+        # Get raw load data.
+        if file_name not in current_session.raw_data:
+            current_session.raw_data[file_name] = data_interface.get_load_table('data/load/', load_request['file_name'])
+    else:
+        current_session.raw_data_name = ''
     return jsonify({'message': 'done'})
 
 
@@ -448,10 +451,9 @@ def add_end_user_tech_from_file():
     file_path = helper_functions.get_file_to_load_from_user()
     with open(file_path, "rb") as f:
         current_session.end_user_tech_sample = pickle.load(f)
-    current_session.filtered_data = \
-        end_user_tech.set_filtered_data_to_match_saved_sample(current_session.end_user_tech_sample)
-    current_session.filtered_data = \
-        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.end_user_tech_sample)
+    raw_data = data_interface.get_load_table('data/load/', end_user_tech['load_details']['file_name'])
+    filtered_data = raw_data.loc[:, ['Datetime'] + end_user_tech['customer_keys']]
+    current_session.filtered_data = end_user_tech.calc_net_profiles(filtered_data, current_session.end_user_tech_sample)
     return jsonify({'message': 'done'})
 
 

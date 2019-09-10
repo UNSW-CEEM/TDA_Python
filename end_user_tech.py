@@ -1,4 +1,5 @@
 import pandas as pd
+import data_interface
 
 
 def create_sample(gui_inputs, filtered_data):
@@ -13,6 +14,8 @@ def create_sample(gui_inputs, filtered_data):
 
 
 def set_filtered_data_to_match_saved_sample(end_user_tech):
+    raw_data = data_interface.get_load_table('/data/load', end_user_tech['load_details']['file_name'])
+    filtered_data = raw_data.loc[:, ['Datetime'] + end_user_tech['customer_keys']]
     return pd.DataFrame()
 
 

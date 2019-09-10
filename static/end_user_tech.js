@@ -1,4 +1,4 @@
-var add_end_user_tech = function(){
+var add_end_user_tech_from_gui = function(){
 
     var tech_details = {}
     tech_details['solar_inputs'] = get_input_set_from_gui('solar');
@@ -8,7 +8,7 @@ var add_end_user_tech = function(){
 
     // Get chart data
     $.ajax({
-        url: '/add_end_user_tech',
+        url: '/add_end_user_tech_from_gui',
         data: JSON.stringify(tech_details),
         contentType: 'application/json',
         type : 'POST',
@@ -30,4 +30,36 @@ var get_input_set_from_gui = function(type){
         input_object[$(input).prop('name')] = $(input).val();
     });
     return input_object
+}
+
+var add_end_user_tech_from_gui = function(){
+    // Get chart data
+    $.ajax({
+        url: '/add_end_user_tech_from_file',
+        data: JSON.stringify(tech_details),
+        contentType: 'application/json',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        success: function(data){
+            alert_user_if_error(data);
+            $('#tech_status_not_set').hide();
+            $('#tech_status_set').show();
+        }
+    });
+}
+
+var save_end_user_tech_sample = function(){
+    // Get chart data
+    $.ajax({
+        url: '/save_end_user_tech_sample',
+        data: JSON.stringify(tech_details),
+        contentType: 'application/json',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        success: function(data){
+            alert_user_if_error(data);
+        }
+    });
 }
