@@ -18,9 +18,9 @@ def _bill_distribution(load_and_results_by_case):
 
     trace = []
     for case_name, results in results_by_case.items():
-        trace.append(go.Histogram(x=results['Bill'], histnorm='probability', name=case_name))
+        trace.append(go.Histogram(x=results['NUOS']['Bill'], histnorm='probability', name=case_name))
 
-    return {'data': trace, 'layout':layout}
+    return {'data': trace, 'layout': layout}
 
 def _bill_box_plot(load_and_results_by_case):
 
@@ -34,9 +34,9 @@ def _bill_box_plot(load_and_results_by_case):
 
     trace = []
     for case_name, results in results_by_case.items():
-        trace.append(go.Box(y=results['Bill'], name=case_name))
+        trace.append(go.Box(y=results['NUOS']['Bill'], name=case_name))
 
-    return {'data': trace, 'layout':layout}
+    return {'data': trace, 'layout': layout}
 
 def _average_annual_profile(load_and_results_by_case):
 
@@ -97,8 +97,8 @@ def _average_load_duration_curve(load_and_results_by_case):
         load2 = load.copy()
         load2.drop(['Datetime'], axis=1, inplace=True)
         load_average = load2.mean(axis=1)
-        load_average_sort = load_average.sort_values(ascending = False, inplace = False, na_position ='last')
-        load_average_sort = load_average_sort.reset_index(drop = True) 
+        load_average_sort = load_average.sort_values(ascending=False, inplace = False, na_position ='last')
+        load_average_sort = load_average_sort.reset_index(drop=True)
 
         trace.append(go.Scatter(x=load_average_sort.index,y=load_average_sort.values, name=case_name))
 
@@ -230,7 +230,7 @@ def singe_variable_chart(chart_name, load_and_results_by_case):
 
 def _get_annual_kWh(results, load, network_load, details, axis):
     axis_name = "Annual kWh"
-    axis_data = results['Annual_kWh']
+    axis_data = results['LoadInfo']['Annual_kWh']
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
@@ -550,13 +550,13 @@ def _get_avg_daily_peak(results, load, network_load, details, axis):
 
 def _get_bill(results, load, network_load, details, axis):
     axis_name = "Bill (AUD)"
-    axis_data = results['Bill']
+    axis_data = results['NUOS']['Bill']
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
 def _get_unitised_bill(results, load, network_load, details, axis):
     axis_name = "Unitised Bill (kW)"
-    axis_data = results['Bill']
+    axis_data = results['NUOS']['Bill']
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
@@ -578,8 +578,8 @@ def dual_variable_chart(load_and_results_by_case, details):
 
     trace = []
     for case_name, results in results_by_case.items():
-        x_axis_data = _dual_variable_axis_methods[details['x_axis']](results,load_by_case[case_name],network_load, details, axis = 'x_axis')
-        y_axis_data = _dual_variable_axis_methods[details['y_axis']](results,load_by_case[case_name],network_load, details, axis = 'y_axis')
+        x_axis_data = _dual_variable_axis_methods[details['x_axis']](results, load_by_case[case_name], network_load, details, axis = 'x_axis')
+        y_axis_data = _dual_variable_axis_methods[details['y_axis']](results, load_by_case[case_name], network_load, details, axis = 'y_axis')
         
         dual_data = go.Scattergl(x=x_axis_data['axis_data'], y=y_axis_data['axis_data'], mode='markers', name=case_name)
         
@@ -611,15 +611,18 @@ def _get_bill_components(data, load_to_plot):
     layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
 
-    data = data.sort_values('Bill', ascending=False)
-    data = data.reset_index(drop=True)
+    data['NUOS']= data['NUOS'].sort_values('Bill', ascending=False)
+    data['NUOS'] = data['NUOS'].reset_index(drop=True)
     traces = []
-    compenent_suffixes = ['Retailer', 'DUOS', 'NUOS', 'TUOS', 'DTOUS']
-    potential_components = [col for col in data.columns if is_component(compenent_suffixes, col)]
+    # compenent_suffixes = ['Retailer', 'DUOS', 'TUOS', 'NUOS']
+    # potential_components = [col for col in data.columns if is_component(compenent_suffixes, col)]
+    potential_components = [col for col in data['NUOS'].columns if col.startswith('Charge')]
+
+
     for component in potential_components:
         trace = dict(name=component,
-                     x=data.index.values,
-                     y=data[component],
+                     x=data['NUOS'].index.values,
+                     y=data['NUOS'][component],
                      mode='lines',
                      stackgroup='one')
         traces.append(trace)
@@ -632,13 +635,13 @@ def _get_bill_components_pie_chart(data, load_by_case):
     layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
 
-    selected_columns = [col for col in data.columns if col.endswith('Charge')]
+    selected_columns = [col for col in data['NUOS'].columns if col.startswith('Charge')]
 
-    selected_data = data[selected_columns]
+    selected_data = data['NUOS'][selected_columns]
 
     percentage = []
     for col in selected_data.columns:
-        percentage.append(selected_data[col].sum(axis=0)/data['Bill'].sum(axis=0))
+        percentage.append(selected_data[col].sum(axis=0)/data['NUOS']['Bill'].sum(axis=0))
 
     trace = [go.Pie(labels=selected_columns, values=percentage)]
 

@@ -202,8 +202,8 @@ def add_case():
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
         network_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), network_tariff)
-        network_results.index.name = 'CUSTOMER_KEY'
-        network_results = network_results.reset_index()
+        network_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
+        network_results['LoadInfo'] = network_results['LoadInfo'].reset_index()
         current_session.project_data.network_results_by_case[case_name] = network_results
         current_session.project_data.network_tariffs_by_case[case_name] = network_tariff
 
