@@ -8,9 +8,16 @@ def create_sample(gui_inputs, filtered_data):
     # ...           ...        ...       ...               ...
     # solar_pen = gui_inputs['solar_inputs']['penetration']
     sample_details = {'load_details': gui_inputs['load_details'],
+                      'tech_inputs': gui_inputs['tech_inputs'],
                       'customer_keys': [col for col in filtered_data.columns if col != 'Datetime'],
                       'end_user_tech_details': pd.DataFrame()}
     return sample_details
+
+
+def update_sample(current_sample, gui_inputs):
+    current_sample['tech_inputs'] = gui_inputs['tech_inputs']
+    # just update operation details of sample
+    return current_sample
 
 
 def set_filtered_data_to_match_saved_sample(end_user_tech_sample):

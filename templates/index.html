@@ -37,7 +37,6 @@
     <script src="static/project_menu.js"></script>
     <script src="static/css-element-queries-1.0.0/src/ResizeSensor.js"></script>
     <script src="static/css-element-queries-1.0.0/src/ElementQueries.js"></script>
-    <script src="static/end_user_tech.js"></script>
     <script src="static/export.js"></script>
     <script src="static/errors.js"></script>
     <script src="static/tou_analysis.js"></script>
@@ -772,11 +771,11 @@
                                 <div class="label_stacked">Solar profiles :</div>
                             </div>
                             <div class="col solar_inputs" style="width: 20%">
-                                <input name="penetration" type="number" min="0" max="100"
+                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100"
                                        value="0">
-                                <input name="mean_size" type="number" min="0" value="0">
-                                <input name="standard_dev" type="number" min="0" value="0">
-                                <select name="profiles"></select>
+                                <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
+                                <select class="sample_parameter" name="profiles"></select>
                             </div>
                         </div>
                         <div class="row" style="overflow: hidden;">
@@ -793,12 +792,12 @@
                                 <div class="label_stacked">Operational strategy:</div>
                             </div>
                             <div class="col battery_inputs" style="width: 20%">
-                                <input name="penetration" type="number" min="0" max="100" value="0">
-                                <input name="mean_size" type="number" min="0" value="0">
-                                <input name="standard_dev" type="number" min="0" value="0">
-                                <input name="mean_power_to_energy" type="number" min="0" value="0">
-                                <input name="power_to_energy_standard_dev" type="number" min="0" value="0">
-                                <select name="strategy"></select>
+                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100" value="0">
+                                <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="mean_power_to_energy" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="power_to_energy_standard_dev" type="number" min="0" value="0">
+                                <select class="operational_parameter" name="strategy"></select>
                             </div>
                         </div>
                     </div>
@@ -817,12 +816,12 @@
                                 <div class="label_stacked">Energy conservation:</div>
                             </div>
                             <div class="col demand_response_inputs" style="width: 20%;">
-                                <input name="penetration" type="number" min="0" max="100"value="0">
-                                <input name="mean_size" type="number" min="0" value="0">
-                                <input name="standard_dev" type="number" min="0" value="0">
-                                <input name="max_response_time" type="number" min="0" value="0">
-                                <input name="events_limit" type="number" min="0" value="0">
-                                <select name="energy_conservation">
+                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100"value="0">
+                                <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="max_response_time" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="events_limit" type="number" min="0" value="0">
+                                <select class="operational_parameter" name="energy_conservation">
                                     <option>Yes</option>
                                     <option>No</option>
                                 </select>
@@ -835,11 +834,29 @@
                         <div class="row" style="overflow: hidden;">
                             <div class="col" style="width: 80%">
                                 <button style="width: 100%; text-align: left; height: 3.25vh;"
-                                        onclick="add_end_user_tech_from_gui()">Apply end user tech based on inputs</button>
+                                        onclick="create_end_user_tech_from_sample_from_gui()">
+                                        <font id="tech_from_gui_status_not_set" color="black" style="display: inline;">&#9675;</font>
+                                        <font id="tech_from_gui_status_set" color="green" style="display: none;">&#9679;</font>
+                                        Create end user tech sample
+                                </button>
                                 <button style="width: 100%; text-align: left; height: 3.25vh;"
-                                        onclick="add_end_user_tech_from_file()">Apply end user tech based on file</button>
-                                <button style="width: 100%; text-align: left; height: 3.25vh;"
-                                        onclick="save_end_user_tech_sample()">Save end user tech sample to file</button>
+                                        onclick="load_end_user_tech_from_sample_from_file()">
+                                        <font id="tech_from_file_status_not_set" color="black" style="display: inline;">&#9675;</font>
+                                        <font id="tech_from_file_status_set" color="green" style="display: none;">&#9679;</font>
+                                        Load end user tech sample from file
+                                </button>
+                                <button id="calc_net_profiles" style="width: 100%; text-align: left; height: 3.25vh;"
+                                        onclick="calc_sample_net_load_profiles()">
+                                        <font id="net_load_profiles_status_not_set" color="black" style="display: inline;">&#9675;</font>
+                                        <font id="net_load_profiles_status_set" color="green" style="display: none;">&#9679;</font>
+                                        Calc sample net load profiles
+                                </button>
+                                <button id="save_tech_sample" style="width: 100%; text-align: left; height: 3.25vh;"
+                                        onclick="save_end_user_tech_sample()">
+                                        <font id="tech_sample_saved_status_not_set" color="black" style="display: inline;">&#9675;</font>
+                                        <font id="tech_sample_saved_status_set" color="green" style="display: none;">&#9679;</font>
+                                        Save current sample to file
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -1238,8 +1255,7 @@
     <script>document.getElementById("default_panel").click();</script>
     <script src="static/resize_plots.js"></script>
     <script src="static/export_chart_data.js"></script>
-
-
+    <script src="static/end_user_tech.js"></script>
 </div>
 </body>
 </html>
