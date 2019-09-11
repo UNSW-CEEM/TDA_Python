@@ -27,6 +27,7 @@ var create_end_user_tech_from_sample_from_gui = function(){
             dataType:"json",
             success: function(data){
                 alert_user_if_error(data);
+                get_net_load_chart();
                 $('#tech_status_not_set').hide();
                 $('#tech_status_set').show();
                 $('#tech_from_gui_status_not_set').hide();
@@ -57,6 +58,7 @@ var load_end_user_tech_from_sample_from_file = function(){
             insert_input_set_into_gui('solar', data['tech_inputs']['solar']);
             insert_input_set_into_gui('battery', data['tech_inputs']['battery']);
             insert_input_set_into_gui('demand_response', data['tech_inputs']['demand_response']);
+            get_net_load_chart();
             $('#tech_status_not_set').hide();
             $('#tech_status_set').show();
             $('#tech_from_gui_status_set').hide();
@@ -90,6 +92,7 @@ var calc_sample_net_load_profiles = function(){
         dataType:"json",
         success: function(data){
             alert_user_if_error(data);
+            get_net_load_chart();
             $('#net_load_profiles_status_not_set').hide();
             $('#net_load_profiles_status_set').show();
             $('#tech_status_not_set').hide();
@@ -121,6 +124,35 @@ var save_end_user_tech_sample = function(){
             }
         }
     });
+}
+
+var get_net_load_chart =  function(){
+    // Update menu bat status indicator
+    var load_request = {'chart_type': $('#select_net_graph').val()}
+
+    $.ajax({
+    url: '/net_load_chart_data',
+    data: JSON.stringify(load_request),
+    contentType: 'application/json;',
+    type : 'POST',
+    async: 'false',
+    dataType:"json",
+    success: function(data){
+            alert_user_if_error(data)
+            plot_net_load(data);
+        }
+    });
+}
+
+var plot_net_load = function(response){
+    var layout = {autosize: true,
+                  margin: { l: 40, r: 35, b: 40, t: 20, pad: 0 },
+                  paper_bgcolor: '#EEEEEE',
+                  plot_bgcolor: '#c7c7c7',
+                  showlegend: response['chart_data']['layout'].showlegend,
+                  xaxis: response['chart_data']['layout'].xaxis,
+                  yaxis: response['chart_data']['layout'].yaxis};
+    Plotly.newPlot('net_load_chart', response['chart_data']['data'], layout);
 }
 
 var get_input_set_from_gui = function(type){
@@ -160,6 +192,10 @@ $('.sample_parameter').on('change', function(){
     $('#tech_sample_saved_status_not_set').show();
     $('#calc_net_profiles').prop('disabled', true)
     $('#save_tech_sample').prop('disabled', true)
+});
+
+$('#select_net_graph').on('change', function(){
+    get_net_load_chart();
 });
 
 

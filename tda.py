@@ -186,6 +186,26 @@ def filtered_load_data():
     return return_data
 
 
+@app.route('/net_load_chart_data', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def net_load_chart_data():
+    # TODO: Update this function to produce the actual plots of net load we want.
+    load_request = request.get_json()
+    file_name = current_session.raw_data_name
+    chart_type = load_request['chart_type']
+    if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
+        chart_data = chart_methods[chart_type](current_session.raw_data[file_name],
+                                               current_session.filtered_data,
+                                               series_name=['All', 'Selected'])
+    else:
+        chart_data = chart_methods[chart_type](current_session.filtered_data)
+
+    # Format as json.
+    return_data = {"chart_data": chart_data}
+    return_data = json.dumps(return_data, cls=plotly.utils.PlotlyJSONEncoder)
+    return return_data
+
+
 @app.route('/get_case_default_name', methods=['GET'])
 @errors.parse_to_user_and_log(logger)
 def get_case_default_name():
@@ -438,7 +458,7 @@ def create_end_user_tech_from_sample_from_gui():
 @errors.parse_to_user_and_log(logger)
 def load_end_user_tech_from_sample_from_file():
     details = request.json
-    file_path = helper_functions.get_file_to_load_from_user()
+    file_path = helper_functions.get_file_to_load_from_user('TDA tech sample', '.tda_tech_sample')
     with open(file_path, "rb") as f:
         current_session.end_user_tech_sample = pickle.load(f)
     current_session.raw_data_name = current_session.end_user_tech_sample['load_details']['file_name']
@@ -465,9 +485,9 @@ def calc_sample_net_load_profiles():
 def save_end_user_tech_sample():
     details = request.json
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
-    file_path = helper_functions.get_save_name_from_user('pickle file', '.pkl')
+    file_path = helper_functions.get_save_name_from_user('TDA tech sample', '.tda_tech_sample')
     if file_path != '':
-        file_path = helper_functions.add_file_extension_if_needed(file_path, '.pkl')
+        file_path = helper_functions.add_file_extension_if_needed(file_path, '.tda_tech_sample')
         with open(file_path, "wb") as f:
             pickle.dump(current_session.end_user_tech_sample, f)
         message = 'saved'
@@ -627,7 +647,7 @@ def open_sample():
 @app.route('/load_project', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def load_project():
-    file_path = helper_functions.get_file_to_load_from_user()
+    file_path = helper_functions.get_file_to_load_from_user('TDA results file', '.tda_results')
     with open(file_path, "rb") as f:
         current_session.project_data = pickle.load(f)
     message = "Done!"
@@ -643,7 +663,7 @@ def save_project():
         file_path = helper_functions.get_save_name_from_user()
         file_path = helper_functions.add_file_extension_if_needed(file_path)
     else:
-        file_path = current_session.project_data.name + '.pkl'
+        file_path = current_session.project_data.name + '.tda_results'
     with open(file_path, "wb") as f:
         pickle.dump(current_session.project_data, f)
     return jsonify({'message': "Done!"})
@@ -652,8 +672,8 @@ def save_project():
 @app.route('/save_project_as', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def save_project_as():
-    file_path = helper_functions.get_save_name_from_user('pickle file', '.pkl')
-    file_path = helper_functions.add_file_extension_if_needed(file_path, '.pkl')
+    file_path = helper_functions.get_save_name_from_user('TDA results file', '.tda_results')
+    file_path = helper_functions.add_file_extension_if_needed(file_path, '.tda_results')
     current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
     with open(file_path, "wb") as f:
         pickle.dump(current_session.project_data, f)

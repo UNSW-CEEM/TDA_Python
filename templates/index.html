@@ -789,6 +789,7 @@
                                 <div class="label_stacked">Standard deviation (kW):</div>
                                 <div class="label_stacked">Mean power/energy ratio:</div>
                                 <div class="label_stacked">Standard deviation:</div>
+                                <div class="label_stacked">Restriction:</div>
                                 <div class="label_stacked">Operational strategy:</div>
                             </div>
                             <div class="col battery_inputs" style="width: 20%">
@@ -797,7 +798,13 @@
                                 <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
                                 <input class="sample_parameter" name="mean_power_to_energy" type="number" min="0" value="0">
                                 <input class="sample_parameter" name="power_to_energy_standard_dev" type="number" min="0" value="0">
-                                <select class="operational_parameter" name="strategy"></select>
+                                <select class="sample_parameter" name="restriction">
+                                    <option>None</option>
+                                    <option>Customers with solar</option>
+                                </select>
+                                <select class="operational_parameter" name="strategy">
+                                    <option>Maximise self consumption</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -865,11 +872,18 @@
                 <div id="net_load_inspection" style="overflow: hidden; height: 38%">
                     <div style="height: 10%; overflow: hidden;">
                         <select  id="select_net_graph" style="float: right; width: 30%;">
-                            <option value="">Some awesome charts!</option>
+                            <option value="Annual Average Profile"> Annual Average Profile</option>
+                            <option value="Daily Profiles">Daily Profiles</option>
+                            <option value="Daily Profile Interquartile Range">Daily Profile Interquartile Range</option>
+                            <option value="Daily kWh Histogram">Daily kWh Histogram</option>
+                            <option value="Average Load Duration Curve">Average Load Duration Curve</option>
+                            <option value="Average Peak Day Profile">Average Peak Day Profile</option>
+                            <option value="Monthly Average kWh">Monthly Average kWh</option>
+                            <option value="Seasonal Daily Pattern">Seasonal Daily Pattern</option>
                         </select>
                         <div class="label_line" style="float: right;">Show:&nbsp</div>
                     </div>
-                    <div class="chart" id="net_load_chart" style="height: 100%;"></div>
+                    <div class="chart" id="net_load_chart" style="height: 90%;"></div>
                 </div>
             </div>
         </div>
