@@ -1,22 +1,15 @@
 var create_end_user_tech_from_sample_from_gui = function(){
-
-    var message = ""
-    var file_name_set = $('#select').children("option:selected").val() != 'Select one';
+    var file_name_set = $('#select').val() != 'Select one';
     if (!file_name_set){
-       message = "Please select load profiles before attempting to create a tech sample."
-    }
-
-    if (message != ""){
+        var message = "Please select load profiles before attempting to create a tech sample."
         $("#message_dialog").dialog({ modal: true});
         $("#message_dialog p").text(message)
     } else  {
-        var tech_details = {}
-        tech_details['tech_inputs'] = {}
-        tech_details['tech_inputs']['solar'] = get_input_set_from_gui('solar');
-        tech_details['tech_inputs']['battery'] = get_input_set_from_gui('battery');
-        tech_details['tech_inputs']['demand_response'] = get_input_set_from_gui('demand_response');
-        tech_details['load_details'] = get_load_details_from_ui();
-
+        var message = "Creating end user tech sample."
+        $("#message_dialog").dialog({ modal: true});
+        $("#message_dialog p").text(message)
+        var tech_details = {'tech_inputs': get_all_tech_inputs(),
+                            'load_details': get_load_details_from_ui()}
         // Get chart data
         $.ajax({
             url: '/create_end_user_tech_from_sample_from_gui',
@@ -28,18 +21,11 @@ var create_end_user_tech_from_sample_from_gui = function(){
             success: function(data){
                 alert_user_if_error(data);
                 get_net_load_chart();
-                $('#tech_status_not_set').hide();
-                $('#tech_status_set').show();
-                $('#tech_from_gui_status_not_set').hide();
-                $('#tech_from_gui_status_set').show();
-                $('#tech_from_file_status_set').hide();
-                $('#tech_from_file_status_not_set').show();
-                $('#net_load_profiles_status_not_set').hide();
-                $('#net_load_profiles_status_set').show();
-                $('#tech_sample_saved_status_not_set').show();
-                $('#tech_sample_saved_status_set').hide();
+                status_set(['tech', 'tech_from_gui', 'net_load_profiles'])
+                status_not_set(['tech_from_file', 'tech_sample_saved'])
                 $('#calc_net_profiles').prop('disabled', false)
                 $('#save_tech_sample').prop('disabled', false)
+                $("#message_dialog p").text(data['message'])
             }
         });
     }
@@ -47,6 +33,9 @@ var create_end_user_tech_from_sample_from_gui = function(){
 
 var load_end_user_tech_from_sample_from_file = function(){
     $('#select').val('Select one').change();
+    var message = "Loading end user tech sample."
+    $("#message_dialog").dialog({ modal: true});
+    $("#message_dialog p").text(message)
     // Get chart data
     $.ajax({
         url: '/load_end_user_tech_from_sample_from_file',
@@ -59,29 +48,20 @@ var load_end_user_tech_from_sample_from_file = function(){
             insert_input_set_into_gui('battery', data['tech_inputs']['battery']);
             insert_input_set_into_gui('demand_response', data['tech_inputs']['demand_response']);
             get_net_load_chart();
-            $('#tech_status_not_set').hide();
-            $('#tech_status_set').show();
-            $('#tech_from_gui_status_set').hide();
-            $('#tech_from_gui_status_not_set').show();
-            $('#tech_from_file_status_not_set').hide();
-            $('#tech_from_file_status_set').show();
-            $('#net_load_profiles_status_not_set').hide();
-            $('#net_load_profiles_status_set').show();
-            $('#tech_sample_saved_status_not_set').hide();
-            $('#tech_sample_saved_status_set').show();
+            status_set(['tech', 'tech_from_file', 'net_load_profiles', 'tech_sample_saved'])
+            status_not_set(['tech_from_gui'])
             $('#calc_net_profiles').prop('disabled', false)
             $('#save_tech_sample').prop('disabled', false)
+            $("#message_dialog p").text(data['message'])
         }
     });
 }
 
 var calc_sample_net_load_profiles = function(){
-    var tech_details = {}
-    tech_details['tech_inputs'] = {}
-    tech_details['tech_inputs']['solar'] = get_input_set_from_gui('solar');
-    tech_details['tech_inputs']['battery'] = get_input_set_from_gui('battery');
-    tech_details['tech_inputs']['demand_response'] = get_input_set_from_gui('demand_response');
-
+    var message = "Calculating net load profiles."
+    $("#message_dialog").dialog({ modal: true});
+    $("#message_dialog p").text(message)
+    var tech_details = {'tech_inputs': get_all_tech_inputs()}
     // Get chart data
     $.ajax({
         url: '/calc_sample_net_load_profiles',
@@ -93,21 +73,17 @@ var calc_sample_net_load_profiles = function(){
         success: function(data){
             alert_user_if_error(data);
             get_net_load_chart();
-            $('#net_load_profiles_status_not_set').hide();
-            $('#net_load_profiles_status_set').show();
-            $('#tech_status_not_set').hide();
-            $('#tech_status_set').show();
+            status_set(['tech', 'net_load_profiles'])
+            $("#message_dialog p").text(data['message'])
         }
     });
 }
 
 var save_end_user_tech_sample = function(){
-    var tech_details = {}
-    tech_details['tech_inputs'] = {}
-    tech_details['tech_inputs']['solar'] = get_input_set_from_gui('solar');
-    tech_details['tech_inputs']['battery'] = get_input_set_from_gui('battery');
-    tech_details['tech_inputs']['demand_response'] = get_input_set_from_gui('demand_response');
-
+    var message = "Saving end user tech sample."
+    $("#message_dialog").dialog({ modal: true});
+    $("#message_dialog p").text(message)
+    var tech_details = {'tech_inputs': get_all_tech_inputs()}
     // Get chart data
     $.ajax({
         url: '/save_end_user_tech_sample',
@@ -119,8 +95,8 @@ var save_end_user_tech_sample = function(){
         success: function(data){
             alert_user_if_error(data);
             if (data['message'] == 'saved'){
-                $('#tech_sample_saved_status_not_set').hide();
-                $('#tech_sample_saved_status_set').show();
+                status_set(['tech_sample_saved'])
+                $("#message_dialog p").text(data['message'])
             }
         }
     });
@@ -129,7 +105,6 @@ var save_end_user_tech_sample = function(){
 var get_net_load_chart =  function(){
     // Update menu bat status indicator
     var load_request = {'chart_type': $('#select_net_graph').val()}
-
     $.ajax({
     url: '/net_load_chart_data',
     data: JSON.stringify(load_request),
@@ -155,6 +130,32 @@ var plot_net_load = function(response){
     Plotly.newPlot('net_load_chart', response['chart_data']['data'], layout);
 }
 
+$('.operational_parameter').on('change', function(){
+    status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved'])
+});
+
+$('.sample_parameter').on('change', function(){
+    status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved', 'tech_from_gui',
+                    'tech_from_file'])
+    $('#calc_net_profiles').prop('disabled', true)
+    $('#save_tech_sample').prop('disabled', true)
+});
+
+$('#select_net_graph').on('change', function(){
+    get_net_load_chart();
+});
+
+$('#calc_net_profiles').prop('disabled', true)
+$('#save_tech_sample').prop('disabled', true)
+
+var get_all_tech_inputs = function(){
+    var tech_inputs = {}
+    tech_inputs['solar'] = get_input_set_from_gui('solar');
+    tech_inputs['battery'] = get_input_set_from_gui('battery');
+    tech_inputs['demand_response'] = get_input_set_from_gui('demand_response');
+    return tech_inputs
+}
+
 var get_input_set_from_gui = function(type){
     var inputs = $('.{}_inputs'.replace('{}', type)).children();
     var input_object = {}
@@ -170,35 +171,17 @@ var insert_input_set_into_gui = function(type, input_set){
     });
 }
 
-$('.operational_parameter').on('change', function(){
-    $('#tech_status_set').hide();
-    $('#tech_status_not_set').show();
-    $('#net_load_profiles_status_set').hide();
-    $('#net_load_profiles_status_not_set').show();
-    $('#tech_sample_saved_status_set').hide();
-    $('#tech_sample_saved_status_not_set').show();
-});
+var status_set = function(base_ids){
+    $.each(base_ids, function(i, base_id){
+         $('#' + base_id +  '_status_set').show();
+         $('#' + base_id + '_status_not_set').hide();
+    });
+}
 
-$('.sample_parameter').on('change', function(){
-    $('#tech_status_set').hide();
-    $('#tech_status_not_set').show();
-    $('#tech_from_gui_status_set').hide();
-    $('#tech_from_gui_status_not_set').show();
-    $('#tech_from_file_status_set').hide();
-    $('#tech_from_file_status_not_set').show();
-    $('#net_load_profiles_status_set').hide();
-    $('#net_load_profiles_status_not_set').show();
-    $('#tech_sample_saved_status_set').hide();
-    $('#tech_sample_saved_status_not_set').show();
-    $('#calc_net_profiles').prop('disabled', true)
-    $('#save_tech_sample').prop('disabled', true)
-});
-
-$('#select_net_graph').on('change', function(){
-    get_net_load_chart();
-});
-
-
-$('#calc_net_profiles').prop('disabled', true)
-$('#save_tech_sample').prop('disabled', true)
+var status_not_set = function(base_ids){
+    $.each(base_ids, function(i, base_id){
+         $('#' + base_id +  '_status_set').hide();
+         $('#' + base_id + '_status_not_set').show();
+    });
+}
 

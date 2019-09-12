@@ -130,7 +130,6 @@ def put_load_profiles_in_memory():
 @app.route('/filtered_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def filtered_load_data():
-
     load_request = request.get_json()
     file_name = load_request['file_name']
     chart_type = load_request['chart_type']
@@ -451,7 +450,7 @@ def create_end_user_tech_from_sample_from_gui():
     current_session.end_user_tech_sample = end_user_tech.create_sample(details, current_session.filtered_data)
     current_session.filtered_data = \
         end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.end_user_tech_sample)
-    return jsonify({'message': 'done'})
+    return jsonify({'message': 'Done!'})
 
 
 @app.route('/load_end_user_tech_from_sample_from_file', methods=['POST'])
@@ -461,12 +460,15 @@ def load_end_user_tech_from_sample_from_file():
     file_path = helper_functions.get_file_to_load_from_user('TDA tech sample', '.tda_tech_sample')
     with open(file_path, "rb") as f:
         current_session.end_user_tech_sample = pickle.load(f)
-    current_session.raw_data_name = current_session.end_user_tech_sample['load_details']['file_name']
-    raw_data = data_interface.get_load_table('data/load/', current_session.raw_data_name)
-    current_session.raw_data[current_session.raw_data_name] = raw_data
-    filtered_data = raw_data.loc[:, ['Datetime'] + current_session.end_user_tech_sample['customer_keys']]
-    current_session.filtered_data = end_user_tech.calc_net_profiles(filtered_data, current_session.end_user_tech_sample)
-    current_session.filter_state = current_session.end_user_tech_sample['load_details']['filter_options']
+    if current_session.end_user_tech_sample['load_details']['file_name'] in os.listdir('data/load/'):
+        current_session.raw_data_name = current_session.end_user_tech_sample['load_details']['file_name']
+        raw_data = data_interface.get_load_table('data/load/', current_session.raw_data_name)
+        current_session.raw_data[current_session.raw_data_name] = raw_data
+        filtered_data = raw_data.loc[:, ['Datetime'] + current_session.end_user_tech_sample['customer_keys']]
+        current_session.filtered_data = end_user_tech.calc_net_profiles(filtered_data,
+                                                                        current_session.end_user_tech_sample)
+        current_session.filter_state = current_session.end_user_tech_sample['load_details']['filter_options']
+
     return jsonify({'message': 'done', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
 
 
@@ -596,6 +598,7 @@ def delete_tariff():
 @app.route('/import_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def import_load_data():
+    
     return jsonify({'message': "No python code for importing data yet!"})
 
 
@@ -630,8 +633,8 @@ def open_tariff_info():
     return jsonify({'message': "No python code for opening tariff info yet!"})
 
 
-@app.route('/create_synthetic_network_load', methods=['POST'])
-def create_synthetic_network_load():
+@app.route('/import_load', methods=['POST'])
+def import_load():
     message = "No python code for creating synthetic network load yet! But we have returned a dummy name to add!"
     dummy_name_to_add_as_option_in_ui = "not real option"
     return jsonify({'message': message, 'name': dummy_name_to_add_as_option_in_ui})

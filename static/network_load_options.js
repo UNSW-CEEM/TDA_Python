@@ -16,7 +16,6 @@ var check_for_synthetic_options_then_update_check_list = function(event, checked
     }
 }
 
-
 var add_option_to_ui = function(data){
     var option_name = data['name']
     var option_template = '<li><input class=\"synthetic_network_load_option menu_check_list\" type=\"checkbox\"' +
