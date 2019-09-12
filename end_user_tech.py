@@ -22,7 +22,7 @@ def update_sample(current_sample, gui_inputs):
 
 def set_filtered_data_to_match_saved_sample(end_user_tech_sample):
     raw_data = data_interface.get_load_table('/data/load', end_user_tech_sample['load_details']['file_name'])
-    filtered_data = raw_data.loc[:, ['Datetime'] + end_user_tech_sample['customer_keys']]
+    filtered_data = raw_data.loc[:, end_user_tech_sample['customer_keys']]
     return pd.DataFrame()
 
 
