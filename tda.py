@@ -79,6 +79,16 @@ def load_names():
     return jsonify(names)
 
 
+@app.route('/network_load_names')
+@errors.parse_to_user_and_log(logger)
+def network_load_names():
+    # Get the list of load files for the user to choose from.
+    names = []
+    for file_name in os.listdir('data/network_loads/'):
+        names.append(file_name.split('.')[0])
+    return jsonify(names)
+
+
 @app.route('/get_tariff_set_options/<tariff_type>')
 @errors.parse_to_user_and_log(logger)
 def get_tariff_set_options(tariff_type):

@@ -54,7 +54,7 @@ var import_data = function(data_type, call_back){
                 $('#message_dialog').dialog({modal: true});
                 $('#message_dialog p').text(data['message']);
                 if (call_back !== undefined){
-                    call_back(data);
+                    call_back(data['name']);
                 }
             }
         });

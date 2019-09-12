@@ -32,7 +32,6 @@
     <script src="static/check_list.js"></script>
     <script src="static/manage_data.js"></script>
     <script src="static/create_new_tariff.js"></script>
-    <script src="static/network_load_options.js"></script>
     <script src="static/tariff_info.js"></script>
     <script src="static/project_menu.js"></script>
     <script src="static/css-element-queries-1.0.0/src/ResizeSensor.js"></script>
@@ -57,7 +56,7 @@
         font-size: 1.75vh;
       }
 
-      select, input {
+      select, input:not(li input) {
         height: 3.0vh;
         margin-bottom: 1.25vh;
         width: 100%;
@@ -67,7 +66,7 @@
         box-sizing: border-box;
       }
 
-      input {
+      input:not(li input) {
         width: 100%;
         display: inline;
         max-width: 600px;
@@ -107,7 +106,7 @@
             font-size: 14px;
         }
 
-        select, input {
+        select, input:not(li input) {
             height: 24px;
             margin-bottom: 10px;
         }
@@ -331,7 +330,7 @@
         background-color: #EEEEEE;
       }
 
-       .case_info_tab_content {
+      .case_info_tab_content {
         display: none;
         border-style: groove;
         border-width: 2px;
@@ -609,17 +608,17 @@
                         <li>
                             <input class="network_load_option menu_check_list" type="checkbox" value="full"
                               checked onclick="update_check_list(event, this)">
-                            <div>Aggregation of Whole Load Data</div>
+                            <div class="menu_check_list_label">Aggregation of Whole Load Data</div>
                         </li>
                         <li>
                             <input class="network_load_option menu_check_list" type="checkbox" value="filtered"
                               onclick="update_check_list(event, this)">
-                            <div>Aggregation of Filtered Load Data</div>
+                            <div class="menu_check_list_label">Aggregation of Filtered Load Data</div>
                         </li>
                         <li>
                             <input class="network_load_option menu_check_list" type="checkbox" value="synthetic"
                               onclick="check_for_synthetic_options_then_update_check_list(event, this)">
-                            <div>Synthetic Network Load</div>
+                            <div class="menu_check_list_label">Synthetic Network Load</div>
                             <ul class="sub_menu" id="synthetic_network_load_options"></ul>
                         </li>
                         <hr>
@@ -1270,6 +1269,7 @@
     <script src="static/resize_plots.js"></script>
     <script src="static/export_chart_data.js"></script>
     <script src="static/end_user_tech.js"></script>
+    <script src="static/network_load_options.js"></script>
 </div>
 </body>
 </html>

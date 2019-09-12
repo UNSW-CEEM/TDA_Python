@@ -16,10 +16,19 @@ var check_for_synthetic_options_then_update_check_list = function(event, checked
     }
 }
 
-var add_option_to_ui = function(data){
-    var option_name = data['name']
+var build_network_load_options = function(){
+    // This script gets the different load options and puts them in the load selector
+    $.getJSON("/network_load_names", function(json){
+        $('#synthetic_network_load_options').empty()
+        $.each(json, function(i, name){
+            add_option_to_ui(name)
+        });
+    });
+}
+
+var add_option_to_ui = function(option_name){
     var option_template = '<li><input class=\"synthetic_network_load_option menu_check_list\" type=\"checkbox\"' +
-                          'value=\"{}\" onclick=\"update_check_list(event, this)\"><div>{}</div></li>'
+                          'value=\"{}\" onclick=\"update_check_list(event, this)\"><div class="menu_check_list_label">{}</div></li>'
     var option_with_name = option_template.replace(/{}/g, option_name)
     $('#synthetic_network_load_options').append($(option_with_name))
     var synthetic_options = $('.synthetic_network_load_option');
@@ -30,3 +39,4 @@ var add_option_to_ui = function(data){
     })
 }
 
+build_network_load_options();
