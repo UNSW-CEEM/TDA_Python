@@ -1,31 +1,33 @@
 var add_demo_selectors = function(response){
     var arraylength = response.actual_names.length
 
-    // Hide existing selectors and remove content
-    for (var i = 0; i < 10; i++){
-        selector_id = "demo_select_" + i.toString()
-        div_id = "demo_" + i.toString()
-        label_id = "demo_label_" + i.toString()
-        var label = document.getElementById(label_id);
-        $('#'+div_id).hide()
-        $('#'+selector_id).find('option').remove()
-        label.innerHTML = ''
+    // Delete the existing selectors and remove content
+    $("#demo_label_col").empty();
+    $("#demo_selector_col").empty();
+
+
+    // Add the required selectors and add the content to them.
+    for (var i = 0; i < arraylength; i++){
+        var name = response.display_names[response.actual_names[i]]
+        $("#demo_label_col").append("<div class=\"label_stacked\">{}</div>".replace(/{}/g, name))
+        $("#demo_selector_col").append("<select id=\"{}\" class=\"select_demo\"></select>".replace(/{}/g, name))
+        $.each(response.options[response.actual_names[i]], function(i, obj){
+                $('#'+name).append($('<option>').text(obj));
+        });
+        $('#'+name).val('All')
     }
 
-    // Show the required selectors and add the new content to them.
-    for (var i = 0; i < arraylength; i++){
-        selector_id = "demo_select_" + i.toString()
-        label_id = "demo_label_" + i.toString()
-        div_id = "demo_" + i.toString()
-        $.each(response.options[response.actual_names[i]], function(i, obj){
-                $('#'+selector_id).append($('<option>').text(obj));
-        });
-        var label = document.getElementById(label_id);
-        $('#'+selector_id).val('All')
-        $('#'+div_id).show()
-        var name = response.display_names[response.actual_names[i]]
-        label.innerHTML = name
-    }
+    // Bind plotting of load to newly created selectors.
+    $('.select_demo').on('change', function() {
+        $('#dialog').dialog({modal: true});
+        plot_filtered_load();
+        // Update menu bat status indicator
+        $('#tech_status_not_set').show()
+        $('#tech_status_set').hide()
+    });
+
+    plot_filtered_load();
+
 }
 
 var get_down_sample_setting = function(){
@@ -78,15 +80,9 @@ var get_load_details_from_ui = function(){
 
     var filter_options = {}
 
-    for (var i = 0; i < 10; i++){
-        selector_id = "demo_select_" + i.toString()
-        label_id = "demo_label_" + i.toString()
-        var label = document.getElementById(label_id);
-        var values = $('#' + selector_id).val();
-        if (label.innerHTML !== ''){
-                filter_options[label.innerHTML] = values;
-                }
-    }
+    $.each($(".select_demo"), function(i, selector){
+        filter_options[$(selector).attr('id')] = $(selector).val();
+    });
 
     var file_name = $('#select').children("option:selected").val();
 
@@ -107,28 +103,24 @@ var get_load_details_from_ui = function(){
 }
 
 var plot_filtered_load =  function(){
-
     // Update menu bat status indicator
     $('#load_status_not_set').show()
     $('#load_status_set').hide()
 
-    $('#dialog').dialog({modal: true});
+    load_request = get_load_details_from_ui()
 
-        load_request = get_load_details_from_ui()
-
-        $.ajax({
-        url: '/filtered_load_data',
-        data: JSON.stringify(load_request),
-        contentType: 'application/json;charset=UTF-8',
-        type : 'POST',
-        async: 'false',
-        dataType:"json",
-        success: function(data){
-                alert_user_if_error(data)
-                plot_load(data);
-            }
-        });
-
+    $.ajax({
+    url: '/filtered_load_data',
+    data: JSON.stringify(load_request),
+    contentType: 'application/json;',
+    type : 'POST',
+    async: 'false',
+    dataType:"json",
+    success: function(data){
+            alert_user_if_error(data)
+            plot_load(data);
+        }
+    });
 }
 
 var plot_load = function(response){
@@ -158,33 +150,34 @@ var print_n_users = function(n_users){
     label.innerHTML = 'No. of users: ' + n_users ;
 }
 
-var make_loading_popup = function(){
-  let params = `scrollbars=no, resizable=no, status=no, location=no, toolbar=no, menubar=no,
-  width=300,height=50,left=500,top=500`;
-  let newWindow = open(',', 'example', params)
-  newWindow.focus();
-
-  newWindow.onload = function() {
-    let html = `<div style="font-size:20px, background-color: #EEEEEE; text-align: center;">Please Wait! Loading data.</div>`;
-    newWindow.document.write(html);
-  };
-  return newWindow
-}
 
 var perform_plot_load_actions = function(){
     var file_name = $('#select').children("option:selected").val();
-    if (file_name != 'Select one'){
-        $.getJSON('/get_demo_options/' + file_name, add_demo_selectors);
-        plot_filtered_load();
-    } else {
-        $("#message_dialog").dialog({ modal: true});
-        $("#message_dialog p").text('Please select a load file.')
-        $('#load_status_not_set').show()
-        $('#load_status_set').hide()
-    }
+    $.ajax({
+        url: '/put_load_profiles_in_memory',
+        data: JSON.stringify({'file_name': file_name}),
+        contentType: 'application/json',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        success: function(data){
+            alert_user_if_error(data)
+            if (file_name != 'Select one'){
+                $.getJSON('/get_demo_options/' + file_name, add_demo_selectors);
+            } else {
+                $("#demo_label_col").empty();
+                $("#demo_selector_col").empty();
+                $("#load_chart").empty();
+                $('#load_status_not_set').show();
+                $('#load_status_set').hide();
+                $('#dialog').dialog('close');
+            }
+        }
+    });
 }
 
 $('#select').on('change', function() {
+    $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
     $('#tech_status_not_set').show()
@@ -192,6 +185,7 @@ $('#select').on('change', function() {
 });
 
 $('.down_sample_option').on('change', function() {
+    $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
     $('#tech_status_not_set').show()
@@ -199,20 +193,15 @@ $('.down_sample_option').on('change', function() {
 });
 
 $('.missing_data_limit').on('change', function() {
+    $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
     $('#tech_status_not_set').show()
     $('#tech_status_set').hide()
 });
 
-$('.select_demo').on('change', function() {
-    plot_filtered_load();
-    // Update menu bat status indicator
-    $('#tech_status_not_set').show()
-    $('#tech_status_set').hide()
-});
-
 $('#select_graph').on('change', function() {
+    $('#dialog').dialog({modal: true});
     plot_filtered_load();
 });
 

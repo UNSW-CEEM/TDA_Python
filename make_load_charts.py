@@ -87,6 +87,7 @@ def get_daily_kWh_hist(load, load_filtered, series_name):
             data ={'data': [trace1, trace2], 'layout':layout}
             return data
 
+
 def get_daily_average_profile(x):
     x_array = np.array(x).reshape((-1,48))
     return np.nanmean(x_array,axis=0)
@@ -121,6 +122,7 @@ def get_daily_profiles(load):
 
         return data
 
+
 def get_daily_profile_interquartile(load):
 
     Xaxis = "Time"
@@ -152,6 +154,7 @@ def get_daily_profile_interquartile(load):
 
         return data
 
+
 def get_average_load_duration_curve(load):
 
     Xaxis = "Time"
@@ -174,6 +177,7 @@ def get_average_load_duration_curve(load):
         trace = go.Scatter(x=load_average_sort.index,y=load_average_sort.values)
         data = {'data': [trace], 'layout':layout}
         return data
+
 
 def get_average_peak_day_profile(load):
 
@@ -209,6 +213,7 @@ def get_average_peak_day_profile(load):
         data = {'data': [trace], 'layout':layout}
         return data
 
+
 def get_monthly_average_kWh(load):
 
     Xaxis = "Daily Electricity (kWh)"
@@ -238,6 +243,7 @@ def get_monthly_average_kWh(load):
         data = {'data': [trace], 'layout':layout}
 
         return data
+
 
 def get_seasonal_daily_pattern(load):
 
@@ -280,6 +286,7 @@ def get_seasonal_daily_pattern(load):
 
         data = {'data': [trace1, trace2], 'layout':layout}
         return data
+
 
 chart_methods = {'Annual Average Profile': get_average_annual_profile,
                  'Daily kWh Histogram':get_daily_kWh_hist,

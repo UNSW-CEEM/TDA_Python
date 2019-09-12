@@ -37,9 +37,9 @@
     <script src="static/project_menu.js"></script>
     <script src="static/css-element-queries-1.0.0/src/ResizeSensor.js"></script>
     <script src="static/css-element-queries-1.0.0/src/ElementQueries.js"></script>
-    <script src="static/end_user_tech.js"></script>
     <script src="static/export.js"></script>
     <script src="static/errors.js"></script>
+    <script src="static/tou_analysis.js"></script>
 
 
   <style>
@@ -57,12 +57,27 @@
         font-size: 1.75vh;
       }
 
-      select {
+      select, input {
         height: 3.0vh;
-        margin-bottom: 1.2vh;
+        margin-bottom: 1.25vh;
         width: 100%;
         font-size: 1.75vh;
         max-width: 200px;
+        padding: 0;
+        box-sizing: border-box;
+      }
+
+      input {
+        width: 100%;
+        display: inline;
+        max-width: 600px;
+      }
+
+      .label_stacked {
+        height: 2.25vh;
+        padding-bottom: 1.625vh;
+        padding-top: 0.375vh;
+        width: 100%;
       }
 
       button {
@@ -76,36 +91,9 @@
         padding: 0.25vh;
       }
 
-      input {
-        height: 2.25vh;
-        width: 100%;
-        display: inline;
-        margin: 0;
-      }
-
-      .tariff_input {
-        width: 70%;
-        margin-bottom: 1.2vh;
-      }
-
       .tariff_label {
         width: 100%;
         float: left;
-      }
-
-      .label_stacked {
-        height: 2.25vh;
-        margin-bottom: 1.625vh;
-        padding-top: 0.375vh;
-        width: 100%;
-      }
-
-      .input_stacked {
-        height: 3.0vh;
-        margin-bottom: 1.3vh;
-        font-size: 1.75vh;
-        max-width: 200px;
-        box-sizing: border-box;
       }
 
       .label_close_stacked {
@@ -119,34 +107,20 @@
             font-size: 14px;
         }
 
-        select {
+        select, input {
             height: 24px;
-            margin-bottom: 10.4px;
-        }
-
-        .input_stacked {
-            height: 24px;
-            margin-bottom: 10.4px;
-        }
-
-        input {
-            height: 18px;
-        }
-
-        .tariff_input {
-            margin-bottom: 9.6px;
+            margin-bottom: 10px;
         }
 
         .label_stacked {
             height: 18px;
-            margin-bottom: 13px;
+            padding-bottom: 13px;
             padding-top: 3px;
         }
 
         .label_close_stacked {
             margin-bottom: 4px;
         }
-
 
       }
 
@@ -486,17 +460,28 @@
 
     <div id="tariff_meta_details_editor" title="Set tariff details" style="display: none;">
         <label class="label_close_stacked">Name</label>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all name tariff_input">
+        <br/>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all name">
+        <br/>
         <label class="label_close_stacked">Provider</label>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all provider tariff_input">
+        <br/>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all provider">
+        <br/>
         <label class="label_close_stacked">Type</label>
-        <input type="text"  value="" class="text ui-widget-content ui-corner-all type tariff_input">
+        <br/>
+        <input type="text"  value="" class="text ui-widget-content ui-corner-all type">
+        <br/>
         <label class="label_close_stacked">State</label>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all state tariff_input">
+        <br/>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all state">
+        <br/>
         <label class="label_close_stacked">Year</label>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all year tariff_input">
+        <br/>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all year ">
+        <br/>
         <label class="label_close_stacked">Info</label>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all info tariff_input">
+        <br/>
+        <input type="text" value="" class="text ui-widget-content ui-corner-all info">
     </div>
 
     <div id="case_namer" title="Basic dialog" style="display: none">
@@ -733,65 +718,14 @@
                             </div>
                         </div>
                     </div>
-                    <div class="col input_col" style="width: 49%;">
+                    <div class="col input_col" style="width: 50%;">
                         <div class="row">
                             <h4 style="margin: 0;">Demographic Filters</h4>
-                            <hr style="width: 100%; float: left; margin-bottom: 1.5vh;">
+                            <hr style="width: 99%; float: left; margin-bottom: 1.5vh;">
                         </div>
                         <div id="demograhphic_selection" class="row" style="overflow: hidden">
-                            <div id="demo_label_col" class="col" style="width: 75%;">
-                                <div id="demo_label_0" class="label_stacked"></div>
-                                <div id="demo_label_1"  class="label_stacked"></div>
-                                <div id="demo_label_2" class="label_stacked"></div>
-                                <div id="demo_label_3"  class="label_stacked"></div>
-                                <div id="demo_label_4"  class="label_stacked"></div>
-                                <div id="demo_label_5" class="label_stacked"></div>
-                                <div id="demo_label_6" class="label_stacked"></div>
-                                <div id="demo_label_7" class="label_stacked"></div>
-                                <div id="demo_label_8"  class="label_stacked"></div>
-                                <div id="demo_label_9"  class="label_stacked"></div>
-                            </div>
+                            <div id="demo_label_col" class="col" style="width: 75%;"></div>
                             <div id="demo_selector_col" class="col" style="width: 25%;">
-                                <div id="demo_0" class="demo_select_container">
-                                    <select  id="demo_select_0" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_0').hide() </script>
-                                <div id="demo_1" class="demo_select_container">
-                                    <select class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_1').hide() </script>
-                                <div id="demo_2" class="demo_select_container">
-                                    <select  id="demo_select_2" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_2').hide() </script>
-                                <div id="demo_3" class="demo_select_container">
-                                    <select  id="demo_select_3" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_3').hide() </script>
-                                <div id="demo_4" class="demo_select_container">
-                                    <select  id="demo_select_4" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_4').hide() </script>
-                                <div id="demo_5" class="demo_select_container">
-                                    <select  id="demo_select_5" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_5').hide() </script>
-                                <div id="demo_6" class="demo_select_container">
-                                    <select  id="demo_select_6" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_6').hide() </script>
-                                <div id="demo_7" class="demo_select_container">
-                                    <select  id="demo_select_7" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_7').hide() </script>
-                                <div id="demo_8" class="demo_select_container">
-                                    <select  id="demo_select_8" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_8').hide() </script>
-                                <div id="demo_9" class="demo_select_container">
-                                    <select  id="demo_select_9" class="select_demo"></select>
-                                </div>
-                                <script> $('#demo_9').hide() </script>
                             </div>
                         </div>
                     </div>
@@ -837,11 +771,11 @@
                                 <div class="label_stacked">Solar profiles :</div>
                             </div>
                             <div class="col solar_inputs" style="width: 20%">
-                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
+                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100"
                                        value="0">
-                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
-                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
-                                <select class="input_stacked" name="profiles"></select>
+                                <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
+                                <select class="sample_parameter" name="profiles"></select>
                             </div>
                         </div>
                         <div class="row" style="overflow: hidden;">
@@ -855,16 +789,22 @@
                                 <div class="label_stacked">Standard deviation (kW):</div>
                                 <div class="label_stacked">Mean power/energy ratio:</div>
                                 <div class="label_stacked">Standard deviation:</div>
+                                <div class="label_stacked">Restriction:</div>
                                 <div class="label_stacked">Operational strategy:</div>
                             </div>
                             <div class="col battery_inputs" style="width: 20%">
-                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
-                                       value="0">
-                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
-                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
-                                <input class="input_stacked" name="mean_power_to_energy" type="number" min="0" value="0">
-                                <input class="input_stacked" name="power_to_energy_standard_dev" type="number" min="0" value="0">
-                                <select class="input_stacked" name="strategy"></select>
+                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100" value="0">
+                                <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="mean_power_to_energy" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="power_to_energy_standard_dev" type="number" min="0" value="0">
+                                <select class="sample_parameter" name="restriction">
+                                    <option>None</option>
+                                    <option>Customers with solar</option>
+                                </select>
+                                <select class="operational_parameter" name="strategy">
+                                    <option>Maximise self consumption</option>
+                                </select>
                             </div>
                         </div>
                     </div>
@@ -883,13 +823,12 @@
                                 <div class="label_stacked">Energy conservation:</div>
                             </div>
                             <div class="col demand_response_inputs" style="width: 20%;">
-                                <input class="input_stacked" name="penetration" type="number" min="0" max="100"
-                                       value="0">
-                                <input class="input_stacked" name="mean_size" type="number" min="0" value="0">
-                                <input class="input_stacked" name="standard_dev" type="number" min="0" value="0">
-                                <input class="input_stacked" name="max_response_time" type="number" min="0" value="0">
-                                <input class="input_stacked" name="events_limit" type="number" min="0" value="0">
-                                <select class="input_stacked" name="energy_conservation">
+                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100"value="0">
+                                <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="max_response_time" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="events_limit" type="number" min="0" value="0">
+                                <select class="operational_parameter" name="energy_conservation">
                                     <option>Yes</option>
                                     <option>No</option>
                                 </select>
@@ -901,8 +840,30 @@
                         </div>
                         <div class="row" style="overflow: hidden;">
                             <div class="col" style="width: 80%">
-                                <button style="width: 80%; text-align: left; height: 3.25vh;"
-                                        onclick="add_end_user_tech()">Add end user tech</button>
+                                <button style="width: 100%; text-align: left; height: 3.25vh;"
+                                        onclick="create_end_user_tech_from_sample_from_gui()">
+                                        <font id="tech_from_gui_status_not_set" color="black" style="display: inline;">&#9675;</font>
+                                        <font id="tech_from_gui_status_set" color="green" style="display: none;">&#9679;</font>
+                                        Create end user tech sample
+                                </button>
+                                <button style="width: 100%; text-align: left; height: 3.25vh;"
+                                        onclick="load_end_user_tech_from_sample_from_file()">
+                                        <font id="tech_from_file_status_not_set" color="black" style="display: inline;">&#9675;</font>
+                                        <font id="tech_from_file_status_set" color="green" style="display: none;">&#9679;</font>
+                                        Load end user tech sample from file
+                                </button>
+                                <button id="calc_net_profiles" style="width: 100%; text-align: left; height: 3.25vh;"
+                                        onclick="calc_sample_net_load_profiles()">
+                                        <font id="net_load_profiles_status_not_set" color="black" style="display: inline;">&#9675;</font>
+                                        <font id="net_load_profiles_status_set" color="green" style="display: none;">&#9679;</font>
+                                        Calc sample net load profiles
+                                </button>
+                                <button id="save_tech_sample" style="width: 100%; text-align: left; height: 3.25vh;"
+                                        onclick="save_end_user_tech_sample()">
+                                        <font id="tech_sample_saved_status_not_set" color="black" style="display: inline;">&#9675;</font>
+                                        <font id="tech_sample_saved_status_set" color="green" style="display: none;">&#9679;</font>
+                                        Save current sample to file
+                                </button>
                             </div>
                         </div>
                     </div>
@@ -911,11 +872,18 @@
                 <div id="net_load_inspection" style="overflow: hidden; height: 38%">
                     <div style="height: 10%; overflow: hidden;">
                         <select  id="select_net_graph" style="float: right; width: 30%;">
-                            <option value="">Some awesome charts!</option>
+                            <option value="Annual Average Profile"> Annual Average Profile</option>
+                            <option value="Daily Profiles">Daily Profiles</option>
+                            <option value="Daily Profile Interquartile Range">Daily Profile Interquartile Range</option>
+                            <option value="Daily kWh Histogram">Daily kWh Histogram</option>
+                            <option value="Average Load Duration Curve">Average Load Duration Curve</option>
+                            <option value="Average Peak Day Profile">Average Peak Day Profile</option>
+                            <option value="Monthly Average kWh">Monthly Average kWh</option>
+                            <option value="Seasonal Daily Pattern">Seasonal Daily Pattern</option>
                         </select>
                         <div class="label_line" style="float: right;">Show:&nbsp</div>
                     </div>
-                    <div class="chart" id="net_load_chart" style="height: 100%;"></div>
+                    <div class="chart" id="net_load_chart" style="height: 90%;"></div>
                 </div>
             </div>
         </div>
@@ -958,7 +926,6 @@
                             <select id="dual_variable_x_axis" style="width: 80%">
                                 <option value="Annual_kWh">Annual kWh</option>
                                 <option value="avg_demand_n_peaks">Average Demand at 'N' Network Peaks</option>
-
                                 <option value="avg_demand_n_monthly_peaks">Average Demand at 'N' Network Monthly Peaks</option>
                                 <option value="avg_demand_top_n_peaks">Average Demand at Top 'N' Peaks</option>
                                 <option value="avg_demand_top_n_monthly_peaks">Average Demand at Top 'N' Monthly Peaks</option>
@@ -966,7 +933,6 @@
                                 <option value="avg_daily_peak">Average Daily Peak</option>
                                 <option value="Bill">Bill ($/year)</option>
                                 <option value="unitised_bill_kW">Unitised Bill (kW)</option>
-
                             </select>
                             <script src="static/plot_results.js"></script>
                             <br/>
@@ -1005,8 +971,8 @@
                                 </div>
                             </div>
                             <div class="col" style="width: 10%">
-                                <input class="x_peak_options input_stacked" id="x_one_peak_a_day" type="checkbox">
-                                <input class="y_peak_options input_stacked" id="y_one_peak_a_day" type="checkbox">
+                                <input class="x_peak_options" id="x_one_peak_a_day" type="checkbox">
+                                <input class="y_peak_options" id="y_one_peak_a_day" type="checkbox">
                             </div>
                             <script src="static/plot_results.js"></script>
                         </div>
@@ -1017,10 +983,8 @@
                                     <div class="label_stacked" style="width: 60%">Autumn:</div>
                                 </div>
                                 <div class="col" style="width: 30%">
-                                    <input id="include_spring" class="input_stacked season_option"
-                                           type="checkbox" checked>
-                                    <input id="include_autumn" class="input_stacked season_option"
-                                           type="checkbox" checked>
+                                    <input id="include_spring" class="season_option" type="checkbox" checked>
+                                    <input id="include_autumn" class="season_option"type="checkbox" checked>
                                 </div>
                             </div>
                             <div class="col" style="width: 50%;">
@@ -1029,10 +993,8 @@
                                     <div class="label_stacked" style="width: 60%">Winter:</div>
                                 </div>
                                 <div class="col" style="width: 30%">
-                                    <input id="include_summer" class="input_stacked season_option"
-                                           type="checkbox" checked>
-                                    <input id="include_winter" class="input_stacked season_option"
-                                           type="checkbox" checked>
+                                    <input id="include_summer" class="season_option" type="checkbox" checked>
+                                    <input id="include_winter" class="season_option" type="checkbox" checked>
                                 </div>
                             </div>
                         </div>
@@ -1073,7 +1035,7 @@
                                 onclick="displayCaseInfoType(event, 'demog_info')">Demog info</button>
                         <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'wholesale_price_info')">
-                            Wholesale price info</button>
+                                Wholesale price info</button>
                         <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'retail_tariff_info')">Retail tariff info</button>
                         <button class="case_tab_links"
@@ -1307,8 +1269,7 @@
     <script>document.getElementById("default_panel").click();</script>
     <script src="static/resize_plots.js"></script>
     <script src="static/export_chart_data.js"></script>
-
-
+    <script src="static/end_user_tech.js"></script>
 </div>
 </body>
 </html>
