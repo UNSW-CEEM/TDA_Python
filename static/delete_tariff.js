@@ -20,6 +20,7 @@ var delete_tariff = function(div_that_got_clicked){
             alert_user_if_error(data);
             reset_tariff_options(tariff_type_tab_id);
             tear_down_tables_in_tariff_type_panel(tariff_type_tab_id);
+            set_save_button_to_normal_state(tariff_type_tab_id);
             }
     });
 }

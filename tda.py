@@ -13,8 +13,7 @@ import format_case_for_export
 import format_chart_data_for_export
 import start_up_procedures
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
-    get_options_from_tariff_set, strip_tariff_to_single_component
-
+    get_options_from_tariff_set, _make_dict
 from make_price_charts import get_price_chart
 from wholesale_energy import get_wholesale_prices, calc_wholesale_energy_costs
 import pickle
@@ -23,6 +22,8 @@ from openpyxl import Workbook
 import errors
 import logging
 import math
+import validate_component_table_cell_values
+import check_time_of_use_coverage
 
 enable_logging = False
 
@@ -111,66 +112,69 @@ def set_tariff_set_in_use():
     return jsonify({'message': 'done'})
 
 
+@app.route('/put_load_profiles_in_memory', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def put_load_profiles_in_memory():
+    load_request = request.get_json()
+    file_name = load_request['file_name']
+    current_session.raw_data_name = file_name
+    # Get raw load data.
+    if file_name not in current_session.raw_data:
+        current_session.raw_data[file_name] = data_interface.get_load_table('data/load/', load_request['file_name'])
+    return jsonify({'message': 'done'})
+
+
 @app.route('/filtered_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def filtered_load_data():
 
     load_request = request.get_json()
+    file_name = load_request['file_name']
+    chart_type = load_request['chart_type']
 
-    # Get raw load data and downsample
+    print('hi the down sample option is {}'.format(load_request['sample_fraction']))
+
+    # Get raw load data.
     if load_request['file_name'] not in current_session.raw_data:
         current_session.raw_data[load_request['file_name']] = \
             data_interface.get_load_table('data/load/', load_request['file_name'])
 
-        # Filter by missing data
-        current_session.raw_data[load_request['file_name']] = current_session.raw_data[load_request['file_name']].set_index('Datetime')
-        raw_data = current_session.raw_data[load_request['file_name']]
-        missing_data_limit = load_request['missing_data_limit']
-        current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
-
-        # Down sample data randomly
-        number_of_loads = len(current_session.filter_missing_data.columns)
-        number_of_loads_downsampled = math.ceil(number_of_loads * load_request['sample_fraction'])
-        if number_of_loads_downsampled < 1:
-            number_of_loads_downsampled = 1
-        current_session.downsample_data = current_session.filter_missing_data.sample(n=number_of_loads_downsampled, axis=1)
-
-    # Filter data by demographic
+    # Filter data
     demo_info_file_name = data_interface.find_loads_demographic_file(load_request['file_name'])
     demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
+
     current_session.filtered_demo_info, current_session.is_filtered = \
         helper_functions.filter_demo_info(demo_info, load_request['filter_options'])
     current_session.filtered_data = helper_functions.filter_load_data(
-        current_session.downsample_data, current_session.filtered_demo_info)
-
-    if not current_session.is_filtered:
-        current_session.filtered_data = current_session.downsample_data
+        current_session.raw_data[load_request['file_name']], current_session.filtered_demo_info)
 
     # Create the requested chart data if it does not already exist.
     if load_request['file_name'] not in current_session.raw_charts:
         current_session.raw_charts[load_request['file_name']] = {}
-    # if load_request['chart_type'] not in raw_charts[load_request['file_name']]:
 
-    if load_request['chart_type'] in ['Annual Average Profile', 'Daily kWh Histogram']:
-        current_session.raw_charts[load_request['file_name']][load_request['chart_type']] = \
-            chart_methods[load_request['chart_type']](current_session.raw_data[load_request['file_name']],
-                                                      current_session.filtered_data, series_name=['All', 'Selected'])
-    else:
-        current_session.raw_charts[load_request['file_name']][load_request['chart_type']] = \
-            chart_methods[load_request['chart_type']](current_session.filtered_data)
+    if load_request['chart_type'] not in current_session.raw_charts[load_request['file_name']]:
+        if load_request['chart_type'] in ['Annual Average Profile', 'Daily kWh Histogram']:
+            current_session.raw_charts[load_request['file_name']][load_request['chart_type']] = \
+                chart_methods[load_request['chart_type']](current_session.raw_data[load_request['file_name']],
+                                                        current_session.filtered_data, series_name=['All'])
+        else:
+            current_session.raw_charts[load_request['file_name']][load_request['chart_type']] = \
+                chart_methods[load_request['chart_type']](current_session.raw_data[load_request['file_name']])
 
     #### prepare chart data and n_users
-    chart_data = current_session.raw_charts[load_request['file_name']][load_request['chart_type']]
+    current_session.filtered_charts = {}
+    current_session.filtered_charts[load_request['file_name']] = {}
+
     if current_session.is_filtered:
-
-        if load_request['chart_type'] in ['Annual Average Profile','Daily kWh Histogram']:
-            current_session.filtered_charts[load_request['file_name']][load_request['chart_type']] = \
-                chart_methods[load_request['chart_type']](current_session.raw_data[load_request['file_name']], current_session.filtered_data, series_name=['All', 'Selected'])
+        if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
+            current_session.filtered_charts[file_name][chart_type] = \
+                chart_methods[chart_type](current_session.raw_data[file_name], current_session.filtered_data,
+                                          series_name=['All', 'Selected'])
         else:
-            current_session.filtered_charts[load_request['file_name']][load_request['chart_type']] = \
-                chart_methods[load_request['chart_type']](current_session.filtered_data)
+            current_session.filtered_charts[file_name][chart_type] = \
+                chart_methods[chart_type](current_session.filtered_data)
 
-        chart_data = current_session.filtered_charts[load_request['file_name']][load_request['chart_type']]
+        chart_data = current_session.filtered_charts[file_name][chart_type]
         n_users = helper_functions.n_users(current_session.filtered_data)
     else:
 
@@ -333,7 +337,6 @@ def get_dual_variable_chart():
     return dual_variable_chart(load_and_results_to_plot, details)
 
 
-
 @app.route('/get_single_case_chart', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def get_single_case_chart():
@@ -362,7 +365,9 @@ def get_demo_options(name):
     demo_file_name = data_interface.find_loads_demographic_file(name)
 
     if demo_file_name != '' and demo_file_name in os.listdir('data/demographics/'):
-        demo = pd.read_csv('data/demographics/' + demo_file_name)
+        demo = pd.read_csv('data/demographics/' + demo_file_name, dtype=str)
+        demo = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
+            current_session.raw_data[current_session.raw_data_name], demo)
         demo_options = helper_functions.get_demographic_options_from_demo_file(demo)
     else:
         demo_options = {'actual_names': [], "display_names": {}, "options": {}}
@@ -471,6 +476,33 @@ def save_tariff():
     return jsonify({'message': 'done'})
 
 
+@app.route('/get_active_tariff_version', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def get_active_tariff_version():
+    # Get the demographic filtering options associated with a particular case.
+    details = request.get_json()
+    tariff_type = details['type']
+    if tariff_type == 'Network':
+        with open('data/NetworkTariffs.json', 'rt') as json_file:
+            tariffs = json.load(json_file)
+            version = tariffs[0]['Version']
+    else:
+        with open('data/RetailTariffs.json', 'rt') as json_file:
+            tariffs = json.load(json_file)
+            version = tariffs[0]['Version']
+    return jsonify({'version': version})
+
+
+@app.route('/get_tou_analysis', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def get_tou_analysis():
+    # Get the demographic filtering options associated with a particular case.
+    tariff_table_data = request.get_json()
+    tariff_table_data = _make_dict(tariff_table_data)
+    analysis_result = check_time_of_use_coverage.compile_set_of_overlapping_components_on_yearly_basis(tariff_table_data)
+    return jsonify({'message': analysis_result})
+
+
 @app.route('/delete_tariff', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def delete_tariff():
@@ -483,7 +515,7 @@ def delete_tariff():
 
     for file_type in ['', 'UserDefined']:
         with open('data/{}{}.json'.format(file_type, file_name), 'rt') as json_file:
-            if file_type == '' and file_name == 'NetworkTariffs':
+            if file_type == '':
                 tariffs = json.load(json_file)
                 for i, tariff in enumerate(tariffs[0]['Tariffs']):
                     if request_details['tariff_name'] == tariff['Name']:
@@ -620,6 +652,16 @@ def export_chart_data():
     elif request_details['export_type'] == 'clipboard':
         export_data.to_clipboard(index=False)
     return jsonify({'message': "Your export is done!"})
+
+
+@app.route('/validate_tariff_cell', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def validate_tariff_cell():
+    request_details = request.get_json()
+    cell_value = request_details['cell_value']
+    column_name = request_details['column_name']
+    message = validate_component_table_cell_values.validate_data(cell_value, column_name)
+    return jsonify({'message': message})
 
 
 @app.route('/restart_tool', methods=['POST'])

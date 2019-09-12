@@ -38,7 +38,7 @@ class InMemoryData:
         self.filter_missing_data = {}
         self.filtered_data = None  # Data after applying user specified filtering
         self.is_filtered = False  # Flag to indicate if filtering has been applied
-
+        self.raw_data_name = ''
         # Chart data for the load plots, only storing data for non filtered data as filtering can change between plot
         # updates.
         # Stored on a file name basis.

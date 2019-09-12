@@ -28,7 +28,7 @@ def get_tariffs(tariff_type):
             user_tariffs = json.load(json_file)
     else:
         with open('data/RetailTariffs.json') as json_file:
-            tariffs = json.load(json_file)
+            tariffs = json.load(json_file)[0]['Tariffs']
         with open('data/UserDefinedRetailTariffs.json') as json_file:
             user_tariffs = json.load(json_file)
     tariffs = tariffs + user_tariffs

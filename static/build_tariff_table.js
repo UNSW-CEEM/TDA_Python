@@ -23,6 +23,7 @@ var get_tariff = function(tariff_type_panel){
             success: function(data){
                 alert_user_if_error(data);
                 display_tariff_info(tariff_type_panel, data);
+                set_save_button_to_normal_state(tariff_type_panel);
             }
         });
 
@@ -120,11 +121,23 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables,
             // Put contents in table.
             display_table_data(parameter_type, table_name, table_data, editable, multi_row, tariff_type_panel);
 
+            // If the tariff is time dependent then add the time of use analysis button.
+            if (table_data['table_header'].includes("TimeIntervals")){
+                var tou_analysis_button =  "<button onclick=\"launch_tou_analysis('{a}', '{b}', '{c}')\">&#x1F550;</button>"
+            } else {
+                var tou_analysis_button = ""
+            }
+
             // Insert a button for adding a row to the table
             if (editable){
                 if (multi_row){
-                    $("<div class='{c}' style='width: 100%; height: 5vh'><button onclick=\"user_add_row('{a}', '{b}', '{c}')\">&#10010;</button><button onclick=\"user_delete_table('{a}', '{c}')\">&#10006</button></div>"
-                    .replace(/{a}/g, tariff_type_panel).replace(/{b}/g, parameter_type).replace(/{c}/g, table_name)).appendTo($("#" + parameter_type))
+                    html_to_add = "<div class='{c}' style='width: 100%; height: 5vh'>" +
+                                    "<button onclick=\"user_add_row('{a}', '{b}', '{c}')\">&#10010;</button>" +
+                                    "<button onclick=\"user_delete_table('{a}', '{c}')\">&#10006;</button>" +
+                                    tou_analysis_button +
+                                  "</div>"
+                    html_to_add = html_to_add.replace(/{a}/g, tariff_type_panel).replace(/{b}/g, parameter_type).replace(/{c}/g, table_name)
+                    $(html_to_add).appendTo($("#" + parameter_type))
                 } else {
                     $("<div class='{b}' style='width: 100%; height: 5vh'><button onclick=\"user_delete_table('{a}', '{b}')\">&#10006</button></div>"
                     .replace(/{a}/g, tariff_type_panel).replace(/{b}/g, table_name)).appendTo($("#" + parameter_type))
@@ -182,7 +195,7 @@ var display_table_data = function(parameter_type, table_name, table_data, editab
 
     // If turned on add editing functionality.
     if (editable){
-        table.MakeCellsEditable({"onUpdate": update_table_structures_after_edit,
+        table.MakeCellsEditable({"onUpdate": edit_validate,
                                  "columns": columns_to_edit(table_data, multi_row)});
     }
 }
@@ -255,6 +268,7 @@ var user_add_row = function(tariff_type_panel, parameter_type, table_name){
     $.each(tables, function(i, table){
         $(table).DataTable().row.add(last_row).draw();
     });
+    set_save_button_to_alert_state(tariff_type_panel);
 }
 
 var user_delete_row = function(row, tariff_type_panel){
@@ -265,7 +279,7 @@ var user_delete_row = function(row, tariff_type_panel){
     $.each(tables_to_edit, function(i, table_to_edit){
         $(table_to_edit).DataTable().row(row_index).remove().draw();
     });
-    //table.DataTable().row($(row).parents('tr')).remove().draw();
+    set_save_button_to_alert_state(tariff_type_panel);
 }
 
 var user_delete_table = function(tariff_type_panel, table_name){
@@ -274,6 +288,7 @@ var user_delete_table = function(tariff_type_panel, table_name){
         tear_down_current_table(table, true);
     });
     $('#' + tariff_type_panel + ' .' + table_name).remove()
+    set_save_button_to_alert_state(tariff_type_panel);
 }
 
 var columns_to_edit = function(table_data, multi_row){
@@ -317,4 +332,48 @@ var get_value_index_in_header = function(table_name){
         }
     }
     return value_index
+}
+
+var edit_validate  = async function(cell, row, oldValue){
+    var edited_table_id = row.table().node().id
+    var edited_table = $('#' + edited_table_id)
+    var tariff_type_panel = $(edited_table).closest('.tariff_type_tab_content').attr('id');
+
+    valid = false
+    request_details = {'cell_value': cell.data(),
+                       'column_name': $(edited_table).DataTable().column(cell.index()['column']).header().innerHTML}
+    let data = await get_validation_message(request_details);
+
+    if (data['message'] == ''){
+        update_table_structures_after_edit(cell, row)
+        $(cell.node()).css('color', 'black')
+        $('#' + tariff_type_panel + ' .save_mod_button').prop('disabled', false)
+    } else {
+        $('#error_dialog').dialog({modal: true})
+        $('#error_dialog p').text(data['message'])
+        $(cell.node()).css('color', 'red')
+        $('#' + tariff_type_panel + ' .save_mod_button').prop('disabled', true)
+        //cell.data(oldValue)
+    }
+
+    if (cell.data() != oldValue){
+        set_save_button_to_alert_state(tariff_type_panel);
+    }
+
+
+}
+
+var set_save_button_to_alert_state = function(tariff_type_panel){
+    $('#' + tariff_type_panel + ' .save_mod_button').css('color', 'orange');
+}
+
+async function get_validation_message(request_details){
+    return Promise.resolve($.ajax({
+        url: '/validate_tariff_cell',
+        data: JSON.stringify(request_details),
+        contentType: 'application/json;charset=UTF-8',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+    }));
 }
