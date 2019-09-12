@@ -17,9 +17,8 @@ def get_unique_default_case_name(names_in_use):
 
 
 def get_demographic_options_from_demo_file(demo_file):
-    n = len(demo_file.columns) if len(demo_file.columns) < 11 else 11
-    actual_names = list(demo_file.columns[1:n])
-    display_names = list(demo_file.columns[1:n])
+    actual_names = list(demo_file.columns[1:])
+    display_names = list(demo_file.columns[1:])
     options = {}
     display_names_dict = {}
     for name, display_name in zip(actual_names, display_names):
@@ -32,6 +31,13 @@ def filter_load_data(raw_data, filtered_demo_info):
     customer_id = [c_id for c_id in list(filtered_demo_info['CUSTOMER_KEY']) if c_id in raw_data.columns]
     filtered_data = raw_data.loc[:, ['Datetime'] + customer_id]
     return filtered_data
+
+
+def add_missing_customer_keys_to_demo_file_with_nan_values(raw_data, demo_info):
+    customer_keys = [key for key in raw_data.columns if key != 'Datetime']
+    df_with_just_customer_keys_from_load_profiles = pd.DataFrame.from_dict({'CUSTOMER_KEY': customer_keys})
+    demo_info = pd.merge(demo_info, df_with_just_customer_keys_from_load_profiles, how='outer', on='CUSTOMER_KEY')
+    return demo_info
 
 
 def filter_demo_info(demo_info, filter_options):
@@ -72,14 +78,14 @@ def get_results_subset_to_plot(case_names, retail_results_by_case, network_resul
     return results_to_plot
 
 
-def get_file_to_load_from_user():
+def get_file_to_load_from_user(file_type, file_extension):
     root = tk.Tk()
     root.geometry('0x0+0+0')
     root.lift()
     root.attributes('-topmost', True)
     root.after_idle(root.attributes, '-topmost', False)
     root.overrideredirect(True)
-    file_path = filedialog.askopenfilename(parent=root, filetypes=(('pickle file', '.pkl'),))
+    file_path = filedialog.askopenfilename(parent=root, filetypes=((file_type, file_extension),))
     return file_path
 
 

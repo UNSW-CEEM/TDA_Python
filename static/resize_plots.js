@@ -49,7 +49,7 @@ setup_vertical_resizing_pair('#wholesale_price_selection', '#price_inspection', 
 var load_listener = {'div': '', 'window':''}
 setup_vertical_resizing_pair('#load_selection', '#load_inspection', 'load_chart', load_listener);
 var tech_listener = {'div': '', 'window':''}
-setup_vertical_resizing_pair('#end_user_tech_inputs', '#net_load_inspection', 'none', tech_listener);
+setup_vertical_resizing_pair('#end_user_tech_inputs', '#net_load_inspection', 'net_load_chart', tech_listener);
 var network_listener = {'div': '', 'window':''}
 setup_vertical_resizing_pair('#network_tariff_selection_panel .upper_tariff_section',
                              '#network_tariff_selection_panel .lower_tariff_section', 'none', network_listener);
