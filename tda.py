@@ -254,8 +254,8 @@ def add_case():
     if retail_tariff_name != 'None':
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
         retail_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), retail_tariff)
-        retail_results.index.name = 'CUSTOMER_KEY'
-        retail_results = retail_results.reset_index()
+        retail_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
+        retail_results['LoadInfo'] = retail_results['LoadInfo'].reset_index()
         current_session.project_data.retail_results_by_case[case_name] = retail_results
         current_session.project_data.retail_tariffs_by_case[case_name] = retail_tariff
 
