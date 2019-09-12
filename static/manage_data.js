@@ -51,10 +51,12 @@ var import_data = function(data_type, call_back){
             success: function(data){
                 alert_user_if_error(data);
                 $('#import_dialog').dialog('close');
-                $('#message_dialog').dialog({modal: true});
-                $('#message_dialog p').text(data['message']);
-                if (call_back !== undefined){
-                    call_back(data['name']);
+                if ('message' in data){
+                    $('#message_dialog').dialog({modal: true});
+                    $('#message_dialog p').text(data['message']);
+                    if (call_back !== undefined){
+                        call_back(data['name']);
+                    }
                 }
             }
         });
