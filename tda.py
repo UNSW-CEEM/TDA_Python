@@ -123,6 +123,7 @@ def put_load_profiles_in_memory():
         # Get raw load data.
         if file_name not in current_session.raw_data:
             current_session.raw_data[file_name] = data_interface.get_load_table('data/load/', load_request['file_name'])
+            current_session.raw_data[file_name] = current_session.raw_data[file_name].set_index('Datetime')
     else:
         current_session.raw_data_name = ''
     return jsonify({'message': 'done'})
@@ -136,23 +137,19 @@ def filtered_load_data():
     chart_type = load_request['chart_type']
     current_session.filter_state = load_request['filter_options']
 
-    # Get raw load data and downsample
-    if file_name not in current_session.raw_data:
-        current_session.raw_data[file_name] = \
-            data_interface.get_load_table('data/load/', file_name)
+    # Filter by missing data
+    current_session.raw_data[file_name] = current_session.raw_data[file_name]
+    raw_data = current_session.raw_data[file_name]
 
-        # Filter by missing data
-        current_session.raw_data[file_name] = current_session.raw_data[file_name].set_index('Datetime')
-        raw_data = current_session.raw_data[file_name]
-        missing_data_limit = load_request['missing_data_limit']
-        current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
+    missing_data_limit = load_request['missing_data_limit']
+    current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
 
-        # Down sample data randomly
-        number_of_loads = len(current_session.filter_missing_data.columns)
-        number_of_loads_downsampled = math.ceil(number_of_loads * load_request['sample_fraction'])
-        if number_of_loads_downsampled < 1:
-            number_of_loads_downsampled = 1
-        current_session.downsample_data = current_session.filter_missing_data.sample(n=number_of_loads_downsampled, axis=1)
+    # Down sample data randomly
+    number_of_loads = len(current_session.filter_missing_data.columns)
+    number_of_loads_downsampled = math.ceil(number_of_loads * load_request['sample_fraction'])
+    if number_of_loads_downsampled < 1:
+        number_of_loads_downsampled = 1
+    current_session.downsample_data = current_session.filter_missing_data.sample(n=number_of_loads_downsampled, axis=1)
 
     # Filter data by demographic
     demo_info_file_name = data_interface.find_loads_demographic_file(file_name)
