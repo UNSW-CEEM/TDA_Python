@@ -35,20 +35,16 @@ def get_average_annual_profile(load, load_filtered, series_name):
         else:
             ### load mean
             load2 = load.copy()
-
             load_mean = load2.mean(axis=1)
 
             trace1 = go.Scattergl(x=load_mean.index, y=load_mean.values, name=series_name[0])
 
-
-            ### load_filtered mean
             load_filtered2 = load_filtered.copy()
-
             load_filtered_mean = load_filtered2.mean(axis=1)
 
             trace2 = go.Scattergl(x=load_filtered_mean.index, y=load_filtered_mean.values, name=series_name[1])
 
-            data = {'data':[trace1, trace2],'layout':layout}
+            data = {'data': [trace1, trace2], 'layout': layout}
             return data
 
 

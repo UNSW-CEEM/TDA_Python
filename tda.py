@@ -123,8 +123,8 @@ def filtered_load_data():
             data_interface.get_load_table('data/load/', load_request['file_name'])
 
         # Filter by missing data
+        current_session.raw_data[load_request['file_name']] = current_session.raw_data[load_request['file_name']].set_index('Datetime')
         raw_data = current_session.raw_data[load_request['file_name']]
-        raw_data = raw_data.set_index('Datetime')
         missing_data_limit = load_request['missing_data_limit']
         current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
 
@@ -134,7 +134,6 @@ def filtered_load_data():
         if number_of_loads_downsampled < 1:
             number_of_loads_downsampled = 1
         current_session.downsample_data = current_session.filter_missing_data.sample(n=number_of_loads_downsampled, axis=1)
-
 
     # Filter data by demographic
     demo_info_file_name = data_interface.find_loads_demographic_file(load_request['file_name'])
