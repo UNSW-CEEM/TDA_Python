@@ -13,7 +13,8 @@ import format_case_for_export
 import format_chart_data_for_export
 import start_up_procedures
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
-    get_options_from_tariff_set
+    get_options_from_tariff_set, strip_tariff_to_single_component
+
 from make_price_charts import get_price_chart
 from wholesale_energy import get_wholesale_prices, calc_wholesale_energy_costs
 import pickle
@@ -128,7 +129,11 @@ def filtered_load_data():
         current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
 
         # Down sample data randomly
-        current_session.downsample_data = current_session.filter_missing_data.sample(frac=load_request['sample_fraction'], axis=1)
+        number_of_loads = len(current_session.filter_missing_data.columns)
+        number_of_loads_downsampled = math.ceil(number_of_loads * load_request['sample_fraction'])
+        if number_of_loads_downsampled < 1:
+            number_of_loads_downsampled = 1
+        current_session.downsample_data = current_session.filter_missing_data.sample(n=number_of_loads_downsampled, axis=1)
 
 
     # Filter data by demographic
@@ -158,24 +163,21 @@ def filtered_load_data():
     #### prepare chart data and n_users
     chart_data = current_session.raw_charts[load_request['file_name']][load_request['chart_type']]
     if current_session.is_filtered:
+
+        if load_request['chart_type'] in ['Annual Average Profile','Daily kWh Histogram']:
+            current_session.filtered_charts[load_request['file_name']][load_request['chart_type']] = \
+                chart_methods[load_request['chart_type']](current_session.raw_data[load_request['file_name']], current_session.filtered_data, series_name=['All', 'Selected'])
+        else:
+            current_session.filtered_charts[load_request['file_name']][load_request['chart_type']] = \
+                chart_methods[load_request['chart_type']](current_session.filtered_data)
+
+        chart_data = current_session.filtered_charts[load_request['file_name']][load_request['chart_type']]
         n_users = helper_functions.n_users(current_session.filtered_data)
     else:
-        n_users = helper_functions.n_users(current_session.raw_data[load_request['file_name']])
 
-    # If filtering has been applied also create the filtered chart data,
-    # if filtered:
-    #     print('filtered data ==========================')
-    #     filtered_chart = chart_methods[load_request['chart_type']](filtered_data, series_name='Selected')
-    #     # chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
-    #     # chart_data.append(filtered_chart)
-    #     # chart_data = [raw_charts[load_request['file_name']][load_request['chart_type']], filtered_chart]
-    #     # n_users = data_interface.n_users(filtered_data)
+        chart_data = current_session.raw_charts[load_request['file_name']][load_request['chart_type']]
+        n_users = helper_functions.n_users(current_session.filtered_data)
 
-    #     chart_data = filtered_chart
-    #     n_users = data_interface.n_users(filtered_data)
-    # else:
-    #     chart_data = raw_charts[load_request['file_name']][load_request['chart_type']]
-    #     n_users = data_interface.n_users(raw_data[load_request['file_name']])
 
     # Format as json.
     return_data = {"n_users": n_users, "chart_data": chart_data}
@@ -306,37 +308,31 @@ def get_single_variable_chart():
     details = request.get_json()
     chart_name = details['chart_name']
     case_names = details['case_names']
-    results_to_plot = helper_functions.get_results_subset_to_plot(
-        case_names,
-        current_session.project_data.retail_results_by_case,
-        current_session.project_data.network_results_by_case,
-        current_session.project_data.wholesale_results_by_case)
-    return singe_variable_chart(chart_name, results_to_plot)
+
+    results_to_plot = helper_functions.get_results_subset_to_plot(case_names,
+                                                                  current_session.project_data.retail_results_by_case,
+                                                                  current_session.project_data.network_results_by_case,
+                                                                  current_session.project_data.wholesale_results_by_case)
+
+    load_and_results_to_plot = {'results': results_to_plot, 'load': current_session.load_by_case}
+    return singe_variable_chart(chart_name, load_and_results_to_plot)
 
 
 @app.route('/get_dual_variable_chart', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def get_dual_variable_chart():
     details = request.get_json()
-    x_axis = details['x_axis']
-    y_axis = details['y_axis']
     case_names = details['case_names']
-
-    # Other cool variables we should totally use!
-    include_summer = details['include_summer']  # boolean
-    include_autumn = details['include_autumn']  # boolean
-    include_winter = details['include_winter']  # boolean
-    include_spring = details['include_spring']  # boolean
-    x_axis_n_peaks = details['x_axis_n_peaks']  # string
-    x_axis_n_peaks = details['y_axis_n_peaks']  # string
-    x_axis_one_peak_per_day = details['x_axis_one_peak_per_day']  # boolean
-    y_axis_one_peak_per_day = details['y_axis_one_peak_per_day']  # boolean
-
+    file_name = details['load_details']['file_name']
     results_to_plot = helper_functions.get_results_subset_to_plot(case_names,
                                                                   current_session.project_data.retail_results_by_case,
                                                                   current_session.project_data.network_results_by_case,
                                                                   current_session.project_data.wholesale_results_by_case)
-    return dual_variable_chart(results_to_plot, x_axis, y_axis)
+    load_and_results_to_plot = {'results': results_to_plot, 'load': current_session.load_by_case,
+                                'network_load': current_session.raw_data[file_name]}
+
+    return dual_variable_chart(load_and_results_to_plot, details)
+
 
 
 @app.route('/get_single_case_chart', methods=['POST'])
@@ -356,7 +352,9 @@ def get_single_case_chart():
     else:
         results_to_plot = results_to_plot[case_name]
 
-    return single_case_chart(chart_name, results_to_plot)
+    load_and_results_to_plot = {'results': results_to_plot, 'load': current_session.load_by_case[case_name]}
+
+    return single_case_chart(chart_name, load_and_results_to_plot)
 
 
 @app.route('/get_demo_options/<name>')

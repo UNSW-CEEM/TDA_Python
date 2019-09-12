@@ -7,6 +7,7 @@ var add_case_to_python = function(){
     var network_tariff_name = $('#network_tariff_selection_panel .select_tariff').val();
 
     // Get load name
+
     var load_request = get_load_details_from_ui();
 
     // Get wholesale price details
