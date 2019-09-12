@@ -78,14 +78,14 @@ def get_results_subset_to_plot(case_names, retail_results_by_case, network_resul
     return results_to_plot
 
 
-def get_file_to_load_from_user():
+def get_file_to_load_from_user(file_type, file_extension):
     root = tk.Tk()
     root.geometry('0x0+0+0')
     root.lift()
     root.attributes('-topmost', True)
     root.after_idle(root.attributes, '-topmost', False)
     root.overrideredirect(True)
-    file_path = filedialog.askopenfilename(parent=root, filetypes=(('pickle file', '.pkl'),))
+    file_path = filedialog.askopenfilename(parent=root, filetypes=((file_type, file_extension),))
     return file_path
 
 

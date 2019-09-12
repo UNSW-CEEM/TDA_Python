@@ -50,5 +50,11 @@ class InMemoryData:
         # Current demographic info after filter.
         self.filtered_demo_info = None
 
+        # End user technology sample.
+        self.end_user_tech_sample = None
+
+        # Filtering options applied to get the current filtered data.
+        self.filter_state = None
+
         # Data subset to save/load.
         self.project_data = ProjectData()

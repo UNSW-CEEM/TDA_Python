@@ -359,8 +359,6 @@ var edit_validate  = async function(cell, row, oldValue){
     if (cell.data() != oldValue){
         set_save_button_to_alert_state(tariff_type_panel);
     }
-
-
 }
 
 var set_save_button_to_alert_state = function(tariff_type_panel){

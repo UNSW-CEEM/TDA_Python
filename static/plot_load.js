@@ -103,26 +103,24 @@ var get_load_details_from_ui = function(){
 }
 
 var plot_filtered_load =  function(){
-
     // Update menu bat status indicator
     $('#load_status_not_set').show()
     $('#load_status_set').hide()
 
-        load_request = get_load_details_from_ui()
+    load_request = get_load_details_from_ui()
 
-        $.ajax({
-        url: '/filtered_load_data',
-        data: JSON.stringify(load_request),
-        contentType: 'application/json;charset=UTF-8',
-        type : 'POST',
-        async: 'false',
-        dataType:"json",
-        success: function(data){
-                alert_user_if_error(data)
-                plot_load(data);
-            }
-        });
-
+    $.ajax({
+    url: '/filtered_load_data',
+    data: JSON.stringify(load_request),
+    contentType: 'application/json;',
+    type : 'POST',
+    async: 'false',
+    dataType:"json",
+    success: function(data){
+            alert_user_if_error(data)
+            plot_load(data);
+        }
+    });
 }
 
 var plot_load = function(response){
@@ -167,10 +165,12 @@ var perform_plot_load_actions = function(){
             if (file_name != 'Select one'){
                 $.getJSON('/get_demo_options/' + file_name, add_demo_selectors);
             } else {
-                $("#message_dialog").dialog({ modal: true});
-                $("#message_dialog p").text('Please select a load file.')
-                $('#load_status_not_set').show()
-                $('#load_status_set').hide()
+                $("#demo_label_col").empty();
+                $("#demo_selector_col").empty();
+                $("#load_chart").empty();
+                $('#load_status_not_set').show();
+                $('#load_status_set').hide();
+                $('#dialog').dialog('close');
             }
         }
     });

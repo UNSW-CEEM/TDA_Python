@@ -42,8 +42,9 @@ var import_data = function(data_type, call_back){
     // Action to perform when the user chooses the create now option.
     var create_now = function(){
         $.ajax({
-            url: '/create_synthetic_network_load',
+            url: '/import_load',
             contentType: 'application/json;',
+            data: JSON.stringify({'type': data_type}),
             type : 'POST',
             async: 'false',
             dataType:"json",
