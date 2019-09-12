@@ -460,7 +460,7 @@ def load_end_user_tech_from_sample_from_file():
     file_path = helper_functions.get_file_to_load_from_user('TDA tech sample', '.tda_tech_sample')
     with open(file_path, "rb") as f:
         current_session.end_user_tech_sample = pickle.load(f)
-    if current_session.end_user_tech_sample['load_details']['file_name'] in os.listdir('data/load/'):
+    if current_session.end_user_tech_sample['load_details']['file_name'] + '.feather' in os.listdir('data/load/'):
         current_session.raw_data_name = current_session.end_user_tech_sample['load_details']['file_name']
         raw_data = data_interface.get_load_table('data/load/', current_session.raw_data_name)
         current_session.raw_data[current_session.raw_data_name] = raw_data
@@ -468,8 +468,11 @@ def load_end_user_tech_from_sample_from_file():
         current_session.filtered_data = end_user_tech.calc_net_profiles(filtered_data,
                                                                         current_session.end_user_tech_sample)
         current_session.filter_state = current_session.end_user_tech_sample['load_details']['filter_options']
+        return_data = jsonify({'message': 'Done!', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
+    else:
+        return_data = jsonify({'error': 'You do not have the required load data to use this tech sample.'})
 
-    return jsonify({'message': 'done', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
+    return return_data
 
 
 @app.route('/calc_sample_net_load_profiles', methods=['POST'])
