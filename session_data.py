@@ -32,6 +32,7 @@ class ProjectData():
         self.original_data = [
             'SampleLoad_without_demo',
             'SampleLoad',
+            'test_data',
         ]
 
 

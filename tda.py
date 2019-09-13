@@ -261,6 +261,8 @@ def add_case():
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
         network_results = Bill_Calc.bill_calculator(current_session.filtered_data, network_tariff)
+
+        print('network_results: ', network_results)
         network_results.index.name = 'CUSTOMER_KEY'
         network_results = network_results.reset_index()
         current_session.project_data.network_results_by_case[case_name] = network_results
@@ -626,6 +628,7 @@ def delete_tariff():
 @errors.parse_to_user_and_log(logger)
 def import_load_data(file_path):
 
+    # @todo: make importing_load_data generic for so it can be used for importing solar and network data.
     # @todo: need to add datafile to pull in on Javascript side
     allowed_extensions = {".csv", ".xls", ".xlsx"}
 
