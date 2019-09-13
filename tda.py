@@ -25,6 +25,8 @@ import validate_component_table_cell_values
 import check_time_of_use_coverage
 import end_user_tech
 import math
+import feather
+import csv
 
 enable_logging = False
 
@@ -123,7 +125,6 @@ def put_load_profiles_in_memory():
         # Get raw load data.
         if file_name not in current_session.raw_data:
             current_session.raw_data[file_name] = data_interface.get_load_table('data/load/', load_request['file_name'])
-            current_session.raw_data[file_name] = current_session.raw_data[file_name]
     else:
         current_session.raw_data_name = ''
     return jsonify({'message': 'done'})
@@ -372,7 +373,6 @@ def get_dual_variable_chart():
 @errors.parse_to_user_and_log(logger)
 def get_single_case_chart():
     details = request.get_json()
-    print(details)
     chart_name = details['chart_name']
     case_name = details['case_name']
     results_to_plot = helper_functions.get_results_subset_to_plot(
@@ -478,7 +478,7 @@ def load_end_user_tech_from_sample_from_file():
         current_session.raw_data_name = current_session.end_user_tech_sample['load_details']['file_name']
         raw_data = data_interface.get_load_table('data/load/', current_session.raw_data_name)
         current_session.raw_data[current_session.raw_data_name] = raw_data
-        filtered_data = raw_data.loc[:, ['Datetime'] + current_session.end_user_tech_sample['customer_keys']]
+        filtered_data = raw_data.loc[:, current_session.end_user_tech_sample['customer_keys']]
         current_session.filtered_data = end_user_tech.calc_net_profiles(filtered_data,
                                                                         current_session.end_user_tech_sample)
         current_session.filter_state = current_session.end_user_tech_sample['load_details']['filter_options']
@@ -614,9 +614,51 @@ def delete_tariff():
 
 @app.route('/import_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def import_load_data():
+def import_load_data(file_path):
 
-    return jsonify({'message': "No python code for importing data yet!"})
+    # @todo: need to add datafile to pull in on Javascript side
+    # @todo: need to fix matching of demographic data for csv
+    allowed_extensions = {".csv", ".xls", ".xlsx"}
+
+    base = os.path.basename(file_path)
+    path_extension = os.path.splitext(base)[1]
+    file_name = os.path.splitext(base)[0]
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        if path_extension in allowed_extensions:
+            if path_extension == ".csv": # Read csv files
+                import_load_data = pd.read_csv(file_path)
+            else: # Read excel files (same as sample file in Matlab tool)
+                xls = pd.ExcelFile(file_path)
+                sheet_names = xls.sheet_names
+                import_load_data = pd.read_excel(xls, sheet_names[0])
+                import_demo_data = pd.read_excel(xls, sheet_names[1])
+            try:
+                import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
+                import_load_data[import_load_data.columns[0]].names = ['Datetime']
+
+                import_demo_data = import_demo_data.set_index(import_demo_data.columns[0])
+                import_demo_data.index.rename('CUSTOMER_KEY')
+
+                if not all(x in import_load_data.columns.tolist() for x in import_demo_data.index.tolist()): #Check if demo data matches load
+                    return jsonify({'error': 'Please ensure that each household has demographic data defined.'})
+            except:
+                return jsonify({'error': 'Invalid data format.'})
+
+            feather.write_dataframe(import_load_data, 'data/load/' + file_name + '.feather')
+            import_demo_data.to_csv('data/demographics/' + file_name + '.csv')
+
+            loaded_files = open('data/load_2_demo_map.csv', 'r').read()
+            with open('data/load_2_demo_map.csv', 'a') as f:
+                if file_name in loaded_files: # Check if file already exists
+                    pass
+                else:
+                    writer = csv.writer(f)
+                    writer.writerow([file_name, file_name + '.csv'])
+            f.close()
+        else:
+            return jsonify({'error': 'Invalid file type. Can only import csv or excel files in format as the sample file.'})
+    else:
+        return jsonify({'error': 'Cannot find file.'})
 
 
 @app.route('/delete_load_data', methods=['POST'])
@@ -624,7 +666,24 @@ def import_load_data():
 def delete_load_data():
     request_details = request.get_json()
     print('I know you want to delete {}'.format(request_details['name']))
-    return jsonify({'message': "No python code for deleting data yet!"})
+
+    try:
+        os.remove('data/load/' + request_details['name'] + '.feather')
+        os.remove('data/demographics/' + request_details['name'] + '.csv')
+    except:
+        return jsonify({'message': "Cannot find file."})
+
+    with open('data/load_2_demo_map.csv', 'r+') as f:
+        lines = f.readlines()
+        f.seek(0)
+
+        for line in lines:
+            if request_details['name'] not in line:
+                f.write(line)
+        f.truncate()
+    f.close()
+
+    return jsonify({'message': "File has been deleted."})
 
 
 @app.route('/restore_original_data_set', methods=['POST'])

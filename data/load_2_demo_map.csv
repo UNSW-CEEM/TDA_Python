@@ -1,3 +1,4 @@
 load,demo
 SGSC,DemogInfo_filtered.csv
 test_data,DemogInfo_filtered.csv
+SampleLoad,SampleLoad.csv
