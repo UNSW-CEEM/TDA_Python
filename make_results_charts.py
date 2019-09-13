@@ -310,7 +310,6 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details, axis):
     
     network_load2 = network_load.copy()
     network_load2['Month_Number'] = network_load2.index.month
-
     network_load_filtered = network_load2.copy()
 
     if details['include_spring'] == False:
@@ -384,8 +383,9 @@ def _get_avg_demand_top_n_peaks(results, load, network_load, details, axis):
 
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
-    load2 = load.copy()    
-    load2['Month_Number'] = load2.index.month
+    load2 = load.copy()
+    load2['Month_Number'] = load2.index.dt.month
+
 
     load_filtered = load2.copy()
 
@@ -441,9 +441,8 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details, ax
 
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
-    load2 = load.copy()    
+    load2 = load.copy()
     load2['Month_Number'] = load2.index.month
-
     load_filtered = load2.copy()
 
     if details['include_spring'] == False:

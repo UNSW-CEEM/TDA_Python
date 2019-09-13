@@ -628,28 +628,37 @@ def import_load_data():
             if path_extension == ".csv": # Read csv files
                 print('importing 2')
                 import_load_data = pd.read_csv(file_path)
+                import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
             else: # Read excel files (same as sample file in Matlab tool)
                 print('importing 3')
                 xls = pd.ExcelFile(file_path)
                 sheet_names = xls.sheet_names
-                import_load_data = pd.read_excel(xls, sheet_names[0])
-                import_demo_data = pd.read_excel(xls, sheet_names[1])
-                print('importing 4')
+                if len(sheet_names) >= 2: #check to see if excel sheet contains two sheets, one for load data and one for demo data.
+                    import_load_data = pd.read_excel(xls, sheet_names[0])
+                    import_demo_data = pd.read_excel(xls, sheet_names[1])
+                elif len(sheet_names) == 1: #allow user to upload only load data without demo data.
+                    import_load_data = pd.read_excel(xls, sheet_names[0])
+                    import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
             try:
                 import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
-                import_load_data[import_load_data.columns[0]].names = ['Datetime']
+                import_load_data.rename(columns={import_load_data.columns[0]: 'Datetime'}, inplace = True)
 
                 import_demo_data = import_demo_data.set_index(import_demo_data.columns[0])
                 import_demo_data.index.rename('CUSTOMER_KEY')
 
-                #if not all(x in import_load_data.columns.tolist() for x in import_demo_data.index.tolist()): #Check if demo data matches load
-                    #return jsonify({'error': 'Please ensure that each household has demographic data defined.'})
+                # Check if demo data matches load
+                # @todo: if we want it to work without all demographic data available use 'any' instead of 'all'
+                if not all(x in import_load_data.columns.tolist() for x in import_demo_data.index.tolist()) and not import_demo_data.empty:
+                    return jsonify({'error': 'Please ensure that each household has demographic data defined.'})
+                else: # if demo data is not available
+                    pass
             except:
                 return jsonify({'error': 'Invalid data format.'})
 
             feather.write_dataframe(import_load_data, 'data/load/' + file_name + '.feather')
             import_demo_data.to_csv('data/demographics/' + file_name + '.csv')
 
+            # Create mapping of load and demographic data
             loaded_files = open('data/load_2_demo_map.csv', 'r').read()
             with open('data/load_2_demo_map.csv', 'a') as f:
                 if file_name in loaded_files: # Check if file already exists
@@ -668,7 +677,6 @@ def import_load_data():
 @errors.parse_to_user_and_log(logger)
 def delete_load_data():
     request_details = request.get_json()
-    print('I know you want to delete {}'.format(request_details['name']))
 
     try:
         os.remove('data/load/' + request_details['name'] + '.feather')
@@ -833,6 +841,7 @@ def on_start_up():
     start_up_procedures.update_nemosis_cache()
     start_up_procedures.update_tariffs()
     return None
+
 
 if __name__ == '__main__':
     on_start_up()
