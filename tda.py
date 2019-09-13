@@ -617,6 +617,7 @@ def delete_tariff():
 @errors.parse_to_user_and_log(logger)
 def import_load_data(file_path):
 
+    # @todo: need to add datafile to pull in on Javascript side
     # @todo: need to fix matching of demographic data for csv
     allowed_extensions = {".csv", ".xls", ".xlsx"}
 
@@ -632,18 +633,20 @@ def import_load_data(file_path):
                 sheet_names = xls.sheet_names
                 import_load_data = pd.read_excel(xls, sheet_names[0])
                 import_demo_data = pd.read_excel(xls, sheet_names[1])
-
             try:
                 import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
                 import_load_data[import_load_data.columns[0]].names = ['Datetime']
 
                 import_demo_data = import_demo_data.set_index(import_demo_data.columns[0])
                 import_demo_data.index.rename('CUSTOMER_KEY')
+
+                if not all(x in import_load_data.columns.tolist() for x in import_demo_data.index.tolist()): #Check if demo data matches load
+                    return jsonify({'error': 'Please ensure that each household has demographic data defined.'})
             except:
                 return jsonify({'error': 'Invalid data format.'})
 
-            feather.write_dataframe(import_load_data, resource_path('data/load/') + file_name + '.feather')
-            import_demo_data.to_csv(resource_path('data/demographics/') + file_name + '.csv')
+            feather.write_dataframe(import_load_data, 'data/load/' + file_name + '.feather')
+            import_demo_data.to_csv('data/demographics/' + file_name + '.csv')
 
             loaded_files = open('data/load_2_demo_map.csv', 'r').read()
             with open('data/load_2_demo_map.csv', 'a') as f:
@@ -664,7 +667,24 @@ def import_load_data(file_path):
 def delete_load_data():
     request_details = request.get_json()
     print('I know you want to delete {}'.format(request_details['name']))
-    return jsonify({'message': "No python code for deleting data yet!"})
+
+    try:
+        os.remove('data/load/' + request_details['name'] + '.feather')
+        os.remove('data/demographics/' + request_details['name'] + '.csv')
+    except:
+        return jsonify({'message': "Cannot find file."})
+
+    with open('data/load_2_demo_map.csv', 'r+') as f:
+        lines = f.readlines()
+        f.seek(0)
+
+        for line in lines:
+            if request_details['name'] not in line:
+                f.write(line)
+        f.truncate()
+    f.close()
+
+    return jsonify({'message': "File has been deleted."})
 
 
 @app.route('/restore_original_data_set', methods=['POST'])
@@ -812,7 +832,6 @@ def on_start_up():
     start_up_procedures.update_tariffs()
     return None
 
-# import_load_data('/Users/bruceho/PycharmProjects/learning_environment/SampleLoad.xlsx')
 
 if __name__ == '__main__':
     on_start_up()
