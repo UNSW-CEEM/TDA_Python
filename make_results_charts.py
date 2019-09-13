@@ -51,7 +51,6 @@ def _average_annual_profile(load_and_results_by_case):
     trace = []
     for case_name, load in load_by_case.items():
         load2 = load.copy()
-        load2.set_index('Datetime',inplace=True)
         load_mean = load.mean(axis=1)
         trace.append(go.Scattergl(x=load_mean.index, y=load_mean.values, name=case_name))
 
@@ -71,7 +70,6 @@ def _daily_kWh_histogram(load_and_results_by_case):
     for case_name, load in load_by_case.items():
 
         load2 = load.copy()
-        del load2['Datetime']
         load_sum = load2.sum(axis=0)/2/365
 
         trace.append(go.Histogram(x=list(load_sum),histnorm='probability',name=case_name,xbins=dict(
@@ -95,7 +93,6 @@ def _average_load_duration_curve(load_and_results_by_case):
     for case_name, load in load_by_case.items():
 
         load2 = load.copy()
-        load2.drop(['Datetime'], axis=1, inplace=True)
         load_average = load2.mean(axis=1)
         load_average_sort = load_average.sort_values(ascending = False, inplace = False, na_position ='last')
         load_average_sort = load_average_sort.reset_index(drop = True) 
@@ -118,7 +115,6 @@ def _monthly_average_kWh(load_and_results_by_case):
     trace = []
     for case_name, load in load_by_case.items():
         load2 = load.copy()
-        load2.set_index('Datetime',inplace=True)
         load_average = load2.mean(axis=1)
 
         # find mean for each month
@@ -148,7 +144,6 @@ def _seasonal_daily_pattern(load_and_results_by_case):
     for case_name, load in load_by_case.items():
 
         load2 = load.copy()
-        load2.set_index('Datetime',inplace=True)
         load_average = load2.mean(axis=1)
 
         # organise data
@@ -183,7 +178,6 @@ def _monthly_peak_time(load_and_results_by_case):
     trace = []
     for case_name, load in load_by_case.items():
         load2 = load.copy()
-        load2.set_index('Datetime',inplace=True)
         load_average = load2.mean(axis=1)
 
         # organise data
@@ -246,7 +240,7 @@ def _get_avg_demand_n_peaks(results, load, network_load, details, axis):
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
     network_load2 = network_load.copy()
-    network_load2['Month_Number'] = network_load2['Datetime'].dt.month
+    network_load2['Month_Number'] = network_load2.index.dt.month
 
     network_load_filtered = network_load2.copy()
 
@@ -265,7 +259,6 @@ def _get_avg_demand_n_peaks(results, load, network_load, details, axis):
     if one_peak_per_day_status == False:
 
         network_load_filtered2=network_load_filtered.copy()
-        network_load_filtered2.set_index('Datetime',inplace=True)
             
         network_load_average = network_load_filtered2.mean(axis=1)
         network_load_average_sort = network_load_average.sort_values(ascending = False, inplace = False, na_position ='last')
@@ -273,7 +266,6 @@ def _get_avg_demand_n_peaks(results, load, network_load, details, axis):
         selected_datetime = network_load_average_sort.index[0:N_peaks]
 
         load2 = load.copy()
-        load2.set_index('Datetime',inplace=True)
 
         selected_load = load2.loc[selected_datetime]
 
@@ -285,7 +277,6 @@ def _get_avg_demand_n_peaks(results, load, network_load, details, axis):
         
     else:
         network_load_filtered2=network_load_filtered.copy()
-        network_load_filtered2.set_index('Datetime',inplace=True)
             
         network_load_average = network_load_filtered2.mean(axis=1)
 
@@ -297,7 +288,6 @@ def _get_avg_demand_n_peaks(results, load, network_load, details, axis):
         selected_datetime = network_daily_peak_sort.index[0:N_peaks]
 
         load2 = load.copy()
-        load2.set_index('Datetime',inplace=True)
 
         load_daily_peak = load2.resample('D').max()
 
@@ -321,7 +311,7 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details, axis):
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
     network_load2 = network_load.copy()
-    network_load2['Month_Number'] = network_load2['Datetime'].dt.month
+    network_load2['Month_Number'] = network_load2.index.dt.month
 
     network_load_filtered = network_load2.copy()
 
@@ -345,7 +335,6 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details, axis):
         selected_datetime = []
         for i in range(12):
             network_load_filtered_by_month_i=network_load_filtered_by_month[i].copy()
-            network_load_filtered_by_month_i.set_index('Datetime',inplace=True)
                 
             network_load_average = network_load_filtered_by_month_i.mean(axis=1)
             network_load_average_sort = network_load_average.sort_values(ascending = False, inplace = False, na_position ='last')
@@ -353,7 +342,6 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details, axis):
             selected_datetime = selected_datetime + list(network_load_average_sort.index[0:N_peaks])
 
         load2 = load.copy()
-        load2.set_index('Datetime',inplace=True)
 
         selected_load = load2.loc[selected_datetime]
 
@@ -367,7 +355,6 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details, axis):
         selected_datetime = []
         for i in range(12):
             network_load_filtered_by_month_i=network_load_filtered_by_month[i].copy()
-            network_load_filtered_by_month_i.set_index('Datetime',inplace=True)
                 
             network_load_average = network_load_filtered_by_month_i.mean(axis=1)
 
@@ -378,7 +365,6 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details, axis):
             selected_datetime = selected_datetime + list(network_daily_peak_sort.index[0:N_peaks])
 
         load2 = load.copy()
-        load2.set_index('Datetime',inplace=True)
 
         load_daily_peak = load2.resample('D').max()
 
@@ -401,7 +387,7 @@ def _get_avg_demand_top_n_peaks(results, load, network_load, details, axis):
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
     load2 = load.copy()    
-    load2['Month_Number'] = load2['Datetime'].dt.month
+    load2['Month_Number'] = load2.index.dt.month
 
     load_filtered = load2.copy()
 
@@ -419,7 +405,6 @@ def _get_avg_demand_top_n_peaks(results, load, network_load, details, axis):
 
     if one_peak_per_day_status == False:
 
-        del load_filtered['Datetime']
         load_filtered2=load_filtered.copy()
 
         load_filtered_sort = pd.concat([load_filtered2[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered2], axis=1, ignore_index=True)
@@ -434,7 +419,6 @@ def _get_avg_demand_top_n_peaks(results, load, network_load, details, axis):
     else:
 
         load_filtered2=load_filtered.copy()
-        load_filtered2.set_index('Datetime',inplace=True)
 
         # find peak for each day
         load_filtered_daily_peak = load_filtered2.resample('D').max()
@@ -460,7 +444,7 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details, ax
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
     load2 = load.copy()    
-    load2['Month_Number'] = load2['Datetime'].dt.month
+    load2['Month_Number'] = load2.index.dt.month
 
     load_filtered = load2.copy()
 
@@ -484,7 +468,6 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details, ax
         selected_load = []
         for i in range(12):
             load_filtered_by_month_i=load_filtered_by_month[i].copy()
-            del load_filtered_by_month_i['Datetime']
 
             load_filtered_by_month_i_sort = pd.concat([load_filtered_by_month_i[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered_by_month_i], axis=1, ignore_index=True)
             selected_load_by_month = load_filtered_by_month_i_sort.iloc[0:N_peaks,:]
@@ -501,7 +484,6 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details, ax
         selected_load = []
         for i in range(12):
             load_filtered_by_month_i=load_filtered_by_month[i].copy()
-            load_filtered_by_month_i.set_index('Datetime',inplace=True)
 
             load_filtered_daily_peak_by_month = load_filtered_by_month_i.resample('D').max()
 
@@ -521,7 +503,6 @@ def _get_avg_daily_kWh(results, load, network_load, details, axis):
     axis_name = "Average Daily kWh"
     axis_data = []
     load2 = load.copy()
-    del load2['Datetime']
 
     axis_data = []
     for i in range(load2.shape[1]):
@@ -536,7 +517,6 @@ def _get_avg_daily_peak(results, load, network_load, details, axis):
     axis_name = "Average Daily Peaks"
     axis_data = []
     load2 = load.copy()
-    del load2['Datetime']
 
     axis_data = []
     for i in range(load2.shape[1]):
@@ -660,7 +640,6 @@ def _get_daily_profile_interquartile_range(results_to_plot, load_to_plot):
                        showlegend=True)
 
     load_to_plot2=load_to_plot.copy()
-    del load_to_plot2['Datetime']
 
     load_daily_average = load_to_plot2.apply(get_daily_average_profile)
 

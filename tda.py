@@ -125,7 +125,6 @@ def put_load_profiles_in_memory():
         # Get raw load data.
         if file_name not in current_session.raw_data:
             current_session.raw_data[file_name] = data_interface.get_load_table('data/load/', load_request['file_name'])
-
     else:
         current_session.raw_data_name = ''
     return jsonify({'message': 'done'})
@@ -251,7 +250,7 @@ def add_case():
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
-        network_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), network_tariff)
+        network_results = Bill_Calc.bill_calculator(current_session.filtered_data, network_tariff)
         network_results.index.name = 'CUSTOMER_KEY'
         network_results = network_results.reset_index()
         current_session.project_data.network_results_by_case[case_name] = network_results
@@ -259,7 +258,7 @@ def add_case():
 
     if retail_tariff_name != 'None':
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
-        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), retail_tariff)
+        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data, retail_tariff)
         retail_results.index.name = 'CUSTOMER_KEY'
         retail_results = retail_results.reset_index()
         current_session.project_data.retail_results_by_case[case_name] = retail_results
@@ -635,7 +634,7 @@ def import_load_data(file_path):
                 import_demo_data = pd.read_excel(xls, sheet_names[1])
             try:
                 import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
-                import_load_data[import_load_data.columns[0]].names = ['Datetime']
+                import_load_data.rename(columns={import_load_data.columns[0]: 'Datetime'}, inplace = True)
 
                 import_demo_data = import_demo_data.set_index(import_demo_data.columns[0])
                 import_demo_data.index.rename('CUSTOMER_KEY')
@@ -832,7 +831,7 @@ def on_start_up():
     start_up_procedures.update_tariffs()
     return None
 
-
+import_load_data('/Users/bruceho/PycharmProjects/learning_environment/data/SampleLoad.xlsx')
 if __name__ == '__main__':
     on_start_up()
     app.run()
