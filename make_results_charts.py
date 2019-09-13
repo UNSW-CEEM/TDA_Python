@@ -68,10 +68,8 @@ def _daily_kWh_histogram(load_and_results_by_case):
     
     trace = []
     for case_name, load in load_by_case.items():
-
         load2 = load.copy()
         load_sum = load2.sum(axis=0)/2/365
-
         trace.append(go.Histogram(x=list(load_sum),histnorm='probability',name=case_name,xbins=dict(
         start=min(load_sum),
         end=max(load_sum),
@@ -240,7 +238,7 @@ def _get_avg_demand_n_peaks(results, load, network_load, details, axis):
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
     network_load2 = network_load.copy()
-    network_load2['Month_Number'] = network_load2.index.dt.month
+    network_load2['Month_Number'] = network_load2.index.month
 
     network_load_filtered = network_load2.copy()
 
@@ -311,8 +309,7 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details, axis):
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
     network_load2 = network_load.copy()
-    network_load2['Month_Number'] = network_load2.index.dt.month
-
+    network_load2['Month_Number'] = network_load2.index.month
     network_load_filtered = network_load2.copy()
 
     if details['include_spring'] == False:
@@ -386,8 +383,8 @@ def _get_avg_demand_top_n_peaks(results, load, network_load, details, axis):
 
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
-    load2 = load.copy()    
-    load2['Month_Number'] = load2.index.dt.month
+    load2 = load.copy()
+    load2['Month_Number'] = load2.index.month
 
     load_filtered = load2.copy()
 
@@ -443,9 +440,8 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details, ax
 
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
-    load2 = load.copy()    
-    load2['Month_Number'] = load2.index.dt.month
-
+    load2 = load.copy()
+    load2['Month_Number'] = load2.index.month
     load_filtered = load2.copy()
 
     if details['include_spring'] == False:

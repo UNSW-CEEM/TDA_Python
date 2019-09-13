@@ -82,6 +82,16 @@ def load_names():
     return jsonify(names)
 
 
+@app.route('/network_load_names')
+@errors.parse_to_user_and_log(logger)
+def network_load_names():
+    # Get the list of load files for the user to choose from.
+    names = []
+    for file_name in os.listdir('data/network_loads/'):
+        names.append(file_name.split('.')[0])
+    return jsonify(names)
+
+
 @app.route('/get_tariff_set_options/<tariff_type>')
 @errors.parse_to_user_and_log(logger)
 def get_tariff_set_options(tariff_type):
@@ -141,6 +151,7 @@ def filtered_load_data():
     # Filter by missing data
     current_session.raw_data[file_name] = current_session.raw_data[file_name]
     raw_data = current_session.raw_data[file_name]
+
     missing_data_limit = load_request['missing_data_limit']
     current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
 
@@ -168,6 +179,7 @@ def filtered_load_data():
 
     # prepare chart data and n_users
     current_session.filtered_charts = {file_name: {}}
+
     if chart_type not in current_session.raw_charts[file_name]:
         if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
             current_session.raw_charts[file_name][chart_type] = \
@@ -393,6 +405,7 @@ def get_single_case_chart():
 @errors.parse_to_user_and_log(logger)
 def get_demo_options(name):
     demo_file_name = data_interface.find_loads_demographic_file(name)
+
     if demo_file_name != '' and demo_file_name in os.listdir('data/demographics/'):
         demo = pd.read_csv('data/demographics/' + demo_file_name, dtype=str)
         demo = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
@@ -627,7 +640,6 @@ def import_load_data(file_path):
             else: # Read excel files (same as sample file in Matlab tool)
                 xls = pd.ExcelFile(file_path)
                 sheet_names = xls.sheet_names
-
                 if len(sheet_names) >= 2: #check to see if excel sheet contains two sheets, one for load data and one for demo data.
                     import_load_data = pd.read_excel(xls, sheet_names[0])
                     import_demo_data = pd.read_excel(xls, sheet_names[1])
@@ -636,7 +648,7 @@ def import_load_data(file_path):
                     import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
             try:
                 import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
-                import_load_data.rename(columns={import_load_data.columns[0]: 'Datetime'}, inplace=True)
+                import_load_data.rename(columns={import_load_data.columns[0]: 'Datetime'}, inplace = True)
 
                 import_demo_data = import_demo_data.set_index(import_demo_data.columns[0])
                 import_demo_data.index.rename('CUSTOMER_KEY')
@@ -865,7 +877,7 @@ def on_start_up():
     start_up_procedures.update_tariffs()
     return None
 
+
 if __name__ == '__main__':
     on_start_up()
     app.run()
-    import_load_data('/Users/bruceho/PycharmProjects/learning_environment/data/SampleLoad.xlsx')

@@ -42,7 +42,7 @@ var import_data = function(data_type, call_back){
     // Action to perform when the user chooses the create now option.
     var create_now = function(){
         $.ajax({
-            url: '/import_load',
+            url: '/import_load_data',
             contentType: 'application/json;',
             data: JSON.stringify({'type': data_type}),
             type : 'POST',
@@ -51,10 +51,12 @@ var import_data = function(data_type, call_back){
             success: function(data){
                 alert_user_if_error(data);
                 $('#import_dialog').dialog('close');
-                $('#message_dialog').dialog({modal: true});
-                $('#message_dialog p').text(data['message']);
-                if (call_back !== undefined){
-                    call_back(data);
+                if ('message' in data){
+                    $('#message_dialog').dialog({modal: true});
+                    $('#message_dialog p').text(data['message']);
+                    if (call_back !== undefined){
+                        call_back(data['name']);
+                    }
                 }
             }
         });
