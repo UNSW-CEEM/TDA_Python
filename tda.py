@@ -141,7 +141,6 @@ def filtered_load_data():
     # Filter by missing data
     current_session.raw_data[file_name] = current_session.raw_data[file_name]
     raw_data = current_session.raw_data[file_name]
-
     missing_data_limit = load_request['missing_data_limit']
     current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
 
@@ -169,7 +168,6 @@ def filtered_load_data():
 
     # prepare chart data and n_users
     current_session.filtered_charts = {file_name: {}}
-
     if chart_type not in current_session.raw_charts[file_name]:
         if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
             current_session.raw_charts[file_name][chart_type] = \
@@ -395,7 +393,6 @@ def get_single_case_chart():
 @errors.parse_to_user_and_log(logger)
 def get_demo_options(name):
     demo_file_name = data_interface.find_loads_demographic_file(name)
-
     if demo_file_name != '' and demo_file_name in os.listdir('data/demographics/'):
         demo = pd.read_csv('data/demographics/' + demo_file_name, dtype=str)
         demo = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
@@ -617,7 +614,6 @@ def delete_tariff():
 def import_load_data(file_path):
 
     # @todo: need to add datafile to pull in on Javascript side
-    # @todo: need to fix matching of demographic data for csv
     allowed_extensions = {".csv", ".xls", ".xlsx"}
 
     base = os.path.basename(file_path)
@@ -640,7 +636,7 @@ def import_load_data(file_path):
                     import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
             try:
                 import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
-                import_load_data.rename(columns={import_load_data.columns[0]: 'Datetime'}, inplace = True)
+                import_load_data.rename(columns={import_load_data.columns[0]: 'Datetime'}, inplace=True)
 
                 import_demo_data = import_demo_data.set_index(import_demo_data.columns[0])
                 import_demo_data.index.rename('CUSTOMER_KEY')
@@ -654,18 +650,23 @@ def import_load_data(file_path):
             except:
                 return jsonify({'error': 'Invalid data format.'})
 
-            feather.write_dataframe(import_load_data, 'data/load/' + file_name + '.feather')
-            import_demo_data.to_csv('data/demographics/' + file_name + '.csv')
+            # Create load and demographic data simultaneously and map them to each other in load_2_demo_map.csv
+            with open('data/load_2_demo_map.csv', 'r') as current_file:
+                files = [loaded_files.split(',', 1)[0] for loaded_files in current_file]
+            current_file.close()
 
-            # Create mapping of load and demographic data
-            loaded_files = open('data/load_2_demo_map.csv', 'r').read()
-            with open('data/load_2_demo_map.csv', 'a') as f:
-                if file_name in loaded_files: # Check if file already exists
-                    pass
-                else:
-                    writer = csv.writer(f)
+            if file_name in files:  # Check if file already exists
+                return jsonify({'message': "File already exists."})
+            else:
+                with open('data/load_2_demo_map.csv', 'a') as future_file:
+                    writer = csv.writer(future_file)
                     writer.writerow([file_name, file_name + '.csv'])
-            f.close()
+                future_file.close()
+
+                feather.write_dataframe(import_load_data, 'data/load/' + file_name + '.feather')
+                import_demo_data.to_csv('data/demographics/' + file_name + '.csv')
+
+                return jsonify({'message': "Successfully imported file."})
         else:
             return jsonify({'error': 'Invalid file type. Can only import csv or excel files in format as the sample file.'})
     else:
@@ -675,31 +676,54 @@ def import_load_data(file_path):
 @app.route('/delete_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def delete_load_data():
+
+    # @todo: need to remove option from selected loads (selected loads should display what is in load_2_demo_map.csv not what is in database)
     request_details = request.get_json()
 
-    try:
-        os.remove('data/load/' + request_details['name'] + '.feather')
-        os.remove('data/demographics/' + request_details['name'] + '.csv')
+    try: # check if file that user is trying to delete exist
+        if request_details['name'] not in current_session.project_data.original_data:
+            os.remove('data/load/' + request_details['name'] + '.feather')
+            os.remove('data/demographics/' + request_details['name'] + '.csv')
+        else:
+            pass
     except:
         return jsonify({'message': "Cannot find file."})
 
     with open('data/load_2_demo_map.csv', 'r+') as f:
         lines = f.readlines()
         f.seek(0)
-
         for line in lines:
-            if request_details['name'] not in line:
+            if request_details['name'] != line.split(',', 1)[0]:
                 f.write(line)
         f.truncate()
     f.close()
 
+    # @todo: Need to message to display file name that has been deleted
     return jsonify({'message': "File has been deleted."})
 
 
 @app.route('/restore_original_data_set', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def restore_original_data_set():
-    return jsonify({'message': "No python code for restoring data yet!"})
+    files_restored = []
+
+    with open('data/load_2_demo_map.csv', 'r') as current_file:
+        files = [loaded_files.split(',', 1)[0] for loaded_files in current_file]
+    current_file.close()
+
+    with open('data/load_2_demo_map.csv', 'a') as future_file:
+        if all(file_name in files for file_name in current_session.project_data.original_data):  # Check if file already exists
+            return jsonify({'message': "All original files are restored already."})
+        else:
+            for file_name in current_session.project_data.original_data:
+                if file_name not in files:
+                    files_restored.append(file_name)
+                    writer = csv.writer(future_file)
+                    writer.writerow([file_name, file_name + '.csv'])
+    future_file.close()
+
+    # @todo: Need message to display file name that has been restored which is held in future_file as a list.
+    return jsonify({'message': "All original files are now restored."})
 
 
 @app.route('/update_tariffs', methods=['POST'])
@@ -841,7 +865,7 @@ def on_start_up():
     start_up_procedures.update_tariffs()
     return None
 
-import_load_data('/Users/bruceho/PycharmProjects/learning_environment/data/SampleLoad_without_demo.xlsx')
 if __name__ == '__main__':
     on_start_up()
     app.run()
+    import_load_data('/Users/bruceho/PycharmProjects/learning_environment/data/SampleLoad.xlsx')

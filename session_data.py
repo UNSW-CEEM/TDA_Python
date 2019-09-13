@@ -28,15 +28,27 @@ class ProjectData():
         # Wholesale price info
         self.wholesale_price_info_by_case = {}
 
+        # Add original data that cannot be deleted (this allows for us to restore to original load data)
+        self.original_data = [
+            'SampleLoad_without_demo',
+            'SampleLoad',
+        ]
+
 
 class InMemoryData:
     def __init__(self):
         # Dictionaries for storing data associated with the current state of the program.
+
         self.raw_data = {}  # Data as loaded from feather files, stored in dict on a file name basis
 
-        self.downsample_data = {}
+        # raw data is first filtered by percentage of allowed missing data
         self.filter_missing_data = {}
-        self.filtered_data = None  # Data after applying user specified filtering
+
+        # data filtered by missing percentage is then downsampled
+        self.downsample_data = {}
+
+        # The downsampled data is then filtered by demographic
+        self.filtered_data = None
         self.is_filtered = False  # Flag to indicate if filtering has been applied
         self.raw_data_name = ''
         # Chart data for the load plots, only storing data for non filtered data as filtering can change between plot
