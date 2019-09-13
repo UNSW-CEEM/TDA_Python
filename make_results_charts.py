@@ -384,8 +384,7 @@ def _get_avg_demand_top_n_peaks(results, load, network_load, details, axis):
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
     
     load2 = load.copy()
-    load2['Month_Number'] = load2.index.dt.month
-
+    load2['Month_Number'] = load2.index.month
 
     load_filtered = load2.copy()
 
