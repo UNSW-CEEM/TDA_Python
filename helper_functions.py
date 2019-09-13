@@ -69,12 +69,13 @@ def get_results_subset_to_plot(case_names, retail_results_by_case, network_resul
                                wholesale_results_by_case):
     results_to_plot = {}
     for name in case_names:
-        if name in retail_results_by_case.keys():
-            results_to_plot[name] = retail_results_by_case[name]
-        elif name in network_results_by_case.keys():
-            results_to_plot[name] = network_results_by_case[name]
-        elif name in wholesale_results_by_case.keys():
-            results_to_plot[name] = wholesale_results_by_case[name]
+        results_to_plot[name] = {}
+        if name in retail_results_by_case.keys():                
+            results_to_plot[name]['Retailer'] = retail_results_by_case[name]
+        if name in network_results_by_case.keys():
+            results_to_plot[name]['Network'] = network_results_by_case[name]
+        if name in wholesale_results_by_case.keys():
+            results_to_plot[name]['Wholesale'] = wholesale_results_by_case[name]
     return results_to_plot
 
 

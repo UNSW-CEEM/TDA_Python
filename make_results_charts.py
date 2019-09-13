@@ -5,9 +5,7 @@ import json
 import numpy as np
 from time import time
 
-
-def _bill_distribution(load_and_results_by_case):
-
+def _bill_distribution(load_and_results_by_case,component_name):
     results_by_case = load_and_results_by_case['results']
 
     Xaxis = "Bill (AUD)"
@@ -18,12 +16,39 @@ def _bill_distribution(load_and_results_by_case):
 
     trace = []
     for case_name, results in results_by_case.items():
-        trace.append(go.Histogram(x=results['NUOS']['Bill'], histnorm='probability', name=case_name))
-
+        if component_name == 'Retailer':
+            if 'Retailer' in results.keys():
+                trace.append(go.Histogram(x=results['Retailer']['Retailer']['Bill'], histnorm='probability', name=case_name))
+        elif component_name == 'NUOS' or component_name == 'DUOS' or component_name == 'TUOS':
+            if 'Network' in results.keys():
+                trace.append(go.Histogram(x=results['Network'][component_name]['Bill'], histnorm='probability', name=case_name))
+        elif component_name == 'Wholesale':
+            if 'Wholesale' in results.keys():
+                trace.append(go.Histogram(x=results['Wholesale']['Bill'], histnorm='probability', name=case_name))
     return {'data': trace, 'layout': layout}
 
-def _bill_box_plot(load_and_results_by_case):
+def _bill_distribution_DUOS(load_and_results_by_case):
+    data = _bill_distribution(load_and_results_by_case,'DUOS')
+    return data
 
+def _bill_distribution_NUOS(load_and_results_by_case):
+    data = _bill_distribution(load_and_results_by_case,'NUOS')
+    return data
+
+def _bill_distribution_TUOS(load_and_results_by_case):
+    data = _bill_distribution(load_and_results_by_case,'TUOS')
+    return data
+
+def _bill_distribution_Retailer(load_and_results_by_case):
+    data = _bill_distribution(load_and_results_by_case,'Retailer')
+    return data
+
+def _bill_distribution_Wholesale(load_and_results_by_case):
+    data = _bill_distribution(load_and_results_by_case,'Wholesale')
+    return data
+
+
+def _bill_box_plot(load_and_results_by_case, component_name):
     results_by_case = load_and_results_by_case['results']
 
     Xaxis = "Case"
@@ -34,9 +59,37 @@ def _bill_box_plot(load_and_results_by_case):
 
     trace = []
     for case_name, results in results_by_case.items():
-        trace.append(go.Box(y=results['NUOS']['Bill'], name=case_name))
-
+        if component_name == 'Retailer':
+            if 'Retailer' in results.keys():
+                trace.append(go.Box(y=results['Retailer']['Retailer']['Bill'], name=case_name))
+        elif component_name == 'NUOS' or component_name == 'DUOS' or component_name == 'TUOS':
+            if 'Network' in results.keys():
+                trace.append(go.Box(y=results['Network'][component_name]['Bill'], name=case_name))
+        elif component_name == 'Wholesale':
+            if 'Wholesale' in results.keys():
+                trace.append(go.Box(y=results['Wholesale']['Bill'], name=case_name))
     return {'data': trace, 'layout': layout}
+
+
+def _bill_box_plot_DUOS(load_and_results_by_case):
+    data = _bill_box_plot(load_and_results_by_case,'DUOS')
+    return data
+
+def _bill_box_plot_NUOS(load_and_results_by_case):
+    data = _bill_box_plot(load_and_results_by_case,'NUOS')
+    return data
+
+def _bill_box_plot_TUOS(load_and_results_by_case):
+    data = _bill_box_plot(load_and_results_by_case,'TUOS')
+    return data
+
+def _bill_box_plot_Retailer(load_and_results_by_case):
+    data = _bill_box_plot(load_and_results_by_case,'Retailer')
+    return data
+
+def _bill_box_plot_Wholesale(load_and_results_by_case):
+    data = _bill_box_plot(load_and_results_by_case,'Wholesale')
+    return data
 
 def _average_annual_profile(load_and_results_by_case):
 
@@ -209,8 +262,16 @@ def _monthly_peak_time(load_and_results_by_case):
 
 ########################### charts dict: _single_variable_chart_methods
 
-_single_variable_chart_methods = {'Bill Distribution': _bill_distribution,
-                                  'Bill Box Plot': _bill_box_plot,
+_single_variable_chart_methods = {'Bill Distribution DUOS': _bill_distribution_DUOS,
+                                  'Bill Distribution NUOS': _bill_distribution_NUOS,
+                                  'Bill Distribution TUOS': _bill_distribution_TUOS,
+                                  'Bill Distribution Retailer': _bill_distribution_Retailer,
+                                  'Bill Distribution Wholesale': _bill_distribution_Wholesale,
+                                  'Bill Box Plot DUOS': _bill_box_plot_DUOS,
+                                  'Bill Box Plot NUOS': _bill_box_plot_NUOS,
+                                  'Bill Box Plot TUOS': _bill_box_plot_TUOS,
+                                  'Bill Box Plot Retailer': _bill_box_plot_Retailer,
+                                  'Bill Box Plot Wholesale': _bill_box_plot_Wholesale,
                                   'Average Annual Profile': _average_annual_profile,
                                   'Daily kWh Histogram':_daily_kWh_histogram,
                                   'Average Load Duration Curve':_average_load_duration_curve,
@@ -230,7 +291,12 @@ def singe_variable_chart(chart_name, load_and_results_by_case):
 
 def _get_annual_kWh(results, load, network_load, details, axis):
     axis_name = "Annual kWh"
-    axis_data = results['LoadInfo']['Annual_kWh']
+    if 'Retailer' in results.keys():
+        axis_data = list(results['Retailer']['LoadInfo']['Annual_kWh'])
+    elif 'Retailer' in results.keys():
+        axis_data = list(results['Network']['LoadInfo']['Annual_kWh'])
+    else:
+        axis_data = []
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
@@ -548,16 +614,46 @@ def _get_avg_daily_peak(results, load, network_load, details, axis):
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
-def _get_bill(results, load, network_load, details, axis):
+def _get_bill_NUOS(results, load, network_load, details, axis):
     axis_name = "Bill (AUD)"
-    axis_data = results['NUOS']['Bill']
+    if 'Network' in results.keys():
+        axis_data = list(results['Network']['NUOS']['Bill'])
+    else:
+        axis_data = []
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
-
-def _get_unitised_bill(results, load, network_load, details, axis):
-    axis_name = "Unitised Bill (kW)"
-    axis_data = results['NUOS']['Bill']
+def _get_bill_DUOS(results, load, network_load, details, axis):
+    axis_name = "Bill (AUD)"
+    if 'Network' in results.keys():
+        axis_data = list(results['Network']['DUOS']['Bill'])
+    else:
+        axis_data = []
     return {'axis_name':axis_name, 'axis_data':axis_data}
+
+def _get_bill_TUOS(results, load, network_load, details, axis):
+    axis_name = "Bill (AUD)"
+    if 'Network' in results.keys():
+        axis_data = list(results['Network']['NUOS']['Bill'])
+    else:
+        axis_data = []
+    return {'axis_name':axis_name, 'axis_data':axis_data}
+
+def _get_bill_Retailer(results, load, network_load, details, axis):
+    axis_name = "Bill (AUD)"
+    if 'Retailer' in results.keys():
+        axis_data = list(results['Retailer']['Retailer']['Bill'])
+    else:
+        axis_data = []
+    return {'axis_name':axis_name, 'axis_data':axis_data}
+
+def _get_bill_Wholesale(results, load, network_load, details, axis):
+    axis_name = "Bill (AUD)"
+    if 'Wholesale' in results.keys():
+        axis_data = list(results['Wholesale']['Bill'])
+    else:
+        axis_data = []
+    return {'axis_name':axis_name, 'axis_data':axis_data}
+
 
 
 _dual_variable_axis_methods = {'Annual_kWh': _get_annual_kWh,
@@ -567,8 +663,11 @@ _dual_variable_axis_methods = {'Annual_kWh': _get_annual_kWh,
                                'avg_demand_top_n_monthly_peaks':_get_avg_demand_top_n_monthly_peaks,
                                'avg_daily_kWh':_get_avg_daily_kWh,
                                'avg_daily_peak':_get_avg_daily_peak,
-                               'Bill':_get_bill,
-                               'unitised_bill_kW':_get_unitised_bill}
+                               'Bill NUOS':_get_bill_NUOS,
+                               'Bill DUOS':_get_bill_DUOS,
+                               'Bill TUOS':_get_bill_TUOS,
+                               'Bill Retailer':_get_bill_Retailer,
+                               'Bill Wholesale':_get_bill_Wholesale}
 
 def dual_variable_chart(load_and_results_by_case, details):
 
@@ -581,10 +680,16 @@ def dual_variable_chart(load_and_results_by_case, details):
         x_axis_data = _dual_variable_axis_methods[details['x_axis']](results, load_by_case[case_name], network_load, details, axis = 'x_axis')
         y_axis_data = _dual_variable_axis_methods[details['y_axis']](results, load_by_case[case_name], network_load, details, axis = 'y_axis')
         
-        dual_data = go.Scattergl(x=x_axis_data['axis_data'], y=y_axis_data['axis_data'], mode='markers', name=case_name)
-        
+        if len(x_axis_data['axis_data'])>0 and len(y_axis_data['axis_data'])>0:
+            corr_matrix = np.corrcoef(x_axis_data['axis_data'],y_axis_data['axis_data'])
+            corr_value = format(corr_matrix[0,1], '.2f')
 
-        trace.append(dual_data)
+            print('=====')
+            print(corr_value)
+
+            dual_data = go.Scattergl(x=x_axis_data['axis_data'], y=y_axis_data['axis_data'], mode='markers', name=case_name+' (CC:'+str(corr_value)+')')
+
+            trace.append(dual_data)
     
     dual_layout = go.Layout(xaxis=dict(title=x_axis_data['axis_name'],rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                             yaxis=dict(title=y_axis_data['axis_name'],rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))

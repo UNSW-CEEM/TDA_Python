@@ -343,7 +343,6 @@ def get_single_variable_chart():
                                                                   current_session.project_data.retail_results_by_case,
                                                                   current_session.project_data.network_results_by_case,
                                                                   current_session.project_data.wholesale_results_by_case)
-
     load_and_results_to_plot = {'results': results_to_plot, 'load': current_session.load_by_case}
     return singe_variable_chart(chart_name, load_and_results_to_plot)
 
@@ -368,7 +367,6 @@ def get_dual_variable_chart():
 @errors.parse_to_user_and_log(logger)
 def get_single_case_chart():
     details = request.get_json()
-    print(details)
     chart_name = details['chart_name']
     case_name = details['case_name']
     results_to_plot = helper_functions.get_results_subset_to_plot(
