@@ -123,7 +123,7 @@ def put_load_profiles_in_memory():
         # Get raw load data.
         if file_name not in current_session.raw_data:
             current_session.raw_data[file_name] = data_interface.get_load_table('data/load/', load_request['file_name'])
-            current_session.raw_data[file_name] = current_session.raw_data[file_name].set_index('Datetime')
+            current_session.raw_data[file_name] = current_session.raw_data[file_name]
     else:
         current_session.raw_data_name = ''
     return jsonify({'message': 'done'})
@@ -249,7 +249,7 @@ def add_case():
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
-        network_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), network_tariff)
+        network_results = Bill_Calc.bill_calculator(current_session.filtered_data, network_tariff)
         network_results.index.name = 'CUSTOMER_KEY'
         network_results = network_results.reset_index()
         current_session.project_data.network_results_by_case[case_name] = network_results
@@ -257,7 +257,7 @@ def add_case():
 
     if retail_tariff_name != 'None':
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
-        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), retail_tariff)
+        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data, retail_tariff)
         retail_results.index.name = 'CUSTOMER_KEY'
         retail_results = retail_results.reset_index()
         current_session.project_data.retail_results_by_case[case_name] = retail_results
