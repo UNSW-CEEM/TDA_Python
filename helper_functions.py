@@ -29,7 +29,7 @@ def get_demographic_options_from_demo_file(demo_file):
 
 def filter_load_data(raw_data, filtered_demo_info):
     customer_id = [c_id for c_id in list(filtered_demo_info['CUSTOMER_KEY']) if c_id in raw_data.columns]
-    filtered_data = raw_data.loc[:, ['Datetime'] + customer_id]
+    filtered_data = raw_data.loc[:, customer_id]
     return filtered_data
 
 
@@ -50,7 +50,7 @@ def filter_demo_info(demo_info, filter_options):
 
 
 def n_users(load_data):
-    n = len(load_data.columns) - 1
+    n = len(load_data.columns)
     return n
 
 

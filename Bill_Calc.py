@@ -323,7 +323,7 @@ def bill_calculator(load_profile, tariff, network_load=None, FiT=True):
         else:
             Results['Bill'] = Results['NUOS_DailyCharge'] + Results['NUOS_EnergyCharge_Discounted'] - Results['NUOS_Fit_Rebate']
 
-        print(time.time() - t0)
+        # print(time.time() - t0)
 
         return Results
 

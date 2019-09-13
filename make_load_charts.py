@@ -13,12 +13,11 @@ def get_average_annual_profile(load, load_filtered, series_name):
     layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                     yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                     showlegend=True)
-    
+
     if len(series_name) == 1:
         ### load mean
         load2 = load.copy()
-        load2.set_index('Datetime',inplace=True)
-        
+
         load_mean = load2.mean(axis=1)
 
         trace1 = go.Scattergl(x=load_mean.index, y=load_mean.values, name=series_name[0])
@@ -27,8 +26,8 @@ def get_average_annual_profile(load, load_filtered, series_name):
 
         data = {'data':[trace1],'layout':layout}
         return data
-    else:    
-        if load_filtered.shape[1] <= 1:
+    else:
+        if load_filtered.shape[1] < 1:
 
             data = {'data':[],'layout':layout}
             return data
@@ -36,22 +35,16 @@ def get_average_annual_profile(load, load_filtered, series_name):
         else:
             ### load mean
             load2 = load.copy()
-            load2.set_index('Datetime',inplace=True)
-            
             load_mean = load2.mean(axis=1)
 
             trace1 = go.Scattergl(x=load_mean.index, y=load_mean.values, name=series_name[0])
 
-
-            ### load_filtered mean
             load_filtered2 = load_filtered.copy()
-            load_filtered2.set_index('Datetime',inplace=True)
-
             load_filtered_mean = load_filtered2.mean(axis=1)
 
             trace2 = go.Scattergl(x=load_filtered_mean.index, y=load_filtered_mean.values, name=series_name[1])
 
-            data = {'data':[trace1, trace2],'layout':layout}
+            data = {'data': [trace1, trace2], 'layout': layout}
             return data
 
 
@@ -62,11 +55,10 @@ def get_daily_kWh_hist(load, load_filtered, series_name):
     layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                     yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                     showlegend=True)
-    
+
     if len(series_name)==1:
 
         load2 = load.copy()
-        del load2['Datetime']
         load_sum = load2.sum(axis=0)/2/365
 
         # no filtered data
@@ -79,23 +71,20 @@ def get_daily_kWh_hist(load, load_filtered, series_name):
         data ={'data': [trace1], 'layout':layout}
         return data
     else:
-        if load_filtered.shape[1] <= 1:
+        if load_filtered.shape[1] < 1:
             data ={'data': [], 'layout':layout}
             return data
         else:
             load2 = load.copy()
-            del load2['Datetime']
             load_sum = load2.sum(axis=0)/2/365
 
             load_filtered2 = load_filtered.copy()
-            del load_filtered2['Datetime']
             load_filtered_sum = load_filtered2.sum(axis=0)/2/365
 
             trace1 = go.Histogram(x=list(load_sum),histnorm='probability',name=series_name[0])
             trace2 = go.Histogram(x=list(load_filtered_sum),histnorm='probability',name=series_name[1])
 
             data ={'data': [trace1, trace2], 'layout':layout}
-            #data = trace
             return data
 
 
@@ -115,12 +104,11 @@ def get_daily_profiles(load):
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
 
-    if load.shape[1] <= 1:
+    if load.shape[1] < 1:
         data ={'data': [], 'layout':layout}
         return data
     else:
         load2=load.copy()
-        del load2['Datetime']
 
         load_daily_average = load2.apply(get_daily_average_profile)
 
@@ -129,7 +117,7 @@ def get_daily_profiles(load):
         for i in range(load_daily_average.shape[1]):
             trace = go.Scatter(x=list(range(0,48)), y=list(load_daily_average.iloc[:,i]), name = load_daily_average.columns[i])
             trace_list.append(trace)
-        
+
         data ={'data': trace_list, 'layout':layout}
 
         return data
@@ -146,12 +134,11 @@ def get_daily_profile_interquartile(load):
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
 
-    if load.shape[1] <= 1:
+    if load.shape[1] < 1:
         data ={'data': [], 'layout':layout}
         return data
     else:
         load2=load.copy()
-        del load2['Datetime']
 
         load_daily_average = load2.apply(get_daily_average_profile)
 
@@ -176,17 +163,16 @@ def get_average_load_duration_curve(load):
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=False)
 
-    if load.shape[1] <= 1:
+    if load.shape[1] < 1:
         data = {'data': [], 'layout':layout}
         return data
 
     else:
         load2=load.copy()
-        load2.drop(['Datetime'], axis=1, inplace=True)
-        
+
         load_average = load2.mean(axis=1)
         load_average_sort = load_average.sort_values(ascending = False, inplace = False, na_position ='last')
-        load_average_sort = load_average_sort.reset_index(drop = True) 
+        load_average_sort = load_average_sort.reset_index(drop = True)
 
         trace = go.Scatter(x=load_average_sort.index,y=load_average_sort.values)
         data = {'data': [trace], 'layout':layout}
@@ -201,13 +187,12 @@ def get_average_peak_day_profile(load):
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=False)
 
-    if load.shape[1] <= 1:
+    if load.shape[1] < 1:
         data = {'data': [], 'layout':layout}
         return data
     else:
         load2=load.copy()
-        load2.set_index('Datetime',inplace=True)
-            
+
         load_average = load2.mean(axis=1)
 
         # organise data
@@ -237,21 +222,20 @@ def get_monthly_average_kWh(load):
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=False)
 
-    if load.shape[1] <= 1:
+    if load.shape[1] < 1:
         data = {'data': [], 'layout':layout}
         return data
     else:
 
         load2=load.copy()
-        load2.set_index('Datetime',inplace=True)
-            
+
         load_average = load2.mean(axis=1)
 
         # find mean for each month
         monthly_mean = load_average.resample('M').mean()
 
         monthly_mean = monthly_mean*24
-        
+
         month_name = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
         trace = go.Bar(x=month_name,y=monthly_mean.values)
@@ -272,13 +256,12 @@ def get_seasonal_daily_pattern(load):
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
 
-    if load.shape[1] <= 1:
+    if load.shape[1] < 1:
         data = {'data': [], 'layout':layout}
         return data
     else:
         load2=load.copy()
-        load2.set_index('Datetime',inplace=True)
-            
+
         load_average = load2.mean(axis=1)
 
         # organise data
