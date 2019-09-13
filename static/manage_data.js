@@ -42,7 +42,7 @@ var import_data = function(data_type, call_back){
     // Action to perform when the user chooses the create now option.
     var create_now = function(){
         $.ajax({
-            url: '/import_load',
+            url: '/import_load_data',
             contentType: 'application/json;',
             data: JSON.stringify({'type': data_type}),
             type : 'POST',

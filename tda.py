@@ -614,8 +614,8 @@ def delete_tariff():
 
 @app.route('/import_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def import_load_data(file_path):
-
+def import_load_data():
+    file_path = r'C:\Users\user\Documents\GitHub\TDA_Python\SGSC_to_import.xlsx'
     # @todo: need to add datafile to pull in on Javascript side
     # @todo: need to fix matching of demographic data for csv
     allowed_extensions = {".csv", ".xls", ".xlsx"}
@@ -626,12 +626,15 @@ def import_load_data(file_path):
     if os.path.exists(file_path) and os.path.isfile(file_path):
         if path_extension in allowed_extensions:
             if path_extension == ".csv": # Read csv files
+                print('importing 2')
                 import_load_data = pd.read_csv(file_path)
             else: # Read excel files (same as sample file in Matlab tool)
+                print('importing 3')
                 xls = pd.ExcelFile(file_path)
                 sheet_names = xls.sheet_names
                 import_load_data = pd.read_excel(xls, sheet_names[0])
                 import_demo_data = pd.read_excel(xls, sheet_names[1])
+                print('importing 4')
             try:
                 import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
                 import_load_data[import_load_data.columns[0]].names = ['Datetime']
@@ -639,8 +642,8 @@ def import_load_data(file_path):
                 import_demo_data = import_demo_data.set_index(import_demo_data.columns[0])
                 import_demo_data.index.rename('CUSTOMER_KEY')
 
-                if not all(x in import_load_data.columns.tolist() for x in import_demo_data.index.tolist()): #Check if demo data matches load
-                    return jsonify({'error': 'Please ensure that each household has demographic data defined.'})
+                #if not all(x in import_load_data.columns.tolist() for x in import_demo_data.index.tolist()): #Check if demo data matches load
+                    #return jsonify({'error': 'Please ensure that each household has demographic data defined.'})
             except:
                 return jsonify({'error': 'Invalid data format.'})
 
@@ -830,7 +833,6 @@ def on_start_up():
     start_up_procedures.update_nemosis_cache()
     start_up_procedures.update_tariffs()
     return None
-
 
 if __name__ == '__main__':
     on_start_up()
