@@ -69,5 +69,7 @@ class InMemoryData:
         # Filtering options applied to get the current filtered data.
         self.filter_state = None
 
+        self.solar_profile_data = {}
+
         # Data subset to save/load.
         self.project_data = ProjectData()
