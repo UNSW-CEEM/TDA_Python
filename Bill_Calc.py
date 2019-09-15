@@ -210,8 +210,9 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
                         cap_exc_no = 0
                     load_profile_f = load_profile_f - (capacity / 2)
                     load_profile_f = load_profile_f.clip(lower=0)
+                    load_profile_f_g = load_profile_f.groupby(load_profile_f.index.normalize()).max()
                     for m in range(1, 13):
-                        arr = load_profile_f.loc[load_profile_f.index.month == m, :].copy().values
+                        arr = load_profile_f_g.loc[load_profile_f_g.index.month == m, :].copy().values
                         cap_exc_no_val = np.sum(arr > 0, axis=0)
                         load_profile_f.loc[load_profile_f.index.month == m, cap_exc_no_val <= cap_exc_no] = 0
                     load_profile_f2 = load_profile_f.copy()
