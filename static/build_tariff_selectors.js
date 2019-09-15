@@ -2,25 +2,28 @@
 
 // This functions takes a set of options to populate the drop downs with,
 // it also resets the selected values based on a set of currently selected values
-var update_tariff_options = function(parent_id, options_by_type, current_options){
-        $.each(options_by_type, function(option_type, options){
-            option_identifier = '#' + parent_id + ' ' + option_type
-            $(option_identifier).empty();
-            if (option_type == '.select_tariff'){
-                $(option_identifier).append($('<option>').text("None"));
-            } else {
-                $(option_identifier).append($('<option>').text("Any"));
-            }
-            $.each(options, function(i, option){
-                    $(option_identifier).append($('<option>').text(option));
-            });
-            $(option_identifier).val(current_options[option_type]);
+var update_tariff_options = function(parent_id, options_by_type, current_options, selected_tariff){
+    $.each(options_by_type, function(option_type, options){
+        option_identifier = '#' + parent_id + ' ' + option_type
+        $(option_identifier).empty();
+        if (option_type == '.select_tariff'){
+            $(option_identifier).append($('<option>').text("None"));
+        } else {
+            $(option_identifier).append($('<option>').text("Any"));
+        }
+        $.each(options, function(i, option){
+                $(option_identifier).append($('<option>').text(option));
         });
+        $(option_identifier).val(current_options[option_type]);
+    });
+    if(typeof selected_tariff !== "undefined") {
+        $('#' + parent_id + ' .select_tariff').val(selected_tariff).change();
+    }
 };
 
 // This function asks the server for possible tariff options given the current
 // options already selected, it then updates the drop downs.
-var get_tariff_options =  function(parent_id){
+var get_tariff_options =  function(parent_id, selected_tariff){
     // Get the current state of the drop downs.
     var current_options = {'.select_tariff_state': {},
                            '.select_tariff_provider': {},
@@ -29,7 +32,7 @@ var get_tariff_options =  function(parent_id){
 
     for (var key in current_options) {
         if (current_options.hasOwnProperty(key)) {
-            current_options[key] = $(key).val();
+            current_options[key] = $('#' + parent_id + ' ' + key).val();
         }
     }
 
@@ -47,7 +50,7 @@ var get_tariff_options =  function(parent_id){
         // Call the function to update the drop downs with the new options.
         success: function(data){
             alert_user_if_error(data);
-            update_tariff_options(parent_id, data['tariff_options'], current_options);
+            update_tariff_options(parent_id, data['tariff_options'], current_options, selected_tariff);
             }
     });
 };

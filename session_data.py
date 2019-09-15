@@ -33,9 +33,12 @@ class InMemoryData:
     def __init__(self):
         # Dictionaries for storing data associated with the current state of the program.
         self.raw_data = {}  # Data as loaded from feather files, stored in dict on a file name basis
+
+        self.downsample_data = {}
+        self.filter_missing_data = {}
         self.filtered_data = None  # Data after applying user specified filtering
         self.is_filtered = False  # Flag to indicate if filtering has been applied
-
+        self.raw_data_name = ''
         # Chart data for the load plots, only storing data for non filtered data as filtering can change between plot
         # updates.
         # Stored on a file name basis.
@@ -46,6 +49,12 @@ class InMemoryData:
 
         # Current demographic info after filter.
         self.filtered_demo_info = None
+
+        # End user technology sample.
+        self.end_user_tech_sample = None
+
+        # Filtering options applied to get the current filtered data.
+        self.filter_state = None
 
         # Data subset to save/load.
         self.project_data = ProjectData()

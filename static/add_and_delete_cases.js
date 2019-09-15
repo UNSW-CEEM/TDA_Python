@@ -7,6 +7,7 @@ var add_case_to_python = function(){
     var network_tariff_name = $('#network_tariff_selection_panel .select_tariff').val();
 
     // Get load name
+
     var load_request = get_load_details_from_ui();
 
     // Get wholesale price details
@@ -149,6 +150,7 @@ var check_that_a_case_can_be_added = function(){
     var retail_tariff_set = $('#retail_tariff_selection_panel .select_tariff').val() != 'None';
     var network_tariff_set = $('#network_tariff_selection_panel .select_tariff').val() != 'None';
     var file_name_set = $('#select').children("option:selected").val() != 'Select one';
+    var end_user_tech_set = $('#tech_status_set').css("display") == 'inline';
     var year_set = $('#select_wholesale_year').val() != 'None';
     var state_set = $('#select_wholesale_state').val() != 'None';
 
@@ -156,9 +158,9 @@ var check_that_a_case_can_be_added = function(){
 
     var message = ""
 
-    if (!are_costs_set && !file_name_set){
+    if (!are_costs_set && !(file_name_set || end_user_tech_set)){
         message = "Please select load profiles and a tariff or wholesale energy costs before attempting to create a case."
-    } else if (!file_name_set){
+    } else if (!(file_name_set || end_user_tech_set)){
         message = "Please select load profiles before attempting to create a case."
     } else if (!are_costs_set){
         message = "Please select a tariff or wholesale energy costs before attempting to create a case."
