@@ -3,6 +3,7 @@ import data_interface
 import numpy as np
 import math
 import random
+import time
 pd.set_option('display.max_rows', 100)
 
 def create_sample(gui_inputs, filtered_data):
@@ -133,9 +134,13 @@ def create_sample(gui_inputs, filtered_data):
                       'solar_profiles': solar_profiles, # @todo: can delete if we store solar profiles already in gui_inputs['tech_inputs']['solar']['profiles']
                       }
 
-    solar_profiles = calc_solar_profiles(sample_details)
-    calc_net_profile_after_battery(filtered_data, solar_profiles, sample_details['end_user_tech_details'])
+    solar_profiles = calc_solar_profiles(solar_profiles, sample_details)
 
+    start = time.time()
+    calc_net_profile_after_battery(filtered_data, solar_profiles, sample_details)
+    end = time.time()
+
+    print('calc_batt time: ', end - start)
     return sample_details
 
 
@@ -153,25 +158,75 @@ def set_filtered_data_to_match_saved_sample(end_user_tech_sample):
 
 def calc_net_profiles(gross_load_profiles, end_user_tech):
     end_user_tech_inputs = end_user_tech['tech_inputs']
-
     return gross_load_profiles
 
 
 
 
-def calc_net_profile_after_battery(load_profile, solar_profile, battery_specs):
-    print('load_profile: ', load_profile)
-    print('battery_specs: ', battery_specs)
-    print('solar_profile: ', solar_profile)
+def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sample):
+    end_user_tech_details = end_user_tech_sample['end_user_tech_details']
+    customer_key = end_user_tech_sample['customer_keys']
 
-    pass
+    # @todo: check if we should be allowing users to define these parameters?
+    batt_soc = 0.2
+    round_trip_batt_eff = 0.85
+    single_trip_batt_eff = math.sqrt(round_trip_batt_eff)
+
+    # @todo: check if assumption that batteries charge and discharge at same rate is valid
+    new_profile_after_batt = pd.DataFrame([])
+
+    for key in customer_key:
+        battery_details = end_user_tech_details.loc[end_user_tech_details['CUSTOMER_KEY'] == key]
+        batt_kw = battery_details['battery_sizes_kW'].values[0]
+        batt_kw_to_kwh = battery_details['battery_sizes_kW_to_kWh'].values[0]
+        batt_strategy = battery_details['battery_strategy'].values[0]
+
+        battery_capacity = 0
+        if str(batt_kw_to_kwh) != 'nan' and str(batt_kw) != 'nan':
+            if batt_kw_to_kwh > 0:
+                battery_capacity = batt_kw / batt_kw_to_kwh
+
+        usable_batt_capacity = battery_capacity * (1 - batt_soc)
+        current_batt_charge = 0 #inital battery capacity
+        max_batt_charge_rate = (batt_kw * single_trip_batt_eff) / 2.0 #current assumes charge and discharge rate is the same
+
+        new_profile = load_profile[[key]] - solar_profile[[key]]
+        if batt_strategy == 'Maximise self consumption':
+            net_load_profile = load_profile[[key]] - solar_profile[[key]]
+
+            # start2 = time.time()
+            for i in range(1, len(net_load_profile)):
+                if net_load_profile[key][i] >= 0:
+                    # maximum charging rate is batt_kw/2.0 since we are using 30min timestamps
+                    chargeable_amount = min((usable_batt_capacity - current_batt_charge) * single_trip_batt_eff, max_batt_charge_rate)
+                    net_energy_flow = 0
+                    if net_load_profile[key][i] > (chargeable_amount / single_trip_batt_eff):
+                        net_energy_flow = net_load_profile[key][i] - chargeable_amount
+                    current_batt_charge += chargeable_amount
+
+                else:
+                    dischargeable_amount = min(current_batt_charge * single_trip_batt_eff, max_batt_charge_rate)
+                    net_energy_flow = 0
+                    if net_load_profile[key][i] < dischargeable_amount / single_trip_batt_eff:
+                        net_energy_flow = net_load_profile[key][i] + dischargeable_amount
+                    current_batt_charge -= dischargeable_amount
+
+                new_profile[key][i] = net_energy_flow
+
+            # end2 = time.time()
+            # print('time to calc one customer: ', end2-start2)
+
+        new_profile_after_batt = pd.concat(
+            [new_profile_after_batt, new_profile], axis=1)
+
+
+    return new_profile_after_batt
 
 
 
-def calc_solar_profiles(end_user_tech_sample):
+def calc_solar_profiles(solar_profiles, end_user_tech_sample):
 
     end_user_tech_details = end_user_tech_sample['end_user_tech_details']
-    solar_profiles = end_user_tech_sample['solar_profiles']
     customer_key = end_user_tech_sample['customer_keys']
 
     solar_kwh_profiles = pd.DataFrame([])
