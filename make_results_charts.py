@@ -260,6 +260,37 @@ def _monthly_peak_time(load_and_results_by_case):
     return {'data': trace, 'layout':layout}
 
 
+
+def _get_daily_profile_interquartile_range(load_and_results_by_case):
+    load_by_case = load_and_results_by_case['load']
+    
+    Xaxis = "30 Minutes Interval"
+    Yaxis = "kWh"
+    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
+                       tickmode = 'array',
+                       tickvals = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46],
+                       ticktext = ['01:00', '03:00', '05:00', '07:00', '09:00', '11:00','13:00','15:00','17:00','19:00','21:00','23:00']),
+                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+                       showlegend=True)
+
+    trace = []
+    for case_name, load in load_by_case.items():
+        load2 = load.copy()
+        del load2['Datetime']
+
+        load_daily_average = load2.apply(get_daily_average_profile)
+
+        qr1 = np.nanpercentile(np.array(load_daily_average), 75, interpolation='midpoint',axis=1)
+        qr2 = np.nanpercentile(np.array(load_daily_average), 50, interpolation='midpoint',axis=1)
+        qr3 = np.nanpercentile(np.array(load_daily_average), 25, interpolation='midpoint',axis=1)
+
+        trace.append(go.Scatter(x=list(range(0,48)),y=list(qr3),fill=None, name = case_name + ' 25%'))
+        trace.append(go.Scatter(x=list(range(0,48)),y=list(qr2),fill='tonexty', name = case_name + ' 50%'))
+        trace.append(go.Scatter(x=list(range(0,48)),y=list(qr1),fill='tonexty', name = case_name + ' 75%'))
+
+    return {'data': trace, 'layout':layout}
+
+
 ########################### charts dict: _single_variable_chart_methods
 
 _single_variable_chart_methods = {'Bill Distribution DUOS': _bill_distribution_DUOS,
@@ -277,7 +308,8 @@ _single_variable_chart_methods = {'Bill Distribution DUOS': _bill_distribution_D
                                   'Average Load Duration Curve':_average_load_duration_curve,
                                   'Monthly Average kWh':_monthly_average_kWh,
                                   'Seasonal Daily Pattern':_seasonal_daily_pattern,
-                                  'Monthly Peak Time':_monthly_peak_time}
+                                  'Monthly Peak Time':_monthly_peak_time,
+                                  'Daily Profile Interquartile Range':_get_daily_profile_interquartile_range}
 
 
 
@@ -684,9 +716,6 @@ def dual_variable_chart(load_and_results_by_case, details):
             corr_matrix = np.corrcoef(x_axis_data['axis_data'],y_axis_data['axis_data'])
             corr_value = format(corr_matrix[0,1], '.2f')
 
-            print('=====')
-            print(corr_value)
-
             dual_data = go.Scattergl(x=x_axis_data['axis_data'], y=y_axis_data['axis_data'], mode='markers', name=case_name+' (CC:'+str(corr_value)+')')
 
             trace.append(dual_data)
@@ -716,18 +745,51 @@ def _get_bill_components(data, load_to_plot):
     layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
 
-    data['NUOS']= data['NUOS'].sort_values('Bill', ascending=False)
-    data['NUOS'] = data['NUOS'].reset_index(drop=True)
+
+    new_data = pd.DataFrame()
+
+    if 'Wholesale' in data.keys():
+        wholesale_data = data['Wholesale'].copy()
+        wholesale_data.set_index('CUSTOMER_KEY',inplace=True)
+        new_data['Wholesale Bill'] = wholesale_data['Bill']
+
+    if 'Network' in data.keys():
+        selected_columns = [col for col in data['Network']['DUOS'].columns if col.startswith('Charge')]
+        for col in selected_columns:
+            new_data['Network DUOS '+col] = data['Network']['DUOS'][col]    
+
+        selected_columns = [col for col in data['Network']['TUOS'].columns if col.startswith('Charge')]
+        for col in selected_columns:
+            new_data['Network TUOS '+col] = data['Network']['TUOS'][col]
+
+        new_data['Network Residual Bill'] = data['Network']['NUOS']['Bill'] - data['Network']['DUOS']['Bill'] - data['Network']['TUOS']['Bill']
+
+    if 'Retailer' in data.keys():
+        if ('Wholesale' in data.keys()) and ('Network' in data.keys()):
+            new_data['Retailer Residual Bill'] = data['Retailer']['Retailer']['Bill'] - data['Network']['NUOS']['Bill']- wholesale_data['Bill']
+      
+        elif (not 'Wholesale' in data.keys()) and ('Network' in data.keys()):
+            new_data['Retailer Residual Bill'] = data['Retailer']['Retailer']['Bill'] - data['Network']['NUOS']['Bill']
+
+        elif ('Wholesale' in data.keys()) and (not 'Network' in data.keys()):
+            new_data['Retailer Residual Bill'] = data['Retailer']['Retailer']['Bill'] - wholesale_data['Bill']
+
+        elif (not 'Wholesale' in data.keys()) and (not 'Network' in data.keys()):
+            selected_columns = [col for col in data['Retailer']['Retailer'].columns if col.startswith('Charge')]
+            for col in selected_columns:
+                new_data['Retailer '+col] = data['Retailer']['Retailer'][col] 
+        
+    new_data['SUM'] = new_data.sum(axis=1)
+
+    new_data.sort_values('SUM', ascending=False, inplace = True)
+    new_data.reset_index(drop=True, inplace = True)
+    del new_data['SUM']
+
     traces = []
-    # compenent_suffixes = ['Retailer', 'DUOS', 'TUOS', 'NUOS']
-    # potential_components = [col for col in data.columns if is_component(compenent_suffixes, col)]
-    potential_components = [col for col in data['NUOS'].columns if col.startswith('Charge')]
-
-
-    for component in potential_components:
-        trace = dict(name=component,
-                     x=data['NUOS'].index.values,
-                     y=data['NUOS'][component],
+    for col in new_data.columns:
+        trace = dict(name=col,
+                     x=new_data.index.values,
+                     y=new_data[col],
                      mode='lines',
                      stackgroup='one')
         traces.append(trace)
@@ -739,53 +801,63 @@ def _get_bill_components_pie_chart(data, load_by_case):
     Yaxis = ""
     layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
+    
+    selected_columns_sum = []
+    label_name = []
 
-    selected_columns = [col for col in data['NUOS'].columns if col.startswith('Charge')]
+    if 'Wholesale' in data.keys():
+        selected_columns_sum.append(data['Wholesale']['Bill'].sum(axis=0))
+        label_name.append('Wholesale Bill')
 
-    selected_data = data['NUOS'][selected_columns]
+    if 'Network' in data.keys():
+        selected_columns = [col for col in data['Network']['DUOS'].columns if col.startswith('Charge')]
+        for col in selected_columns:
+            selected_columns_sum.append(data['Network']['DUOS'][col].sum(axis=0))
+            label_name.append('Network DUOS ' + col)
+        del selected_columns
 
-    percentage = []
-    for col in selected_data.columns:
-        percentage.append(selected_data[col].sum(axis=0)/data['NUOS']['Bill'].sum(axis=0))
+        selected_columns = [col for col in data['Network']['TUOS'].columns if col.startswith('Charge')]
+        for col in selected_columns:
+            selected_columns_sum.append(data['Network']['TUOS'][col].sum(axis=0))
+            label_name.append('Network TUOS ' + col)
+        del selected_columns
 
-    trace = [go.Pie(labels=selected_columns, values=percentage)]
+        selected_columns_sum.append(data['Network']['NUOS']['Bill'].sum(axis=0) - data['Network']['DUOS']['Bill'].sum(axis=0) - data['Network']['TUOS']['Bill'].sum(axis=0))
+        label_name.append('Network Residual component')
 
+    if 'Retailer' in data.keys():
+        if ('Wholesale' in data.keys()) and ('Network' in data.keys()):
+            selected_columns_sum.append(data['Retailer']['Retailer']['Bill'].sum(axis=0) - data['Network']['NUOS']['Bill'].sum(axis=0) - data['Wholesale']['Bill'].sum(axis=0))
+            label_name.append('Retailer residual component')
+        
+        elif (not 'Wholesale' in data.keys()) and ('Network' in data.keys()):
+            selected_columns_sum.append(data['Retailer']['Retailer']['Bill'].sum(axis=0) - data['Network']['NUOS']['Bill'].sum(axis=0))
+            label_name.append('Retailer residual component')
+
+        elif ('Wholesale' in data.keys()) and (not 'Network' in data.keys()):
+            selected_columns_sum.append(data['Retailer']['Retailer']['Bill'].sum(axis=0) - data['Wholesale']['Bill'].sum(axis=0))
+            label_name.append('Retailer residual component')
+
+        elif (not 'Wholesale' in data.keys()) and (not 'Network' in data.keys()):
+            
+            selected_columns = [col for col in data['Retailer']['Retailer'].columns if col.startswith('Charge')]
+            for col in selected_columns:
+                selected_columns_sum.append(data['Retailer']['Retailer'][col].sum(axis=0))
+                label_name.append('Retailer ' + col)
+            del selected_columns
+
+    percentage = np.array(selected_columns_sum)/np.nansum(np.array(selected_columns_sum))
+    trace = [go.Pie(labels=label_name, values=percentage)]
     return {'data':trace, 'layout': layout}
 
 def get_daily_average_profile(x):
     x_array = np.array(x).reshape((-1,48))
     return np.nanmean(x_array,axis=0)
 
-def _get_daily_profile_interquartile_range(results_to_plot, load_to_plot):
-    
-    Xaxis = "30 Minutes Interval"
-    Yaxis = "kWh"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
-                       tickmode = 'array',
-                       tickvals = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46],
-                       ticktext = ['01:00', '03:00', '05:00', '07:00', '09:00', '11:00','13:00','15:00','17:00','19:00','21:00','23:00']),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
-                       showlegend=True)
-
-    load_to_plot2=load_to_plot.copy()
-    del load_to_plot2['Datetime']
-
-    load_daily_average = load_to_plot2.apply(get_daily_average_profile)
-
-    qr1 = np.nanpercentile(np.array(load_daily_average), 75, interpolation='midpoint',axis=1)
-    qr2 = np.nanpercentile(np.array(load_daily_average), 50, interpolation='midpoint',axis=1)
-    qr3 = np.nanpercentile(np.array(load_daily_average), 25, interpolation='midpoint',axis=1)
-
-    trace1 = go.Scatter(x=list(range(0,48)),y=list(qr3),fill=None, name = '25%')
-    trace2 = go.Scatter(x=list(range(0,48)),y=list(qr2),fill='tonexty', name = '50%')
-    trace3 = go.Scatter(x=list(range(0,48)),y=list(qr1),fill='tonexty', name = '75%')
-
-    return {'data': [trace1, trace2, trace3], 'layout':layout}
 
 
 _single_case_chart_methods = {'bill_components': _get_bill_components,
-                              'bill_components_pie_chart': _get_bill_components_pie_chart,
-                              'daily_profile_interquartile_range': _get_daily_profile_interquartile_range}
+                              'bill_components_pie_chart': _get_bill_components_pie_chart}
 
 
 def single_case_chart(chart_name, load_and_results_to_plot):

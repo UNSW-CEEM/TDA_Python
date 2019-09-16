@@ -889,9 +889,9 @@
         <div id="results_panel" class="main_tab_content">
             <div class="results_area">
                 <div id="results_tab_set" class="tab_button_area">
-                    <button id="default_results_tab" class="results_tab_links" onclick="displayResults(event, 'single_variable_tab')">Single variable graphs</button>
-                    <button id="dual_var_button" class="results_tab_links" onclick="displayResults(event, 'dual_variable_tab')">Dual variable graphs</button>
-                    <button id="single_case_button" class="results_tab_links" onclick="displayResults(event, 'single_case_tab')">Single case graphs</button>
+                    <button id="default_results_tab" class="results_tab_links" onclick="displayResults(event, 'single_variable_tab')">Load Info and Bill Info</button>
+                    <button id="dual_var_button" class="results_tab_links" onclick="displayResults(event, 'dual_variable_tab')">Correlation</button>
+                    <button id="single_case_button" class="results_tab_links" onclick="displayResults(event, 'single_case_tab')">Bill Components</button>
                 </div>
                 <div id="single_variable_tab" class="results_tab_content">
                     <div id="single_variable_result_chart" class="row chart" style="height: 80%"></div>
@@ -907,6 +907,7 @@
                                 <option value="Monthly Average kWh">Monthly Average kWh</option>
                                 <option value="Seasonal Daily Pattern">Seasonal Daily Pattern</option>
                                 <option value="Monthly Peak Time">Monthly Peak Time</option>
+                                <option value="Daily Profile Interquartile Range">Daily Profile Interquartile Range</option>
 
                                 <option value="Bill Distribution NUOS">Bill distribution (NUOS)</option>
                                 <option value="Bill Distribution DUOS">Bill distribution (DUOS)</option>
@@ -1030,7 +1031,6 @@
                             <select id="single_case_chart_type" style="width: 100%;">
                                 <option value="bill_components">Bill Components</option>
                                 <option value="bill_components_pie_chart">Bill Components Pie Chart</option>
-                                <option value="daily_profile_interquartile_range">Daily Profile Interquartile Range</option>
                             </select>
                             <script src="static/plot_results.js"></script>
                         </div>
