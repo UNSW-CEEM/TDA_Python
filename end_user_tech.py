@@ -3,6 +3,8 @@ import data_interface
 import numpy as np
 import math
 import random
+
+# Packages below this line can be deleted, used for testing purposes only.
 import time
 pd.set_option('display.max_rows', 100)
 
