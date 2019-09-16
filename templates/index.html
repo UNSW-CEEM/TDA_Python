@@ -398,11 +398,11 @@
       }
 
       .case_info_button, .case_delete_button, .case_visibility_checkbox {
-        height: 18px;
-        width: 18px;
-        font-size: 12px;
-        padding:0;
-        vertical-align: top;
+        height: 2vh !important;
+        width: 2vh !important;
+        font-size: 1.25vh !important;
+        padding:0 !important;
+        vertical-align: top !important;
       }
 
       .x_peak_options, .y_peak_options {
@@ -489,7 +489,7 @@
     </div>
 
     <div id="case_control_template" class="row case_control"
-         style="width: 100%; margin-bottom: 2vh; float: left;">
+         style="width: 100%; float: left;">
         <div class="case_label" style="vertical-align: middle; width: 30%; display: inline;"></div>
         <input class="case_visibility_checkbox" type="checkbox" style="width: 10%;"
                checked onclick="on_checkbox_change()">
@@ -889,9 +889,14 @@
         <div id="results_panel" class="main_tab_content">
             <div class="results_area">
                 <div id="results_tab_set" class="tab_button_area">
-                    <button id="default_results_tab" class="results_tab_links" onclick="displayResults(event, 'single_variable_tab')">Load Info and Bill Info</button>
-                    <button id="dual_var_button" class="results_tab_links" onclick="displayResults(event, 'dual_variable_tab')">Correlation</button>
-                    <button id="single_case_button" class="results_tab_links" onclick="displayResults(event, 'single_case_tab')">Bill Components</button>
+                    <button id="default_results_tab" class="results_tab_links"
+                            onclick="displayResults(event, 'single_variable_tab')">Bill info</button>
+                    <button id="default_results_tab_2" class="results_tab_links"
+                            onclick="displayResults(event, 'single_variable_tab_2')">Load info</button>
+                    <button id="dual_var_button" class="results_tab_links"
+                            onclick="displayResults(event, 'dual_variable_tab')">Variable correlations</button>
+                    <button id="single_case_button" class="results_tab_links"
+                            onclick="displayResults(event, 'single_case_tab')">Bill components</button>
                 </div>
                 <div id="single_variable_tab" class="results_tab_content">
                     <div id="single_variable_result_chart" class="row chart" style="height: 80%"></div>
@@ -901,12 +906,28 @@
                         </div>
                         <div class="col" style="width: 80%">
                             <select id="single_variable_chart_type" style="width: 50%">
+                                <option value="Bill Distribution">Bill Distribution</option>
+                                <option value="Bill Box Plot">Bill Box Plot</option>
+                            </select>
+                        </div>
+                        <script src="static/plot_results.js"></script>
+                    </div>
+                </div>
+                <div id="single_variable_tab_2" class="results_tab_content">
+                    <div id="single_variable_result_chart_2" class="row chart" style="height: 80%"></div>
+                    <div class="row" style="height: 20%">
+                        <div class="col">
+                            <div class="label_line">Select figure:&nbsp</div>
+                        </div>
+                        <div class="col" style="width: 80%">
+                            <select id="single_variable_chart_type_2" style="width: 50%">
                                 <option value="Average Annual Profile">Average Annual Profile</option>
                                 <option value="Daily kWh Histogram">Daily kWh Histogram</option>
                                 <option value="Average Load Duration Curve">Average Load Duration Curve</option>
                                 <option value="Monthly Average kWh">Monthly Average kWh</option>
                                 <option value="Seasonal Daily Pattern">Seasonal Daily Pattern</option>
                                 <option value="Monthly Peak Time">Monthly Peak Time</option>
+                                
                                 <option value="Daily Profile Interquartile Range">Daily Profile Interquartile Range</option>
 
                                 <option value="Bill Distribution NUOS">Bill distribution (NUOS)</option>

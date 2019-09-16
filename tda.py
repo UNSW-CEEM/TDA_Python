@@ -24,6 +24,9 @@ import logging
 import validate_component_table_cell_values
 import check_time_of_use_coverage
 import end_user_tech
+import math
+import feather
+import csv
 
 enable_logging = False
 
@@ -145,18 +148,30 @@ def filtered_load_data():
     chart_type = load_request['chart_type']
     current_session.filter_state = load_request['filter_options']
 
-    print('hi the down sample option is {}'.format(load_request['sample_fraction']))
+    # Filter by missing data
+    current_session.raw_data[file_name] = current_session.raw_data[file_name]
+    raw_data = current_session.raw_data[file_name]
 
-    # Filter data
+    missing_data_limit = load_request['missing_data_limit']
+    current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
+
+    # Down sample data randomly
+    number_of_loads = len(current_session.filter_missing_data.columns)
+    number_of_loads_downsampled = math.ceil(number_of_loads * load_request['sample_fraction'])
+    if number_of_loads_downsampled < 1:
+        number_of_loads_downsampled = 1
+    current_session.downsample_data = current_session.filter_missing_data.sample(n=number_of_loads_downsampled, axis=1)
+
+    # Filter data by demographic
     demo_info_file_name = data_interface.find_loads_demographic_file(file_name)
     demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
     demo_info = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
-        current_session.raw_data[file_name], demo_info)
+        current_session.downsample_data, demo_info)
 
     current_session.filtered_demo_info, current_session.is_filtered = \
         helper_functions.filter_demo_info(demo_info, load_request['filter_options'])
     current_session.filtered_data = helper_functions.filter_load_data(
-        current_session.raw_data[file_name], current_session.filtered_demo_info)
+        current_session.downsample_data, current_session.filtered_demo_info)
 
     # Create the requested chart data if it does not already exist.
     if file_name not in current_session.raw_charts:
@@ -164,20 +179,20 @@ def filtered_load_data():
 
     # prepare chart data and n_users
     current_session.filtered_charts = {file_name: {}}
-    
+
     if chart_type not in current_session.raw_charts[file_name]:
         if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
             current_session.raw_charts[file_name][chart_type] = \
-                chart_methods[chart_type](current_session.raw_data[file_name],
+                chart_methods[chart_type](current_session.downsample_data,
                                           current_session.filtered_data, series_name=['All'])
         else:
             current_session.raw_charts[file_name][chart_type] = \
-                chart_methods[chart_type](current_session.raw_data[file_name])
+                chart_methods[chart_type](current_session.downsample_data)
 
     if current_session.is_filtered:
         if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
             current_session.filtered_charts[file_name][chart_type] = \
-                chart_methods[chart_type](current_session.raw_data[file_name], current_session.filtered_data,
+                chart_methods[chart_type](current_session.downsample_data, current_session.filtered_data,
                                           series_name=['All', 'Selected'])
         else:
             current_session.filtered_charts[file_name][chart_type] = \
@@ -187,7 +202,7 @@ def filtered_load_data():
         n_users = helper_functions.n_users(current_session.filtered_data)
     else:
         chart_data = current_session.raw_charts[file_name][chart_type]
-        n_users = helper_functions.n_users(current_session.raw_data[file_name])
+        n_users = helper_functions.n_users(current_session.downsample_data)
 
     # Format as json.
     return_data = {"n_users": n_users, "chart_data": chart_data}
@@ -248,6 +263,7 @@ def add_case():
         network_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), network_tariff)
         network_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         network_results['LoadInfo'] = network_results['LoadInfo'].reset_index()
+
         current_session.project_data.network_results_by_case[case_name] = network_results
         current_session.project_data.network_tariffs_by_case[case_name] = network_tariff
 
@@ -256,6 +272,7 @@ def add_case():
         retail_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), retail_tariff)
         retail_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         retail_results['LoadInfo'] = retail_results['LoadInfo'].reset_index()
+
         current_session.project_data.retail_results_by_case[case_name] = retail_results
         current_session.project_data.retail_tariffs_by_case[case_name] = retail_tariff
 
@@ -472,7 +489,7 @@ def load_end_user_tech_from_sample_from_file():
         current_session.raw_data_name = current_session.end_user_tech_sample['load_details']['file_name']
         raw_data = data_interface.get_load_table('data/load/', current_session.raw_data_name)
         current_session.raw_data[current_session.raw_data_name] = raw_data
-        filtered_data = raw_data.loc[:, ['Datetime'] + current_session.end_user_tech_sample['customer_keys']]
+        filtered_data = raw_data.loc[:, current_session.end_user_tech_sample['customer_keys']]
         current_session.filtered_data = end_user_tech.calc_net_profiles(filtered_data,
                                                                         current_session.end_user_tech_sample)
         current_session.filter_state = current_session.end_user_tech_sample['load_details']['filter_options']
@@ -609,16 +626,86 @@ def delete_tariff():
 @app.route('/import_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def import_load_data():
-    
-    return jsonify({'message': "No python code for importing data yet!"})
+    file_path = r'C:\Users\user\Documents\GitHub\TDA_Python\SGSC_to_import.xlsx'
+    # @todo: need to add datafile to pull in on Javascript side
+    # @todo: need to fix matching of demographic data for csv
+    allowed_extensions = {".csv", ".xls", ".xlsx"}
+
+    base = os.path.basename(file_path)
+    path_extension = os.path.splitext(base)[1]
+    file_name = os.path.splitext(base)[0]
+    if os.path.exists(file_path) and os.path.isfile(file_path):
+        if path_extension in allowed_extensions:
+            if path_extension == ".csv": # Read csv files
+                print('importing 2')
+                import_load_data = pd.read_csv(file_path)
+                import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
+            else: # Read excel files (same as sample file in Matlab tool)
+                print('importing 3')
+                xls = pd.ExcelFile(file_path)
+                sheet_names = xls.sheet_names
+                if len(sheet_names) >= 2: #check to see if excel sheet contains two sheets, one for load data and one for demo data.
+                    import_load_data = pd.read_excel(xls, sheet_names[0])
+                    import_demo_data = pd.read_excel(xls, sheet_names[1])
+                elif len(sheet_names) == 1: #allow user to upload only load data without demo data.
+                    import_load_data = pd.read_excel(xls, sheet_names[0])
+                    import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
+            try:
+                import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
+                import_load_data.rename(columns={import_load_data.columns[0]: 'Datetime'}, inplace = True)
+
+                import_demo_data = import_demo_data.set_index(import_demo_data.columns[0])
+                import_demo_data.index.rename('CUSTOMER_KEY')
+
+                # Check if demo data matches load
+                # @todo: if we want it to work without all demographic data available use 'any' instead of 'all'
+                if not all(x in import_load_data.columns.tolist() for x in import_demo_data.index.tolist()) and not import_demo_data.empty:
+                    return jsonify({'error': 'Please ensure that each household has demographic data defined.'})
+                else: # if demo data is not available
+                    pass
+            except:
+                return jsonify({'error': 'Invalid data format.'})
+
+            feather.write_dataframe(import_load_data, 'data/load/' + file_name + '.feather')
+            import_demo_data.to_csv('data/demographics/' + file_name + '.csv')
+
+            # Create mapping of load and demographic data
+            loaded_files = open('data/load_2_demo_map.csv', 'r').read()
+            with open('data/load_2_demo_map.csv', 'a') as f:
+                if file_name in loaded_files: # Check if file already exists
+                    pass
+                else:
+                    writer = csv.writer(f)
+                    writer.writerow([file_name, file_name + '.csv'])
+            f.close()
+        else:
+            return jsonify({'error': 'Invalid file type. Can only import csv or excel files in format as the sample file.'})
+    else:
+        return jsonify({'error': 'Cannot find file.'})
 
 
 @app.route('/delete_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def delete_load_data():
     request_details = request.get_json()
-    print('I know you want to delete {}'.format(request_details['name']))
-    return jsonify({'message': "No python code for deleting data yet!"})
+
+    try:
+        os.remove('data/load/' + request_details['name'] + '.feather')
+        os.remove('data/demographics/' + request_details['name'] + '.csv')
+    except:
+        return jsonify({'message': "Cannot find file."})
+
+    with open('data/load_2_demo_map.csv', 'r+') as f:
+        lines = f.readlines()
+        f.seek(0)
+
+        for line in lines:
+            if request_details['name'] not in line:
+                f.write(line)
+        f.truncate()
+    f.close()
+
+    return jsonify({'message': "File has been deleted."})
 
 
 @app.route('/restore_original_data_set', methods=['POST'])

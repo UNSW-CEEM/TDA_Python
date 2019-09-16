@@ -186,6 +186,7 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
     # Demand charge:
     for TarComp, TarCompVal in tariff['Parameters'].items():
         if 'Demand' in TarCompVal.keys():
+
             for DemCharComp, DemCharCompVal in TarCompVal['Demand'].items():
                 ts_num = DemCharCompVal['Demand Window Length']  # number of timestamp
                 num_of_peaks = DemCharCompVal['Number of Peaks']

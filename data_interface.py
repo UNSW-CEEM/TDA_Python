@@ -4,10 +4,18 @@ import json
 
 
 def get_load_table(folder_path, load_file):
+    # @todo: if cannot find load file throw an error
+
     load_data = feather.read_dataframe(folder_path + load_file + '.feather')
-    load_data['Datetime'] = pd.to_datetime(load_data['READING_DATETIME'])
-    load_data = load_data.drop('READING_DATETIME', axis=1)
+    load_data.columns = load_data.columns.str.lower() #Convert all columns to lowercase
+
+    # Allow for different naming of column as the column for timestamp
+    date_column_name = load_data.filter(regex='date|time').columns.tolist()[0]
+    load_data['Datetime'] = pd.to_datetime(load_data[date_column_name])
+
+    load_data = load_data.drop(date_column_name, axis=1)
     load_data = load_data.sort_values(by=['Datetime'])
+    load_data = load_data.set_index('Datetime')
     return load_data
 
 
@@ -34,13 +42,14 @@ def get_tariffs(tariff_type):
     tariffs = tariffs + user_tariffs
     return tariffs
 
-
 def find_loads_demographic_file(load_file_name):
     load_2_demo_map = pd.read_csv('data/load_2_demo_map.csv')
+
+    # @todo: if cannot find demographic file throw an error
     if load_file_name in list(load_2_demo_map['load']):
         demographic_file_name = load_2_demo_map[load_2_demo_map['load'] == load_file_name]['demo'].iloc[0]
     else:
-        demographic_file_name = ''
+        return False
     return demographic_file_name
 
 
