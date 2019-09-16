@@ -17,6 +17,7 @@ def get_wholesale_prices(year, region):
 
 
 def calc_wholesale_energy_costs(price_data, load_profiles):
+    load_profiles['Datetime'] = load_profiles.index
     imports = [np.nansum(load_profiles[col].values[load_profiles[col].values > 0])
                for col in load_profiles.columns if col != 'Datetime']
     results = pd.DataFrame(index=[col for col in load_profiles.columns if col != 'Datetime'],

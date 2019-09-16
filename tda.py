@@ -269,7 +269,7 @@ def add_case():
 
     if retail_tariff_name != 'None':
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
-        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), retail_tariff)
+        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data, retail_tariff)
         retail_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         retail_results['LoadInfo'] = retail_results['LoadInfo'].reset_index()
 
@@ -278,6 +278,8 @@ def add_case():
 
     if (wholesale_year != 'None') & (wholesale_state != 'None'):
         price_data = get_wholesale_prices(wholesale_year, wholesale_state)
+        print(price_data)
+        print(current_session.filtered_data)
         wholesale_results = calc_wholesale_energy_costs(price_data,  current_session.filtered_data.copy())
         wholesale_results.index.name = 'CUSTOMER_KEY'
         wholesale_results = wholesale_results.reset_index()
