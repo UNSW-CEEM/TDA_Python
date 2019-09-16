@@ -24,27 +24,27 @@ def _bill_distribution(load_and_results_by_case,component_name):
                 trace.append(go.Histogram(x=results['Network'][component_name]['Bill'], histnorm='probability', name=case_name))
         elif component_name == 'Wholesale':
             if 'Wholesale' in results.keys():
-                trace.append(go.Histogram(x=results['Wholesale']['Bill'], histnorm='probability', name=case_name))
+                trace.append(go.Histogram(x=results['Wholesale']['Bill'], histnorm='probability', name=case_name))         
     return {'data': trace, 'layout': layout}
 
 def _bill_distribution_DUOS(load_and_results_by_case):
-    data = _bill_distribution(load_and_results_by_case,'DUOS')
+    data = _bill_distribution(load_and_results_by_case,component_name='DUOS')
     return data
 
 def _bill_distribution_NUOS(load_and_results_by_case):
-    data = _bill_distribution(load_and_results_by_case,'NUOS')
+    data = _bill_distribution(load_and_results_by_case,component_name='NUOS')
     return data
 
 def _bill_distribution_TUOS(load_and_results_by_case):
-    data = _bill_distribution(load_and_results_by_case,'TUOS')
+    data = _bill_distribution(load_and_results_by_case,component_name='TUOS')
     return data
 
 def _bill_distribution_Retailer(load_and_results_by_case):
-    data = _bill_distribution(load_and_results_by_case,'Retailer')
+    data = _bill_distribution(load_and_results_by_case,component_name='Retailer')
     return data
 
 def _bill_distribution_Wholesale(load_and_results_by_case):
-    data = _bill_distribution(load_and_results_by_case,'Wholesale')
+    data = _bill_distribution(load_and_results_by_case,component_name='Wholesale')
     return data
 
 
@@ -72,23 +72,23 @@ def _bill_box_plot(load_and_results_by_case, component_name):
 
 
 def _bill_box_plot_DUOS(load_and_results_by_case):
-    data = _bill_box_plot(load_and_results_by_case,'DUOS')
+    data = _bill_box_plot(load_and_results_by_case,component_name='DUOS')
     return data
 
 def _bill_box_plot_NUOS(load_and_results_by_case):
-    data = _bill_box_plot(load_and_results_by_case,'NUOS')
+    data = _bill_box_plot(load_and_results_by_case,component_name='NUOS')
     return data
 
 def _bill_box_plot_TUOS(load_and_results_by_case):
-    data = _bill_box_plot(load_and_results_by_case,'TUOS')
+    data = _bill_box_plot(load_and_results_by_case,component_name='TUOS')
     return data
 
 def _bill_box_plot_Retailer(load_and_results_by_case):
-    data = _bill_box_plot(load_and_results_by_case,'Retailer')
+    data = _bill_box_plot(load_and_results_by_case,component_name='Retailer')
     return data
 
 def _bill_box_plot_Wholesale(load_and_results_by_case):
-    data = _bill_box_plot(load_and_results_by_case,'Wholesale')
+    data = _bill_box_plot(load_and_results_by_case,component_name='Wholesale')
     return data
 
 def _average_annual_profile(load_and_results_by_case):
@@ -268,8 +268,6 @@ def _get_daily_profile_interquartile_range(load_and_results_by_case):
     trace = []
     for case_name, load in load_by_case.items():
         load2 = load.copy()
-        del load2['Datetime']
-
         load_daily_average = load2.apply(get_daily_average_profile)
 
         qr1 = np.nanpercentile(np.array(load_daily_average), 75, interpolation='midpoint',axis=1)
@@ -315,9 +313,11 @@ def singe_variable_chart(chart_name, load_and_results_by_case):
 
 def _get_annual_kWh(results, load, network_load, details, axis):
     axis_name = "Annual kWh"
+    print('================= Annual kWh')
+    print(results)
     if 'Retailer' in results.keys():
         axis_data = list(results['Retailer']['LoadInfo']['Annual_kWh'])
-    elif 'Retailer' in results.keys():
+    elif 'Network' in results.keys():
         axis_data = list(results['Network']['LoadInfo']['Annual_kWh'])
     else:
         axis_data = []
@@ -682,11 +682,15 @@ def dual_variable_chart(load_and_results_by_case, details):
     results_by_case = load_and_results_by_case['results']
     load_by_case = load_and_results_by_case['load']
     network_load = load_and_results_by_case['network_load']
-
+    print('============== details from dual variable')
+    print(details)
     trace = []
     for case_name, results in results_by_case.items():
+        print(case_name)
         x_axis_data = _dual_variable_axis_methods[details['x_axis']](results, load_by_case[case_name], network_load, details, axis = 'x_axis')
         y_axis_data = _dual_variable_axis_methods[details['y_axis']](results, load_by_case[case_name], network_load, details, axis = 'y_axis')
+        print(x_axis_data)
+        print(y_axis_data)
         
         if len(x_axis_data['axis_data'])>0 and len(y_axis_data['axis_data'])>0:
             corr_matrix = np.corrcoef(x_axis_data['axis_data'],y_axis_data['axis_data'])

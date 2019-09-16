@@ -19,6 +19,7 @@ var plot_single_variable_results = function(chart_type_selector_id, chart_div_id
 
     // Get the chart type to be drawn from the GUI.
     var chart_type = $(chart_type_selector_id).children("option:selected").val();
+    console.log('chart_type:',chart_type)
 
     // Package request details into a single object.
     var case_details = {'chart_name': chart_type, 'case_names': cases_to_plot}

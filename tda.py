@@ -260,7 +260,7 @@ def add_case():
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
-        network_results = Bill_Calc.bill_calculator(current_session.filtered_data.set_index('Datetime'), network_tariff)
+        network_results = Bill_Calc.bill_calculator(current_session.filtered_data, network_tariff)
         network_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         network_results['LoadInfo'] = network_results['LoadInfo'].reset_index()
 
@@ -355,6 +355,8 @@ def delete_case():
 @errors.parse_to_user_and_log(logger)
 def get_single_variable_chart():
     details = request.get_json()
+    print('-------------------------------------')
+    print(details)
     chart_name = details['chart_name']
     case_names = details['case_names']
 
