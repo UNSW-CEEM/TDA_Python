@@ -278,8 +278,6 @@ def add_case():
 
     if (wholesale_year != 'None') & (wholesale_state != 'None'):
         price_data = get_wholesale_prices(wholesale_year, wholesale_state)
-        print(price_data)
-        print(current_session.filtered_data)
         wholesale_results = calc_wholesale_energy_costs(price_data,  current_session.filtered_data.copy())
         wholesale_results.index.name = 'CUSTOMER_KEY'
         wholesale_results = wholesale_results.reset_index()
@@ -355,8 +353,6 @@ def delete_case():
 @errors.parse_to_user_and_log(logger)
 def get_single_variable_chart():
     details = request.get_json()
-    print('-------------------------------------')
-    print(details)
     chart_name = details['chart_name']
     case_names = details['case_names']
 

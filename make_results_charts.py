@@ -313,8 +313,6 @@ def singe_variable_chart(chart_name, load_and_results_by_case):
 
 def _get_annual_kWh(results, load, network_load, details, axis):
     axis_name = "Annual kWh"
-    print('================= Annual kWh')
-    print(results)
     if 'Retailer' in results.keys():
         axis_data = list(results['Retailer']['LoadInfo']['Annual_kWh'])
     elif 'Network' in results.keys():
@@ -682,15 +680,10 @@ def dual_variable_chart(load_and_results_by_case, details):
     results_by_case = load_and_results_by_case['results']
     load_by_case = load_and_results_by_case['load']
     network_load = load_and_results_by_case['network_load']
-    print('============== details from dual variable')
-    print(details)
     trace = []
     for case_name, results in results_by_case.items():
-        print(case_name)
         x_axis_data = _dual_variable_axis_methods[details['x_axis']](results, load_by_case[case_name], network_load, details, axis = 'x_axis')
         y_axis_data = _dual_variable_axis_methods[details['y_axis']](results, load_by_case[case_name], network_load, details, axis = 'y_axis')
-        print(x_axis_data)
-        print(y_axis_data)
         
         if len(x_axis_data['axis_data'])>0 and len(y_axis_data['axis_data'])>0:
             corr_matrix = np.corrcoef(x_axis_data['axis_data'],y_axis_data['axis_data'])
