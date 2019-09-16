@@ -699,19 +699,19 @@ def delete_load_data():
         if request_details['name'] not in current_session.project_data.original_data:
             os.remove('data/load/' + request_details['name'] + '.feather')
             os.remove('data/demographics/' + request_details['name'] + '.csv')
+
+            with open('data/load_2_demo_map.csv', 'r+') as f:
+                lines = f.readlines()
+                f.seek(0)
+                for line in lines:
+                    if request_details['name'] != line.split(',', 1)[0]:
+                        f.write(line)
+                f.truncate()
+            f.close()
         else:
-            pass
+            return jsonify({'message': "Cannot delete default data files. Can only delete data files imported by user."})
     except:
         return jsonify({'message': "Cannot find file."})
-
-    with open('data/load_2_demo_map.csv', 'r+') as f:
-        lines = f.readlines()
-        f.seek(0)
-        for line in lines:
-            if request_details['name'] != line.split(',', 1)[0]:
-                f.write(line)
-        f.truncate()
-    f.close()
 
     # @todo: Need to message to display file name that has been deleted
     return jsonify({'message': "File has been deleted."})
