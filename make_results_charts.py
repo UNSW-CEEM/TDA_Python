@@ -24,7 +24,22 @@ def _bill_distribution(load_and_results_by_case,component_name):
                 trace.append(go.Histogram(x=results['Network'][component_name]['Bill'], histnorm='probability', name=case_name))
         elif component_name == 'Wholesale':
             if 'Wholesale' in results.keys():
-                trace.append(go.Histogram(x=results['Wholesale']['Bill'], histnorm='probability', name=case_name))         
+                trace.append(go.Histogram(x=results['Wholesale']['Bill'], histnorm='probability', name=case_name)) 
+        elif component_name == 'Total':
+            if 'Retailer' in results.keys():
+                trace.append(go.Histogram(x=results['Retailer']['Retailer']['Bill'], histnorm='probability', name=case_name))
+            else:
+                if ('Wholesale' in results.keys()) and ('Network' in results.keys()):
+                    wholesale_bill = results['Wholesale'].copy()
+                    wholesale_bill.set_index('CUSTOMER_KEY',inplace=True)
+
+                    trace.append(go.Histogram(x=wholesale_bill['Bill'] + results['Network']['NUOS']['Bill'], histnorm='probability', name=case_name)) 
+                    
+                elif ('Wholesale' in results.keys()) and (not 'Network' in results.keys()):
+                    trace.append(go.Histogram(x=results['Wholesale']['Bill'], histnorm='probability', name=case_name)) 
+                elif (not 'Wholesale' in results.keys()) and ('Network' in results.keys()):
+                    trace.append(go.Histogram(x=results['Network']['NUOS']['Bill'], histnorm='probability', name=case_name)) 
+
     return {'data': trace, 'layout': layout}
 
 def _bill_distribution_DUOS(load_and_results_by_case):
@@ -47,6 +62,11 @@ def _bill_distribution_Wholesale(load_and_results_by_case):
     data = _bill_distribution(load_and_results_by_case,component_name='Wholesale')
     return data
 
+def _bill_distribution_Total(load_and_results_by_case):
+    data = _bill_distribution(load_and_results_by_case,component_name='Total')
+    return data
+
+
 
 def _bill_box_plot(load_and_results_by_case, component_name):
     results_by_case = load_and_results_by_case['results']
@@ -68,8 +88,25 @@ def _bill_box_plot(load_and_results_by_case, component_name):
         elif component_name == 'Wholesale':
             if 'Wholesale' in results.keys():
                 trace.append(go.Box(y=results['Wholesale']['Bill'], name=case_name))
+        elif component_name == 'Total':
+            if 'Retailer' in results.keys():
+                trace.append(go.Box(y=results['Retailer']['Retailer']['Bill'], name=case_name))
+            else:
+                if ('Wholesale' in results.keys()) and ('Network' in results.keys()):
+                    wholesale_bill = results['Wholesale'].copy()
+                    wholesale_bill.set_index('CUSTOMER_KEY',inplace=True)
+
+                    trace.append(go.Box(y=wholesale_bill['Bill'] + results['Network']['NUOS']['Bill'], name=case_name))
+                elif ('Wholesale' in results.keys()) and (not 'Network' in results.keys()):
+                    trace.append(go.Box(y=results['Wholesale']['Bill'], name=case_name))
+                elif (not 'Wholesale' in results.keys()) and ('Network' in results.keys()):
+                    trace.append(go.Box(y=results['Network']['NUOS']['Bill'], name=case_name))
+
     return {'data': trace, 'layout': layout}
 
+def _bill_box_plot_Total(load_and_results_by_case):
+    data = _bill_box_plot(load_and_results_by_case,component_name='Total')
+    return data
 
 def _bill_box_plot_DUOS(load_and_results_by_case):
     data = _bill_box_plot(load_and_results_by_case,component_name='DUOS')
@@ -283,16 +320,20 @@ def _get_daily_profile_interquartile_range(load_and_results_by_case):
 
 ########################### charts dict: _single_variable_chart_methods
 
-_single_variable_chart_methods = {'Bill Distribution DUOS': _bill_distribution_DUOS,
+_single_variable_chart_methods = {'Bill Distribution Total': _bill_distribution_Total,
+                                  'Bill Distribution DUOS': _bill_distribution_DUOS,
                                   'Bill Distribution NUOS': _bill_distribution_NUOS,
                                   'Bill Distribution TUOS': _bill_distribution_TUOS,
                                   'Bill Distribution Retailer': _bill_distribution_Retailer,
                                   'Bill Distribution Wholesale': _bill_distribution_Wholesale,
+
+                                  'Bill Box Plot Total': _bill_box_plot_Total,
                                   'Bill Box Plot DUOS': _bill_box_plot_DUOS,
                                   'Bill Box Plot NUOS': _bill_box_plot_NUOS,
                                   'Bill Box Plot TUOS': _bill_box_plot_TUOS,
                                   'Bill Box Plot Retailer': _bill_box_plot_Retailer,
                                   'Bill Box Plot Wholesale': _bill_box_plot_Wholesale,
+
                                   'Average Annual Profile': _average_annual_profile,
                                   'Daily kWh Histogram':_daily_kWh_histogram,
                                   'Average Load Duration Curve':_average_load_duration_curve,
@@ -661,6 +702,25 @@ def _get_bill_Wholesale(results, load, network_load, details, axis):
         axis_data = []
     return {'axis_name':axis_name, 'axis_data':axis_data}
 
+def _get_bill_Total(results, load, network_load, details, axis):
+    axis_name = "Bill (AUD)"
+
+    if 'Retailer' in results.keys():
+        axis_data = list(results['Retailer']['Retailer']['Bill'])
+    else:
+        if ('Wholesale' in results.keys()) and ('Network' in results.keys()):
+            wholesale_bill = results['Wholesale'].copy()
+            wholesale_bill.set_index('CUSTOMER_KEY',inplace=True)
+            axis_data = list(wholesale_bill['Bill'] + results['Network']['NUOS']['Bill'])
+        elif ('Wholesale' in results.keys()) and (not 'Network' in results.keys()):
+            axis_data = list(results['Wholesale']['Bill'])
+        elif (not 'Wholesale' in results.keys()) and ('Network' in results.keys()):
+            axis_data = list(results['Network']['NUOS']['Bill'])
+        else:
+            axis_data = []
+
+    return {'axis_name':axis_name, 'axis_data':axis_data}
+
 
 
 _dual_variable_axis_methods = {'Annual_kWh': _get_annual_kWh,
@@ -674,7 +734,8 @@ _dual_variable_axis_methods = {'Annual_kWh': _get_annual_kWh,
                                'Bill DUOS':_get_bill_DUOS,
                                'Bill TUOS':_get_bill_TUOS,
                                'Bill Retailer':_get_bill_Retailer,
-                               'Bill Wholesale':_get_bill_Wholesale}
+                               'Bill Wholesale':_get_bill_Wholesale,
+                               'Bill Total':_get_bill_Total}
 
 def dual_variable_chart(load_and_results_by_case, details):
 
