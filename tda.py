@@ -8,7 +8,7 @@ import json
 from make_load_charts import chart_methods
 from make_results_charts import singe_variable_chart, dual_variable_chart, single_case_chart
 from import_delete_data import check_valid_filetype, check_file_exists, check_load_2_demo_map, check_data_is_not_default, \
-    add_to_load_2_demo_map, load_data_to_dataframe, network_data_to_dataframe
+    add_to_load_2_demo_map, load_data_to_dataframe, generic_data_to_dataframe
 import data_interface
 import Bill_Calc
 import format_case_for_export
@@ -696,7 +696,7 @@ def import_load_data():
 
     elif import_file_type == 'network':
         # read file and load into dataframe
-        network_data = network_data_to_dataframe(file_path)
+        network_data = generic_data_to_dataframe(file_path)
 
         # Check if the file format is in the correct format
         try:
@@ -706,6 +706,20 @@ def import_load_data():
 
         feather.write_dataframe(network_data, 'data/network_loads/' + file_name + '.feather')
         return jsonify({'message': "Successfully imported file."})
+
+    elif import_file_type == 'solar':
+        solar_data = generic_data_to_dataframe(file_path)
+
+        # Check if the file format is in the correct format
+        try:
+            solar_data.rename(columns={solar_data.columns[0]: 'Datetime'}, inplace=True)
+        except:
+            return jsonify({'error': 'Invalid data format.'})
+
+        feather.write_dataframe(solar_data, 'data/network_loads/' + file_name + '.feather')
+        return jsonify({'message': "Successfully imported file."})
+
+
 
 
 @app.route('/delete_load_data', methods=['POST'])

@@ -54,18 +54,18 @@ def load_data_to_dataframe(file_path):
     return load_data, demo_data
 
 
-def network_data_to_dataframe(file_path):
+def generic_data_to_dataframe(file_path):
     base = os.path.basename(file_path)
     path_extension = os.path.splitext(base)[1]
 
     if path_extension == '.csv':
-        network_data = pd.read_csv(file_path)
+        data = pd.read_csv(file_path)
     else:
         xls = pd.ExcelFile(file_path)
         sheet_names = xls.sheet_names
-        network_data = pd.read_excel(xls, sheet_names[0])
+        data = pd.read_excel(xls, sheet_names[0])
 
-    return network_data
+    return data
 
 
 def check_data_is_not_default(file_name, list_of_default_data):
