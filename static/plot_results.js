@@ -176,9 +176,27 @@ $('#dual_variable_y_axis').on('change', function() {
     plot_dual_variable_results();
 });
 
-$('.season_option').on('change', function() {
+// $('.season_option').on('change', function() {
+//     plot_dual_variable_results();
+// });
+
+$('#include_summer').on('change', function() {
     plot_dual_variable_results();
 });
+
+$('#include_winter').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#include_spring').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#include_autumn').on('change', function() {
+    plot_dual_variable_results();
+});
+
+
 
 $('#single_case_result_chosen_case').on('change', function() {
     plot_single_case_results();

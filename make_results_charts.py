@@ -349,12 +349,12 @@ def _get_avg_demand_n_peaks(results, load, network_load, details, axis):
     
     del network_load_filtered['Month_Number']
 
-
     if one_peak_per_day_status == False:
 
         network_load_filtered2=network_load_filtered.copy()
             
         network_load_average = network_load_filtered2.mean(axis=1)
+
         network_load_average_sort = network_load_average.sort_values(ascending = False, inplace = False, na_position ='last')
 
         selected_datetime = network_load_average_sort.index[0:N_peaks]
@@ -389,6 +389,7 @@ def _get_avg_demand_n_peaks(results, load, network_load, details, axis):
 
         selected_load_average = selected_load.mean(axis=0)
         axis_data = list(selected_load_average)
+
         return {'axis_name':axis_name, 'axis_data':axis_data}    
 
 
@@ -485,13 +486,13 @@ def _get_avg_demand_top_n_peaks(results, load, network_load, details, axis):
     load_filtered = load2.copy()
 
     if details['include_spring'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([3,4,5])]
     if details['include_summer'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([6,7,8])]
     if details['include_autumn'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([9,10,11])]
     if details['include_winter'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([1,2,12])]
     
     del load_filtered['Month_Number']
     
@@ -541,13 +542,13 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details, ax
     load_filtered = load2.copy()
 
     if details['include_spring'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([3,4,5])]
     if details['include_summer'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([6,7,8])]
     if details['include_autumn'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([9,10,11])]
     if details['include_winter'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
+        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([1,2,12])]
 
     load_filtered_by_month = []
     for i in range(12):

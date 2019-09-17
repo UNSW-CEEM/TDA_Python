@@ -407,7 +407,7 @@
 
       .x_peak_options, .y_peak_options {
         visibility: hidden;
-      }
+      } 
 
       .input_col {
         max-width: 500px;
@@ -994,7 +994,6 @@
                                 <select class="y_peak_options" id="y_n_peaks_select" style="width: 80%;"></select>
                                 <script src="static/make_n_peak_options.js"></script>
                             </div>
-                            <script src="static/plot_results.js"></script>
                             <div class="col">
                                 <div class="x_peak_options label_stacked" style="width: 70%; white-space: nowrap;">
                                     One Peak/Day
@@ -1007,10 +1006,13 @@
                             <div class="col" style="width: 10%">
                                 <input class="x_peak_options" id="x_one_peak_a_day" type="checkbox">
                                 <input class="y_peak_options" id="y_one_peak_a_day" type="checkbox">
+                                <script src="static/make_n_peak_options.js"></script>
                             </div>
-                            <script src="static/plot_results.js"></script>
                         </div>
-                        <div id="select_seasons" class="col" style="width: 24%; float: left; min-width: 200px">
+                        <script src="static/plot_results.js"></script>
+
+                        
+                        <div id="select_seasons" class="col" style="width: 24%; float: left; min-width: 200px; display: none;">
                             <div class="col" style="width: 50%;">
                                 <div class="col">
                                     <div class="label_stacked" style="width: 60%">Spring:</div>
@@ -1019,6 +1021,7 @@
                                 <div class="col" style="width: 30%">
                                     <input id="include_spring" class="season_option" type="checkbox" checked>
                                     <input id="include_autumn" class="season_option"type="checkbox" checked>
+                                    <script src="static/make_n_peak_options.js"></script>
                                 </div>
                             </div>
                             <div class="col" style="width: 50%;">
@@ -1029,9 +1032,11 @@
                                 <div class="col" style="width: 30%">
                                     <input id="include_summer" class="season_option" type="checkbox" checked>
                                     <input id="include_winter" class="season_option" type="checkbox" checked>
+                                    <script src="static/make_n_peak_options.js"></script>
                                 </div>
                             </div>
                         </div>
+                        
                         <script src="static/plot_results.js"></script>
                     </div>
                 </div>
