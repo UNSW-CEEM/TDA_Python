@@ -227,8 +227,11 @@ def network_load(load_request):
     else:
         file_name = filter_option
         synthetic_load = pd.read_feather('data/network_loads/' + file_name + '.feather')
+        synthetic_load.rename(columns={synthetic_load.columns[0]: 'Datetime'}, inplace=True)
+        synthetic_load = synthetic_load.set_index('Datetime')
         agg_network_load = synthetic_load.sum(axis=1)
 
+    agg_network_load.columns = ['load']
     return agg_network_load
 
 
