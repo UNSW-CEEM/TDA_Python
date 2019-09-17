@@ -7,7 +7,7 @@ import plotly
 import json
 from make_load_charts import chart_methods
 from make_results_charts import singe_variable_chart, dual_variable_chart, single_case_chart
-from import_delete_data import check_valid_filetype, check_file_exists, fix_load_2_demo_map, check_data_is_not_default, \
+from import_delete_data import check_valid_filetype, check_file_exists, check_load_2_demo_map, check_data_is_not_default, \
     add_to_load_2_demo_map, load_data_to_dataframe, network_data_to_dataframe
 import data_interface
 import Bill_Calc
@@ -717,7 +717,7 @@ def delete_load_data():
 
     ###############################################
     # Prevent user from deleting default or original data files
-    if file_name in current_session.project_data.original_data:
+    if not check_data_is_not_default(file_name, current_session.project_data.original_data):
         return jsonify({'message': "Cannot delete default data files. Can only delete data files imported by user."})
 
     ###############################################
@@ -884,6 +884,7 @@ def validate_tariff_cell():
 @errors.parse_to_user_and_log(logger)
 def restart_tool():
     current_session.__init__()
+    check_load_2_demo_map()
     return jsonify("Done!")
 
 
@@ -905,6 +906,7 @@ def shutdown():
 def on_start_up():
     start_up_procedures.update_nemosis_cache()
     start_up_procedures.update_tariffs()
+    check_load_2_demo_map() # Fix load_2_demo_map if corrupted
     return None
 
 

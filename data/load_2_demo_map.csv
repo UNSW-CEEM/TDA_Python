@@ -1,4 +1,3 @@
 load,demo
-test_data,demo_test_data
-SampleLoad,demo_SampleLoad
 SampleLoad_without_demo,demo_SampleLoad_without_demo
+test_data,demo_test_data

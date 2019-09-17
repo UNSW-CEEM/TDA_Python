@@ -19,32 +19,6 @@ def check_file_exists(file_path):
     else:
         return False
 
-def fix_load_2_demo_map():
-    load_2_demo_map = pd.read_csv('data/load_2_demo_map.csv')
-    new_load_2_demo_map = load_2_demo_map.copy()
-
-    # check if csv contains the correct headers:
-    default_columns = ['load', 'demo']
-    columns = new_load_2_demo_map.columns.tolist()
-
-    # check that load_2_demo_map has valid columns
-    if columns == default_columns:
-        pass
-    else:
-        new_load_2_demo_map.columns = default_columns
-
-    # check that load_2_demo_map is mapping files that exists
-    # if mapped files does not exist, delete from csv file
-    for index, files in new_load_2_demo_map.iterrows():
-        load_file_exist = check_file_exists('data/load/' + files[0] + '.feather')
-        demo_file_exist = check_file_exists('data/demographics/' + files[0] + '.feather')
-        if load_file_exist == True & demo_file_exist == True:
-            pass
-        else:
-            new_load_2_demo_map = new_load_2_demo_map.drop(index, axis=0)
-
-    new_load_2_demo_map.to_csv('data/load_2_demo_map.csv', index=False)
-
 
 def add_to_load_2_demo_map(file_name):
     load_2_demo_map = pd.read_csv('data/load_2_demo_map.csv')
@@ -103,9 +77,54 @@ def check_data_is_not_default(file_name, list_of_default_data):
         return False
 
 
+def check_load_2_demo_map():
+    # Fix load_2_demo_map if corrupted or not mapping available data from database
+    load_2_demo_map = pd.read_csv('data/load_2_demo_map.csv')
+    new_load_2_demo_map = load_2_demo_map.copy()
+
+    ###############################
+    # check that load_2_demo_map has valid columns
+    default_columns = ['load', 'demo']
+    columns = new_load_2_demo_map.columns.tolist()
+    if columns == default_columns:
+        pass
+    else:
+        new_load_2_demo_map.columns = default_columns
+
+    ###############################
+    # Get list of all files in database:
+    load_database_files = os.listdir('data/load/')
+    demo_database_files = os.listdir('data/demographics/')
 
 
+    list_valid_files_in_database = []
+    for file in demo_database_files:
+        if file.lstrip('demo_') in load_database_files:
+            file_name = os.path.splitext(file.lstrip('demo_'))[0]
+            list_valid_files_in_database.append(file_name)
 
+    ###############################
+    # check that load_2_demo_map is mapping files that exists
+    # if mapped files does not exist, delete from csv file
+
+    list_valid_mapped_files = []
+    for index, files in new_load_2_demo_map.iterrows():
+        load_file_exist = check_file_exists('data/load/' + files[0] + '.feather')
+        demo_file_exist = check_file_exists('data/demographics/' + 'demo_' + files[0] + '.feather')
+        if load_file_exist == True & demo_file_exist == True:
+            list_valid_mapped_files.append(files[0])
+            pass
+        else:
+            new_load_2_demo_map = new_load_2_demo_map.drop(index, axis=0)
+
+    new_load_2_demo_map.to_csv('data/load_2_demo_map.csv', index=False)
+
+    ###############################
+    # check if valid files in database has been mapped in load_2_demo_map
+    # if files in database has not been mapped, mapped it in load_2_demo_map
+    for file in list_valid_files_in_database:
+        if file not in list_valid_mapped_files:
+            add_to_load_2_demo_map(file)
 
 
 
