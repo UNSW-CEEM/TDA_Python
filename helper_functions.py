@@ -17,6 +17,8 @@ def get_unique_default_case_name(names_in_use):
 
 
 def get_demographic_options_from_demo_file(demo_file):
+    print('demo_file: ', demo_file)
+
     actual_names = list(demo_file.columns[1:])
     display_names = list(demo_file.columns[1:])
     options = {}
@@ -34,7 +36,7 @@ def filter_load_data(raw_data, filtered_demo_info):
 
 
 def add_missing_customer_keys_to_demo_file_with_nan_values(raw_data, demo_info):
-    customer_keys = [key for key in raw_data.columns if key != 'Datetime']
+    customer_keys = [str(key) for key in raw_data.columns if key != 'Datetime']
     df_with_just_customer_keys_from_load_profiles = pd.DataFrame.from_dict({'CUSTOMER_KEY': customer_keys})
     demo_info = pd.merge(demo_info, df_with_just_customer_keys_from_load_profiles, how='outer', on='CUSTOMER_KEY')
     return demo_info

@@ -31,7 +31,6 @@ class ProjectData():
         # Add original data that cannot be deleted (this allows for us to restore to original load data)
         self.original_data = [
             'SampleLoad_without_demo',
-            'SampleLoad',
             'test_data',
         ]
 

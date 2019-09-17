@@ -163,8 +163,6 @@ def calc_net_profiles(gross_load_profiles, end_user_tech):
     return gross_load_profiles
 
 
-
-
 def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sample):
     end_user_tech_details = end_user_tech_sample['end_user_tech_details']
     customer_key = end_user_tech_sample['customer_keys']
@@ -220,7 +218,6 @@ def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sa
 
         new_profile_after_batt = pd.concat(
             [new_profile_after_batt, new_profile], axis=1)
-
 
     return new_profile_after_batt
 

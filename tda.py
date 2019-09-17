@@ -7,6 +7,7 @@ import plotly
 import json
 from make_load_charts import chart_methods
 from make_results_charts import singe_variable_chart, dual_variable_chart, single_case_chart
+from import_delete_data import check_valid_filetype, check_file_exists, fix_load_2_demo_map, check_data_is_not_default
 import data_interface
 import Bill_Calc
 import format_case_for_export
@@ -144,14 +145,13 @@ def put_load_profiles_in_memory():
 @errors.parse_to_user_and_log(logger)
 def filtered_load_data():
     load_request = request.get_json()
+
     file_name = load_request['file_name']
     chart_type = load_request['chart_type']
     current_session.filter_state = load_request['filter_options']
-
-    # Filter by missing data
-    current_session.raw_data[file_name] = current_session.raw_data[file_name]
     raw_data = current_session.raw_data[file_name]
 
+    # Filter by missing data
     missing_data_limit = load_request['missing_data_limit']
     current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
 
@@ -164,7 +164,7 @@ def filtered_load_data():
 
     # Filter data by demographic
     demo_info_file_name = data_interface.find_loads_demographic_file(file_name)
-    demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
+    demo_info = pd.read_feather('data/demographics/' + demo_info_file_name + '.feather').astype(str)
     demo_info = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
         current_session.downsample_data, demo_info)
 
@@ -207,7 +207,35 @@ def filtered_load_data():
     # Format as json.
     return_data = {"n_users": n_users, "chart_data": chart_data}
     return_data = json.dumps(return_data, cls=plotly.utils.PlotlyJSONEncoder)
+
+    # network_load(load_request)
     return return_data
+
+
+@errors.parse_to_user_and_log(logger)
+def network_load(load_request):
+    # filter_option = load_request['network_load']
+    #
+    # print('filter_option: ', filter_option)
+    #
+    # if filter_option == 'full':
+    #     # @todo: Aggregation of filtered load data is currently the sum of data after filtering by missing data.
+    #     agg_network_load = current_session.filter_missing_data.sum(axis=1)
+    #     print('agg_network_load: ', agg_network_load)
+    #
+    # if network_load == 'filtered':
+    #     agg_network_load = current_session.filtered_data.sum(axis=1)
+    #     print('agg_network_load: ', agg_network_load)
+    #
+    # else:
+    #     file_extension = os.path.splitext(filter_option)[1]
+    #     file_name = os.path.splitext(filter_option)[0]
+    #
+    #     # if file_extension == '.csv':
+    #     #     synthetic_load = pd.read_csv('data/network_loads/' + filter_option)
+    #     # else:
+    #
+    # return None
 
 
 @app.route('/net_load_chart_data', methods=['POST'])
@@ -406,10 +434,10 @@ def get_single_case_chart():
 @app.route('/get_demo_options/<name>')
 @errors.parse_to_user_and_log(logger)
 def get_demo_options(name):
-    demo_file_name = data_interface.find_loads_demographic_file(name)
+    demo_file_name = data_interface.find_loads_demographic_file(name) + '.feather'
 
     if demo_file_name != '' and demo_file_name in os.listdir('data/demographics/'):
-        demo = pd.read_csv('data/demographics/' + demo_file_name, dtype=str)
+        demo = pd.read_feather('data/demographics/' + demo_file_name).astype(str)
         demo = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
             current_session.raw_data[current_session.raw_data_name], demo)
         demo_options = helper_functions.get_demographic_options_from_demo_file(demo)
@@ -627,65 +655,72 @@ def delete_tariff():
 @app.route('/import_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def import_load_data(file_path):
-
-    # @todo: make importing_load_data generic for so it can be used for importing solar and network data.
-    # @todo: need to add datafile to pull in on Javascript side
-    allowed_extensions = {".csv", ".xls", ".xlsx"}
-
     base = os.path.basename(file_path)
     path_extension = os.path.splitext(base)[1]
     file_name = os.path.splitext(base)[0]
-    if os.path.exists(file_path) and os.path.isfile(file_path):
-        if path_extension in allowed_extensions:
-            if path_extension == ".csv": # Read csv files
-                import_load_data = pd.read_csv(file_path)
-                import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
-            else: # Read excel files (same as sample file in Matlab tool)
-                xls = pd.ExcelFile(file_path)
-                sheet_names = xls.sheet_names
-                if len(sheet_names) >= 2: #check to see if excel sheet contains two sheets, one for load data and one for demo data.
-                    import_load_data = pd.read_excel(xls, sheet_names[0])
-                    import_demo_data = pd.read_excel(xls, sheet_names[1])
-                elif len(sheet_names) == 1: #allow user to upload only load data without demo data.
-                    import_load_data = pd.read_excel(xls, sheet_names[0])
-                    import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
-            try:
-                import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
-                import_load_data.rename(columns={import_load_data.columns[0]: 'Datetime'}, inplace = True)
 
-                import_demo_data = import_demo_data.set_index(import_demo_data.columns[0])
-                import_demo_data.index.rename('CUSTOMER_KEY')
+    ###############################################
+    # Check whether the file being imported exist and is in the valid file type
 
-                # Check if demo data matches load
-                # @todo: if we want it to work without all demographic data available use 'any' instead of 'all'
-                if not all(x in import_load_data.columns.tolist() for x in import_demo_data.index.tolist()) and not import_demo_data.empty:
-                    return jsonify({'error': 'Please ensure that each household has demographic data defined.'})
-                else: # if demo data is not available
-                    pass
-            except:
-                return jsonify({'error': 'Invalid data format.'})
-
-            # Create load and demographic data simultaneously and map them to each other in load_2_demo_map.csv
-            with open('data/load_2_demo_map.csv', 'r') as current_file:
-                files = [loaded_files.split(',', 1)[0] for loaded_files in current_file]
-            current_file.close()
-
-            if file_name in files:  # Check if file already exists
-                return jsonify({'message': "File already exists."})
-            else:
-                with open('data/load_2_demo_map.csv', 'a') as future_file:
-                    writer = csv.writer(future_file)
-                    writer.writerow([file_name, file_name + '.csv'])
-                future_file.close()
-
-                feather.write_dataframe(import_load_data, 'data/load/' + file_name + '.feather')
-                import_demo_data.to_csv('data/demographics/' + file_name + '.csv')
-
-                return jsonify({'message': "Successfully imported file."})
-        else:
-            return jsonify({'error': 'Invalid file type. Can only import csv or excel files in format as the sample file.'})
+    if check_file_exists(file_path) == True:
+        pass
     else:
         return jsonify({'error': 'Cannot find file.'})
+
+    if check_valid_filetype(file_path, allowed_extensions=['.csv', '.xls', '.xlsx']) == True:
+        pass
+    else:
+        return jsonify({'error': 'Invalid file type. Can only import csv or excel files in format as the sample file.'})
+
+    ###############################################
+    # read file and load into dataframe
+
+    if path_extension == '.csv':
+        import_load_data = pd.read_csv(file_path)
+        import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
+    else:
+        xls = pd.ExcelFile(file_path)
+        sheet_names = xls.sheet_names
+        if len(sheet_names) >= 2:  # check to see if excel sheet contains two sheets, one for load data and one for demo data.
+            import_load_data = pd.read_excel(xls, sheet_names[0])
+            import_demo_data = pd.read_excel(xls, sheet_names[1])
+            if import_demo_data.empty == True:
+                import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
+        elif len(sheet_names) == 1:  # allow user to upload only load data without demo data.
+            import_load_data = pd.read_excel(xls, sheet_names[0])
+            import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
+
+    ###############################################
+    # Check if the file format is in the correct format
+
+    try:
+        import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
+        import_load_data.rename(columns={import_load_data.columns[0]: 'Datetime'}, inplace=True)
+
+        import_demo_data.rename(columns={import_demo_data.columns[0]: 'CUSTOMER_KEY'}, inplace=True)
+
+    except:
+        return jsonify({'error': 'Invalid data format.'})
+
+    ###############################################
+    # Add mapping of imported file into load_2_demo_map.csv
+
+    load_2_demo_map = pd.read_csv('data/load_2_demo_map.csv')
+    new_load_2_demo_map = load_2_demo_map.copy()
+    mapped_files = new_load_2_demo_map['load'].tolist()
+
+    if file_name not in mapped_files:
+        new_load_2_demo_map = new_load_2_demo_map.append(pd.DataFrame({'load': [file_name], 'demo': ['demo_' + file_name]}))
+
+    new_load_2_demo_map.to_csv('data/load_2_demo_map.csv', index=False)
+
+    ###############################################
+    # Add import load files to database
+
+    feather.write_dataframe(import_load_data, 'data/load/' + file_name + '.feather')
+    feather.write_dataframe(import_demo_data, 'data/demographics/' + 'demo_' + file_name + '.feather')
+
+    return jsonify({'message': "Successfully imported file."})
 
 
 @app.route('/delete_load_data', methods=['POST'])
@@ -694,27 +729,37 @@ def delete_load_data():
 
     # @todo: need to remove option from selected loads (selected loads should display what is in load_2_demo_map.csv not what is in database)
     request_details = request.get_json()
+    file_name = request_details['name']
+    demo_file_path = 'data/demographics/' + 'demo_' + file_name + '.feather'
+    load_file_path = 'data/load/' + file_name + '.feather'
 
-    try: # check if file that user is trying to delete exist
-        if request_details['name'] not in current_session.project_data.original_data:
-            os.remove('data/load/' + request_details['name'] + '.feather')
-            os.remove('data/demographics/' + request_details['name'] + '.csv')
+    ###############################################
+    # Prevent user from deleting default or original data files
+    if file_name in current_session.project_data.original_data:
+        return jsonify({'message': "Cannot delete default data files. Can only delete data files imported by user."})
 
-            with open('data/load_2_demo_map.csv', 'r+') as f:
-                lines = f.readlines()
-                f.seek(0)
-                for line in lines:
-                    if request_details['name'] != line.split(',', 1)[0]:
-                        f.write(line)
-                f.truncate()
-            f.close()
-        else:
-            return jsonify({'message': "Cannot delete default data files. Can only delete data files imported by user."})
-    except:
+    ###############################################
+    # Deleting the data files
+
+    if check_file_exists(demo_file_path) == True & check_file_exists(load_file_path) == True:
+        load_path = 'data/load/' + file_name + '.feather'
+        demo_path = 'data/demographics/' + 'demo_' + file_name + '.feather'
+
+        load_2_demo_map = pd.read_csv('data/load_2_demo_map.csv')
+        new_load_2_demo_map = load_2_demo_map.copy()
+
+        for index, files in new_load_2_demo_map.iterrows():
+            if file_name.split('.')[0] == files[0]:
+                new_load_2_demo_map = new_load_2_demo_map.drop(index, axis=0)
+                os.remove(load_path)
+                os.remove(demo_path)
+            else:
+                pass
+        new_load_2_demo_map.to_csv('data/load_2_demo_map.csv', index=False)
+
+        return jsonify({'message': "File has been deleted."})
+    else:
         return jsonify({'message': "Cannot find file."})
-
-    # @todo: Need to message to display file name that has been deleted
-    return jsonify({'message': "File has been deleted."})
 
 
 @app.route('/restore_original_data_set', methods=['POST'])
@@ -884,3 +929,4 @@ def on_start_up():
 if __name__ == '__main__':
     on_start_up()
     app.run()
+    import_load_data('/Users/bruceho/PycharmProjects/learning_environment/data/SampleLoad.xlsx')
