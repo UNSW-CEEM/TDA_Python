@@ -7,7 +7,8 @@ import plotly
 import json
 from make_load_charts import chart_methods
 from make_results_charts import singe_variable_chart, dual_variable_chart, single_case_chart
-from import_delete_data import check_valid_filetype, check_file_exists, fix_load_2_demo_map, check_data_is_not_default
+from import_delete_data import check_valid_filetype, check_file_exists, fix_load_2_demo_map, check_data_is_not_default, \
+    add_to_load_2_demo_map, load_data_to_dataframe, network_data_to_dataframe
 import data_interface
 import Bill_Calc
 import format_case_for_export
@@ -208,34 +209,34 @@ def filtered_load_data():
     return_data = {"n_users": n_users, "chart_data": chart_data}
     return_data = json.dumps(return_data, cls=plotly.utils.PlotlyJSONEncoder)
 
-    # network_load(load_request)
+    network_load(load_request)
     return return_data
 
 
 @errors.parse_to_user_and_log(logger)
 def network_load(load_request):
-    # filter_option = load_request['network_load']
-    #
-    # print('filter_option: ', filter_option)
-    #
-    # if filter_option == 'full':
-    #     # @todo: Aggregation of filtered load data is currently the sum of data after filtering by missing data.
-    #     agg_network_load = current_session.filter_missing_data.sum(axis=1)
-    #     print('agg_network_load: ', agg_network_load)
-    #
-    # if network_load == 'filtered':
-    #     agg_network_load = current_session.filtered_data.sum(axis=1)
-    #     print('agg_network_load: ', agg_network_load)
-    #
-    # else:
-    #     file_extension = os.path.splitext(filter_option)[1]
-    #     file_name = os.path.splitext(filter_option)[0]
-    #
-    #     # if file_extension == '.csv':
-    #     #     synthetic_load = pd.read_csv('data/network_loads/' + filter_option)
-    #     # else:
-    #
-    # return None
+    filter_option = load_request['network_load']
+
+    print('filter_option: ', filter_option)
+
+    if filter_option == 'full':
+        # @todo: Aggregation of filtered load data is currently the sum of data after filtering by missing data.
+        agg_network_load = current_session.filter_missing_data.sum(axis=1)
+        print('agg_network_load: ', agg_network_load)
+
+    if network_load == 'filtered':
+        agg_network_load = current_session.filtered_data.sum(axis=1)
+        print('agg_network_load: ', agg_network_load)
+
+    else:
+        file_extension = os.path.splitext(filter_option)[1]
+        file_name = os.path.splitext(filter_option)[0]
+
+        # if file_extension == '.csv':
+        #     synthetic_load = pd.read_csv('data/network_loads/' + filter_option)
+        # else:
+
+    return None
 
 
 @app.route('/net_load_chart_data', methods=['POST'])
@@ -654,9 +655,13 @@ def delete_tariff():
 
 @app.route('/import_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def import_load_data(file_path):
+def import_load_data():
+    request_details = request.get_json()
+    import_file_type = request_details['type']
+
+    # @todo: need to get file path from user
+    file_path = '/Users/bruceho/PycharmProjects/learning_environment/data/SampleLoad_without_demo.xlsx'
     base = os.path.basename(file_path)
-    path_extension = os.path.splitext(base)[1]
     file_name = os.path.splitext(base)[0]
 
     ###############################################
@@ -673,54 +678,39 @@ def import_load_data(file_path):
         return jsonify({'error': 'Invalid file type. Can only import csv or excel files in format as the sample file.'})
 
     ###############################################
-    # read file and load into dataframe
 
-    if path_extension == '.csv':
-        import_load_data = pd.read_csv(file_path)
-        import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
-    else:
-        xls = pd.ExcelFile(file_path)
-        sheet_names = xls.sheet_names
-        if len(sheet_names) >= 2:  # check to see if excel sheet contains two sheets, one for load data and one for demo data.
-            import_load_data = pd.read_excel(xls, sheet_names[0])
-            import_demo_data = pd.read_excel(xls, sheet_names[1])
-            if import_demo_data.empty == True:
-                import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
-        elif len(sheet_names) == 1:  # allow user to upload only load data without demo data.
-            import_load_data = pd.read_excel(xls, sheet_names[0])
-            import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
+    if import_file_type == 'load':
+        # read file and load into dataframe
+        load_data, demo_data = load_data_to_dataframe(file_path)
 
-    ###############################################
-    # Check if the file format is in the correct format
+        # Check if the file format is in the correct format
+        try:
+            load_data[load_data.columns[0]] = pd.to_datetime(load_data[load_data.columns[0]])
+            load_data.rename(columns={load_data.columns[0]: 'Datetime'}, inplace=True)
+            demo_data.rename(columns={demo_data.columns[0]: 'CUSTOMER_KEY'}, inplace=True)
+        except:
+            return jsonify({'error': 'Invalid data format.'})
 
-    try:
-        import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
-        import_load_data.rename(columns={import_load_data.columns[0]: 'Datetime'}, inplace=True)
+        # Add mapping of imported file into load_2_demo_map.csv
+        add_to_load_2_demo_map(file_name)
 
-        import_demo_data.rename(columns={import_demo_data.columns[0]: 'CUSTOMER_KEY'}, inplace=True)
+        # Add import load files to database
+        feather.write_dataframe(load_data, 'data/load/' + file_name + '.feather')
+        feather.write_dataframe(demo_data, 'data/demographics/' + 'demo_' + file_name + '.feather')
+        return jsonify({'message': "Successfully imported file."})
 
-    except:
-        return jsonify({'error': 'Invalid data format.'})
+    elif import_file_type == 'network':
+        # read file and load into dataframe
+        network_data = network_data_to_dataframe(file_path)
 
-    ###############################################
-    # Add mapping of imported file into load_2_demo_map.csv
+        # Check if the file format is in the correct format
+        try:
+            network_data.rename(columns={network_data.columns[0]: 'Datetime'}, inplace=True)
+        except:
+            return jsonify({'error': 'Invalid data format.'})
 
-    load_2_demo_map = pd.read_csv('data/load_2_demo_map.csv')
-    new_load_2_demo_map = load_2_demo_map.copy()
-    mapped_files = new_load_2_demo_map['load'].tolist()
-
-    if file_name not in mapped_files:
-        new_load_2_demo_map = new_load_2_demo_map.append(pd.DataFrame({'load': [file_name], 'demo': ['demo_' + file_name]}))
-
-    new_load_2_demo_map.to_csv('data/load_2_demo_map.csv', index=False)
-
-    ###############################################
-    # Add import load files to database
-
-    feather.write_dataframe(import_load_data, 'data/load/' + file_name + '.feather')
-    feather.write_dataframe(import_demo_data, 'data/demographics/' + 'demo_' + file_name + '.feather')
-
-    return jsonify({'message': "Successfully imported file."})
+        feather.write_dataframe(network_data, 'data/network_loads/' + file_name + '.feather')
+        return jsonify({'message': "Successfully imported file."})
 
 
 @app.route('/delete_load_data', methods=['POST'])
@@ -929,4 +919,3 @@ def on_start_up():
 if __name__ == '__main__':
     on_start_up()
     app.run()
-    import_load_data('/Users/bruceho/PycharmProjects/learning_environment/data/SampleLoad.xlsx')

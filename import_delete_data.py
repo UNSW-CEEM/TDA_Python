@@ -46,17 +46,52 @@ def fix_load_2_demo_map():
     new_load_2_demo_map.to_csv('data/load_2_demo_map.csv', index=False)
 
 
-def import_load_data():
+def add_to_load_2_demo_map(file_name):
+    load_2_demo_map = pd.read_csv('data/load_2_demo_map.csv')
+    new_load_2_demo_map = load_2_demo_map.copy()
+    mapped_files = new_load_2_demo_map['load'].tolist()
 
-    pass
+    if file_name not in mapped_files:
+        new_load_2_demo_map = new_load_2_demo_map.append(
+            pd.DataFrame({'load': [file_name], 'demo': ['demo_' + file_name]}))
+
+    new_load_2_demo_map.to_csv('data/load_2_demo_map.csv', index=False)
 
 
-def import_network_data():
-    pass
+def load_data_to_dataframe(file_path):
+    base = os.path.basename(file_path)
+    path_extension = os.path.splitext(base)[1]
+
+    if path_extension == '.csv':
+        load_data = pd.read_csv(file_path)
+        demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
+    else:
+        xls = pd.ExcelFile(file_path)
+        sheet_names = xls.sheet_names
+        if len(sheet_names) >= 2:  # check to see if excel sheet contains two sheets, one for load data and one for demo data.
+            load_data = pd.read_excel(xls, sheet_names[0])
+            demo_data = pd.read_excel(xls, sheet_names[1])
+            if demo_data.empty == True:
+                import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
+        elif len(sheet_names) == 1:  # allow user to upload only load data without demo data.
+            load_data = pd.read_excel(xls, sheet_names[0])
+            demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
+
+    return load_data, demo_data
 
 
-def import_solar_data():
-    pass
+def network_data_to_dataframe(file_path):
+    base = os.path.basename(file_path)
+    path_extension = os.path.splitext(base)[1]
+
+    if path_extension == '.csv':
+        network_data = pd.read_csv(file_path)
+    else:
+        xls = pd.ExcelFile(file_path)
+        sheet_names = xls.sheet_names
+        network_data = pd.read_excel(xls, sheet_names[0])
+
+    return network_data
 
 
 def check_data_is_not_default(file_name, list_of_default_data):
