@@ -181,6 +181,9 @@ def filtered_load_data():
     # prepare chart data and n_users
     current_session.filtered_charts = {file_name: {}}
 
+    # Create network load profile:
+    current_session.network_load = network_load(load_request)
+
     if chart_type not in current_session.raw_charts[file_name]:
         if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
             current_session.raw_charts[file_name][chart_type] = \
@@ -208,8 +211,6 @@ def filtered_load_data():
     # Format as json.
     return_data = {"n_users": n_users, "chart_data": chart_data}
     return_data = json.dumps(return_data, cls=plotly.utils.PlotlyJSONEncoder)
-
-    print('agg_network_load: ', network_load(load_request))
     return return_data
 
 
@@ -290,7 +291,7 @@ def add_case():
 
     if retail_tariff_name != 'None':
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
-        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data, retail_tariff)        
+        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data, retail_tariff)
         retail_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         retail_results['LoadInfo'] = retail_results['LoadInfo'].reset_index()
         current_session.project_data.retail_results_by_case[case_name] = retail_results

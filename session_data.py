@@ -70,5 +70,7 @@ class InMemoryData:
 
         self.solar_profile_data = {}
 
+        self.network_load = {}
+
         # Data subset to save/load.
         self.project_data = ProjectData()
