@@ -209,34 +209,26 @@ def filtered_load_data():
     return_data = {"n_users": n_users, "chart_data": chart_data}
     return_data = json.dumps(return_data, cls=plotly.utils.PlotlyJSONEncoder)
 
-    network_load(load_request)
+    print('agg_network_load: ', network_load(load_request))
     return return_data
 
 
 @errors.parse_to_user_and_log(logger)
 def network_load(load_request):
-    filter_option = load_request['network_load']
-
-    print('filter_option: ', filter_option)
+    filter_option = load_request['network_load'].strip()
 
     if filter_option == 'full':
-        # @todo: Aggregation of filtered load data is currently the sum of data after filtering by missing data.
         agg_network_load = current_session.filter_missing_data.sum(axis=1)
-        print('agg_network_load: ', agg_network_load)
 
-    if network_load == 'filtered':
+    elif filter_option == 'filtered':
         agg_network_load = current_session.filtered_data.sum(axis=1)
-        print('agg_network_load: ', agg_network_load)
 
     else:
-        file_extension = os.path.splitext(filter_option)[1]
-        file_name = os.path.splitext(filter_option)[0]
+        file_name = filter_option
+        synthetic_load = pd.read_feather('data/network_loads/' + file_name + '.feather')
+        agg_network_load = synthetic_load.sum(axis=1)
 
-        # if file_extension == '.csv':
-        #     synthetic_load = pd.read_csv('data/network_loads/' + filter_option)
-        # else:
-
-    return None
+    return agg_network_load
 
 
 @app.route('/net_load_chart_data', methods=['POST'])
