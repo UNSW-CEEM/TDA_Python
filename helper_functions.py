@@ -17,8 +17,6 @@ def get_unique_default_case_name(names_in_use):
 
 
 def get_demographic_options_from_demo_file(demo_file):
-    print('demo_file: ', demo_file)
-
     actual_names = list(demo_file.columns[1:])
     display_names = list(demo_file.columns[1:])
     options = {}

@@ -12,7 +12,9 @@ def create_sample(gui_inputs, filtered_data):
     # Goal of this function is to create a record of end user tech by customer, should be data frame like. . .
     # CUSTOMER_KEY, HAS_SOLAR, solar_kw, solar_profile_id, HAS_BATTERY, etc
     # ...           ...        ...       ...               ...
-    print('gui_inputs: ', gui_inputs)
+
+    # This function takes ~2.5secs to execute
+    # print('gui_inputs: ', gui_inputs)
 
     solar_inputs = gui_inputs['tech_inputs']['solar']
     #
@@ -135,14 +137,6 @@ def create_sample(gui_inputs, filtered_data):
                       'end_user_tech_details': end_user_tech_details,
                       'solar_profiles': solar_profiles, # @todo: can delete if we store solar profiles already in gui_inputs['tech_inputs']['solar']['profiles']
                       }
-
-
-    #
-    # start = time.time()
-    # calc_net_profile_after_battery(filtered_data, solar_profiles, sample_details)
-    # end = time.time()
-    #
-    # print('calc_batt time: ', end - start)
     return sample_details
 
 
@@ -217,7 +211,6 @@ def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sa
             [new_profile_after_batt, new_profile], axis=1)
 
     return new_profile_after_batt
-
 
 
 def calc_solar_profiles(end_user_tech_sample):

@@ -17,10 +17,10 @@ class TestGetFromTariffSet(unittest.TestCase):
         one_profile = [1, 0.5, 7.27]
         second_profile = [11.4, -1, 8]
         date_time = ["2018-01-01 00:00:00", "2018-01-01 00:30:00", "2018-01-01 01:00:00"]
-        self.load_profiles = pd.DataFrame.from_dict({'Datetime': date_time,
-                                                     '1': one_profile,
+        self.load_profiles = pd.DataFrame.from_dict({'1': one_profile,
                                                      '2': second_profile})
-        self.load_profiles['Datetime'] = pd.to_datetime(self.load_profiles['Datetime'])
+        self.load_profiles.index = date_time
+        self.load_profiles.index = pd.to_datetime(self.load_profiles.index)
 
         # Expected output
         annual_consumption = [sum(one_profile), 19.4]

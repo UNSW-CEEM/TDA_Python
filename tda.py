@@ -30,6 +30,9 @@ import math
 import feather
 import csv
 
+# please delete packages imported below this line.
+import time
+
 enable_logging = False
 
 # Initialise object for holding the current session/project's data.
@@ -146,43 +149,55 @@ def put_load_profiles_in_memory():
 @errors.parse_to_user_and_log(logger)
 def filtered_load_data():
     load_request = request.get_json()
-
     file_name = load_request['file_name']
+
+    ######################################
+    # Filtering Data
+
+    # Should only filter once for every new load data selected
+    if current_session.filter_state != load_request['filter_options']:
+        current_session.filter_state = load_request['filter_options']
+        raw_data = current_session.raw_data[file_name]
+
+        # Filter by missing data
+        missing_data_limit = load_request['missing_data_limit']
+        current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
+
+        # Down sample data randomly
+        number_of_loads = len(current_session.filter_missing_data.columns)
+        number_of_loads_downsampled = math.ceil(number_of_loads * load_request['sample_fraction'])
+        if number_of_loads_downsampled < 1:
+            number_of_loads_downsampled = 1
+        current_session.downsample_data = current_session.filter_missing_data.sample(n=number_of_loads_downsampled, axis=1)
+
+        # Filter data by demographic
+        demo_info_file_name = data_interface.find_loads_demographic_file(file_name)
+        demo_info = pd.read_feather('data/demographics/' + demo_info_file_name + '.feather').astype(str)
+        demo_info = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
+            current_session.downsample_data, demo_info)
+
+        current_session.filtered_demo_info, current_session.is_filtered = \
+            helper_functions.filter_demo_info(demo_info, load_request['filter_options'])
+        current_session.filtered_data = helper_functions.filter_load_data(
+            current_session.downsample_data, current_session.filtered_demo_info)
+    else:
+        pass
+
+    ######################################
+    # Create network load profile:
+    current_session.network_load = network_load(load_request)
+
+    ######################################
+    # Creating Charts
     chart_type = load_request['chart_type']
-    current_session.filter_state = load_request['filter_options']
-    raw_data = current_session.raw_data[file_name]
-
-    # Filter by missing data
-    missing_data_limit = load_request['missing_data_limit']
-    current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
-
-    # Down sample data randomly
-    number_of_loads = len(current_session.filter_missing_data.columns)
-    number_of_loads_downsampled = math.ceil(number_of_loads * load_request['sample_fraction'])
-    if number_of_loads_downsampled < 1:
-        number_of_loads_downsampled = 1
-    current_session.downsample_data = current_session.filter_missing_data.sample(n=number_of_loads_downsampled, axis=1)
-
-    # Filter data by demographic
-    demo_info_file_name = data_interface.find_loads_demographic_file(file_name)
-    demo_info = pd.read_feather('data/demographics/' + demo_info_file_name + '.feather').astype(str)
-    demo_info = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
-        current_session.downsample_data, demo_info)
-
-    current_session.filtered_demo_info, current_session.is_filtered = \
-        helper_functions.filter_demo_info(demo_info, load_request['filter_options'])
-    current_session.filtered_data = helper_functions.filter_load_data(
-        current_session.downsample_data, current_session.filtered_demo_info)
 
     # Create the requested chart data if it does not already exist.
     if file_name not in current_session.raw_charts:
         current_session.raw_charts[file_name] = {}
 
     # prepare chart data and n_users
-    current_session.filtered_charts = {file_name: {}}
 
-    # Create network load profile:
-    current_session.network_load = network_load(load_request)
+    current_session.filtered_charts = {file_name: {}}
 
     if chart_type not in current_session.raw_charts[file_name]:
         if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
@@ -191,7 +206,7 @@ def filtered_load_data():
                                           current_session.filtered_data, series_name=['All'])
         else:
             current_session.raw_charts[file_name][chart_type] = \
-                chart_methods[chart_type](current_session.downsample_data)
+                chart_methods[chart_type](current_session.filtered_data)
 
     if current_session.is_filtered:
         if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
@@ -244,10 +259,10 @@ def net_load_chart_data():
     chart_type = load_request['chart_type']
     if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
         chart_data = chart_methods[chart_type](current_session.raw_data[file_name],
-                                               current_session.filtered_data,
+                                               current_session.end_user_tech_data,
                                                series_name=['All', 'Selected'])
     else:
-        chart_data = chart_methods[chart_type](current_session.filtered_data)
+        chart_data = chart_methods[chart_type](current_session.end_user_tech_data)
 
     # Format as json.
     return_data = {"chart_data": chart_data}
@@ -280,12 +295,15 @@ def add_case():
     wholesale_year = case_details['wholesale_price_details']['year']
     wholesale_state = case_details['wholesale_price_details']['state']
 
+    if current_session.end_user_tech_sample_applied == False:
+        current_session.end_user_tech_data = current_session.filtered_data
+
     # Save demographic info for case
     current_session.project_data.demographic_info_by_case[case_name] = current_session.filtered_demo_info
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
-        network_results = Bill_Calc.bill_calculator(current_session.filtered_data, network_tariff)
+        network_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data, network_tariff)
         network_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         network_results['LoadInfo'] = network_results['LoadInfo'].reset_index()
 
@@ -294,7 +312,7 @@ def add_case():
 
     if retail_tariff_name != 'None':
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
-        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data, retail_tariff)
+        retail_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data, retail_tariff)
         retail_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         retail_results['LoadInfo'] = retail_results['LoadInfo'].reset_index()
         current_session.project_data.retail_results_by_case[case_name] = retail_results
@@ -302,7 +320,7 @@ def add_case():
 
     if (wholesale_year != 'None') & (wholesale_state != 'None'):
         price_data = get_wholesale_prices(wholesale_year, wholesale_state)
-        wholesale_results = calc_wholesale_energy_costs(price_data,  current_session.filtered_data.copy())
+        wholesale_results = calc_wholesale_energy_costs(price_data,  current_session.end_user_tech_data.copy())
         wholesale_results.index.name = 'CUSTOMER_KEY'
         wholesale_results = wholesale_results.reset_index()
         current_session.project_data.wholesale_results_by_case[case_name] = wholesale_results
@@ -311,10 +329,10 @@ def add_case():
         current_session.project_data.wholesale_price_info_by_case[case_name]['state'] = wholesale_state
 
     # Save input data and settings associated with the case.
-    current_session.load_by_case[case_name] = current_session.filtered_data
+    current_session.load_by_case[case_name] = current_session.end_user_tech_data
     current_session.project_data.load_file_name_by_case[case_name] = load_file_name
     current_session.project_data.load_n_users_by_case[case_name] = \
-        helper_functions.n_users(current_session.filtered_data)
+        helper_functions.n_users(current_session.end_user_tech_data)
     current_session.project_data.filter_options_by_case[case_name] = filter_options
     return jsonify({'message': 'done'})
 
@@ -498,8 +516,10 @@ def get_wholesale_price_info():
 def create_end_user_tech_from_sample_from_gui():
     details = request.json
     current_session.end_user_tech_sample = end_user_tech.create_sample(details, current_session.filtered_data)
-    current_session.filtered_data = \
+    current_session.end_user_tech_data = \
         end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.end_user_tech_sample)
+
+    current_session.end_user_tech_sample_applied = True
     return jsonify({'message': 'Done!'})
 
 
@@ -515,13 +535,14 @@ def load_end_user_tech_from_sample_from_file():
         raw_data = data_interface.get_load_table('data/load/', current_session.raw_data_name)
         current_session.raw_data[current_session.raw_data_name] = raw_data
         filtered_data = raw_data.loc[:, current_session.end_user_tech_sample['customer_keys']]
-        current_session.filtered_data = end_user_tech.calc_net_profiles(filtered_data,
+        current_session.end_user_tech_data = end_user_tech.calc_net_profiles(filtered_data,
                                                                         current_session.end_user_tech_sample)
         current_session.filter_state = current_session.end_user_tech_sample['load_details']['filter_options']
         return_data = jsonify({'message': 'Done!', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
+
+        current_session.end_user_tech_sample_applied = True
     else:
         return_data = jsonify({'error': 'You do not have the required load data to use this tech sample.'})
-
     return return_data
 
 
@@ -530,8 +551,10 @@ def load_end_user_tech_from_sample_from_file():
 def calc_sample_net_load_profiles():
     details = request.json
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
-    current_session.filtered_data = \
+    current_session.end_user_tech_data = \
         end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.end_user_tech_sample)
+
+    current_session.end_user_tech_sample_applied = True
     return jsonify({'message': 'done'})
 
 
