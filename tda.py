@@ -234,19 +234,18 @@ def network_load(load_request):
     filter_option = load_request['network_load'].strip()
 
     if filter_option == 'full':
-        agg_network_load = current_session.filter_missing_data.sum(axis=1)
+        agg_network_load = pd.DataFrame(current_session.filter_missing_data.sum(axis=1), columns=['load'])
 
     elif filter_option == 'filtered':
-        agg_network_load = current_session.filtered_data.sum(axis=1)
+        agg_network_load = pd.DataFrame(current_session.filtered_data.sum(axis=1), columns=['load'])
 
     else:
         file_name = filter_option
         synthetic_load = pd.read_feather('data/network_loads/' + file_name + '.feather')
         synthetic_load.rename(columns={synthetic_load.columns[0]: 'Datetime'}, inplace=True)
         synthetic_load = synthetic_load.set_index('Datetime')
-        agg_network_load = synthetic_load.sum(axis=1)
+        agg_network_load = pd.DataFrame(synthetic_load.sum(axis=1), columns=['load'])
 
-    agg_network_load.columns = ['load']
     return agg_network_load
 
 
@@ -297,14 +296,14 @@ def add_case():
     wholesale_state = case_details['wholesale_price_details']['state']
 
     if current_session.end_user_tech_sample_applied == False:
-        current_session.end_user_tech_data = current_session.filtered_data
+        current_session.end_user_tech_data['final_net_profiles'] = current_session.filtered_data
 
     # Save demographic info for case
     current_session.project_data.demographic_info_by_case[case_name] = current_session.filtered_demo_info
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
-        network_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data, network_tariff)
+        network_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data['final_net_profiles'], network_tariff)
         network_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         network_results['LoadInfo'] = network_results['LoadInfo'].reset_index()
 
@@ -313,7 +312,7 @@ def add_case():
 
     if retail_tariff_name != 'None':
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
-        retail_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data, retail_tariff)
+        retail_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data['final_net_profiles'], retail_tariff)
         retail_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         retail_results['LoadInfo'] = retail_results['LoadInfo'].reset_index()
         current_session.project_data.retail_results_by_case[case_name] = retail_results
@@ -321,7 +320,7 @@ def add_case():
 
     if (wholesale_year != 'None') & (wholesale_state != 'None'):
         price_data = get_wholesale_prices(wholesale_year, wholesale_state)
-        wholesale_results = calc_wholesale_energy_costs(price_data,  current_session.end_user_tech_data.copy())
+        wholesale_results = calc_wholesale_energy_costs(price_data,  current_session.end_user_tech_data['final_net_profiles'].copy())
         wholesale_results.index.name = 'CUSTOMER_KEY'
         wholesale_results = wholesale_results.reset_index()
         current_session.project_data.wholesale_results_by_case[case_name] = wholesale_results
@@ -330,10 +329,10 @@ def add_case():
         current_session.project_data.wholesale_price_info_by_case[case_name]['state'] = wholesale_state
 
     # Save input data and settings associated with the case.
-    current_session.load_by_case[case_name] = current_session.end_user_tech_data
+    current_session.load_by_case[case_name] = current_session.end_user_tech_data['final_net_profiles']
     current_session.project_data.load_file_name_by_case[case_name] = load_file_name
     current_session.project_data.load_n_users_by_case[case_name] = \
-        helper_functions.n_users(current_session.end_user_tech_data)
+        helper_functions.n_users(current_session.end_user_tech_data['final_net_profiles'])
     current_session.project_data.filter_options_by_case[case_name] = filter_options
     return jsonify({'message': 'done'})
 
@@ -945,8 +944,8 @@ def shutdown():
 
 @errors.log(logger)
 def on_start_up():
-    start_up_procedures.update_nemosis_cache()
-    start_up_procedures.update_tariffs()
+    # start_up_procedures.update_nemosis_cache()
+    # start_up_procedures.update_tariffs()
     check_load_2_demo_map() # Fix load_2_demo_map if corrupted
     return None
 
