@@ -153,15 +153,26 @@ def set_filtered_data_to_match_saved_sample(end_user_tech_sample):
 
 
 def calc_net_profiles(gross_load_profiles, end_user_tech):
-    customer_solar_profiles = calc_solar_profiles(end_user_tech)
+    solar_profiles = calc_solar_profiles(end_user_tech)
 
-    net_profile = calc_net_profile_after_DR(gross_load_profiles, end_user_tech)
-    net_profile = calc_net_profile_after_battery(net_profile, customer_solar_profiles, end_user_tech)
+    net_profile_after_solar = gross_load_profiles - solar_profiles
+    net_profile_after_dr = calc_net_profile_after_DR(net_profile_after_solar, end_user_tech)
+    net_profile_after_batt = calc_net_profile_after_battery(net_profile_after_dr, end_user_tech)
 
-    return net_profile
+    dr_energy_offset = net_profile_after_solar - net_profile_after_dr
+    batt_energy_offset = net_profile_after_dr - net_profile_after_batt
+
+    net_profiles = {'load_profiles': gross_load_profiles,
+                    'solar_profiles': solar_profiles,
+                    'dr_profiles': dr_energy_offset,
+                    'battery_profiles': batt_energy_offset,
+                    'final_net_profiles': net_profile_after_batt,
+                   }
+
+    return net_profiles
 
 
-def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sample):
+def calc_net_profile_after_battery(net_load_profile, end_user_tech_sample):
     end_user_tech_details = end_user_tech_sample['end_user_tech_details']
     customer_key = end_user_tech_sample['customer_keys']
 
@@ -188,19 +199,18 @@ def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sa
         current_batt_charge = 0 # inital battery capacity
         max_batt_charge_rate = (batt_kw * single_trip_batt_eff) / 2.0 # current assumes charge and discharge rate is the same
 
-        new_profile = load_profile[[key]] - solar_profile[[key]]
         if batt_strategy == 'Maximise self consumption':
             # start2 = time.time()
-            for i in range(1, len(new_profile)):
-                net_profile = new_profile[key][i]
+            for i in range(1, len(net_load_profile)):
+                net_profile = net_load_profile[key][i]
                 if net_profile < 0:
                     # maximum charging rate is batt_kw/2.0 since we are using 30min timestamps
                     chargeable_amount = min((usable_batt_capacity - current_batt_charge), max_batt_charge_rate, abs(net_profile))
-                    new_profile[key][i] = net_profile + chargeable_amount
+                    net_load_profile[key][i] = net_profile + chargeable_amount
                     current_batt_charge += chargeable_amount / single_trip_batt_eff
                 elif net_profile > 0:
                     dischargeable_amount = min(current_batt_charge, max_batt_charge_rate, net_profile)
-                    new_profile[key][i] = net_profile - dischargeable_amount
+                    net_load_profile[key][i] = net_profile - dischargeable_amount
                     current_batt_charge -= dischargeable_amount / single_trip_batt_eff
                 else:
                     pass
@@ -208,7 +218,7 @@ def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sa
             # print('time to calc one customer: ', end2-start2)
 
         new_profile_after_batt = pd.concat(
-            [new_profile_after_batt, new_profile], axis=1)
+            [new_profile_after_batt, net_load_profile], axis=1)
 
     return new_profile_after_batt
 

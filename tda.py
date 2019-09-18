@@ -255,14 +255,15 @@ def network_load(load_request):
 def net_load_chart_data():
     # TODO: Update this function to produce the actual plots of net load we want.
     load_request = request.get_json()
-    file_name = current_session.raw_data_name
     chart_type = load_request['chart_type']
     if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
-        chart_data = chart_methods[chart_type](current_session.raw_data[file_name],
-                                               current_session.end_user_tech_data,
+        chart_data = chart_methods[chart_type](current_session.downsample_data,
+                                               current_session.end_user_tech_data['final_net_profiles'],
                                                series_name=['All', 'Selected'])
-    else:
+    elif chart_type == 'Annual Average Energy Flow Profile':
         chart_data = chart_methods[chart_type](current_session.end_user_tech_data)
+    else:
+        chart_data = chart_methods[chart_type](current_session.end_user_tech_data['final_net_profiles'])
 
     # Format as json.
     return_data = {"chart_data": chart_data}

@@ -69,6 +69,7 @@ class InMemoryData:
         # End user technology sample.
         self.end_user_tech_sample = None
         self.end_user_tech_sample_applied = False
+        self.end_user_tech_profiles = None
 
         # Filtering options applied to get the current filtered data.
         self.filter_state = None
