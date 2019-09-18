@@ -136,13 +136,13 @@ def create_sample(gui_inputs, filtered_data):
                       'solar_profiles': solar_profiles, # @todo: can delete if we store solar profiles already in gui_inputs['tech_inputs']['solar']['profiles']
                       }
 
-    solar_profiles = calc_solar_profiles(solar_profiles, sample_details)
 
-    start = time.time()
-    calc_net_profile_after_battery(filtered_data, solar_profiles, sample_details)
-    end = time.time()
-
-    print('calc_batt time: ', end - start)
+    #
+    # start = time.time()
+    # calc_net_profile_after_battery(filtered_data, solar_profiles, sample_details)
+    # end = time.time()
+    #
+    # print('calc_batt time: ', end - start)
     return sample_details
 
 
@@ -159,8 +159,12 @@ def set_filtered_data_to_match_saved_sample(end_user_tech_sample):
 
 
 def calc_net_profiles(gross_load_profiles, end_user_tech):
-    end_user_tech_inputs = end_user_tech['tech_inputs']
-    return gross_load_profiles
+    customer_solar_profiles = calc_solar_profiles(end_user_tech)
+
+    net_profile = calc_net_profile_after_DR(gross_load_profiles, end_user_tech)
+    net_profile = calc_net_profile_after_battery(net_profile, customer_solar_profiles, end_user_tech)
+
+    return net_profile
 
 
 def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sample):
@@ -192,24 +196,18 @@ def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sa
 
         new_profile = load_profile[[key]] - solar_profile[[key]]
         if batt_strategy == 'Maximise self consumption':
-            net_load_profile = load_profile[[key]] - solar_profile[[key]]
-
             # start2 = time.time()
-            for i in range(1, len(net_load_profile)):
-                if net_load_profile[key][i] >= 0:
+            for i in range(1, len(new_profile)):
+                if new_profile[key][i] >= 0:
                     # maximum charging rate is batt_kw/2.0 since we are using 30min timestamps
-                    chargeable_amount = min((usable_batt_capacity - current_batt_charge) * single_trip_batt_eff, max_batt_charge_rate)
-                    net_energy_flow = 0
-                    if net_load_profile[key][i] > (chargeable_amount / single_trip_batt_eff):
-                        net_energy_flow = net_load_profile[key][i] - chargeable_amount
-                    current_batt_charge += chargeable_amount
+                    chargeable_amount = min((usable_batt_capacity - current_batt_charge) * single_trip_batt_eff, max_batt_charge_rate, new_profile[key][i])
+                    net_energy_flow = new_profile[key][i] - chargeable_amount
+                    current_batt_charge += (chargeable_amount / single_trip_batt_eff)
 
                 else:
-                    dischargeable_amount = min(current_batt_charge * single_trip_batt_eff, max_batt_charge_rate)
-                    net_energy_flow = 0
-                    if net_load_profile[key][i] < dischargeable_amount / single_trip_batt_eff:
-                        net_energy_flow = net_load_profile[key][i] + dischargeable_amount
-                    current_batt_charge -= dischargeable_amount
+                    dischargeable_amount = min(current_batt_charge * single_trip_batt_eff, max_batt_charge_rate, abs(new_profile[key][i]))
+                    net_energy_flow = new_profile[key][i] + dischargeable_amount
+                    current_batt_charge -= (dischargeable_amount / single_trip_batt_eff)
 
                 new_profile[key][i] = net_energy_flow
 
@@ -223,9 +221,12 @@ def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sa
 
 
 
-def calc_solar_profiles(solar_profiles, end_user_tech_sample):
+def calc_solar_profiles(end_user_tech_sample):
 
     end_user_tech_details = end_user_tech_sample['end_user_tech_details']
+    solar_profiles = end_user_tech_sample['solar_profiles']
+
+    print('end_user_tech_details: ', end_user_tech_details)
     customer_key = end_user_tech_sample['customer_keys']
 
     solar_kwh_profiles = pd.DataFrame([])
@@ -244,6 +245,6 @@ def calc_solar_profiles(solar_profiles, end_user_tech_sample):
 
 
 def calc_net_profile_after_DR(load_profile, end_user_solar_tech):
-    pass
+    return load_profile
 
 
