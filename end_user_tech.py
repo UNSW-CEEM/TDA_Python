@@ -191,26 +191,25 @@ def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sa
                 battery_capacity = batt_kw / batt_kw_to_kwh
 
         usable_batt_capacity = battery_capacity * (1 - batt_soc)
-        current_batt_charge = 0 #inital battery capacity
-        max_batt_charge_rate = (batt_kw * single_trip_batt_eff) / 2.0 #current assumes charge and discharge rate is the same
+        current_batt_charge = 0 # inital battery capacity
+        max_batt_charge_rate = (batt_kw * single_trip_batt_eff) / 2.0 # current assumes charge and discharge rate is the same
 
         new_profile = load_profile[[key]] - solar_profile[[key]]
         if batt_strategy == 'Maximise self consumption':
             # start2 = time.time()
             for i in range(1, len(new_profile)):
-                if new_profile[key][i] >= 0:
+                net_profile = new_profile[key][i]
+                if net_profile < 0:
                     # maximum charging rate is batt_kw/2.0 since we are using 30min timestamps
-                    chargeable_amount = min((usable_batt_capacity - current_batt_charge) * single_trip_batt_eff, max_batt_charge_rate, new_profile[key][i])
-                    net_energy_flow = new_profile[key][i] - chargeable_amount
-                    current_batt_charge += (chargeable_amount / single_trip_batt_eff)
-
+                    chargeable_amount = min((usable_batt_capacity - current_batt_charge), max_batt_charge_rate, abs(net_profile))
+                    new_profile[key][i] = net_profile + chargeable_amount
+                    current_batt_charge += chargeable_amount / single_trip_batt_eff
+                elif net_profile > 0:
+                    dischargeable_amount = min(current_batt_charge, max_batt_charge_rate, net_profile)
+                    new_profile[key][i] = net_profile - dischargeable_amount
+                    current_batt_charge -= dischargeable_amount / single_trip_batt_eff
                 else:
-                    dischargeable_amount = min(current_batt_charge * single_trip_batt_eff, max_batt_charge_rate, abs(new_profile[key][i]))
-                    net_energy_flow = new_profile[key][i] + dischargeable_amount
-                    current_batt_charge -= (dischargeable_amount / single_trip_batt_eff)
-
-                new_profile[key][i] = net_energy_flow
-
+                    pass
             # end2 = time.time()
             # print('time to calc one customer: ', end2-start2)
 
@@ -224,9 +223,7 @@ def calc_net_profile_after_battery(load_profile, solar_profile, end_user_tech_sa
 def calc_solar_profiles(end_user_tech_sample):
 
     end_user_tech_details = end_user_tech_sample['end_user_tech_details']
-    solar_profiles = end_user_tech_sample['solar_profiles']
-
-    print('end_user_tech_details: ', end_user_tech_details)
+    solar_profiles = end_user_tech_sample['solar_profiles'].clip(0)
     customer_key = end_user_tech_sample['customer_keys']
 
     solar_kwh_profiles = pd.DataFrame([])

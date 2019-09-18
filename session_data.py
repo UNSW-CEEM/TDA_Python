@@ -41,15 +41,19 @@ class InMemoryData:
 
         self.raw_data = {}  # Data as loaded from feather files, stored in dict on a file name basis
 
-        # raw data is first filtered by percentage of allowed missing data
-        self.filter_missing_data = {}
+        # 1) raw data is filtered by percentage of allowed missing data
+        self.filter_missing_data = None
 
-        # data filtered by missing percentage is then downsampled
-        self.downsample_data = {}
+        # 2) filter_missing_data is downsampled by user defined percentage
+        self.downsample_data = None
 
-        # The downsampled data is then filtered by demographic
+        # 3) downsample_data is filtered by demographic
         self.filtered_data = None
         self.is_filtered = False  # Flag to indicate if filtering has been applied
+
+        # 4) filtered_data is used to calculate user load profiles after end-user-tech (solar/battery/demand response)
+        self.end_user_tech_data = None
+
         self.raw_data_name = ''
         # Chart data for the load plots, only storing data for non filtered data as filtering can change between plot
         # updates.
@@ -68,9 +72,9 @@ class InMemoryData:
         # Filtering options applied to get the current filtered data.
         self.filter_state = None
 
-        self.solar_profile_data = {}
+        self.solar_profile_data = {} # Data as loaded from feather files, stored in dict on a file name basis
 
-        self.network_load = {}
+        self.network_load = None
 
         # Data subset to save/load.
         self.project_data = ProjectData()
