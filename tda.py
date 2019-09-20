@@ -517,7 +517,7 @@ def create_end_user_tech_from_sample_from_gui():
     details = request.json
     current_session.end_user_tech_sample = end_user_tech.create_sample(details, current_session.filtered_data)
     current_session.end_user_tech_data = \
-        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.end_user_tech_sample)
+        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load, current_session.end_user_tech_sample)
 
     current_session.end_user_tech_sample_applied = True
     return jsonify({'message': 'Done!'})
@@ -535,7 +535,7 @@ def load_end_user_tech_from_sample_from_file():
         raw_data = data_interface.get_load_table('data/load/', current_session.raw_data_name)
         current_session.raw_data[current_session.raw_data_name] = raw_data
         filtered_data = raw_data.loc[:, current_session.end_user_tech_sample['customer_keys']]
-        current_session.end_user_tech_data = end_user_tech.calc_net_profiles(filtered_data,
+        current_session.end_user_tech_data = end_user_tech.calc_net_profiles(filtered_data, current_session.network_load,
                                                                         current_session.end_user_tech_sample)
         current_session.filter_state = current_session.end_user_tech_sample['load_details']['filter_options']
         return_data = jsonify({'message': 'Done!', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
@@ -552,7 +552,7 @@ def calc_sample_net_load_profiles():
     details = request.json
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
     current_session.end_user_tech_data = \
-        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.end_user_tech_sample)
+        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load, current_session.end_user_tech_sample)
 
     current_session.end_user_tech_sample_applied = True
     return jsonify({'message': 'done'})

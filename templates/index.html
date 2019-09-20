@@ -815,18 +815,18 @@
                         <div class="row" style="overflow: hidden;">
                             <div class="col" style="width: 60%;">
                                 <div class="label_stacked">Penetration (%):</div>
-                                <div class="label_stacked">Mean max response size (kW):</div>
-                                <div class="label_stacked">Standard deviation (kW):</div>
-                                <div class="label_stacked">Max response time:</div>
-                                <div class="label_stacked">Response events limit (/year):</div>
+                                <div class="label_stacked">Mean Load Reduction (%):</div>
+                                <div class="label_stacked">Standard deviation (%):</div>
+                                <div class="label_stacked">Mean response time (hours):</div>
+                                <div class="label_stacked">Network Peak Limit for Event (kW):</div>
                                 <div class="label_stacked">Energy conservation:</div>
                             </div>
                             <div class="col demand_response_inputs" style="width: 20%;">
-                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100"value="0">
-                                <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100" value="0">
+                                <input class="sample_parameter" name="mean_load_reduction" type="number" min="0" max="100" value="0">
                                 <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
-                                <input class="operational_parameter" name="max_response_time" type="number" min="0" value="0">
-                                <input class="operational_parameter" name="events_limit" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="mean_response_time" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="network_kw_events_limit" type="number" min="0" value="0">
                                 <select class="operational_parameter" name="energy_conservation">
                                     <option>Yes</option>
                                     <option>No</option>
