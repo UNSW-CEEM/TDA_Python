@@ -295,7 +295,7 @@ def calc_net_profile_after_DR(load_profile, network_load, end_user_tech_sample):
                 x = np.random.weibull(2, rebound_hours*2)
                 scale = total_energy_offset / x.sum()
 
-                energy_rebound = pd.DataFrame(sort_from_middle(np.sort(x*scale)[::-1], 2), index=index_time, columns=[key])
+                energy_rebound = pd.DataFrame(sort_from_middle(np.sort(x*scale)[::-1], rebound_hours + 2), index=index_time, columns=[key])
                 net_load_after_dr = net_load_after_dr.add(energy_rebound, fill_value=0, axis=0)
 
     return net_load_after_dr
