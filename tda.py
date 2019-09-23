@@ -172,7 +172,7 @@ def filtered_load_data():
 
         # Filter data by demographic
         demo_info_file_name = data_interface.find_loads_demographic_file(file_name)
-        demo_info = pd.read_feather('data/demographics/' + demo_info_file_name + '.feather').astype(str)
+        demo_info = feather.read_dataframe('data/demographics/' + demo_info_file_name + '.feather').astype(str)
         demo_info = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
             current_session.downsample_data, demo_info)
 
@@ -241,7 +241,7 @@ def network_load(load_request):
 
     else:
         file_name = filter_option
-        synthetic_load = pd.read_feather('data/network_loads/' + file_name + '.feather')
+        synthetic_load = feather.read_dataframe('data/network_loads/' + file_name + '.feather')
         synthetic_load.rename(columns={synthetic_load.columns[0]: 'Datetime'}, inplace=True)
         synthetic_load = synthetic_load.set_index('Datetime')
         agg_network_load = pd.DataFrame(synthetic_load.sum(axis=1), columns=['load'])
@@ -451,7 +451,7 @@ def get_demo_options(name):
     demo_file_name = data_interface.find_loads_demographic_file(name) + '.feather'
 
     if demo_file_name != '' and demo_file_name in os.listdir('data/demographics/'):
-        demo = pd.read_feather('data/demographics/' + demo_file_name).astype(str)
+        demo = feather.read_dataframe('data/demographics/' + demo_file_name).astype(str)
         demo = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
             current_session.raw_data[current_session.raw_data_name], demo)
         demo_options = helper_functions.get_demographic_options_from_demo_file(demo)
@@ -944,8 +944,8 @@ def shutdown():
 
 @errors.log(logger)
 def on_start_up():
-    # start_up_procedures.update_nemosis_cache()
-    # start_up_procedures.update_tariffs()
+    start_up_procedures.update_nemosis_cache()
+    start_up_procedures.update_tariffs()
     check_load_2_demo_map() # Fix load_2_demo_map if corrupted
     return None
 
