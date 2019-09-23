@@ -39,8 +39,6 @@ var delete_data = function(){
 
 var import_data = function(data_type, call_back){
 
-    $('#file1').click();
-
     // Action to perform when the user chooses the create now option.
     var create_now = function(){
         $.ajax({

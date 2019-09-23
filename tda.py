@@ -466,9 +466,9 @@ def create_end_user_tech_from_sample_from_gui():
 @app.route('/load_end_user_tech_from_sample_from_file', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def load_end_user_tech_from_sample_from_file():
-    details = request.json
-    file_path = helper_functions.get_file_to_load_from_user('TDA tech sample', '.tda_tech_sample')
-    with open(file_path, "rb") as f:
+    file = request.files['file']
+    file.save('data/temp/temp.pkl')
+    with open('data/temp/temp.pkl', "rb") as f:
         current_session.end_user_tech_sample = pickle.load(f)
     if current_session.end_user_tech_sample['load_details']['file_name'] + '.feather' in os.listdir('data/load/'):
         current_session.raw_data_name = current_session.end_user_tech_sample['load_details']['file_name']

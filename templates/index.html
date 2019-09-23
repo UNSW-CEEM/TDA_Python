@@ -502,8 +502,11 @@
         <thead class="tariff_table_header"></thead>
         <tbody class="tariff_table_body"></tbody>
     </table>
+    <form id="file_form" method = "POST" enctype = "multipart/form-data">
+        <input type="file" id="file1" name="file" style="display:none">
+        <input type = "submit"/>
+    </form>
 
-    <input type="file" accept=".tda_results" id="file1"  webkitdirectory  style="display:none">
 
 </head>
 
@@ -848,7 +851,7 @@
                                         Create end user tech sample
                                 </button>
                                 <button style="width: 100%; text-align: left; height: 3.25vh;"
-                                        onclick="load_end_user_tech_from_sample_from_file()">
+                                        onclick="get_file_and_pass_to_python('.tda_tech_sample', '/load_end_user_tech_from_sample_from_file', load_end_user_tech_from_sample_from_file)">
                                         <font id="tech_from_file_status_not_set" color="black" style="display: inline;">&#9675;</font>
                                         <font id="tech_from_file_status_set" color="green" style="display: none;">&#9679;</font>
                                         Load end user tech sample from file
@@ -1272,6 +1275,7 @@
     <script src="static/export_chart_data.js"></script>
     <script src="static/end_user_tech.js"></script>
     <script src="static/network_load_options.js"></script>
+    <script src="static/file_dialog.js"></script>
 </div>
 </body>
 </html>
