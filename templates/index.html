@@ -407,7 +407,7 @@
 
       .x_peak_options, .y_peak_options {
         visibility: hidden;
-      }
+      } 
 
       .input_col {
         max-width: 500px;
@@ -690,9 +690,13 @@
             <font id="tariff_status_set" color="green" style="display: none;">&#9679;</font> Tariffs
         </button>
         <button id="results_panel_button" class="main_tab_links"
-                onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">
+                onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px; margin-bottom: .75vh;">
             <font id="results_status_not_set" color="black" style="display: inline;">&#9675;</font>
             <font id="results_status_set" color="green" style="display: none;">&#9679;</font> Results
+        </button>
+        <hr style="padding-bottom: .75vh;">
+        <button style="width: 100%; height: 50px" onclick="check_that_a_case_can_be_added()">
+            Calculate results
         </button>
     </div>
     <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left; overflow: hidden; position: relative;">
@@ -820,18 +824,18 @@
                         <div class="row" style="overflow: hidden;">
                             <div class="col" style="width: 60%;">
                                 <div class="label_stacked">Penetration (%):</div>
-                                <div class="label_stacked">Mean max response size (kW):</div>
-                                <div class="label_stacked">Standard deviation (kW):</div>
-                                <div class="label_stacked">Max response time:</div>
-                                <div class="label_stacked">Response events limit (/year):</div>
+                                <div class="label_stacked">Mean Load Reduction (%):</div>
+                                <div class="label_stacked">Standard deviation (%):</div>
+                                <div class="label_stacked">Mean response time (hours):</div>
+                                <div class="label_stacked">Network Peak Limit for Event (kW):</div>
                                 <div class="label_stacked">Energy conservation:</div>
                             </div>
                             <div class="col demand_response_inputs" style="width: 20%;">
-                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100"value="0">
-                                <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100" value="0">
+                                <input class="sample_parameter" name="mean_load_reduction" type="number" min="0" max="100" value="0">
                                 <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
-                                <input class="operational_parameter" name="max_response_time" type="number" min="0" value="0">
-                                <input class="operational_parameter" name="events_limit" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="mean_response_time" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="network_kw_events_limit" type="number" min="0" value="0">
                                 <select class="operational_parameter" name="energy_conservation">
                                     <option>Yes</option>
                                     <option>No</option>
@@ -877,6 +881,7 @@
                     <div style="height: 10%; overflow: hidden;">
                         <select  id="select_net_graph" style="float: right; width: 30%;">
                             <option value="Annual Average Profile"> Annual Average Profile</option>
+                            <option value="Annual Average Energy Flow Profile">Annual Average Energy Flow Profile</option>
                             <option value="Daily Profiles">Daily Profiles</option>
                             <option value="Daily Profile Interquartile Range">Daily Profile Interquartile Range</option>
                             <option value="Daily kWh Histogram">Daily kWh Histogram</option>
@@ -894,9 +899,14 @@
         <div id="results_panel" class="main_tab_content">
             <div class="results_area">
                 <div id="results_tab_set" class="tab_button_area">
-                    <button id="default_results_tab" class="results_tab_links" onclick="displayResults(event, 'single_variable_tab')">Single variable graphs</button>
-                    <button id="dual_var_button" class="results_tab_links" onclick="displayResults(event, 'dual_variable_tab')">Dual variable graphs</button>
-                    <button id="single_case_button" class="results_tab_links" onclick="displayResults(event, 'single_case_tab')">Single case graphs</button>
+                    <button id="default_results_tab" class="results_tab_links"
+                            onclick="displayResults(event, 'single_variable_tab')">Bill info</button>
+                    <button id="default_results_tab_2" class="results_tab_links"
+                            onclick="displayResults(event, 'single_variable_tab_2')">Load info</button>
+                    <button id="dual_var_button" class="results_tab_links"
+                            onclick="displayResults(event, 'dual_variable_tab')">Variable correlations</button>
+                    <button id="single_case_button" class="results_tab_links"
+                            onclick="displayResults(event, 'single_case_tab')">Bill components</button>
                 </div>
                 <div id="single_variable_tab" class="results_tab_content">
                     <div id="single_variable_result_chart" class="row chart" style="height: 80%"></div>
@@ -906,14 +916,40 @@
                         </div>
                         <div class="col" style="width: 80%">
                             <select id="single_variable_chart_type" style="width: 50%">
+                                <option value="Bill Distribution Total">Bill distribution (Total)</option>
+                                <option value="Bill Distribution NUOS">Bill distribution (NUOS)</option>
+                                <option value="Bill Distribution DUOS">Bill distribution (DUOS)</option>
+                                <option value="Bill Distribution TUOS">Bill distribution (TUOS)</option>
+                                <option value="Bill Distribution Retailer">Bill distribution (Retailer)</option>
+                                <option value="Bill Distribution Wholesale">Bill distribution (Wholesale)</option>
+
+                                <option value="Bill Box Plot Total">Bill box plot (Total)</option>
+                                <option value="Bill Box Plot NUOS">Bill box plot (NUOS)</option>
+                                <option value="Bill Box Plot DUOS">Bill box plot (DUOS)</option>
+                                <option value="Bill Box Plot TUOS">Bill box plot (TUOS)</option>
+                                <option value="Bill Box Plot Retailer">Bill box plot (Retailer)</option>
+                                <option value="Bill Box Plot Wholesale">Bill box plot (Wholesale)</option>
+                            </select>
+                        </div>
+                        <script src="static/plot_results.js"></script>
+                    </div>
+                </div>
+                <div id="single_variable_tab_2" class="results_tab_content">
+                    <div id="single_variable_result_chart_2" class="row chart" style="height: 80%"></div>
+                    <div class="row" style="height: 20%">
+                        <div class="col">
+                            <div class="label_line">Select figure:&nbsp</div>
+                        </div>
+                        <div class="col" style="width: 80%">
+                            <select id="single_variable_chart_type_2" style="width: 50%">
                                 <option value="Average Annual Profile">Average Annual Profile</option>
                                 <option value="Daily kWh Histogram">Daily kWh Histogram</option>
                                 <option value="Average Load Duration Curve">Average Load Duration Curve</option>
                                 <option value="Monthly Average kWh">Monthly Average kWh</option>
                                 <option value="Seasonal Daily Pattern">Seasonal Daily Pattern</option>
                                 <option value="Monthly Peak Time">Monthly Peak Time</option>
-                                <option value="Bill Distribution">Bill Distribution</option>
-                                <option value="Bill Box Plot">Bill Box Plot</option>
+                                <option value="Daily Profile Interquartile Range">Daily Profile Interquartile Range</option>
+
                             </select>
                         </div>
                         <script src="static/plot_results.js"></script>
@@ -935,8 +971,12 @@
                                 <option value="avg_demand_top_n_monthly_peaks">Average Demand at Top 'N' Monthly Peaks</option>
                                 <option value="avg_daily_kWh">Average Daily kWh</option>
                                 <option value="avg_daily_peak">Average Daily Peak</option>
-                                <option value="Bill">Bill ($/year)</option>
-                                <option value="unitised_bill_kW">Unitised Bill (kW)</option>
+                                <option value="Bill NUOS">Bill NUOS ($/year)</option>
+                                <option value="Bill DUOS">Bill DUOS ($/year)</option>
+                                <option value="Bill TUOS">Bill TUOS ($/year)</option>
+                                <option value="Bill Retailer">Bill Retailer ($/year)</option>
+                                <option value="Bill Wholesale">Bill Wholesale ($/year)</option>
+                                <option value="Bill Total">Bill Total ($/year)</option>
                             </select>
                             <script src="static/plot_results.js"></script>
                             <br/>
@@ -948,8 +988,12 @@
                                 <option value="avg_demand_top_n_monthly_peaks">Average Demand at Top 'N' Monthly Peaks</option>
                                 <option value="avg_daily_kWh">Average Daily kWh</option>
                                 <option value="avg_daily_peak">Average Daily Peak</option>
-                                <option value="Bill">Bill ($/year)</option>
-                                <option value="unitised_bill_kW">Unitised Bill (kW)</option>
+                                <option value="Bill NUOS">Bill NUOS ($/year)</option>
+                                <option value="Bill DUOS">Bill DUOS ($/year)</option>
+                                <option value="Bill TUOS">Bill TUOS ($/year)</option>
+                                <option value="Bill Retailer">Bill Retailer ($/year)</option>
+                                <option value="Bill Wholesale">Bill Wholesale ($/year)</option>
+                                <option value="Bill Total">Bill Total ($/year)</option>
                             </select>
                             <script src="static/plot_results.js"></script>
                         </div>
@@ -964,7 +1008,6 @@
                                 <select class="y_peak_options" id="y_n_peaks_select" style="width: 80%;"></select>
                                 <script src="static/make_n_peak_options.js"></script>
                             </div>
-                            <script src="static/plot_results.js"></script>
                             <div class="col">
                                 <div class="x_peak_options label_stacked" style="width: 70%; white-space: nowrap;">
                                     One Peak/Day
@@ -977,10 +1020,13 @@
                             <div class="col" style="width: 10%">
                                 <input class="x_peak_options" id="x_one_peak_a_day" type="checkbox">
                                 <input class="y_peak_options" id="y_one_peak_a_day" type="checkbox">
+                                <script src="static/make_n_peak_options.js"></script>
                             </div>
-                            <script src="static/plot_results.js"></script>
                         </div>
-                        <div id="select_seasons" class="col" style="width: 24%; float: left; min-width: 200px">
+                        <script src="static/plot_results.js"></script>
+
+                        
+                        <div id="select_seasons" class="col" style="width: 24%; float: left; min-width: 200px; display: none;">
                             <div class="col" style="width: 50%;">
                                 <div class="col">
                                     <div class="label_stacked" style="width: 60%">Spring:</div>
@@ -989,6 +1035,7 @@
                                 <div class="col" style="width: 30%">
                                     <input id="include_spring" class="season_option" type="checkbox" checked>
                                     <input id="include_autumn" class="season_option"type="checkbox" checked>
+                                    <script src="static/make_n_peak_options.js"></script>
                                 </div>
                             </div>
                             <div class="col" style="width: 50%;">
@@ -999,9 +1046,11 @@
                                 <div class="col" style="width: 30%">
                                     <input id="include_summer" class="season_option" type="checkbox" checked>
                                     <input id="include_winter" class="season_option" type="checkbox" checked>
+                                    <script src="static/make_n_peak_options.js"></script>
                                 </div>
                             </div>
                         </div>
+                        
                         <script src="static/plot_results.js"></script>
                     </div>
                 </div>
@@ -1018,7 +1067,6 @@
                             <select id="single_case_chart_type" style="width: 100%;">
                                 <option value="bill_components">Bill Components</option>
                                 <option value="bill_components_pie_chart">Bill Components Pie Chart</option>
-                                <option value="daily_profile_interquartile_range">Daily Profile Interquartile Range</option>
                             </select>
                             <script src="static/plot_results.js"></script>
                         </div>
@@ -1241,14 +1289,6 @@
                                     <option selected="selected">None</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="row">
-                            <h4 style="margin: 0;">Actions</h4>
-                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
-                        </div>
-                        <div class="row" style="overflow: hidden;">
-                            <button style="width: 80%; text-align: left; height: 3.25vh;"
-                                    onclick="check_that_a_case_can_be_added()">Create case</button>
                         </div>
                     </div>
                 </div>

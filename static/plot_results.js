@@ -1,7 +1,8 @@
 
 var plot_results = function(){
     // Plot results for each results tab.
-    plot_single_variable_results();
+    plot_single_variable_results('#single_variable_chart_type', 'single_variable_result_chart')
+    plot_single_variable_results('#single_variable_chart_type_2', 'single_variable_result_chart_2')
     plot_dual_variable_results();
     plot_single_case_results();
     $('#dialog').dialog('close');
@@ -11,17 +12,17 @@ var plot_results = function(){
 
 
 
-var plot_single_variable_results = function(){
+var plot_single_variable_results = function(chart_type_selector_id, chart_div_id){
     // Get cases to plot
     cases_to_plot = get_cases_to_plot_from_ui();
     console.log('cases_to_plot:',cases_to_plot)
 
     // Get the chart type to be drawn from the GUI.
-    var chart_type = $('#single_variable_chart_type').children("option:selected").val();
+    var chart_type = $(chart_type_selector_id).children("option:selected").val();
+    console.log('chart_type:',chart_type)
 
     // Package request details into a single object.
     var case_details = {'chart_name': chart_type, 'case_names': cases_to_plot}
-
 
     // Get chart data
     $.ajax({
@@ -42,8 +43,8 @@ var plot_single_variable_results = function(){
                             xaxis: data['layout'].xaxis,
                             yaxis: data['layout'].yaxis};
 
-            Plotly.newPlot('single_variable_result_chart', data['data'], layout, {responsive: true});
-        ;}
+            Plotly.newPlot(chart_div_id, data['data'], layout, {responsive: true});
+        }
     });
 
 }
@@ -143,7 +144,11 @@ var plot_single_case_results = function(){
 
 
 $('#single_variable_chart_type').on('change', function() {
-    plot_single_variable_results();
+    plot_single_variable_results('#single_variable_chart_type', 'single_variable_result_chart');
+});
+
+$('#single_variable_chart_type_2').on('change', function() {
+    plot_single_variable_results('#single_variable_chart_type_2', 'single_variable_result_chart_2');
 });
 
 $('#x_n_peaks_select').on('change', function() {
@@ -171,9 +176,27 @@ $('#dual_variable_y_axis').on('change', function() {
     plot_dual_variable_results();
 });
 
-$('.season_option').on('change', function() {
+// $('.season_option').on('change', function() {
+//     plot_dual_variable_results();
+// });
+
+$('#include_summer').on('change', function() {
     plot_dual_variable_results();
 });
+
+$('#include_winter').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#include_spring').on('change', function() {
+    plot_dual_variable_results();
+});
+
+$('#include_autumn').on('change', function() {
+    plot_dual_variable_results();
+});
+
+
 
 $('#single_case_result_chosen_case').on('change', function() {
     plot_single_case_results();
