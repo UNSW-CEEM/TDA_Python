@@ -565,7 +565,7 @@ def save_end_user_tech_sample():
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
     file_path = helper_functions.get_save_name_from_user('TDA tech sample', '.tda_tech_sample')
     if file_path != '':
-        file_path = helper_functions.add_file_extension_if_needed(file_path, '.tda_tech_sample')
+        file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_tech_sample')
         with open(file_path, "wb") as f:
             pickle.dump(current_session.end_user_tech_sample, f)
         message = 'saved'
@@ -856,7 +856,7 @@ def load_project():
 def save_project():
     if current_session.project_data.name == '':
         file_path = helper_functions.get_save_name_from_user()
-        file_path = helper_functions.add_file_extension_if_needed(file_path)
+        file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_results')
     else:
         file_path = current_session.project_data.name + '.tda_results'
     with open(file_path, "wb") as f:
@@ -868,7 +868,7 @@ def save_project():
 @errors.parse_to_user_and_log(logger)
 def save_project_as():
     file_path = helper_functions.get_save_name_from_user('TDA results file', '.tda_results')
-    file_path = helper_functions.add_file_extension_if_needed(file_path, '.tda_results')
+    file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_results')
     current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
     with open(file_path, "wb") as f:
         pickle.dump(current_session.project_data, f)
@@ -885,7 +885,7 @@ def delete_project():
 @errors.parse_to_user_and_log(logger)
 def export_results():
     file_path = helper_functions.get_save_name_from_user('excel file', '.xlsx')
-    file_path = helper_functions.add_file_extension_if_needed(file_path, '.xlsx')
+    file_path = helper_functions.add_file_extension_if_needed(file_path, 'xlsx')
     wb = Workbook()
     for case_name in current_session.project_data.load_file_name_by_case.keys():
         data_to_export = format_case_for_export.process_case(case_name, current_session.project_data)
@@ -903,7 +903,7 @@ def export_chart_data():
     export_data = format_chart_data_for_export.plot_ly_to_pandas(request_details)
     if request_details['export_type'] == 'csv':
         file_path = helper_functions.get_save_name_from_user('csv file', '.csv')
-        file_path = helper_functions.add_file_extension_if_needed(file_path, '.csv')
+        file_path = helper_functions.add_file_extension_if_needed(file_path, 'csv')
         export_data.to_csv(file_path, index=False)
     elif request_details['export_type'] == 'clipboard':
         export_data.to_clipboard(index=False)

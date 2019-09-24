@@ -106,7 +106,7 @@ def get_project_name_from_file_path(file_path):
 
 
 def add_file_extension_if_needed(file_path, extension):
-    if file_path[-4:] != extension:
+    if file_path.split('.')[1] != extension:
         file_path = file_path + extension
     return file_path
 

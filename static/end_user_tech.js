@@ -31,7 +31,7 @@ var create_end_user_tech_from_sample_from_gui = function(){
     }
 }
 
-var load_end_user_tech_from_sample_from_file = function(data){
+var update_gui_after_loading_tech_file = function(data){
     $('#select').val('Select one').change();
     var message = "Loading end user tech sample."
     $("#message_dialog").dialog({ modal: true});
