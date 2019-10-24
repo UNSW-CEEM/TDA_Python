@@ -10,8 +10,8 @@ def _bill_distribution(load_and_results_by_case,component_name):
 
     Xaxis = "Bill (AUD)"
     Yaxis = "Percentage"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                    yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                    yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                     showlegend=True)
 
     trace = []
@@ -73,8 +73,8 @@ def _bill_box_plot(load_and_results_by_case, component_name):
 
     Xaxis = "Case"
     Yaxis = "Bill (AUD)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                    yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                    yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                     showlegend=True)
 
     trace = []
@@ -134,8 +134,8 @@ def _average_annual_profile(load_and_results_by_case):
 
     Xaxis = "Time"
     Yaxis = "Average Load (kW)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                    yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                    yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                     showlegend=True)
 
     trace = []
@@ -152,8 +152,8 @@ def _daily_kWh_histogram(load_and_results_by_case):
 
     Xaxis = "Daily Electricity (kWh)"
     Yaxis = "Percentage"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                    yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                    yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                     showlegend=True)
     
     trace = []
@@ -173,8 +173,8 @@ def _average_load_duration_curve(load_and_results_by_case):
 
     Xaxis = "Time"
     Yaxis = "Load (kW)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
     
     trace = []
@@ -196,8 +196,8 @@ def _monthly_average_kWh(load_and_results_by_case):
 
     Xaxis = "Daily Electricity (kWh)"
     Yaxis = "Load (kW)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
     
     trace = []
@@ -221,11 +221,11 @@ def _seasonal_daily_pattern(load_and_results_by_case):
 
     Xaxis = "Time"
     Yaxis = "Load (kW)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
                        tickmode = 'array',
                        tickvals = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46],
                        ticktext = ['01:00', '03:00', '05:00', '07:00', '09:00', '11:00','13:00','15:00','17:00','19:00','21:00','23:00']),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
     
     trace = []
@@ -259,8 +259,8 @@ def _monthly_peak_time(load_and_results_by_case):
 
     Xaxis = "Month"
     Yaxis = "Time of day (Hour)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                       yaxis=dict(title=Yaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
     
     trace = []
@@ -295,11 +295,11 @@ def _get_daily_profile_interquartile_range(load_and_results_by_case):
     
     Xaxis = "30 Minutes Interval"
     Yaxis = "kWh"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
                        tickmode = 'array',
                        tickvals = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46],
                        ticktext = ['01:00', '03:00', '05:00', '07:00', '09:00', '11:00','13:00','15:00','17:00','19:00','21:00','23:00']),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
 
     trace = []
@@ -755,8 +755,8 @@ def dual_variable_chart(load_and_results_by_case, details):
 
             trace.append(dual_data)
     
-    dual_layout = go.Layout(xaxis=dict(title=x_axis_data['axis_name'],rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
-                            yaxis=dict(title=y_axis_data['axis_name'],rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
+    dual_layout = go.Layout(xaxis=dict(showgrid=False, title=x_axis_data['axis_name'],rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+                            yaxis=dict(showgrid=False, title=y_axis_data['axis_name'],rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
     
     chart_data = {'data': trace, 'layout':dual_layout}
     chart_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
@@ -777,8 +777,8 @@ def _get_bill_components(data, load_to_plot):
 
     Xaxis = "Users (sorted by total bill)"
     Yaxis = "Bill (AUD)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
 
 
     new_data = pd.DataFrame()
@@ -834,8 +834,8 @@ def _get_bill_components_pie_chart(data, load_by_case):
 
     Xaxis = ""
     Yaxis = ""
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)))
     
     selected_columns_sum = []
     label_name = []

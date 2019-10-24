@@ -10,8 +10,8 @@ from datetime import datetime, timedelta
 def get_average_annual_profile(load, load_filtered, series_name):
     Xaxis = "Time"
     Yaxis = "Average Load (kW)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                    yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                    yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                     showlegend=True)
 
     if len(series_name) == 1:
@@ -52,8 +52,8 @@ def get_daily_kWh_hist(load, load_filtered, series_name):
 
     Xaxis = "Daily Electricity (kWh)"
     Yaxis = "Percentage"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                    yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                    yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                     showlegend=True)
 
     if len(series_name)==1:
@@ -97,11 +97,11 @@ def get_daily_profiles(load):
 
     Xaxis = "Time"
     Yaxis = "Average Load (kW)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
                        tickmode = 'array',
                        tickvals = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46],
                        ticktext = ['01:00', '03:00', '05:00', '07:00', '09:00', '11:00','13:00','15:00','17:00','19:00','21:00','23:00']),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
 
     if load.shape[1] < 1:
@@ -127,11 +127,11 @@ def get_daily_profile_interquartile(load):
 
     Xaxis = "Time"
     Yaxis = "Load (kW)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
                        tickmode = 'array',
                        tickvals = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46],
                        ticktext = ['01:00', '03:00', '05:00', '07:00', '09:00', '11:00','13:00','15:00','17:00','19:00','21:00','23:00']),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
 
     if load.shape[1] < 1:
@@ -159,8 +159,8 @@ def get_average_load_duration_curve(load):
 
     Xaxis = "Time"
     Yaxis = "Load (kW)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=False)
 
     if load.shape[1] < 1:
@@ -183,8 +183,8 @@ def get_average_peak_day_profile(load):
 
     Xaxis = "Time"
     Yaxis = "Load (kW)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=False)
 
     if load.shape[1] < 1:
@@ -218,8 +218,8 @@ def get_monthly_average_kWh(load):
 
     Xaxis = "Daily Electricity (kWh)"
     Yaxis = "Load (kW)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=False)
 
     if load.shape[1] < 1:
@@ -249,11 +249,11 @@ def get_seasonal_daily_pattern(load):
 
     Xaxis = "Time"
     Yaxis = "Load (kW)"
-    layout = go.Layout(xaxis=dict(title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
+    layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),
                        tickmode = 'array',
                        tickvals = [2, 6, 10, 14, 18, 22, 26, 30, 34, 38, 42, 46],
                        ticktext = ['01:00', '03:00', '05:00', '07:00', '09:00', '11:00','13:00','15:00','17:00','19:00','21:00','23:00']),
-                       yaxis=dict(title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
+                       yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
 
     if load.shape[1] < 1:
