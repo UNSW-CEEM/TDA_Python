@@ -685,9 +685,13 @@
             <font id="tariff_status_set" color="green" style="display: none;">&#9679;</font> Tariffs
         </button>
         <button id="results_panel_button" class="main_tab_links"
-                onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px">
+                onclick="displayPanels(event, 'results_panel')" style="width: 100%; height: 50px; margin-bottom: .75vh;">
             <font id="results_status_not_set" color="black" style="display: inline;">&#9675;</font>
             <font id="results_status_set" color="green" style="display: none;">&#9679;</font> Results
+        </button>
+        <hr style="padding-bottom: .75vh;">
+        <button style="width: 100%; height: 50px" onclick="check_that_a_case_can_be_added()">
+            Calculate results
         </button>
     </div>
     <div id="right_column" class="main_tab" style="height: 100%; width: 83%; float: left; overflow: hidden; position: relative;">
@@ -815,18 +819,18 @@
                         <div class="row" style="overflow: hidden;">
                             <div class="col" style="width: 60%;">
                                 <div class="label_stacked">Penetration (%):</div>
-                                <div class="label_stacked">Mean max response size (kW):</div>
-                                <div class="label_stacked">Standard deviation (kW):</div>
-                                <div class="label_stacked">Max response time:</div>
-                                <div class="label_stacked">Response events limit (/year):</div>
+                                <div class="label_stacked">Mean Load Reduction (%):</div>
+                                <div class="label_stacked">Standard deviation (%):</div>
+                                <div class="label_stacked">Mean response time (hours):</div>
+                                <div class="label_stacked">Network Peak Limit for Event (kW):</div>
                                 <div class="label_stacked">Energy conservation:</div>
                             </div>
                             <div class="col demand_response_inputs" style="width: 20%;">
-                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100"value="0">
-                                <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
+                                <input class="sample_parameter" name="penetration" type="number" min="0" max="100" value="0">
+                                <input class="sample_parameter" name="mean_load_reduction" type="number" min="0" max="100" value="0">
                                 <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
-                                <input class="operational_parameter" name="max_response_time" type="number" min="0" value="0">
-                                <input class="operational_parameter" name="events_limit" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="mean_response_time" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="network_kw_events_limit" type="number" min="0" value="0">
                                 <select class="operational_parameter" name="energy_conservation">
                                     <option>Yes</option>
                                     <option>No</option>
@@ -872,6 +876,7 @@
                     <div style="height: 10%; overflow: hidden;">
                         <select  id="select_net_graph" style="float: right; width: 30%;">
                             <option value="Annual Average Profile"> Annual Average Profile</option>
+                            <option value="Annual Average Energy Flow Profile">Annual Average Energy Flow Profile</option>
                             <option value="Daily Profiles">Daily Profiles</option>
                             <option value="Daily Profile Interquartile Range">Daily Profile Interquartile Range</option>
                             <option value="Daily kWh Histogram">Daily kWh Histogram</option>
@@ -1279,14 +1284,6 @@
                                     <option selected="selected">None</option>
                                 </select>
                             </div>
-                        </div>
-                        <div class="row">
-                            <h4 style="margin: 0;">Actions</h4>
-                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
-                        </div>
-                        <div class="row" style="overflow: hidden;">
-                            <button style="width: 80%; text-align: left; height: 3.25vh;"
-                                    onclick="check_that_a_case_can_be_added()">Create case</button>
                         </div>
                     </div>
                 </div>

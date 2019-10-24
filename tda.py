@@ -7,6 +7,8 @@ import plotly
 import json
 from make_load_charts import chart_methods
 from make_results_charts import singe_variable_chart, dual_variable_chart, single_case_chart
+from import_delete_data import check_valid_filetype, check_file_exists, check_load_2_demo_map, check_data_is_not_default, \
+    add_to_load_2_demo_map, load_data_to_dataframe, generic_data_to_dataframe
 import data_interface
 import Bill_Calc
 import format_case_for_export
@@ -27,6 +29,9 @@ import end_user_tech
 import math
 import feather
 import csv
+
+# please delete packages imported below this line.
+import time
 
 enable_logging = False
 
@@ -145,39 +150,53 @@ def put_load_profiles_in_memory():
 def filtered_load_data():
     load_request = request.get_json()
     file_name = load_request['file_name']
+
+    ######################################
+    # Filtering Data
+
+    # Should only filter once for every new load data selected
+    if current_session.filter_state != load_request['filter_options']:
+        current_session.filter_state = load_request['filter_options']
+        raw_data = current_session.raw_data[file_name]
+
+        # Filter by missing data
+        missing_data_limit = load_request['missing_data_limit']
+        current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
+
+        # Down sample data randomly
+        number_of_loads = len(current_session.filter_missing_data.columns)
+        number_of_loads_downsampled = math.ceil(number_of_loads * load_request['sample_fraction'])
+        if number_of_loads_downsampled < 1:
+            number_of_loads_downsampled = 1
+        current_session.downsample_data = current_session.filter_missing_data.sample(n=number_of_loads_downsampled, axis=1)
+
+        # Filter data by demographic
+        demo_info_file_name = data_interface.find_loads_demographic_file(file_name)
+        demo_info = feather.read_dataframe('data/demographics/' + demo_info_file_name + '.feather').astype(str)
+        demo_info = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
+            current_session.downsample_data, demo_info)
+
+        current_session.filtered_demo_info, current_session.is_filtered = \
+            helper_functions.filter_demo_info(demo_info, load_request['filter_options'])
+        current_session.filtered_data = helper_functions.filter_load_data(
+            current_session.downsample_data, current_session.filtered_demo_info)
+    else:
+        pass
+
+    ######################################
+    # Create network load profile:
+    current_session.network_load = network_load(load_request)
+
+    ######################################
+    # Creating Charts
     chart_type = load_request['chart_type']
-    current_session.filter_state = load_request['filter_options']
-
-    # Filter by missing data
-    current_session.raw_data[file_name] = current_session.raw_data[file_name]
-    raw_data = current_session.raw_data[file_name]
-
-    missing_data_limit = load_request['missing_data_limit']
-    current_session.filter_missing_data = raw_data[raw_data.columns[raw_data.isnull().mean() <= missing_data_limit]]
-
-    # Down sample data randomly
-    number_of_loads = len(current_session.filter_missing_data.columns)
-    number_of_loads_downsampled = math.ceil(number_of_loads * load_request['sample_fraction'])
-    if number_of_loads_downsampled < 1:
-        number_of_loads_downsampled = 1
-    current_session.downsample_data = current_session.filter_missing_data.sample(n=number_of_loads_downsampled, axis=1)
-
-    # Filter data by demographic
-    demo_info_file_name = data_interface.find_loads_demographic_file(file_name)
-    demo_info = pd.read_csv('data/demographics/' + demo_info_file_name, dtype=str)
-    demo_info = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
-        current_session.downsample_data, demo_info)
-
-    current_session.filtered_demo_info, current_session.is_filtered = \
-        helper_functions.filter_demo_info(demo_info, load_request['filter_options'])
-    current_session.filtered_data = helper_functions.filter_load_data(
-        current_session.downsample_data, current_session.filtered_demo_info)
 
     # Create the requested chart data if it does not already exist.
     if file_name not in current_session.raw_charts:
         current_session.raw_charts[file_name] = {}
 
     # prepare chart data and n_users
+
     current_session.filtered_charts = {file_name: {}}
 
     if chart_type not in current_session.raw_charts[file_name]:
@@ -187,7 +206,7 @@ def filtered_load_data():
                                           current_session.filtered_data, series_name=['All'])
         else:
             current_session.raw_charts[file_name][chart_type] = \
-                chart_methods[chart_type](current_session.downsample_data)
+                chart_methods[chart_type](current_session.filtered_data)
 
     if current_session.is_filtered:
         if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
@@ -210,19 +229,40 @@ def filtered_load_data():
     return return_data
 
 
+@errors.parse_to_user_and_log(logger)
+def network_load(load_request):
+    filter_option = load_request['network_load'].strip()
+
+    if filter_option == 'full':
+        agg_network_load = pd.DataFrame(current_session.filter_missing_data.sum(axis=1), columns=['load'])
+
+    elif filter_option == 'filtered':
+        agg_network_load = pd.DataFrame(current_session.filtered_data.sum(axis=1), columns=['load'])
+
+    else:
+        file_name = filter_option
+        synthetic_load = feather.read_dataframe('data/network_loads/' + file_name + '.feather')
+        synthetic_load.rename(columns={synthetic_load.columns[0]: 'Datetime'}, inplace=True)
+        synthetic_load = synthetic_load.set_index('Datetime')
+        agg_network_load = pd.DataFrame(synthetic_load.sum(axis=1), columns=['load'])
+
+    return agg_network_load
+
+
 @app.route('/net_load_chart_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def net_load_chart_data():
     # TODO: Update this function to produce the actual plots of net load we want.
     load_request = request.get_json()
-    file_name = current_session.raw_data_name
     chart_type = load_request['chart_type']
     if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
-        chart_data = chart_methods[chart_type](current_session.raw_data[file_name],
-                                               current_session.filtered_data,
+        chart_data = chart_methods[chart_type](current_session.downsample_data,
+                                               current_session.end_user_tech_data['final_net_profiles'],
                                                series_name=['All', 'Selected'])
+    elif chart_type == 'Annual Average Energy Flow Profile':
+        chart_data = chart_methods[chart_type](current_session.end_user_tech_data)
     else:
-        chart_data = chart_methods[chart_type](current_session.filtered_data)
+        chart_data = chart_methods[chart_type](current_session.end_user_tech_data['final_net_profiles'])
 
     # Format as json.
     return_data = {"chart_data": chart_data}
@@ -255,12 +295,15 @@ def add_case():
     wholesale_year = case_details['wholesale_price_details']['year']
     wholesale_state = case_details['wholesale_price_details']['state']
 
+    if current_session.end_user_tech_sample_applied == False:
+        current_session.end_user_tech_data['final_net_profiles'] = current_session.filtered_data
+
     # Save demographic info for case
     current_session.project_data.demographic_info_by_case[case_name] = current_session.filtered_demo_info
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
-        network_results = Bill_Calc.bill_calculator(current_session.filtered_data, network_tariff)
+        network_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data['final_net_profiles'], network_tariff)
         network_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         network_results['LoadInfo'] = network_results['LoadInfo'].reset_index()
 
@@ -269,16 +312,15 @@ def add_case():
 
     if retail_tariff_name != 'None':
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
-        retail_results = Bill_Calc.bill_calculator(current_session.filtered_data, retail_tariff)
+        retail_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data['final_net_profiles'], retail_tariff)
         retail_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         retail_results['LoadInfo'] = retail_results['LoadInfo'].reset_index()
-
         current_session.project_data.retail_results_by_case[case_name] = retail_results
         current_session.project_data.retail_tariffs_by_case[case_name] = retail_tariff
 
     if (wholesale_year != 'None') & (wholesale_state != 'None'):
         price_data = get_wholesale_prices(wholesale_year, wholesale_state)
-        wholesale_results = calc_wholesale_energy_costs(price_data,  current_session.filtered_data.copy())
+        wholesale_results = calc_wholesale_energy_costs(price_data,  current_session.end_user_tech_data['final_net_profiles'].copy())
         wholesale_results.index.name = 'CUSTOMER_KEY'
         wholesale_results = wholesale_results.reset_index()
         current_session.project_data.wholesale_results_by_case[case_name] = wholesale_results
@@ -287,10 +329,10 @@ def add_case():
         current_session.project_data.wholesale_price_info_by_case[case_name]['state'] = wholesale_state
 
     # Save input data and settings associated with the case.
-    current_session.load_by_case[case_name] = current_session.filtered_data
+    current_session.load_by_case[case_name] = current_session.end_user_tech_data['final_net_profiles']
     current_session.project_data.load_file_name_by_case[case_name] = load_file_name
     current_session.project_data.load_n_users_by_case[case_name] = \
-        helper_functions.n_users(current_session.filtered_data)
+        helper_functions.n_users(current_session.end_user_tech_data['final_net_profiles'])
     current_session.project_data.filter_options_by_case[case_name] = filter_options
     return jsonify({'message': 'done'})
 
@@ -360,6 +402,7 @@ def get_single_variable_chart():
                                                                   current_session.project_data.retail_results_by_case,
                                                                   current_session.project_data.network_results_by_case,
                                                                   current_session.project_data.wholesale_results_by_case)
+
     load_and_results_to_plot = {'results': results_to_plot, 'load': current_session.load_by_case}
     return singe_variable_chart(chart_name, load_and_results_to_plot)
 
@@ -375,7 +418,7 @@ def get_dual_variable_chart():
                                                                   current_session.project_data.network_results_by_case,
                                                                   current_session.project_data.wholesale_results_by_case)
     load_and_results_to_plot = {'results': results_to_plot, 'load': current_session.load_by_case,
-                                'network_load': current_session.raw_data[current_session.raw_data_name]}
+                                'network_load': current_session.network_load}
 
     return dual_variable_chart(load_and_results_to_plot, details)
 
@@ -405,10 +448,10 @@ def get_single_case_chart():
 @app.route('/get_demo_options/<name>')
 @errors.parse_to_user_and_log(logger)
 def get_demo_options(name):
-    demo_file_name = data_interface.find_loads_demographic_file(name)
+    demo_file_name = data_interface.find_loads_demographic_file(name) + '.feather'
 
     if demo_file_name != '' and demo_file_name in os.listdir('data/demographics/'):
-        demo = pd.read_csv('data/demographics/' + demo_file_name, dtype=str)
+        demo = feather.read_dataframe('data/demographics/' + demo_file_name).astype(str)
         demo = helper_functions.add_missing_customer_keys_to_demo_file_with_nan_values(
             current_session.raw_data[current_session.raw_data_name], demo)
         demo_options = helper_functions.get_demographic_options_from_demo_file(demo)
@@ -473,8 +516,10 @@ def get_wholesale_price_info():
 def create_end_user_tech_from_sample_from_gui():
     details = request.json
     current_session.end_user_tech_sample = end_user_tech.create_sample(details, current_session.filtered_data)
-    current_session.filtered_data = \
-        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.end_user_tech_sample)
+    current_session.end_user_tech_data = \
+        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load, current_session.end_user_tech_sample)
+
+    current_session.end_user_tech_sample_applied = True
     return jsonify({'message': 'Done!'})
 
 
@@ -490,13 +535,14 @@ def load_end_user_tech_from_sample_from_file():
         raw_data = data_interface.get_load_table('data/load/', current_session.raw_data_name)
         current_session.raw_data[current_session.raw_data_name] = raw_data
         filtered_data = raw_data.loc[:, current_session.end_user_tech_sample['customer_keys']]
-        current_session.filtered_data = end_user_tech.calc_net_profiles(filtered_data,
+        current_session.end_user_tech_data = end_user_tech.calc_net_profiles(filtered_data, current_session.network_load,
                                                                         current_session.end_user_tech_sample)
         current_session.filter_state = current_session.end_user_tech_sample['load_details']['filter_options']
         return_data = jsonify({'message': 'Done!', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
+
+        current_session.end_user_tech_sample_applied = True
     else:
         return_data = jsonify({'error': 'You do not have the required load data to use this tech sample.'})
-
     return return_data
 
 
@@ -505,8 +551,10 @@ def load_end_user_tech_from_sample_from_file():
 def calc_sample_net_load_profiles():
     details = request.json
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
-    current_session.filtered_data = \
-        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.end_user_tech_sample)
+    current_session.end_user_tech_data = \
+        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load, current_session.end_user_tech_sample)
+
+    current_session.end_user_tech_sample_applied = True
     return jsonify({'message': 'done'})
 
 
@@ -626,92 +674,138 @@ def delete_tariff():
 @app.route('/import_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def import_load_data():
-    file_path = r'C:\Users\user\Documents\GitHub\TDA_Python\SGSC_to_import.xlsx'
-    # @todo: need to add datafile to pull in on Javascript side
-    # @todo: need to fix matching of demographic data for csv
-    allowed_extensions = {".csv", ".xls", ".xlsx"}
+    request_details = request.get_json()
+    import_file_type = request_details['type']
 
+    # @todo: need to get file path from user
+    file_path = '/Users/bruceho/PycharmProjects/learning_environment/data/SampleLoad_without_demo.xlsx'
     base = os.path.basename(file_path)
-    path_extension = os.path.splitext(base)[1]
     file_name = os.path.splitext(base)[0]
-    if os.path.exists(file_path) and os.path.isfile(file_path):
-        if path_extension in allowed_extensions:
-            if path_extension == ".csv": # Read csv files
-                print('importing 2')
-                import_load_data = pd.read_csv(file_path)
-                import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
-            else: # Read excel files (same as sample file in Matlab tool)
-                print('importing 3')
-                xls = pd.ExcelFile(file_path)
-                sheet_names = xls.sheet_names
-                if len(sheet_names) >= 2: #check to see if excel sheet contains two sheets, one for load data and one for demo data.
-                    import_load_data = pd.read_excel(xls, sheet_names[0])
-                    import_demo_data = pd.read_excel(xls, sheet_names[1])
-                elif len(sheet_names) == 1: #allow user to upload only load data without demo data.
-                    import_load_data = pd.read_excel(xls, sheet_names[0])
-                    import_demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
-            try:
-                import_load_data[import_load_data.columns[0]] = pd.to_datetime(import_load_data[import_load_data.columns[0]])
-                import_load_data.rename(columns={import_load_data.columns[0]: 'Datetime'}, inplace = True)
 
-                import_demo_data = import_demo_data.set_index(import_demo_data.columns[0])
-                import_demo_data.index.rename('CUSTOMER_KEY')
+    ###############################################
+    # Check whether the file being imported exist and is in the valid file type
 
-                # Check if demo data matches load
-                # @todo: if we want it to work without all demographic data available use 'any' instead of 'all'
-                if not all(x in import_load_data.columns.tolist() for x in import_demo_data.index.tolist()) and not import_demo_data.empty:
-                    return jsonify({'error': 'Please ensure that each household has demographic data defined.'})
-                else: # if demo data is not available
-                    pass
-            except:
-                return jsonify({'error': 'Invalid data format.'})
-
-            feather.write_dataframe(import_load_data, 'data/load/' + file_name + '.feather')
-            import_demo_data.to_csv('data/demographics/' + file_name + '.csv')
-
-            # Create mapping of load and demographic data
-            loaded_files = open('data/load_2_demo_map.csv', 'r').read()
-            with open('data/load_2_demo_map.csv', 'a') as f:
-                if file_name in loaded_files: # Check if file already exists
-                    pass
-                else:
-                    writer = csv.writer(f)
-                    writer.writerow([file_name, file_name + '.csv'])
-            f.close()
-        else:
-            return jsonify({'error': 'Invalid file type. Can only import csv or excel files in format as the sample file.'})
+    if check_file_exists(file_path) == True:
+        pass
     else:
         return jsonify({'error': 'Cannot find file.'})
+
+    if check_valid_filetype(file_path, allowed_extensions=['.csv', '.xls', '.xlsx']) == True:
+        pass
+    else:
+        return jsonify({'error': 'Invalid file type. Can only import csv or excel files in format as the sample file.'})
+
+    ###############################################
+
+    if import_file_type == 'load':
+        # read file and load into dataframe
+        load_data, demo_data = load_data_to_dataframe(file_path)
+
+        # Check if the file format is in the correct format
+        try:
+            load_data[load_data.columns[0]] = pd.to_datetime(load_data[load_data.columns[0]])
+            load_data.rename(columns={load_data.columns[0]: 'Datetime'}, inplace=True)
+            demo_data.rename(columns={demo_data.columns[0]: 'CUSTOMER_KEY'}, inplace=True)
+        except:
+            return jsonify({'error': 'Invalid data format.'})
+
+        # Add mapping of imported file into load_2_demo_map.csv
+        add_to_load_2_demo_map(file_name)
+
+        # Add import load files to database
+        feather.write_dataframe(load_data, 'data/load/' + file_name + '.feather')
+        feather.write_dataframe(demo_data, 'data/demographics/' + 'demo_' + file_name + '.feather')
+        return jsonify({'message': "Successfully imported file."})
+
+    elif import_file_type == 'network':
+        # read file and load into dataframe
+        network_data = generic_data_to_dataframe(file_path)
+
+        # Check if the file format is in the correct format
+        try:
+            network_data.rename(columns={network_data.columns[0]: 'Datetime'}, inplace=True)
+        except:
+            return jsonify({'error': 'Invalid data format.'})
+
+        feather.write_dataframe(network_data, 'data/network_loads/' + file_name + '.feather')
+        return jsonify({'message': "Successfully imported file."})
+
+    elif import_file_type == 'solar':
+        solar_data = generic_data_to_dataframe(file_path)
+
+        # Check if the file format is in the correct format
+        try:
+            solar_data.rename(columns={solar_data.columns[0]: 'Datetime'}, inplace=True)
+        except:
+            return jsonify({'error': 'Invalid data format.'})
+
+        feather.write_dataframe(solar_data, 'data/network_loads/' + file_name + '.feather')
+        return jsonify({'message': "Successfully imported file."})
+
+
 
 
 @app.route('/delete_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def delete_load_data():
+
+    # @todo: need to remove option from selected loads (selected loads should display what is in load_2_demo_map.csv not what is in database)
     request_details = request.get_json()
+    file_name = request_details['name']
+    demo_file_path = 'data/demographics/' + 'demo_' + file_name + '.feather'
+    load_file_path = 'data/load/' + file_name + '.feather'
 
-    try:
-        os.remove('data/load/' + request_details['name'] + '.feather')
-        os.remove('data/demographics/' + request_details['name'] + '.csv')
-    except:
+    ###############################################
+    # Prevent user from deleting default or original data files
+    if not check_data_is_not_default(file_name, current_session.project_data.original_data):
+        return jsonify({'message': "Cannot delete default data files. Can only delete data files imported by user."})
+
+    ###############################################
+    # Deleting the data files
+
+    if check_file_exists(demo_file_path) == True & check_file_exists(load_file_path) == True:
+        load_path = 'data/load/' + file_name + '.feather'
+        demo_path = 'data/demographics/' + 'demo_' + file_name + '.feather'
+
+        load_2_demo_map = pd.read_csv('data/load_2_demo_map.csv')
+        new_load_2_demo_map = load_2_demo_map.copy()
+
+        for index, files in new_load_2_demo_map.iterrows():
+            if file_name.split('.')[0] == files[0]:
+                new_load_2_demo_map = new_load_2_demo_map.drop(index, axis=0)
+                os.remove(load_path)
+                os.remove(demo_path)
+            else:
+                pass
+        new_load_2_demo_map.to_csv('data/load_2_demo_map.csv', index=False)
+
+        return jsonify({'message': "File has been deleted."})
+    else:
         return jsonify({'message': "Cannot find file."})
-
-    with open('data/load_2_demo_map.csv', 'r+') as f:
-        lines = f.readlines()
-        f.seek(0)
-
-        for line in lines:
-            if request_details['name'] not in line:
-                f.write(line)
-        f.truncate()
-    f.close()
-
-    return jsonify({'message': "File has been deleted."})
 
 
 @app.route('/restore_original_data_set', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def restore_original_data_set():
-    return jsonify({'message': "No python code for restoring data yet!"})
+    files_restored = []
+
+    with open('data/load_2_demo_map.csv', 'r') as current_file:
+        files = [loaded_files.split(',', 1)[0] for loaded_files in current_file]
+    current_file.close()
+
+    with open('data/load_2_demo_map.csv', 'a') as future_file:
+        if all(file_name in files for file_name in current_session.project_data.original_data):  # Check if file already exists
+            return jsonify({'message': "All original files are restored already."})
+        else:
+            for file_name in current_session.project_data.original_data:
+                if file_name not in files:
+                    files_restored.append(file_name)
+                    writer = csv.writer(future_file)
+                    writer.writerow([file_name, file_name + '.csv'])
+    future_file.close()
+
+    # @todo: Need message to display file name that has been restored which is held in future_file as a list.
+    return jsonify({'message': "All original files are now restored."})
 
 
 @app.route('/update_tariffs', methods=['POST'])
@@ -830,6 +924,7 @@ def validate_tariff_cell():
 @errors.parse_to_user_and_log(logger)
 def restart_tool():
     current_session.__init__()
+    check_load_2_demo_map()
     return jsonify("Done!")
 
 
@@ -851,6 +946,7 @@ def shutdown():
 def on_start_up():
     start_up_procedures.update_nemosis_cache()
     start_up_procedures.update_tariffs()
+    check_load_2_demo_map() # Fix load_2_demo_map if corrupted
     return None
 
 

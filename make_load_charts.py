@@ -287,12 +287,36 @@ def get_seasonal_daily_pattern(load):
         data = {'data': [trace1, trace2], 'layout':layout}
         return data
 
+def get_annual_average_energy_flow_profile(energy_profiles):
+    load_profiles = energy_profiles['load_profiles'].mean(axis=1)
+    solar_profiles = energy_profiles['solar_profiles'].mean(axis=1)
+    dr_profiles = energy_profiles['dr_profiles'].mean(axis=1)
+    battery_profiles = energy_profiles['battery_profiles'].mean(axis=1)
+    final_net_profiles = energy_profiles['final_net_profiles'].mean(axis=1)
+
+    Xaxis = "Time"
+    Yaxis = "Average Load (kW)"
+    layout = go.Layout(xaxis=dict(title=Xaxis, title_font=dict(size=12), tickfont=dict(size=12)),
+                       yaxis=dict(title=Yaxis, title_font=dict(size=12), tickfont=dict(size=12)),
+                       showlegend=True)
+
+    trace1 = go.Scatter(x=load_profiles.index, y=load_profiles.values , name='load profile', fill='tozeroy')
+    trace2 = go.Scatter(x=solar_profiles.index, y=solar_profiles.values, name='solar profile', fill='tozeroy')
+    trace3 = go.Scatter(x=dr_profiles.index, y=dr_profiles.values, name='demand response profile', fill='tozeroy')
+    trace4 = go.Scatter(x=battery_profiles.index, y=battery_profiles.values, name='battery profile', fill='tozeroy')
+    trace5 = go.Scatter(x=final_net_profiles.index, y=final_net_profiles.values, name='net profile')
+
+    data = {'data': [trace1, trace2, trace3, trace4, trace5], 'layout': layout}
+    return data
+
+
 
 chart_methods = {'Annual Average Profile': get_average_annual_profile,
-                 'Daily kWh Histogram':get_daily_kWh_hist,
-                 'Daily Profiles':get_daily_profiles,
-                 'Daily Profile Interquartile Range':get_daily_profile_interquartile,
-                 'Average Load Duration Curve':get_average_load_duration_curve,
-                 'Average Peak Day Profile':get_average_peak_day_profile,
-                 'Monthly Average kWh':get_monthly_average_kWh,
-                 'Seasonal Daily Pattern':get_seasonal_daily_pattern}
+                 'Daily kWh Histogram': get_daily_kWh_hist,
+                 'Daily Profiles': get_daily_profiles,
+                 'Daily Profile Interquartile Range': get_daily_profile_interquartile,
+                 'Average Load Duration Curve': get_average_load_duration_curve,
+                 'Average Peak Day Profile': get_average_peak_day_profile,
+                 'Monthly Average kWh': get_monthly_average_kWh,
+                 'Seasonal Daily Pattern': get_seasonal_daily_pattern,
+                 'Annual Average Energy Flow Profile': get_annual_average_energy_flow_profile}

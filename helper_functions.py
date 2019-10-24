@@ -34,7 +34,7 @@ def filter_load_data(raw_data, filtered_demo_info):
 
 
 def add_missing_customer_keys_to_demo_file_with_nan_values(raw_data, demo_info):
-    customer_keys = [key for key in raw_data.columns if key != 'Datetime']
+    customer_keys = [str(key) for key in raw_data.columns if key != 'Datetime']
     df_with_just_customer_keys_from_load_profiles = pd.DataFrame.from_dict({'CUSTOMER_KEY': customer_keys})
     demo_info = pd.merge(demo_info, df_with_just_customer_keys_from_load_profiles, how='outer', on='CUSTOMER_KEY')
     return demo_info
@@ -109,3 +109,9 @@ def add_file_extension_if_needed(file_path, extension):
     if file_path[-4:] != extension:
         file_path = file_path + extension
     return file_path
+
+
+def sort_from_middle(arr, n):
+    arr1 = sorted(arr[:n // 2])
+    arr2 = sorted(arr[n // 2:], reverse=True)
+    return arr1 + arr2

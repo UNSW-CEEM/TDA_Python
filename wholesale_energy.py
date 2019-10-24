@@ -17,7 +17,7 @@ def get_wholesale_prices(year, region):
 
 
 def calc_wholesale_energy_costs(price_data, load_profiles):
-    load_profiles['Datetime'] = load_profiles.index
+
     imports = [np.nansum(load_profiles[col].values[load_profiles[col].values > 0])
                for col in load_profiles.columns if col != 'Datetime']
     results = pd.DataFrame(index=[col for col in load_profiles.columns if col != 'Datetime'],
@@ -26,10 +26,11 @@ def calc_wholesale_energy_costs(price_data, load_profiles):
                                       + price_data['SETTLEMENTDATE'].dt.day.astype(str) + '_' \
                                       + price_data['SETTLEMENTDATE'].dt.time.astype(str)
     price_data = price_data.drop('SETTLEMENTDATE', axis=1)
-    load_profiles['date_time_no_year'] = load_profiles['Datetime'].dt.month.astype(str) + '_' \
-                                         + load_profiles['Datetime'].dt.day.astype(str) + '_' \
-                                         + load_profiles['Datetime'].dt.time.astype(str)
-    load_profiles = load_profiles.drop('Datetime', axis=1)
+
+    load_profiles['date_time_no_year'] = load_profiles.index.month.astype(str) + '_' \
+                                         + load_profiles.index.day.astype(str) + '_' \
+                                         + load_profiles.index.time.astype(str)
+
     price_and_load = pd.merge(load_profiles, price_data, how='left', on='date_time_no_year')
     results['Bill'] = [np.nansum(price_and_load[col] * (price_and_load['RRP'].astype(float)/1000))
                        for col in load_profiles.columns if col != 'date_time_no_year']
