@@ -842,11 +842,11 @@ def open_sample():
 @app.route('/load_project', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def load_project():
-    file_path = helper_functions.get_file_to_load_from_user('TDA results file', '.tda_results')
-    with open(file_path, "rb") as f:
+    file = request.files['file']
+    file.save('data/temp/temp.pkl')
+    with open('data/temp/temp.pkl', "rb") as f:
         current_session.project_data = pickle.load(f)
     message = "Done!"
-    current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
     also_return_a_list_of_cases_loaded = list(current_session.project_data.load_file_name_by_case.keys())
     return jsonify({'message': message, 'name': current_session.project_data.name, 'cases': also_return_a_list_of_cases_loaded})
 
@@ -865,14 +865,10 @@ def save_project():
 
 
 @app.route('/save_project_as/<path:filename>')
-#@errors.parse_to_user_and_log(logger)
 def save_project_as(filename):
-    #file_path = helper_functions.get_save_name_from_user('TDA results file', '.tda_results')
-    #file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_results')
-    #current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
-    with open('new_project.tda_results', "wb") as f:
+    with open('data/temp/' + filename, "wb") as f:
         pickle.dump(current_session.project_data, f)
-    return send_from_directory('', 'new_project.tda_results', as_attachment=True)
+    return send_from_directory('data/temp', filename, as_attachment=True)
 
 
 @app.route('/delete_project', methods=['POST'])

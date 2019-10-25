@@ -517,11 +517,8 @@
       <ul id="tariff_menu" class="dropdown">
           <li><div>Project</div>
               <ul>
-                  <li><div onclick="load_project()">Load Project</div></li>
-                  <li><div onclick="save_project()">Save Project</div></li>
-                  <li><div onclick="saveAs('/save_project_as/new_project.tda_results', 'new_project.tda_results');">Save Project As</div></li>
-                  <li><a href="/save_project_as/new_project.pkl" download>Save Project As</a></li>
-                  <li><div onclick="save_project_as()">Save Project As</div></li>
+                  <li><div onclick="get_file_and_pass_to_python('.tda_results', '/load_project', load_project)">Load Project</div></li>
+                  <li><div onclick="saveAs('/save_project_as/new_project.tda_results', 'new_project.tda_results');">Save Project</div></li>
                   <hr>
                   <li><div id="restart_button" onclick="restart_tool()">Restart Tool</div></li>
               </ul>
