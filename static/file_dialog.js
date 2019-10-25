@@ -18,3 +18,32 @@ var get_file_and_pass_to_python = function(extension, url, call_back){
     $('#file1').click();
 }
 
+var get_file_from_python_and_save_to_disk = function(extension, url, call_back){
+
+    $.ajax({
+        url: url,
+        data: JSON.stringify(request_details),
+        contentType: 'application/json;',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        success: function(data){
+            download('new_project', data)
+        }
+    });
+
+}
+
+var download = function(filename, text) {
+    console.log('Downloading!')
+    var pom = document.createElement('a');
+    pom.setAttribute('href', 'data:text/plain;charset=utf-8,' + encodeURIComponent(text));
+    pom.setAttribute('download', filename);
+    if (document.createEvent) {
+        var event = document.createEvent('MouseEvents');
+        event.initEvent('click', true, true);
+        pom.dispatchEvent(event);
+    } else {
+        pom.click();
+    }
+}
