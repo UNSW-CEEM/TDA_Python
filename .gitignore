@@ -197,3 +197,9 @@ data/aemo_raw_cache/*
 *.xlsx
 tda_log_file.txt
 
+data/load/SGSC2.feather
+data/demographics/demo_SGSC.feather
+data/demographics/SGSC-CTCustomer-Household-Data.csv
+temp.py
+temp.py
+temp.py
