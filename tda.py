@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import os
 import sys
 import pandas as pd
@@ -864,15 +864,15 @@ def save_project():
     return jsonify({'message': "Done!"})
 
 
-@app.route('/save_project_as', methods=['POST'])
-@errors.parse_to_user_and_log(logger)
-def save_project_as():
-    file_path = helper_functions.get_save_name_from_user('TDA results file', '.tda_results')
-    file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_results')
-    current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
-    with open(file_path, "wb") as f:
+@app.route('/save_project_as/<path:filename>')
+#@errors.parse_to_user_and_log(logger)
+def save_project_as(filename):
+    #file_path = helper_functions.get_save_name_from_user('TDA results file', '.tda_results')
+    #file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_results')
+    #current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
+    with open(filename, "wb") as f:
         pickle.dump(current_session.project_data, f)
-    return jsonify({'message': 'Done!', 'name': current_session.project_data.name})
+    return send_from_directory('', filename, as_attachment=True)
 
 
 @app.route('/delete_project', methods=['POST'])

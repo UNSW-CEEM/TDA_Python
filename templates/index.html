@@ -503,8 +503,8 @@
         <thead class="tariff_table_header"></thead>
         <tbody class="tariff_table_body"></tbody>
     </table>
-    <form id="file_form" method = "POST" enctype = "multipart/form-data">
-        <input type="file" id="file1" name="file" style="display:none">
+    <form id="file_form" method = "POST" enctype = "multipart/form-data" style="display:none">>
+        <input type="file" id="file1" name="file">
         <input type = "submit"/>
     </form>
 
@@ -519,6 +519,7 @@
               <ul>
                   <li><div onclick="load_project()">Load Project</div></li>
                   <li><div onclick="save_project()">Save Project</div></li>
+                  <li><a href="/save_project_as/new_project.pkl" download>Save Project As</a></li>
                   <li><div onclick="save_project_as()">Save Project As</div></li>
                   <hr>
                   <li><div id="restart_button" onclick="restart_tool()">Restart Tool</div></li>
