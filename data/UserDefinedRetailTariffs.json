@@ -1,1 +1,1 @@
-[]
+[{"Date_accessed ": "2018-11-28", "Discount (%)": 0, "Distributor": "Evoenergy", "Name": "Simple Energy Flat Rate ACT v2", "Parameters": {"Daily": {"Value": 0.8102, "Unit": "$/day"}, "FlatRate": {"Value": 0.2219, "Unit": "$/kWh"}, "BlockQuarterly": {"Summer": {"HighBound": 1000, "Unit": "$/kWh", "Value": 1.0}}}, "Provider": "Simple Energy", "ProviderType": "Retailer", "State": "ACT", "Tariff ID": "T00001", "Type": "Flat_rate", "Year": "", "Info": ""}]

@@ -31,30 +31,24 @@ var create_end_user_tech_from_sample_from_gui = function(){
     }
 }
 
-var load_end_user_tech_from_sample_from_file = function(){
+var update_gui_after_loading_tech_file = function(data){
     $('#select').val('Select one').change();
     var message = "Loading end user tech sample."
     $("#message_dialog").dialog({ modal: true});
-    $("#message_dialog p").text(message)
-    // Get chart data
-    $.ajax({
-        url: '/load_end_user_tech_from_sample_from_file',
-        type : 'POST',
-        async: 'false',
-        dataType:"json",
-        success: function(data){
-            alert_user_if_error(data);
-            insert_input_set_into_gui('solar', data['tech_inputs']['solar']);
-            insert_input_set_into_gui('battery', data['tech_inputs']['battery']);
-            insert_input_set_into_gui('demand_response', data['tech_inputs']['demand_response']);
-            get_net_load_chart();
-            status_set(['tech', 'tech_from_file', 'net_load_profiles', 'tech_sample_saved'])
-            status_not_set(['tech_from_gui'])
-            $('#calc_net_profiles').prop('disabled', false)
-            $('#save_tech_sample').prop('disabled', false)
-            $("#message_dialog p").text(data['message'])
-        }
-    });
+    $("#message_dialog p").text(message);
+    if ('message' in data){
+        insert_input_set_into_gui('solar', data['tech_inputs']['solar']);
+        insert_input_set_into_gui('battery', data['tech_inputs']['battery']);
+        insert_input_set_into_gui('demand_response', data['tech_inputs']['demand_response']);
+        get_net_load_chart();
+        status_set(['tech', 'tech_from_file', 'net_load_profiles', 'tech_sample_saved'])
+        status_not_set(['tech_from_gui'])
+        $('#calc_net_profiles').prop('disabled', false)
+        $('#save_tech_sample').prop('disabled', false)
+        $("#message_dialog p").text(data['message'])
+    } else {
+        $("#message_dialog").dialog('close');
+    }
 }
 
 var calc_sample_net_load_profiles = function(){

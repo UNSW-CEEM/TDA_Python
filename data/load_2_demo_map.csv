@@ -1,3 +1,3 @@
 load,demo
-SGSC,DemogInfo_filtered.csv
-test_data,DemogInfo_filtered.csv
+test_data,demo_test_data
+SGSC,demo_SGSC
