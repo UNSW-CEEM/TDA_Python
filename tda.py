@@ -155,8 +155,8 @@ def filtered_load_data():
     # Filtering Data
 
     # Should only filter once for every new load data selected
-    if current_session.filter_state != load_request['filter_options']:
-        current_session.filter_state = load_request['filter_options']
+    if current_session.filter_state != load_request:
+        current_session.filter_state = load_request
         raw_data = current_session.raw_data[file_name]
 
         # Filter by missing data
@@ -943,12 +943,12 @@ def shutdown():
 
 @errors.log(logger)
 def on_start_up():
-    start_up_procedures.update_nemosis_cache()
-    start_up_procedures.update_tariffs()
+    # start_up_procedures.update_nemosis_cache()
+    # start_up_procedures.update_tariffs()
     check_load_2_demo_map() # Fix load_2_demo_map if corrupted
     return None
 
 
 if __name__ == '__main__':
     on_start_up()
-    app.run()
+    app.run(debug=True)
