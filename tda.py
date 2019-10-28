@@ -84,7 +84,12 @@ def load_names():
     names = []
     for file_name in os.listdir('data/load/'):
         names.append(file_name.split('.')[0])
-    return jsonify(names)
+
+    data = {
+        "names": names,
+        "current_load": current_session.raw_data_name
+    }
+    return jsonify(data)
 
 
 @app.route('/network_load_names')
