@@ -18,6 +18,7 @@ var enable_tariff_creation = function(){
     })
     $('.component_adder').show();
     $('#create_tariff_popup').dialog('close');
+    $('#tariff_panel_button').click();
 }
 
 var disable_tariff_creation = function(){
