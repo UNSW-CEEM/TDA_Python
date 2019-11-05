@@ -20,13 +20,15 @@ def update_tariffs():
 
 
 def update_tariff_set(type):
-    response = requests.get('http://api.ceem.org.au/elec-tariffs/{}'.format(type))
-    if response.status_code != 404:
-        tariffs = response.json()
-        version = tariffs[0]['Version']
-        folder_and_name = 'data/{}_tariff_set_versions/NetworkTariffs_{}.json'.format(type.title(),version)
-        # Write contents to the file in the 'data' folder that acts as the active tariff data set.
-        with open(folder_and_name, 'wt') as json_file:
-            json.dump(tariffs, json_file)
-        return tariffs[0]['Version']
-    return None
+    try:
+        response = requests.get('http://api.ceem.org.au/elec-tariffs/{}'.format(type))
+        if response.status_code != 404:
+            tariffs = response.json()
+            version = tariffs[0]['Version']
+            folder_and_name = 'data/{}_tariff_set_versions/NetworkTariffs_{}.json'.format(type.title(),version)
+            # Write contents to the file in the 'data' folder that acts as the active tariff data set.
+            with open(folder_and_name, 'wt') as json_file:
+                json.dump(tariffs, json_file)
+            return tariffs[0]['Version']
+    except:
+        return None

@@ -25,18 +25,36 @@ var export_chart = function(chart_id, export_type){
     request_details['export_type'] = export_type;
     $('#export_dialog').dialog({modal: true});
     $('#export_dialog p').text("Preparing chart data export.");
-    $.ajax({
-    url: '/export_chart_data',
-    data: JSON.stringify(request_details),
-    contentType: 'application/json;',
-    type : 'POST',
-    async: 'false',
-    dataType:"json",
-    success: function(data){
-        alert_user_if_error(data);
-        $("#export_dialog").dialog('close');
-        $('#message_dialog').dialog({modal: true});
-        $('#message_dialog p').text(data['message']);
+    if (export_type == 'clipboard'){
+        $.ajax({
+            url: '/export_chart_data_to_clipboard',
+            data: JSON.stringify(request_details),
+            contentType: 'application/json;',
+            type : 'POST',
+            async: 'false',
+            dataType:"json",
+            success: function(data){
+                alert_user_if_error(data);
+                $("#export_dialog").dialog('close');
+                $('#message_dialog').dialog({modal: true});
+                $('#message_dialog p').text(data['message']);
+            }
+        });
+    } else {
+        $.ajax({
+            url: '/prepare_export_chart_data_to_csv',
+            data: JSON.stringify(request_details),
+            contentType: 'application/json;',
+            type : 'POST',
+            async: 'false',
+            dataType:"json",
+            success: function(data){
+                alert_user_if_error(data);
+                saveAs('/export_chart_data_to_csv', 'chart_data.csv');
+                $("#export_dialog").dialog('close');
+                $('#message_dialog').dialog({modal: true});
+                $('#message_dialog p').text(data['message']);
+            }
+        });
     }
-    });
 }

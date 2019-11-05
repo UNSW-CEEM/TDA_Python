@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import os
 import sys
 import pandas as pd
@@ -119,7 +119,6 @@ def get_tariff_set_options(tariff_type):
 def set_tariff_set_in_use():
     # Replace the network or retail data sets in the main 'data' folder with a set from the 'tariff_set_versions' folder
     # Allows the user to continue using older versions of the tariff data base.
-
     request_details = request.get_json()
 
     # Determine if 'Retail' of 'Network tariffs are being updated and sets the correct version to retrieve.
@@ -846,71 +845,77 @@ def open_sample():
 @app.route('/load_project', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def load_project():
-    file_path = helper_functions.get_file_to_load_from_user('TDA results file', '.tda_results')
-    with open(file_path, "rb") as f:
+    file = request.files['file']
+    file.save('data/temp/temp.pkl')
+    with open('data/temp/temp.pkl', "rb") as f:
         current_session.project_data = pickle.load(f)
     message = "Done!"
-    current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
     also_return_a_list_of_cases_loaded = list(current_session.project_data.load_file_name_by_case.keys())
-    return jsonify({'message': message, 'name': current_session.project_data.name, 'cases': also_return_a_list_of_cases_loaded})
+    return jsonify({'message': message, 'name': current_session.project_data.name,
+                    'cases': also_return_a_list_of_cases_loaded})
 
 
-@app.route('/save_project', methods=['POST'])
+@app.route('/save_project/<path:filename>')
 @errors.parse_to_user_and_log(logger)
-def save_project():
-    if current_session.project_data.name == '':
-        file_path = helper_functions.get_save_name_from_user()
-        file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_results')
-    else:
-        file_path = current_session.project_data.name + '.tda_results'
-    with open(file_path, "wb") as f:
+def save_project(filename):
+    current_session.project_data.name = filename
+    for the_file in os.listdir('data/temp'):
+        file_path = os.path.join('data/temp', the_file)
+        os.unlink(file_path)
+    with open('data/temp/{}.tda_results'.format(filename), "wb") as f:
         pickle.dump(current_session.project_data, f)
-    return jsonify({'message': "Done!"})
+    return send_from_directory('data/temp/', filename+'.tda_results', as_attachment=True)
 
 
-@app.route('/save_project_as', methods=['POST'])
+@app.route('/current_project_name', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def save_project_as():
-    file_path = helper_functions.get_save_name_from_user('TDA results file', '.tda_results')
-    file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_results')
-    current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
-    with open(file_path, "wb") as f:
-        pickle.dump(current_session.project_data, f)
-    return jsonify({'message': 'Done!', 'name': current_session.project_data.name})
+def current_project_name():
+    return jsonify({'message': "Done!", 'name': current_session.project_data.name})
 
 
-@app.route('/delete_project', methods=['POST'])
+@app.route('/prepare_export_results', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def delete_project():
-    return jsonify({'message': "No python code for deleting projects as yet!"})
-
-
-@app.route('/export_results', methods=['POST'])
-@errors.parse_to_user_and_log(logger)
-def export_results():
-    file_path = helper_functions.get_save_name_from_user('excel file', '.xlsx')
-    file_path = helper_functions.add_file_extension_if_needed(file_path, 'xlsx')
+def prepare_export_results():
+    for the_file in os.listdir('data/temp'):
+        file_path = os.path.join('data/temp', the_file)
+        os.unlink(file_path)
     wb = Workbook()
     for case_name in current_session.project_data.load_file_name_by_case.keys():
         data_to_export = format_case_for_export.process_case(case_name, current_session.project_data)
         ws = wb.create_sheet(case_name)
         for row in data_to_export:
             ws.append(row,)
-    wb.save(file_path)
-    return jsonify({'message': "Done!"})
+    wb.save('data/temp/results.xlsx')
+    return jsonify({'message': "Done!", 'name': current_session.project_data.name})
 
 
-@app.route('/export_chart_data', methods=['POST'])
+@app.route('/export_results')
 @errors.parse_to_user_and_log(logger)
-def export_chart_data():
+def export_results():
+    return send_from_directory('data/temp/', 'results.xlsx', as_attachment=True)
+
+
+@app.route('/prepare_export_chart_data_to_csv', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def prepare_export_chart_data_to_csv():
     request_details = request.get_json()
     export_data = format_chart_data_for_export.plot_ly_to_pandas(request_details)
-    if request_details['export_type'] == 'csv':
-        file_path = helper_functions.get_save_name_from_user('csv file', '.csv')
-        file_path = helper_functions.add_file_extension_if_needed(file_path, 'csv')
-        export_data.to_csv(file_path, index=False)
-    elif request_details['export_type'] == 'clipboard':
-        export_data.to_clipboard(index=False)
+    export_data.to_csv('data/temp/chart_data.csv', index=False)
+    return jsonify({'message': "Your export is done!"})
+
+
+@app.route('/export_chart_data_to_csv')
+@errors.parse_to_user_and_log(logger)
+def export_chart_data_to_csv():
+    return send_from_directory('data/temp/', 'chart_data.csv', as_attachment=True)
+
+
+@app.route('/export_chart_data_to_clipboard', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def export_chart_data_to_clipboard():
+    request_details = request.get_json()
+    export_data = format_chart_data_for_export.plot_ly_to_pandas(request_details)
+    export_data.to_clipboard(index=False)
     return jsonify({'message': "Your export is done!"})
 
 

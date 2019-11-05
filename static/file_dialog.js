@@ -17,4 +17,3 @@ var get_file_and_pass_to_python = function(extension, url, call_back){
     $('#file1').prop('accept', extension);
     $('#file1').click();
 }
-
