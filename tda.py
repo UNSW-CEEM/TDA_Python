@@ -869,32 +869,49 @@ def current_project_name():
     return jsonify({'message': "Done!", 'name': current_session.project_data.name})
 
 
-@app.route('/export_results', methods=['POST'])
+@app.route('/prepare_export_results', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def export_results():
-    file_path = helper_functions.get_save_name_from_user('excel file', '.xlsx')
-    file_path = helper_functions.add_file_extension_if_needed(file_path, 'xlsx')
+def prepare_export_results():
+    for the_file in os.listdir('data/temp'):
+        file_path = os.path.join('data/temp', the_file)
+        os.unlink(file_path)
     wb = Workbook()
     for case_name in current_session.project_data.load_file_name_by_case.keys():
         data_to_export = format_case_for_export.process_case(case_name, current_session.project_data)
         ws = wb.create_sheet(case_name)
         for row in data_to_export:
             ws.append(row,)
-    wb.save(file_path)
-    return jsonify({'message': "Done!"})
+    wb.save('data/temp/results.xlsx')
+    return jsonify({'message': "Done!", 'name': current_session.project_data.name})
 
 
-@app.route('/export_chart_data', methods=['POST'])
+@app.route('/export_results')
 @errors.parse_to_user_and_log(logger)
-def export_chart_data():
+def export_results():
+    return send_from_directory('data/temp/', 'results.xlsx', as_attachment=True)
+
+
+@app.route('/prepare_export_chart_data_to_csv', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def prepare_export_chart_data_to_csv():
     request_details = request.get_json()
     export_data = format_chart_data_for_export.plot_ly_to_pandas(request_details)
-    if request_details['export_type'] == 'csv':
-        file_path = helper_functions.get_save_name_from_user('csv file', '.csv')
-        file_path = helper_functions.add_file_extension_if_needed(file_path, 'csv')
-        export_data.to_csv(file_path, index=False)
-    elif request_details['export_type'] == 'clipboard':
-        export_data.to_clipboard(index=False)
+    export_data.to_csv('data/temp/chart_data.csv', index=False)
+    return jsonify({'message': "Your export is done!"})
+
+
+@app.route('/export_chart_data_to_csv')
+@errors.parse_to_user_and_log(logger)
+def export_chart_data_to_csv():
+    return send_from_directory('data/temp/', 'chart_data.csv', as_attachment=True)
+
+
+@app.route('/export_chart_data_to_clipboard', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def export_chart_data_to_clipboard():
+    request_details = request.get_json()
+    export_data = format_chart_data_for_export.plot_ly_to_pandas(request_details)
+    export_data.to_clipboard(index=False)
     return jsonify({'message': "Your export is done!"})
 
 
