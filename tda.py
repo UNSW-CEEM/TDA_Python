@@ -114,7 +114,6 @@ def get_tariff_set_options(tariff_type):
 def set_tariff_set_in_use():
     # Replace the network or retail data sets in the main 'data' folder with a set from the 'tariff_set_versions' folder
     # Allows the user to continue using older versions of the tariff data base.
-
     request_details = request.get_json()
 
     # Determine if 'Retail' of 'Network tariffs are being updated and sets the correct version to retrieve.
@@ -846,39 +845,27 @@ def load_project():
     with open(file_path, "rb") as f:
         current_session.project_data = pickle.load(f)
     message = "Done!"
-    current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
     also_return_a_list_of_cases_loaded = list(current_session.project_data.load_file_name_by_case.keys())
-    return jsonify({'message': message, 'name': current_session.project_data.name, 'cases': also_return_a_list_of_cases_loaded})
+    return jsonify({'message': message, 'name': current_session.project_data.name,
+                    'cases': also_return_a_list_of_cases_loaded})
 
 
-@app.route('/save_project', methods=['POST'])
+@app.route('/save_project/<path:filename>')
 @errors.parse_to_user_and_log(logger)
-def save_project():
-    if current_session.project_data.name == '':
-        file_path = helper_functions.get_save_name_from_user()
-        file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_results')
-    else:
-        file_path = current_session.project_data.name + '.tda_results'
-    with open(file_path, "wb") as f:
+def save_project(filename):
+    current_session.project_data.name = filename
+    for the_file in os.listdir('data/temp'):
+        file_path = os.path.join('data/temp', the_file)
+        os.unlink(file_path)
+    with open('data/temp/{}.tda_results'.format(filename), "wb") as f:
         pickle.dump(current_session.project_data, f)
-    return jsonify({'message': "Done!"})
+    return send_from_directory('data/temp/', filename+'.tda_results', as_attachment=True)
 
 
-@app.route('/save_project_as/<path:filename>')
-#@errors.parse_to_user_and_log(logger)
-def save_project_as(filename):
-    #file_path = helper_functions.get_save_name_from_user('TDA results file', '.tda_results')
-    #file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_results')
-    #current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
-    with open('new_project.tda_results', "wb") as f:
-        pickle.dump(current_session.project_data, f)
-    return send_from_directory('', 'new_project.tda_results', as_attachment=True)
-
-
-@app.route('/delete_project', methods=['POST'])
+@app.route('/current_project_name', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def delete_project():
-    return jsonify({'message': "No python code for deleting projects as yet!"})
+def current_project_name():
+    return jsonify({'message': "Done!", 'name': current_session.project_data.name})
 
 
 @app.route('/export_results', methods=['POST'])
