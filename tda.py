@@ -84,7 +84,12 @@ def load_names():
     names = []
     for file_name in os.listdir('data/load/'):
         names.append(file_name.split('.')[0])
-    return jsonify(names)
+
+    data = {
+        "names": names,
+        "current_load": current_session.raw_data_name
+    }
+    return jsonify(data)
 
 
 @app.route('/network_load_names')
@@ -155,8 +160,8 @@ def filtered_load_data():
     # Filtering Data
 
     # Should only filter once for every new load data selected
-    if current_session.filter_state != load_request['filter_options']:
-        current_session.filter_state = load_request['filter_options']
+    if current_session.filter_state != load_request:
+        current_session.filter_state = load_request
         raw_data = current_session.raw_data[file_name]
 
         # Filter by missing data
@@ -412,7 +417,6 @@ def get_single_variable_chart():
 def get_dual_variable_chart():
     details = request.get_json()
     case_names = details['case_names']
-    file_name = details['load_details']['file_name']
     results_to_plot = helper_functions.get_results_subset_to_plot(case_names, 
                                                                   current_session.project_data.retail_results_by_case,
                                                                   current_session.project_data.network_results_by_case,
@@ -944,12 +948,12 @@ def shutdown():
 
 @errors.log(logger)
 def on_start_up():
-    start_up_procedures.update_nemosis_cache()
-    start_up_procedures.update_tariffs()
+    # start_up_procedures.update_nemosis_cache()
+    # start_up_procedures.update_tariffs()
     check_load_2_demo_map() # Fix load_2_demo_map if corrupted
     return None
 
 
 if __name__ == '__main__':
     on_start_up()
-    app.run()
+    app.run(debug=True)
