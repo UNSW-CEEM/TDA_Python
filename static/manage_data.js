@@ -30,6 +30,7 @@ var delete_data = function(){
         dataType:"json",
         success: function(data){
             alert_user_if_error(data);
+            add_load_names();
             $('#delete_dialog').dialog('close');
             $('#message_dialog').dialog({modal: true})
             $('#message_dialog p').text(data['message'])
