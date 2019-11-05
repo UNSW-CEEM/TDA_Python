@@ -17,29 +17,15 @@ var load_project = function(data){
     plot_results();
 };
 
-var save_project = function(){
+var save_project_as = function(project_name){
+    saveAs('/save_project/' + project_name, project_name +'.tda_results');
     $.ajax({
-        url: '/save_project',
+        url: '/current_project_name/project_name',
         contentType: 'application/json;',
         type : 'POST',
-        async: 'false',
         dataType:"json",
         success: function(data){
-            $('#message_dialog').dialog({modal: true});
-            $('#message_dialog p').text(data['message']);
-
-        }
-    });
-};
-
-var save_project_as = function(){
-    $.ajax({
-        url: '/save_project_as',
-        contentType: 'application/json;',
-        type : 'POST',
-        async: 'false',
-        dataType:"json",
-        success: function(data){
+            alert_user_if_error(data);
             $('#message_dialog').dialog({modal: true});
             $('#message_dialog p').text(data['message']);
             $('#project_name').text(data['name']);
@@ -47,19 +33,22 @@ var save_project_as = function(){
     });
 };
 
-var delete_project = function(){
-    $.ajax({
-        url: '/delete_project',
-        contentType: 'application/json;',
-        type : 'POST',
-        async: 'false',
-        dataType:"json",
-        success: function(data){
-            $('#message_dialog').dialog({modal: true});
-            $('#message_dialog p').text(data['message']);
+var launch_project_namer = function(){
+    if ($('#project_name').text() == 'N/A'){
+        $('#project_name_input').val('New project')
+    } else {
+        $('#project_name_input').val($('#project_name').text())
+    }
+    $("#project_namer").dialog({
+        modal: true,
+        buttons: {"Save project": function(){
+            $('#project_name').text($('#project_name_input').val())
+            save_project_as($('#project_name_input').val())
+            $("#project_namer").dialog('close')
+            }
         }
     });
-};
+}
 
 var restart_tool = function(){
     $.ajax({

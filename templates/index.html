@@ -39,7 +39,7 @@
     <script src="static/export.js"></script>
     <script src="static/errors.js"></script>
     <script src="static/tou_analysis.js"></script>
-    <script src="static/FileSaver.js-master/FileSaver.js-master/dist/FileSaver.js"></script>
+    <script src="static/FileSaver.js-master/FileSaver.js-master/src/FileSaver.js"></script>
 
 
   <style>
@@ -484,9 +484,14 @@
         <input type="text" value="" class="text ui-widget-content ui-corner-all info">
     </div>
 
-    <div id="case_namer" title="Basic dialog" style="display: none">
+    <div id="case_namer" title="Case name" style="display: none">
         <p>Please provide a name for this case.</p>
         <input id="case_name">
+    </div>
+
+    <div id="project_namer" title="Project name" style="display: none">
+        <p>Please provide a name for this project.</p>
+        <input id="project_name_input">
     </div>
 
     <div id="case_control_template" class="row case_control"
@@ -517,8 +522,8 @@
       <ul id="tariff_menu" class="dropdown">
           <li><div>Project</div>
               <ul>
-                  <li><div onclick="get_file_and_pass_to_python('.tda_results', '/load_project', load_project)">Load Project</div></li>
-                  <li><div onclick="saveAs('/save_project_as/new_project.tda_results', 'new_project.tda_results');">Save Project</div></li>
+                  <li><div onclick="load_project()">Load Project</div></li>
+                  <li><div onclick="launch_project_namer()">Save Project</div></li>
                   <hr>
                   <li><div id="restart_button" onclick="restart_tool()">Restart Tool</div></li>
               </ul>
