@@ -1,6 +1,5 @@
 
 var get_file_and_pass_to_python = function(extension, url, call_back){
-
     $('#file1').on('change', function(){
         var xhr = new XMLHttpRequest();
         xhr.open("POST", url);
@@ -13,7 +12,6 @@ var get_file_and_pass_to_python = function(extension, url, call_back){
         var formData = new FormData(document.getElementById("file_form"));
         xhr.send(formData);
     })
-
     $('#file1').prop('accept', extension);
     $('#file1').click();
 }

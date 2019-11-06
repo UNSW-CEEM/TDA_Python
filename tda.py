@@ -947,14 +947,14 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    #shutdown_server()
+    shutdown_server()
     return 'Server shutting down...'
 
 
 @errors.log(logger)
 def on_start_up():
-    # start_up_procedures.update_nemosis_cache()
-    # start_up_procedures.update_tariffs()
+    start_up_procedures.update_nemosis_cache()
+    start_up_procedures.update_tariffs()
     check_load_2_demo_map() # Fix load_2_demo_map if corrupted
     return None
 

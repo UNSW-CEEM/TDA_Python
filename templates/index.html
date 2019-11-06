@@ -522,7 +522,7 @@
       <ul id="tariff_menu" class="dropdown">
           <li><div>Project</div>
               <ul>
-                  <li><div onclick="load_project()">Load Project</div></li>
+                  <li><div onclick="get_file_and_pass_to_python('.tda_results', '/load_project', load_project)">Load Project</div></li>
                   <li><div onclick="launch_project_namer()">Save Project</div></li>
                   <hr>
                   <li><div id="restart_button" onclick="restart_tool()">Restart Tool</div></li>
@@ -644,7 +644,7 @@
               <div>Tariff</div>
               <ul class="sub_menu">
                   <li><div onclick="launch_tariff_creator()">Create New Tariff</div></li>
-                  <li><div onclick="open_tariff_info()">Tariff Info</div></li>
+                  <!--<li><div onclick="open_tariff_info()">Tariff Info</div></li>-->
                   <li><div>Reset Network Tariffs</div>
                       <ul class="sub_menu" id="network_tariff_sets"></ul>
                   </li>
