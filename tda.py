@@ -674,11 +674,42 @@ def delete_tariff():
     return jsonify({'message': 'done'})
 
 
+@app.route('/import_load', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def import_load():
+    file = request.files['file']
+    file_name = file.filename
+    file_path = 'data/temp/' + file_name
+    file.save(file_path)
+
+    # read file and load into dataframe
+    load_data, demo_data = load_data_to_dataframe(file_path)
+
+    # Check if the file format is in the correct format
+    try:
+        load_data[load_data.columns[0]] = pd.to_datetime(load_data[load_data.columns[0]])
+        load_data.rename(columns={load_data.columns[0]: 'Datetime'}, inplace=True)
+        demo_data.rename(columns={demo_data.columns[0]: 'CUSTOMER_KEY'}, inplace=True)
+    except:
+        return jsonify({'error': 'Invalid data format.'})
+
+    # Add mapping of imported file into load_2_demo_map.csv
+    add_to_load_2_demo_map(file_name)
+
+    # Add import load files to database
+    feather.write_dataframe(load_data, 'data/load/' + file_name + '.feather')
+    feather.write_dataframe(demo_data, 'data/demographics/' + 'demo_' + file_name + '.feather')
+    return jsonify({'message': "Successfully imported file."})
+
+
 @app.route('/import_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def import_load_data():
     request_details = request.get_json()
     import_file_type = request_details['type']
+
+    file = request.files['file']
+    file.save('data/temp/temp.csv')
 
     # @todo: need to get file path from user
     file_path = '/Users/bruceho/PycharmProjects/learning_environment/data/SampleLoad_without_demo.xlsx'
@@ -744,8 +775,6 @@ def import_load_data():
 
         feather.write_dataframe(solar_data, 'data/network_loads/' + file_name + '.feather')
         return jsonify({'message': "Successfully imported file."})
-
-
 
 
 @app.route('/delete_load_data', methods=['POST'])
@@ -826,13 +855,6 @@ def update_tariffs():
 @errors.parse_to_user_and_log(logger)
 def open_tariff_info():
     return jsonify({'message': "No python code for opening tariff info yet!"})
-
-
-@app.route('/import_load', methods=['POST'])
-def import_load():
-    message = "No python code for creating synthetic network load yet! But we have returned a dummy name to add!"
-    dummy_name_to_add_as_option_in_ui = "not real option"
-    return jsonify({'message': message, 'name': dummy_name_to_add_as_option_in_ui})
 
 
 @app.route('/open_sample', methods=['POST'])
@@ -947,7 +969,7 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    shutdown_server()
+    #shutdown_server()
     return 'Server shutting down...'
 
 

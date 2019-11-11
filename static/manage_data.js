@@ -41,26 +41,20 @@ var delete_data = function(){
 var import_data = function(data_type, call_back){
 
     // Action to perform when the user chooses the create now option.
-    var create_now = function(){
-        $.ajax({
-            url: '/import_load_data',
-            contentType: 'application/json;',
-            data: JSON.stringify({'type': data_type}),
-            type : 'POST',
-            async: 'false',
-            dataType:"json",
-            success: function(data){
-                alert_user_if_error(data);
-                $('#import_dialog').dialog('close');
-                if ('message' in data){
-                    $('#message_dialog').dialog({modal: true});
-                    $('#message_dialog p').text(data['message']);
-                    if (call_back !== undefined){
-                        call_back(data['name']);
-                    }
-                }
+    var initial_message_call_back = function(data){
+        alert_user_if_error(data);
+        $('#import_dialog').dialog('close');
+        if ('message' in data){
+            $('#message_dialog').dialog({modal: true});
+            $('#message_dialog p').text(data['message']);
+            if (call_back !== undefined){
+                call_back(data);
             }
-        });
+        }
+    }
+
+    var create_action = function(){
+        get_file_and_pass_to_python('.xlsx, .csv', data_type, initial_message_call_back)
     }
 
     // Action to perform when the user chooses to view the sample load.
@@ -85,14 +79,22 @@ var import_data = function(data_type, call_back){
     $('#import_dialog').dialog({
         modal: true,
         width: 500,
-        buttons: {"Create now": create_now,
+        buttons: {"Create now": create_action,
                   "Open sample file": open_sample,
                   "Cancel": function(){$('#import_dialog').dialog('close')}}
     });
-    var message = "Please refer to the instructions, section 5.3 (CREATING NEW LOAD DATA) and put the network load " +
+    if(data_type == '/import_network'){
+        var message = "Please refer to the instructions, section 5.3 (CREATING NEW LOAD DATA) and put the network load " +
+                      "data in the required format before importing. You can also open the sample file and see the " +
+                      "required or paste in your data into this file and save as a new load file and then load the file " +
+                      "when creating the new load data."
+    } else {
+        var message = "Please refer to the instructions, section 5.3 (CREATING NEW LOAD DATA) and put the network load " +
                   "data in the required format before importing. You can also open the sample file and see the " +
                   "required or paste in your data into this file and save as a new load file and then load the file " +
                   "when creating the new load data."
+    }
+
     $('#import_dialog p').text(message)
 }
 
