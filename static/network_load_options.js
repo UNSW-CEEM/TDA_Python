@@ -21,13 +21,15 @@ var build_network_load_options = function(){
     $.getJSON("/network_load_names", function(json){
         $('#synthetic_network_load_options').empty()
         $.each(json, function(i, name){
+
+            console.log(name)
             add_option_to_ui(name)
         });
     });
 }
 
-var add_option_to_ui = function(data){
-    option_name = data['name']
+var add_option_to_ui = function(option_name){
+//    option_name = data['name']
     var option_template = '<li><input class=\"synthetic_network_load_option menu_check_list\" type=\"checkbox\"' +
                           'value=\"{}\" onclick=\"update_check_list(event, this)\"><div class="menu_check_list_label">{}</div></li>'
     var option_with_name = option_template.replace(/{}/g, option_name)

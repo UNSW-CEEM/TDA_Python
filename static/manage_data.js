@@ -83,7 +83,7 @@ var import_data = function(data_type, call_back){
                   "Open sample file": open_sample,
                   "Cancel": function(){$('#import_dialog').dialog('close')}}
     });
-    if(data_type == '/import_network'){
+    if(data_type == '/import_network_data'){
         var message = "Please refer to the instructions, section 5.3 (CREATING NEW LOAD DATA) and put the network load " +
                       "data in the required format before importing. You can also open the sample file and see the " +
                       "required or paste in your data into this file and save as a new load file and then load the file " +

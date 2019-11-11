@@ -674,11 +674,11 @@ def delete_tariff():
     return jsonify({'message': 'done'})
 
 
-@app.route('/import_load', methods=['POST'])
+@app.route('/import_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def import_load():
     file = request.files['file']
-    file_name = file.filename
+    file_name = os.path.splitext(file.filename)[0]
     file_path = 'data/temp/' + file_name
     file.save(file_path)
 
@@ -702,79 +702,45 @@ def import_load():
     return jsonify({'message': "Successfully imported file."})
 
 
-@app.route('/import_load_data', methods=['POST'])
+@app.route('/import_network_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def import_load_data():
-    request_details = request.get_json()
-    import_file_type = request_details['type']
-
+def import_network_data():
     file = request.files['file']
-    file.save('data/temp/temp.csv')
+    file_name = os.path.splitext(file.filename)[0]
+    file_path = 'data/temp/' + file_name
+    file.save(file_path)
 
-    # @todo: need to get file path from user
-    file_path = '/Users/bruceho/PycharmProjects/learning_environment/data/SampleLoad_without_demo.xlsx'
-    base = os.path.basename(file_path)
-    file_name = os.path.splitext(base)[0]
+    # read file and load into dataframe
+    network_data = generic_data_to_dataframe(file_path)
 
-    ###############################################
-    # Check whether the file being imported exist and is in the valid file type
+    # Check if the file format is in the correct format
+    try:
+        network_data.rename(columns={network_data.columns[0]: 'Datetime'}, inplace=True)
+    except:
+        return jsonify({'error': 'Invalid data format.'})
 
-    if check_file_exists(file_path) == True:
-        pass
-    else:
-        return jsonify({'error': 'Cannot find file.'})
+    feather.write_dataframe(network_data, 'data/network_loads/' + file_name + '.feather')
+    return jsonify({'message': "Successfully imported file."})
 
-    if check_valid_filetype(file_path, allowed_extensions=['.csv', '.xls', '.xlsx']) == True:
-        pass
-    else:
-        return jsonify({'error': 'Invalid file type. Can only import csv or excel files in format as the sample file.'})
 
-    ###############################################
+@app.route('/import_solar_data', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def import_solar_data():
+    file = request.files['file']
+    file_name = os.path.splitext(file.filename)[0]
+    file_path = 'data/temp/' + file_name
+    file.save(file_path)
 
-    if import_file_type == 'load':
-        # read file and load into dataframe
-        load_data, demo_data = load_data_to_dataframe(file_path)
+    solar_data = generic_data_to_dataframe(file_path)
 
-        # Check if the file format is in the correct format
-        try:
-            load_data[load_data.columns[0]] = pd.to_datetime(load_data[load_data.columns[0]])
-            load_data.rename(columns={load_data.columns[0]: 'Datetime'}, inplace=True)
-            demo_data.rename(columns={demo_data.columns[0]: 'CUSTOMER_KEY'}, inplace=True)
-        except:
-            return jsonify({'error': 'Invalid data format.'})
+    # Check if the file format is in the correct format
+    try:
+        solar_data.rename(columns={solar_data.columns[0]: 'Datetime'}, inplace=True)
+    except:
+        return jsonify({'error': 'Invalid data format.'})
 
-        # Add mapping of imported file into load_2_demo_map.csv
-        add_to_load_2_demo_map(file_name)
-
-        # Add import load files to database
-        feather.write_dataframe(load_data, 'data/load/' + file_name + '.feather')
-        feather.write_dataframe(demo_data, 'data/demographics/' + 'demo_' + file_name + '.feather')
-        return jsonify({'message': "Successfully imported file."})
-
-    elif import_file_type == 'network':
-        # read file and load into dataframe
-        network_data = generic_data_to_dataframe(file_path)
-
-        # Check if the file format is in the correct format
-        try:
-            network_data.rename(columns={network_data.columns[0]: 'Datetime'}, inplace=True)
-        except:
-            return jsonify({'error': 'Invalid data format.'})
-
-        feather.write_dataframe(network_data, 'data/network_loads/' + file_name + '.feather')
-        return jsonify({'message': "Successfully imported file."})
-
-    elif import_file_type == 'solar':
-        solar_data = generic_data_to_dataframe(file_path)
-
-        # Check if the file format is in the correct format
-        try:
-            solar_data.rename(columns={solar_data.columns[0]: 'Datetime'}, inplace=True)
-        except:
-            return jsonify({'error': 'Invalid data format.'})
-
-        feather.write_dataframe(solar_data, 'data/network_loads/' + file_name + '.feather')
-        return jsonify({'message': "Successfully imported file."})
+    feather.write_dataframe(solar_data, 'data/network_loads/' + file_name + '.feather')
+    return jsonify({'message': "Successfully imported file."})
 
 
 @app.route('/delete_load_data', methods=['POST'])
@@ -807,8 +773,7 @@ def delete_load_data():
                 new_load_2_demo_map = new_load_2_demo_map.drop(index, axis=0)
                 os.remove(load_path)
                 os.remove(demo_path)
-            else:
-                pass
+
         new_load_2_demo_map.to_csv('data/load_2_demo_map.csv', index=False)
 
         return jsonify({'message': "File has been deleted."})
