@@ -445,6 +445,10 @@
         <select></select>
     </div>
 
+    <div id="delete_solar_dialog" title="Delete solar data" style="display: none">
+        <select></select>
+    </div>
+
     <div id="updating_tariffs" title="Updating tariffs" style="display: none">
         <p>Loading . . .  please wait.</p>
     </div>
@@ -639,6 +643,13 @@
                   </li>
               </ul>
           </li>
+          <li>
+              <div>Solar</div>
+              <ul class="sub_menu">
+                  <li><div onclick="import_data('/import_solar_data', add_solar_names)">Import Solar Data</div></li>
+                  <li><div onclick="choose_solar_data_to_delete()">Delete Solar Data</div></li>
+              </ul>
+          </li>
 
           <li>
               <div>Tariff</div>
@@ -788,7 +799,9 @@
                                        value="0">
                                 <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
                                 <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
-                                <select class="sample_parameter" name="profiles"></select>
+                                <select class="sample_parameter" id="solar_data" name="solar_data">
+                                    <option selected="selected_solar">None</option>
+                                </select>
                             </div>
                         </div>
                         <div class="row" style="overflow: hidden;">
@@ -1321,6 +1334,7 @@
     <script src="static/end_user_tech.js"></script>
     <script src="static/network_load_options.js"></script>
     <script src="static/file_dialog.js"></script>
+    <script src="static/build_solar_selector.js"></script>
 </div>
 </body>
 </html>

@@ -33,6 +33,10 @@ class ProjectData():
             'test_data',
         ]
 
+        self.original_solar_data = [
+            'solar_profile'
+        ]
+
 
 class InMemoryData:
     def __init__(self):

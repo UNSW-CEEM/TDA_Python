@@ -92,6 +92,17 @@ def load_names():
     return jsonify(data)
 
 
+@app.route('/solar_names')
+@errors.parse_to_user_and_log(logger)
+def solar_names():
+    # Get the list of load files for the user to choose from.
+    names = []
+    for file_name in os.listdir('data/solar_profiles/'):
+        names.append(file_name.split('.')[0])
+
+    return jsonify(names)
+
+
 @app.route('/network_load_names')
 @errors.parse_to_user_and_log(logger)
 def network_load_names():
@@ -739,9 +750,22 @@ def import_solar_data():
     except:
         return jsonify({'error': 'Invalid data format.'})
 
-    feather.write_dataframe(solar_data, 'data/network_loads/' + file_name + '.feather')
+    feather.write_dataframe(solar_data, 'data/solar_profiles/' + file_name + '.feather')
     return jsonify({'message': "Successfully imported file."})
 
+@app.route('/delete_solar_data', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def delete_solar_data():
+    request_details = request.get_json()
+    file_name = request_details['name']
+    solar_file_path = 'data/solar_profiles/' + file_name + '.feather'
+
+    if not check_data_is_not_default(file_name, current_session.project_data.original_solar_data):
+        return jsonify({'message': "Cannot delete default data files. Can only delete data files imported by user."})
+
+    else:
+        os.remove(solar_file_path)
+        return jsonify({'message': "File has been deleted."})
 
 @app.route('/delete_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
@@ -934,7 +958,7 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    #shutdown_server()
+    shutdown_server()
     return 'Server shutting down...'
 
 

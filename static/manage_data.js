@@ -3,6 +3,7 @@ var choose_data_to_delete = function(){
     // the load tab.
     $('#delete_dialog select').empty();
     var load_options = $('#select option')
+
     $.each(load_options, function(i, option){
         $('#delete_dialog select').append($(option).clone());
     });
@@ -37,6 +38,49 @@ var delete_data = function(){
         }
     });
 };
+
+var choose_solar_data_to_delete = function(){
+    // Update the select box in the dialog to have the same options as the load select box on
+    // the load tab.
+    $('#delete_solar_dialog select').empty();
+    var solar_options = $('#solar_data option')
+
+    $.each(solar_options, function(i, option){
+        $('#delete_solar_dialog select').append($(option).clone());
+    });
+    $('#delete_solar_dialog select').val('Select one');
+    // Get the user to select which load data set to delete.
+
+    $('#delete_solar_dialog').dialog({modal: true,
+        buttons: {"Delete": delete_solar_data,
+                  "Cancel": function(){$('#delete_solar_dialog').dialog('close')}
+                  }
+    });
+}
+
+var delete_solar_data = function(){
+    // Get the selected load file to delete
+    var file_name = $('#delete_solar_dialog select').children("option:selected").val();
+
+    // Send an instruction to the server to delete the load file.
+    request = {'name': file_name}
+    $.ajax({
+        url: '/delete_solar_data',
+        type: 'POST',
+        data: JSON.stringify(request),
+        contentType: 'application/json;',
+        async: 'false',
+        dataType:"json",
+        success: function(data){
+            alert_user_if_error(data);
+            add_solar_names();
+            $('#delete_solar_dialog').dialog('close');
+            $('#message_dialog').dialog({modal: true})
+            $('#message_dialog p').text(data['message'])
+        }
+    });
+};
+
 
 var import_data = function(data_type, call_back){
 

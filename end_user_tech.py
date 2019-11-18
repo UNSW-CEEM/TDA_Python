@@ -3,6 +3,7 @@ import data_interface
 import numpy as np
 import math
 import random
+import feather
 from helper_functions import sort_from_middle
 
 # Packages below this line can be deleted, used for testing purposes only.
@@ -16,18 +17,16 @@ def create_sample(gui_inputs, filtered_data):
     # ...           ...        ...       ...               ...
 
     # This function takes ~2.5secs to execute
-    print('gui_inputs: ', gui_inputs)
 
     solar_inputs = gui_inputs['tech_inputs']['solar']
-    #
     solar_pen = float(solar_inputs['penetration'])/100.0
     solar_mean_size = float(solar_inputs['mean_size'])
     solar_size_stdev = float(solar_inputs['standard_dev'])
     number_solar_customers = math.ceil(solar_pen * len(filtered_data.columns))
 
     # @todo: add link to select solar data from solar_profiles folder
-    # solar_profiles = solar_inputs['profiles']
-    solar_profiles = pd.read_csv('data/solar_profiles/solar_profile.csv')
+    solar_data = solar_inputs['solar_data']
+    solar_profiles = feather.read_dataframe('data/solar_profiles/' + solar_data + '.feather')
     solar_profiles = solar_profiles.set_index('Datetime')
     solar_profiles.index = pd.to_datetime(solar_profiles.index)
     number_solar_profiles = len(solar_profiles.columns)
