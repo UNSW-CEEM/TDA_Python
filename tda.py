@@ -814,8 +814,8 @@ def restore_original_data_set():
         files = [loaded_files.split(',', 1)[0] for loaded_files in current_file][1:]
     current_file.close()
 
-    original_data = current_session.project_data.original_data.sort()
-    files_loaded = files.sort()
+    original_data = sorted(current_session.project_data.original_data)
+    files_loaded = sorted(files)
     if files_loaded == original_data:
         return jsonify({'message': "All original files are already restored."})
 

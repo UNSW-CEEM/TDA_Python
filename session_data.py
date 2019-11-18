@@ -34,7 +34,7 @@ class ProjectData():
         ]
 
         self.original_solar_data = [
-            'solar_profile'
+            'solar_profile',
         ]
 
 
