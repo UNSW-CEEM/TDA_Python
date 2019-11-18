@@ -152,6 +152,7 @@ var restore_original_data_set = function(){
         dataType:"json",
         success: function(data){
             alert_user_if_error(data)
+            add_load_names();
             $('#message_dialog p').text(data['message'])
         }
     });

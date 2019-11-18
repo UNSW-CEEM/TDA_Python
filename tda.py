@@ -811,18 +811,25 @@ def restore_original_data_set():
     files_restored = []
 
     with open('data/load_2_demo_map.csv', 'r') as current_file:
-        files = [loaded_files.split(',', 1)[0] for loaded_files in current_file]
+        files = [loaded_files.split(',', 1)[0] for loaded_files in current_file][1:]
     current_file.close()
 
-    with open('data/load_2_demo_map.csv', 'a') as future_file:
-        if all(file_name in files for file_name in current_session.project_data.original_data):  # Check if file already exists
-            return jsonify({'message': "All original files are restored already."})
-        else:
-            for file_name in current_session.project_data.original_data:
-                if file_name not in files:
-                    files_restored.append(file_name)
-                    writer = csv.writer(future_file)
-                    writer.writerow([file_name, file_name + '.csv'])
+    original_data = current_session.project_data.original_data.sort()
+    files_loaded = files.sort()
+    if files_loaded == original_data:
+        return jsonify({'message': "All original files are already restored."})
+
+    with open('data/load_2_demo_map.csv', 'w') as future_file:
+        for file in files:
+            if file not in current_session.project_data.original_data:
+                os.remove('data/load/' + file + '.feather')
+                os.remove('data/demographics/demo_' + file + '.feather')
+
+        writer = csv.writer(future_file)
+        writer.writerow(['load', 'demo'])
+        for file in current_session.project_data.original_data:
+            files_restored.append(file)
+            writer.writerow([file, 'demo_' + file])
     future_file.close()
 
     # @todo: Need message to display file name that has been restored which is held in future_file as a list.
