@@ -8,9 +8,10 @@ var add_demo_selectors = function(response){
 
     // Add the required selectors and add the content to them.
     for (var i = 0; i < arraylength; i++){
-        var name = response.display_names[response.actual_names[i]]
-        $("#demo_label_col").append("<div class=\"label_stacked\">{}</div>".replace(/{}/g, name))
-        $("#demo_selector_col").append("<select id=\"{}\" class=\"select_demo\"></select>".replace(/{}/g, name))
+        var name = response.actual_names[i]
+        var display_name = response.display_names[response.actual_names[i]]
+        $("#demo_label_col").append("<div class=\"label_stacked\">{}</div>".replace(/{}/g, display_name))
+        $("#demo_selector_col").append("<select id=\"{a}\" class=\"select_demo\" name=\"{b}\"></select>".replace(/{a}/g, name).replace(/{b}/g, display_name))
         $.each(response.options[response.actual_names[i]], function(i, obj){
                 $('#'+name).append($('<option>').text(obj));
         });
@@ -81,7 +82,7 @@ var get_load_details_from_ui = function(){
     var filter_options = {}
 
     $.each($(".select_demo"), function(i, selector){
-        filter_options[$(selector).attr('id')] = $(selector).val();
+        filter_options[$(selector).attr('name')] = $(selector).val();
     });
 
     var file_name = $('#select').children("option:selected").val();

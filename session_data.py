@@ -31,6 +31,13 @@ class ProjectData():
         # Add original data that cannot be deleted (this allows for us to restore to original load data)
         self.original_data = [
             'test_data',
+            'AG300_G_2010',
+            'AG300_G_2011',
+            'AG300_G_2012',
+            'AG300_N_2010',
+            'AG300_N_2011',
+            'AG300_N_2012',
+            'SGSC2013',
         ]
 
         self.original_solar_data = [
