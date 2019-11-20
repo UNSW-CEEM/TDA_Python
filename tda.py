@@ -92,6 +92,17 @@ def load_names():
     return jsonify(data)
 
 
+@app.route('/solar_names')
+@errors.parse_to_user_and_log(logger)
+def solar_names():
+    # Get the list of load files for the user to choose from.
+    names = []
+    for file_name in os.listdir('data/solar_profiles/'):
+        names.append(file_name.split('.')[0])
+
+    return jsonify(names)
+
+
 @app.route('/network_load_names')
 @errors.parse_to_user_and_log(logger)
 def network_load_names():
@@ -739,9 +750,22 @@ def import_solar_data():
     except:
         return jsonify({'error': 'Invalid data format.'})
 
-    feather.write_dataframe(solar_data, 'data/network_loads/' + file_name + '.feather')
+    feather.write_dataframe(solar_data, 'data/solar_profiles/' + file_name + '.feather')
     return jsonify({'message': "Successfully imported file."})
 
+@app.route('/delete_solar_data', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def delete_solar_data():
+    request_details = request.get_json()
+    file_name = request_details['name']
+    solar_file_path = 'data/solar_profiles/' + file_name + '.feather'
+
+    if not check_data_is_not_default(file_name, current_session.project_data.original_solar_data):
+        return jsonify({'message': "Cannot delete default data files. Can only delete data files imported by user."})
+
+    else:
+        os.remove(solar_file_path)
+        return jsonify({'message': "File has been deleted."})
 
 @app.route('/delete_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
@@ -787,18 +811,25 @@ def restore_original_data_set():
     files_restored = []
 
     with open('data/load_2_demo_map.csv', 'r') as current_file:
-        files = [loaded_files.split(',', 1)[0] for loaded_files in current_file]
+        files = [loaded_files.split(',', 1)[0] for loaded_files in current_file][1:]
     current_file.close()
 
-    with open('data/load_2_demo_map.csv', 'a') as future_file:
-        if all(file_name in files for file_name in current_session.project_data.original_data):  # Check if file already exists
-            return jsonify({'message': "All original files are restored already."})
-        else:
-            for file_name in current_session.project_data.original_data:
-                if file_name not in files:
-                    files_restored.append(file_name)
-                    writer = csv.writer(future_file)
-                    writer.writerow([file_name, file_name + '.csv'])
+    original_data = sorted(current_session.project_data.original_data)
+    files_loaded = sorted(files)
+    if files_loaded == original_data:
+        return jsonify({'message': "All original files are already restored."})
+
+    with open('data/load_2_demo_map.csv', 'w') as future_file:
+        for file in files:
+            if file not in current_session.project_data.original_data:
+                os.remove('data/load/' + file + '.feather')
+                os.remove('data/demographics/demo_' + file + '.feather')
+
+        writer = csv.writer(future_file)
+        writer.writerow(['load', 'demo'])
+        for file in current_session.project_data.original_data:
+            files_restored.append(file)
+            writer.writerow([file, 'demo_' + file])
     future_file.close()
 
     # @todo: Need message to display file name that has been restored which is held in future_file as a list.
@@ -934,14 +965,14 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    #shutdown_server()
+    # shutdown_server()
     return 'Server shutting down...'
 
 
 @errors.log(logger)
 def on_start_up():
-    start_up_procedures.update_nemosis_cache()
-    start_up_procedures.update_tariffs()
+    # start_up_procedures.update_nemosis_cache()
+    # start_up_procedures.update_tariffs()
     check_load_2_demo_map() # Fix load_2_demo_map if corrupted
     return None
 
