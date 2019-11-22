@@ -373,65 +373,70 @@ def _get_avg_demand_n_peaks(results, load, network_load, details, axis):
         one_peak_per_day_status = details['y_axis_one_peak_per_day']
 
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
-    
-    network_load2 = network_load.copy()
-    network_load2['Month_Number'] = network_load2.index.month
 
-    network_load_filtered = network_load2.copy()
+    if not bool(load):
+        return {'axis_name':axis_name, 'axis_data':[]}
 
-    if details['include_spring'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
-    if details['include_summer'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
-    if details['include_autumn'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
-    if details['include_winter'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
-    
-    del network_load_filtered['Month_Number']
-
-    if one_peak_per_day_status == False:
-
-        network_load_filtered2=network_load_filtered.copy()
-            
-        network_load_average = network_load_filtered2.mean(axis=1)
-
-        network_load_average_sort = network_load_average.sort_values(ascending = False, inplace = False, na_position ='last')
-
-        selected_datetime = network_load_average_sort.index[0:N_peaks]
-
-        load2 = load.copy()
-
-        selected_load = load2.loc[selected_datetime]
-
-        selected_load_average = selected_load.mean(axis=0)
-
-        axis_data = list(selected_load_average)
-
-        return {'axis_name':axis_name, 'axis_data':axis_data}
-        
     else:
-        network_load_filtered2=network_load_filtered.copy()
+
+        network_load2 = network_load.copy()
+        network_load2['Month_Number'] = network_load2.index.month
+
+        network_load_filtered = network_load2.copy()
+
+        if details['include_spring'] == False:
+            network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
+        if details['include_summer'] == False:
+            network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
+        if details['include_autumn'] == False:
+            network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
+        if details['include_winter'] == False:
+            network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
+        
+        del network_load_filtered['Month_Number']
+
+        if one_peak_per_day_status == False:
+
+            network_load_filtered2=network_load_filtered.copy()
+                
+            network_load_average = network_load_filtered2.mean(axis=1)
+
+            network_load_average_sort = network_load_average.sort_values(ascending = False, inplace = False, na_position ='last')
+
+            selected_datetime = network_load_average_sort.index[0:N_peaks]
+
+            load2 = load.copy()
+
+            selected_load = load2.loc[selected_datetime]
+
+            selected_load_average = selected_load.mean(axis=0)
+
+            axis_data = list(selected_load_average)
+
+            return {'axis_name':axis_name, 'axis_data':axis_data}
             
-        network_load_average = network_load_filtered2.mean(axis=1)
+        else:
+            network_load_filtered2=network_load_filtered.copy()
+                
+            network_load_average = network_load_filtered2.mean(axis=1)
 
-        # find peak for each day
-        network_daily_peak = network_load_average.resample('D').max()
+            # find peak for each day
+            network_daily_peak = network_load_average.resample('D').max()
 
-        network_daily_peak_sort = network_daily_peak.sort_values(ascending = False, inplace = False, na_position ='last')
+            network_daily_peak_sort = network_daily_peak.sort_values(ascending = False, inplace = False, na_position ='last')
 
-        selected_datetime = network_daily_peak_sort.index[0:N_peaks]
+            selected_datetime = network_daily_peak_sort.index[0:N_peaks]
 
-        load2 = load.copy()
+            load2 = load.copy()
 
-        load_daily_peak = load2.resample('D').max()
+            load_daily_peak = load2.resample('D').max()
 
-        selected_load = load_daily_peak.loc[selected_datetime]
+            selected_load = load_daily_peak.loc[selected_datetime]
 
-        selected_load_average = selected_load.mean(axis=0)
-        axis_data = list(selected_load_average)
+            selected_load_average = selected_load.mean(axis=0)
+            axis_data = list(selected_load_average)
 
-        return {'axis_name':axis_name, 'axis_data':axis_data}    
+            return {'axis_name':axis_name, 'axis_data':axis_data}    
 
 
 
@@ -445,69 +450,74 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details, axis):
         one_peak_per_day_status = details['y_axis_one_peak_per_day']
 
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
-    
-    network_load2 = network_load.copy()
-    network_load2['Month_Number'] = network_load2.index.month
-    network_load_filtered = network_load2.copy()
 
-    if details['include_spring'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
-    if details['include_summer'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
-    if details['include_autumn'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
-    if details['include_winter'] == False:
-        network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
+    if not bool(load):
+        return {'axis_name':axis_name, 'axis_data':[]}
 
-    network_load_filtered_by_month = []
-    for i in range(12):
-        monthly_data = network_load_filtered[network_load_filtered['Month_Number'].isin([i+1])]
-        del monthly_data['Month_Number']
-        network_load_filtered_by_month.append(monthly_data)
-
-    if one_peak_per_day_status == False:
-
-        selected_datetime = []
-        for i in range(12):
-            network_load_filtered_by_month_i=network_load_filtered_by_month[i].copy()
-                
-            network_load_average = network_load_filtered_by_month_i.mean(axis=1)
-            network_load_average_sort = network_load_average.sort_values(ascending = False, inplace = False, na_position ='last')
-
-            selected_datetime = selected_datetime + list(network_load_average_sort.index[0:N_peaks])
-
-        load2 = load.copy()
-
-        selected_load = load2.loc[selected_datetime]
-
-        selected_load_average = selected_load.mean(axis=0)
-
-        axis_data = list(selected_load_average)
-
-        return {'axis_name':axis_name, 'axis_data':axis_data}
     else:
+    
+        network_load2 = network_load.copy()
+        network_load2['Month_Number'] = network_load2.index.month
+        network_load_filtered = network_load2.copy()
 
-        selected_datetime = []
+        if details['include_spring'] == False:
+            network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([3,4,5])]
+        if details['include_summer'] == False:
+            network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([6,7,8])]
+        if details['include_autumn'] == False:
+            network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([9,10,11])]
+        if details['include_winter'] == False:
+            network_load_filtered = network_load_filtered[~network_load_filtered['Month_Number'].isin([1,2,12])]
+
+        network_load_filtered_by_month = []
         for i in range(12):
-            network_load_filtered_by_month_i=network_load_filtered_by_month[i].copy()
-                
-            network_load_average = network_load_filtered_by_month_i.mean(axis=1)
+            monthly_data = network_load_filtered[network_load_filtered['Month_Number'].isin([i+1])]
+            del monthly_data['Month_Number']
+            network_load_filtered_by_month.append(monthly_data)
 
-            network_daily_peak = network_load_average.resample('D').max()
+        if one_peak_per_day_status == False:
 
-            network_daily_peak_sort = network_daily_peak.sort_values(ascending = False, inplace = False, na_position ='last')
+            selected_datetime = []
+            for i in range(12):
+                network_load_filtered_by_month_i=network_load_filtered_by_month[i].copy()
+                    
+                network_load_average = network_load_filtered_by_month_i.mean(axis=1)
+                network_load_average_sort = network_load_average.sort_values(ascending = False, inplace = False, na_position ='last')
 
-            selected_datetime = selected_datetime + list(network_daily_peak_sort.index[0:N_peaks])
+                selected_datetime = selected_datetime + list(network_load_average_sort.index[0:N_peaks])
 
-        load2 = load.copy()
+            load2 = load.copy()
 
-        load_daily_peak = load2.resample('D').max()
+            selected_load = load2.loc[selected_datetime]
 
-        selected_load = load_daily_peak.loc[selected_datetime]
+            selected_load_average = selected_load.mean(axis=0)
 
-        selected_load_average = selected_load.mean(axis=0)
-        axis_data = list(selected_load_average)
-        return {'axis_name':axis_name, 'axis_data':axis_data}    
+            axis_data = list(selected_load_average)
+
+            return {'axis_name':axis_name, 'axis_data':axis_data}
+        else:
+
+            selected_datetime = []
+            for i in range(12):
+                network_load_filtered_by_month_i=network_load_filtered_by_month[i].copy()
+                    
+                network_load_average = network_load_filtered_by_month_i.mean(axis=1)
+
+                network_daily_peak = network_load_average.resample('D').max()
+
+                network_daily_peak_sort = network_daily_peak.sort_values(ascending = False, inplace = False, na_position ='last')
+
+                selected_datetime = selected_datetime + list(network_daily_peak_sort.index[0:N_peaks])
+
+            load2 = load.copy()
+
+            load_daily_peak = load2.resample('D').max()
+
+            selected_load = load_daily_peak.loc[selected_datetime]
+
+            selected_load_average = selected_load.mean(axis=0)
+            axis_data = list(selected_load_average)
+            return {'axis_name':axis_name, 'axis_data':axis_data}    
 
 
 def _get_avg_demand_top_n_peaks(results, load, network_load, details, axis):
@@ -520,51 +530,57 @@ def _get_avg_demand_top_n_peaks(results, load, network_load, details, axis):
         one_peak_per_day_status = details['y_axis_one_peak_per_day']
 
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
-    
-    load2 = load.copy()
-    load2['Month_Number'] = load2.index.month
 
-    load_filtered = load2.copy()
-
-    if details['include_spring'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([3,4,5])]
-    if details['include_summer'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([6,7,8])]
-    if details['include_autumn'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([9,10,11])]
-    if details['include_winter'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([1,2,12])]
-    
-    del load_filtered['Month_Number']
-    
-
-    if one_peak_per_day_status == False:
-
-        load_filtered2=load_filtered.copy()
-
-        load_filtered_sort = pd.concat([load_filtered2[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered2], axis=1, ignore_index=True)
-
-        selected_load = load_filtered_sort.iloc[0:N_peaks,:]
-
-        selected_load_average = selected_load.mean(axis=0)
-
-        axis_data = list(selected_load_average)
-        return {'axis_name':axis_name, 'axis_data':axis_data}
+    if not bool(load):
+        return {'axis_name':axis_name, 'axis_data':[]}
 
     else:
 
-        load_filtered2=load_filtered.copy()
+    
+        load2 = load.copy()
+        load2['Month_Number'] = load2.index.month
 
-        # find peak for each day
-        load_filtered_daily_peak = load_filtered2.resample('D').max()
+        load_filtered = load2.copy()
 
-        load_filtered_daily_peak_sort = pd.concat([load_filtered_daily_peak[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered_daily_peak], axis=1, ignore_index=True)
-        selected_load = load_filtered_daily_peak_sort.iloc[0:N_peaks,:]
+        if details['include_spring'] == False:
+            load_filtered = load_filtered[~load_filtered['Month_Number'].isin([3,4,5])]
+        if details['include_summer'] == False:
+            load_filtered = load_filtered[~load_filtered['Month_Number'].isin([6,7,8])]
+        if details['include_autumn'] == False:
+            load_filtered = load_filtered[~load_filtered['Month_Number'].isin([9,10,11])]
+        if details['include_winter'] == False:
+            load_filtered = load_filtered[~load_filtered['Month_Number'].isin([1,2,12])]
+        
+        del load_filtered['Month_Number']
+        
 
-        selected_load_average = selected_load.mean(axis=0)
+        if one_peak_per_day_status == False:
 
-        axis_data = list(selected_load_average)  
-        return {'axis_name':axis_name, 'axis_data':axis_data}
+            load_filtered2=load_filtered.copy()
+
+            load_filtered_sort = pd.concat([load_filtered2[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered2], axis=1, ignore_index=True)
+
+            selected_load = load_filtered_sort.iloc[0:N_peaks,:]
+
+            selected_load_average = selected_load.mean(axis=0)
+
+            axis_data = list(selected_load_average)
+            return {'axis_name':axis_name, 'axis_data':axis_data}
+
+        else:
+
+            load_filtered2=load_filtered.copy()
+
+            # find peak for each day
+            load_filtered_daily_peak = load_filtered2.resample('D').max()
+
+            load_filtered_daily_peak_sort = pd.concat([load_filtered_daily_peak[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered_daily_peak], axis=1, ignore_index=True)
+            selected_load = load_filtered_daily_peak_sort.iloc[0:N_peaks,:]
+
+            selected_load_average = selected_load.mean(axis=0)
+
+            axis_data = list(selected_load_average)  
+            return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
 def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details, axis):
@@ -577,89 +593,106 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details, ax
         one_peak_per_day_status = details['y_axis_one_peak_per_day']
 
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
-    
-    load2 = load.copy()
-    load2['Month_Number'] = load2.index.month
-    load_filtered = load2.copy()
 
-    if details['include_spring'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([3,4,5])]
-    if details['include_summer'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([6,7,8])]
-    if details['include_autumn'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([9,10,11])]
-    if details['include_winter'] == False:
-        load_filtered = load_filtered[~load_filtered['Month_Number'].isin([1,2,12])]
 
-    load_filtered_by_month = []
-    for i in range(12):
-        monthly_data = load_filtered[load_filtered['Month_Number'].isin([i+1])]
-        del monthly_data['Month_Number']
-        load_filtered_by_month.append(monthly_data)
+    if not bool(load):
+        return {'axis_name':axis_name, 'axis_data':[]}
 
-    if one_peak_per_day_status == False:
-
-        selected_load = []
-        for i in range(12):
-            load_filtered_by_month_i=load_filtered_by_month[i].copy()
-
-            load_filtered_by_month_i_sort = pd.concat([load_filtered_by_month_i[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered_by_month_i], axis=1, ignore_index=True)
-            selected_load_by_month = load_filtered_by_month_i_sort.iloc[0:N_peaks,:]
-
-            selected_load.append(list(selected_load_by_month.mean(axis=0)))
-
-        selected_load_average = np.nanmean(np.array(selected_load),axis=0)
-
-        axis_data = list(selected_load_average)
-
-        return {'axis_name':axis_name, 'axis_data':axis_data}
     else:
+    
+        load2 = load.copy()
+        load2['Month_Number'] = load2.index.month
+        load_filtered = load2.copy()
 
-        selected_load = []
+        if details['include_spring'] == False:
+            load_filtered = load_filtered[~load_filtered['Month_Number'].isin([3,4,5])]
+        if details['include_summer'] == False:
+            load_filtered = load_filtered[~load_filtered['Month_Number'].isin([6,7,8])]
+        if details['include_autumn'] == False:
+            load_filtered = load_filtered[~load_filtered['Month_Number'].isin([9,10,11])]
+        if details['include_winter'] == False:
+            load_filtered = load_filtered[~load_filtered['Month_Number'].isin([1,2,12])]
+
+        load_filtered_by_month = []
         for i in range(12):
-            load_filtered_by_month_i=load_filtered_by_month[i].copy()
+            monthly_data = load_filtered[load_filtered['Month_Number'].isin([i+1])]
+            del monthly_data['Month_Number']
+            load_filtered_by_month.append(monthly_data)
 
-            load_filtered_daily_peak_by_month = load_filtered_by_month_i.resample('D').max()
+        if one_peak_per_day_status == False:
 
-            load_filtered_daily_peak_by_month_sort = pd.concat([load_filtered_daily_peak_by_month[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered_daily_peak_by_month], axis=1, ignore_index=True)
-            selected_load_by_month = load_filtered_daily_peak_by_month_sort.iloc[0:N_peaks,:]
+            selected_load = []
+            for i in range(12):
+                load_filtered_by_month_i=load_filtered_by_month[i].copy()
 
-            selected_load.append(list(selected_load_by_month.mean(axis=0)))
+                load_filtered_by_month_i_sort = pd.concat([load_filtered_by_month_i[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered_by_month_i], axis=1, ignore_index=True)
+                selected_load_by_month = load_filtered_by_month_i_sort.iloc[0:N_peaks,:]
 
-        selected_load_average = np.nanmean(np.array(selected_load),axis=0)
+                selected_load.append(list(selected_load_by_month.mean(axis=0)))
 
-        axis_data = list(selected_load_average)
+            selected_load_average = np.nanmean(np.array(selected_load),axis=0)
 
-        return {'axis_name':axis_name, 'axis_data':axis_data}
+            axis_data = list(selected_load_average)
+
+            return {'axis_name':axis_name, 'axis_data':axis_data}
+        else:
+
+            selected_load = []
+            for i in range(12):
+                load_filtered_by_month_i=load_filtered_by_month[i].copy()
+
+                load_filtered_daily_peak_by_month = load_filtered_by_month_i.resample('D').max()
+
+                load_filtered_daily_peak_by_month_sort = pd.concat([load_filtered_daily_peak_by_month[col].sort_values(ascending = False, inplace = False, na_position ='last').reset_index(drop=True) for col in load_filtered_daily_peak_by_month], axis=1, ignore_index=True)
+                selected_load_by_month = load_filtered_daily_peak_by_month_sort.iloc[0:N_peaks,:]
+
+                selected_load.append(list(selected_load_by_month.mean(axis=0)))
+
+            selected_load_average = np.nanmean(np.array(selected_load),axis=0)
+
+            axis_data = list(selected_load_average)
+
+            return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
 def _get_avg_daily_kWh(results, load, network_load, details, axis):
     axis_name = "Average Daily kWh"
-    axis_data = []
-    load2 = load.copy()
 
-    axis_data = []
-    for i in range(load2.shape[1]):
-        load_id_array = np.array(load2.iloc[:,i]).reshape((-1,48))
-        load_id_daily_kWh = np.sum(load_id_array,axis=1)
-        average_daily = np.nanmean(load_id_daily_kWh)
-        axis_data.append(average_daily)
+    if not bool(load):
+        return {'axis_name':axis_name, 'axis_data':[]}
 
-    return {'axis_name':axis_name, 'axis_data':axis_data}
+    else:
+
+        axis_data = []
+        load2 = load.copy()
+
+        axis_data = []
+        for i in range(load2.shape[1]):
+            load_id_array = np.array(load2.iloc[:,i]).reshape((-1,48))
+            load_id_daily_kWh = np.sum(load_id_array,axis=1)
+            average_daily = np.nanmean(load_id_daily_kWh)
+            axis_data.append(average_daily)
+
+        return {'axis_name':axis_name, 'axis_data':axis_data}
 
 def _get_avg_daily_peak(results, load, network_load, details, axis):
     axis_name = "Average Daily Peaks"
-    axis_data = []
-    load2 = load.copy()
 
-    axis_data = []
-    for i in range(load2.shape[1]):
-        load_id_array = np.array(load2.iloc[:,i]).reshape((-1,48))
-        load_id_daily_peak = np.max(load_id_array,axis=1)
-        average_daily = np.nanmean(load_id_daily_peak)
-        axis_data.append(average_daily)
+    if not bool(load):
+        return {'axis_name':axis_name, 'axis_data':[]}
 
-    return {'axis_name':axis_name, 'axis_data':axis_data}
+    else:
+        axis_data = []
+        load2 = load.copy()
+
+        axis_data = []
+        for i in range(load2.shape[1]):
+            load_id_array = np.array(load2.iloc[:,i]).reshape((-1,48))
+            load_id_daily_peak = np.max(load_id_array,axis=1)
+            average_daily = np.nanmean(load_id_daily_peak)
+            axis_data.append(average_daily)
+
+        return {'axis_name':axis_name, 'axis_data':axis_data}
 
 
 def _get_bill_NUOS(results, load, network_load, details, axis):
@@ -744,9 +777,22 @@ def dual_variable_chart(load_and_results_by_case, details):
     network_load = load_and_results_by_case['network_load']
     trace = []
     for case_name, results in results_by_case.items():
-        x_axis_data = _dual_variable_axis_methods[details['x_axis']](results, load_by_case[case_name], network_load, details, axis = 'x_axis')
-        y_axis_data = _dual_variable_axis_methods[details['y_axis']](results, load_by_case[case_name], network_load, details, axis = 'y_axis')
+
+
+        if bool(load_by_case):
+            x_axis_data = _dual_variable_axis_methods[details['x_axis']](results, load_by_case[case_name], network_load, details, axis = 'x_axis')
+        else:
+            x_axis_data = _dual_variable_axis_methods[details['x_axis']](results, {}, None, details, axis = 'x_axis')
+
         
+        if bool(load_by_case):
+            y_axis_data = _dual_variable_axis_methods[details['y_axis']](results, load_by_case[case_name], network_load, details, axis = 'y_axis')
+        else:
+            y_axis_data = _dual_variable_axis_methods[details['y_axis']](results, {}, None, details, axis = 'y_axis')
+            
+                    
+
+
         if len(x_axis_data['axis_data'])>0 and len(y_axis_data['axis_data'])>0:
             corr_matrix = np.corrcoef(x_axis_data['axis_data'],y_axis_data['axis_data'])
             corr_value = format(corr_matrix[0,1], '.2f')

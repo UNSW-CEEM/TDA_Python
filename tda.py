@@ -431,6 +431,7 @@ def get_dual_variable_chart():
                                                                   current_session.project_data.retail_results_by_case,
                                                                   current_session.project_data.network_results_by_case,
                                                                   current_session.project_data.wholesale_results_by_case)
+
     load_and_results_to_plot = {'results': results_to_plot, 'load': current_session.load_by_case,
                                 'network_load': current_session.network_load}
 
