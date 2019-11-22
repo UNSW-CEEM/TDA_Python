@@ -19,19 +19,26 @@ def process_case(case_name, project_data):
                                                       project_data.network_tariffs_by_case[case_name]['Name'])
     data_for_export = _add_one_level_dictionary(data_for_export, 'Demographic filtering',
                                                 project_data.filter_options_by_case[case_name])
-    result_dataframe_to_export = project_data.demographic_info_by_case[case_name]
+    #result_dataframe_to_export = \
+    #    project_data.demographic_info_by_case[case_name].add_prefix('Demographic_').rename(
+    #        columns={'Demographic_CUSTOMER_KEY': 'CUSTOMER_KEY'})
     if case_name in project_data.retail_results_by_case.keys():
-        result_dataframe_to_export = _merge_results_dataframes(result_dataframe_to_export,
-                                                               project_data.retail_results_by_case[case_name],
-                                                               'Demographic', 'Retail')
+        retail_results = project_data.retail_results_by_case[case_name]['Retailer'].add_prefix('Retailer_').reset_index()
+        #result_dataframe_to_export = _merge_results_dataframes(result_dataframe_to_export, retail_results)
+        result_dataframe_to_export = retail_results
     if case_name in project_data.network_results_by_case.keys():
-        result_dataframe_to_export = _merge_results_dataframes(result_dataframe_to_export,
-                                                               project_data.network_results_by_case[case_name],
-                                                               'Retail', 'Network')
+        duos_results = project_data.network_results_by_case[case_name]['DUOS'].add_prefix('DUOS_').reset_index()
+        tuos_results = project_data.network_results_by_case[case_name]['TUOS'].add_prefix('TUOS_').reset_index()
+        nuos_results = project_data.network_results_by_case[case_name]['NUOS'].add_prefix('NUOS_').reset_index()
+        result_dataframe_to_export = _merge_results_dataframes(result_dataframe_to_export, duos_results)
+        result_dataframe_to_export = _merge_results_dataframes(result_dataframe_to_export, tuos_results)
+        result_dataframe_to_export = _merge_results_dataframes(result_dataframe_to_export, nuos_results)
     if case_name in project_data.wholesale_results_by_case.keys():
+        wholesale_result_dataframe_to_export = \
+            project_data.wholesale_results_by_case[case_name].add_prefix('Wholesale_').rename(
+                columns={'Wholesale_CUSTOMER_KEY': 'CUSTOMER_KEY'})
         result_dataframe_to_export = _merge_results_dataframes(result_dataframe_to_export,
-                                                               project_data.wholesale_results_by_case[case_name],
-                                                               '', 'Wholesale')
+                                                               wholesale_result_dataframe_to_export)
     data_for_export = _add_results_dataframe(data_for_export, result_dataframe_to_export)
     return data_for_export
 
@@ -54,9 +61,8 @@ def _add_results_dataframe(data_for_export, dataframe):
     return data_for_export
 
 
-def _merge_results_dataframes(left_dataframe, right_dataframe, left_name, right_name):
-    left_dataframe = pd.merge(left_dataframe, right_dataframe, how='left', on='CUSTOMER_KEY',
-                              suffixes=('_' + left_name, '_' + right_name))
+def _merge_results_dataframes(left_dataframe, right_dataframe):
+    left_dataframe = pd.merge(left_dataframe, right_dataframe, how='left', on='CUSTOMER_KEY')
     return left_dataframe
 
 

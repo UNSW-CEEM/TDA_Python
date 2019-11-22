@@ -50,7 +50,6 @@ def load_data_to_dataframe(file_path):
         elif len(sheet_names) == 1:  # allow user to upload only load data without demo data.
             load_data = pd.read_excel(xls, sheet_names[0])
             demo_data = pd.DataFrame({'CUSTOMER_KEY': []})
-
     return load_data, demo_data
 
 

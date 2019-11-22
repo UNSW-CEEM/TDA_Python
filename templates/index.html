@@ -39,6 +39,7 @@
     <script src="static/export.js"></script>
     <script src="static/errors.js"></script>
     <script src="static/tou_analysis.js"></script>
+    <script src="static/FileSaver.js-master/FileSaver.js-master/src/FileSaver.js"></script>
 
 
   <style>
@@ -444,6 +445,10 @@
         <select></select>
     </div>
 
+    <div id="delete_solar_dialog" title="Delete solar data" style="display: none">
+        <select></select>
+    </div>
+
     <div id="updating_tariffs" title="Updating tariffs" style="display: none">
         <p>Loading . . .  please wait.</p>
     </div>
@@ -483,9 +488,14 @@
         <input type="text" value="" class="text ui-widget-content ui-corner-all info">
     </div>
 
-    <div id="case_namer" title="Basic dialog" style="display: none">
+    <div id="case_namer" title="Case name" style="display: none">
         <p>Please provide a name for this case.</p>
         <input id="case_name">
+    </div>
+
+    <div id="project_namer" title="Project name" style="display: none">
+        <p>Please provide a name for this project.</p>
+        <input id="project_name_input">
     </div>
 
     <div id="case_control_template" class="row case_control"
@@ -502,6 +512,11 @@
         <thead class="tariff_table_header"></thead>
         <tbody class="tariff_table_body"></tbody>
     </table>
+    <form id="file_form" method = "POST" enctype = "multipart/form-data" style="display:none">>
+        <input type="file" id="file1" name="file">
+        <input type = "submit"/>
+    </form>
+
 
 </head>
 
@@ -511,16 +526,15 @@
       <ul id="tariff_menu" class="dropdown">
           <li><div>Project</div>
               <ul>
-                  <li><div onclick="load_project()">Load Project</div></li>
-                  <li><div onclick="save_project()">Save Project</div></li>
-                  <li><div onclick="save_project_as()">Save Project As</div></li>
+                  <li><div onclick="get_file_and_pass_to_python('.tda_results', '/load_project', load_project)">Load Project</div></li>
+                  <li><div onclick="launch_project_namer()">Save Project</div></li>
                   <hr>
                   <li><div id="restart_button" onclick="restart_tool()">Restart Tool</div></li>
               </ul>
           </li>
           <li><div>Load</div>
               <ul class="sub_menu">
-                  <li><div onclick="import_data('load')">Import Load Data</div></li>
+                  <li><div onclick="import_data('/import_load_data', add_load_names)">Import Load Data</div></li>
                   <li><div onclick="choose_data_to_delete()">Delete Load Data</div></li>
                   <li><div onclick="restore_original_data_set()">Restore Original Load Data</div></li>
                   <hr>
@@ -623,10 +637,17 @@
                         </li>
                         <hr>
                         <li>
-                            <div onclick="import_data('network', add_option_to_ui)">Create New Synthetic Network Load</div>
+                            <div onclick="import_data('/import_network_data', build_network_load_options)">Create New Synthetic Network Load</div>
                         </li>
                     </ul>
                   </li>
+              </ul>
+          </li>
+          <li>
+              <div>Solar</div>
+              <ul class="sub_menu">
+                  <li><div onclick="import_data('/import_solar_data', add_solar_names)">Import Solar Data</div></li>
+                  <li><div onclick="choose_solar_data_to_delete()">Delete Solar Data</div></li>
               </ul>
           </li>
 
@@ -634,7 +655,7 @@
               <div>Tariff</div>
               <ul class="sub_menu">
                   <li><div onclick="launch_tariff_creator()">Create New Tariff</div></li>
-                  <li><div onclick="open_tariff_info()">Tariff Info</div></li>
+                  <!--<li><div onclick="open_tariff_info()">Tariff Info</div></li>-->
                   <li><div>Reset Network Tariffs</div>
                       <ul class="sub_menu" id="network_tariff_sets"></ul>
                   </li>
@@ -778,7 +799,9 @@
                                        value="0">
                                 <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
                                 <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
-                                <select class="sample_parameter" name="profiles"></select>
+                                <select class="sample_parameter" id="solar_data" name="solar_data">
+                                    <option selected="selected_solar">None</option>
+                                </select>
                             </div>
                         </div>
                         <div class="row" style="overflow: hidden;">
@@ -850,7 +873,7 @@
                                         Create end user tech sample
                                 </button>
                                 <button style="width: 100%; text-align: left; height: 3.25vh;"
-                                        onclick="load_end_user_tech_from_sample_from_file()">
+                                        onclick="get_file_and_pass_to_python('.tda_tech_sample', '/load_end_user_tech_from_sample_from_file', update_gui_after_loading_tech_file)">
                                         <font id="tech_from_file_status_not_set" color="black" style="display: inline;">&#9675;</font>
                                         <font id="tech_from_file_status_set" color="green" style="display: none;">&#9679;</font>
                                         Load end user tech sample from file
@@ -1310,6 +1333,8 @@
     <script src="static/export_chart_data.js"></script>
     <script src="static/end_user_tech.js"></script>
     <script src="static/network_load_options.js"></script>
+    <script src="static/file_dialog.js"></script>
+    <script src="static/build_solar_selector.js"></script>
 </div>
 </body>
 </html>

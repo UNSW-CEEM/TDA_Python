@@ -2,7 +2,7 @@ var export_results = function(){
     $('#message_dialog').dialog({modal: true});
     $('#message_dialog p').text('Exporting . . .');
     $.ajax({
-        url: '/export_results',
+        url: '/prepare_export_results',
         type : 'POST',
         async: 'false',
         dataType:"json",
@@ -10,6 +10,7 @@ var export_results = function(){
             alert_user_if_error(data);
             $('#message_dialog').dialog({modal: true});
             $('#message_dialog p').text(data['message']);
+            saveAs('/export_results', 'results.xlsx');
         }
     });
 };

@@ -38,6 +38,7 @@ def get_tariffs(tariff_type):
     tariffs = tariffs + user_tariffs
     return tariffs
 
+
 def find_loads_demographic_file(load_file_name):
     load_2_demo_map = pd.read_csv('data/load_2_demo_map.csv')
 

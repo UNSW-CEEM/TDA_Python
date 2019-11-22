@@ -1,4 +1,4 @@
-from flask import Flask, render_template, request, jsonify
+from flask import Flask, render_template, request, jsonify, send_from_directory
 import os
 import sys
 import pandas as pd
@@ -84,6 +84,22 @@ def load_names():
     names = []
     for file_name in os.listdir('data/load/'):
         names.append(file_name.split('.')[0])
+
+    data = {
+        "names": names,
+        "current_load": current_session.raw_data_name
+    }
+    return jsonify(data)
+
+
+@app.route('/solar_names')
+@errors.parse_to_user_and_log(logger)
+def solar_names():
+    # Get the list of load files for the user to choose from.
+    names = []
+    for file_name in os.listdir('data/solar_profiles/'):
+        names.append(file_name.split('.')[0])
+
     return jsonify(names)
 
 
@@ -114,7 +130,6 @@ def get_tariff_set_options(tariff_type):
 def set_tariff_set_in_use():
     # Replace the network or retail data sets in the main 'data' folder with a set from the 'tariff_set_versions' folder
     # Allows the user to continue using older versions of the tariff data base.
-
     request_details = request.get_json()
 
     # Determine if 'Retail' of 'Network tariffs are being updated and sets the correct version to retrieve.
@@ -155,8 +170,8 @@ def filtered_load_data():
     # Filtering Data
 
     # Should only filter once for every new load data selected
-    if current_session.filter_state != load_request['filter_options']:
-        current_session.filter_state = load_request['filter_options']
+    if current_session.filter_state != load_request:
+        current_session.filter_state = load_request
         raw_data = current_session.raw_data[file_name]
 
         # Filter by missing data
@@ -412,7 +427,6 @@ def get_single_variable_chart():
 def get_dual_variable_chart():
     details = request.get_json()
     case_names = details['case_names']
-    file_name = details['load_details']['file_name']
     results_to_plot = helper_functions.get_results_subset_to_plot(case_names, 
                                                                   current_session.project_data.retail_results_by_case,
                                                                   current_session.project_data.network_results_by_case,
@@ -526,9 +540,9 @@ def create_end_user_tech_from_sample_from_gui():
 @app.route('/load_end_user_tech_from_sample_from_file', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def load_end_user_tech_from_sample_from_file():
-    details = request.json
-    file_path = helper_functions.get_file_to_load_from_user('TDA tech sample', '.tda_tech_sample')
-    with open(file_path, "rb") as f:
+    file = request.files['file']
+    file.save('data/temp/temp.pkl')
+    with open('data/temp/temp.pkl', "rb") as f:
         current_session.end_user_tech_sample = pickle.load(f)
     if current_session.end_user_tech_sample['load_details']['file_name'] + '.feather' in os.listdir('data/load/'):
         current_session.raw_data_name = current_session.end_user_tech_sample['load_details']['file_name']
@@ -565,7 +579,7 @@ def save_end_user_tech_sample():
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
     file_path = helper_functions.get_save_name_from_user('TDA tech sample', '.tda_tech_sample')
     if file_path != '':
-        file_path = helper_functions.add_file_extension_if_needed(file_path, '.tda_tech_sample')
+        file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_tech_sample')
         with open(file_path, "wb") as f:
             pickle.dump(current_session.end_user_tech_sample, f)
         message = 'saved'
@@ -673,77 +687,85 @@ def delete_tariff():
 
 @app.route('/import_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def import_load_data():
+def import_load():
+    file = request.files['file']
+    file_name = os.path.splitext(file.filename)[0]
+    file_path = 'data/temp/' + file_name
+    file.save(file_path)
+
+    # read file and load into dataframe
+    load_data, demo_data = load_data_to_dataframe(file_path)
+
+    # Check if the file format is in the correct format
+    try:
+        load_data[load_data.columns[0]] = pd.to_datetime(load_data[load_data.columns[0]])
+        load_data.rename(columns={load_data.columns[0]: 'Datetime'}, inplace=True)
+        demo_data.rename(columns={demo_data.columns[0]: 'CUSTOMER_KEY'}, inplace=True)
+    except:
+        return jsonify({'error': 'Invalid data format.'})
+
+    # Add mapping of imported file into load_2_demo_map.csv
+    add_to_load_2_demo_map(file_name)
+
+    # Add import load files to database
+    feather.write_dataframe(load_data, 'data/load/' + file_name + '.feather')
+    feather.write_dataframe(demo_data, 'data/demographics/' + 'demo_' + file_name + '.feather')
+    return jsonify({'message': "Successfully imported file."})
+
+
+@app.route('/import_network_data', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def import_network_data():
+    file = request.files['file']
+    file_name = os.path.splitext(file.filename)[0]
+    file_path = 'data/temp/' + file_name
+    file.save(file_path)
+
+    # read file and load into dataframe
+    network_data = generic_data_to_dataframe(file_path)
+
+    # Check if the file format is in the correct format
+    try:
+        network_data.rename(columns={network_data.columns[0]: 'Datetime'}, inplace=True)
+    except:
+        return jsonify({'error': 'Invalid data format.'})
+
+    feather.write_dataframe(network_data, 'data/network_loads/' + file_name + '.feather')
+    return jsonify({'message': "Successfully imported file."})
+
+
+@app.route('/import_solar_data', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def import_solar_data():
+    file = request.files['file']
+    file_name = os.path.splitext(file.filename)[0]
+    file_path = 'data/temp/' + file_name
+    file.save(file_path)
+
+    solar_data = generic_data_to_dataframe(file_path)
+
+    # Check if the file format is in the correct format
+    try:
+        solar_data.rename(columns={solar_data.columns[0]: 'Datetime'}, inplace=True)
+    except:
+        return jsonify({'error': 'Invalid data format.'})
+
+    feather.write_dataframe(solar_data, 'data/solar_profiles/' + file_name + '.feather')
+    return jsonify({'message': "Successfully imported file."})
+
+@app.route('/delete_solar_data', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def delete_solar_data():
     request_details = request.get_json()
-    import_file_type = request_details['type']
+    file_name = request_details['name']
+    solar_file_path = 'data/solar_profiles/' + file_name + '.feather'
 
-    # @todo: need to get file path from user
-    file_path = '/Users/bruceho/PycharmProjects/learning_environment/data/SampleLoad_without_demo.xlsx'
-    base = os.path.basename(file_path)
-    file_name = os.path.splitext(base)[0]
+    if not check_data_is_not_default(file_name, current_session.project_data.original_solar_data):
+        return jsonify({'message': "Cannot delete default data files. Can only delete data files imported by user."})
 
-    ###############################################
-    # Check whether the file being imported exist and is in the valid file type
-
-    if check_file_exists(file_path) == True:
-        pass
     else:
-        return jsonify({'error': 'Cannot find file.'})
-
-    if check_valid_filetype(file_path, allowed_extensions=['.csv', '.xls', '.xlsx']) == True:
-        pass
-    else:
-        return jsonify({'error': 'Invalid file type. Can only import csv or excel files in format as the sample file.'})
-
-    ###############################################
-
-    if import_file_type == 'load':
-        # read file and load into dataframe
-        load_data, demo_data = load_data_to_dataframe(file_path)
-
-        # Check if the file format is in the correct format
-        try:
-            load_data[load_data.columns[0]] = pd.to_datetime(load_data[load_data.columns[0]])
-            load_data.rename(columns={load_data.columns[0]: 'Datetime'}, inplace=True)
-            demo_data.rename(columns={demo_data.columns[0]: 'CUSTOMER_KEY'}, inplace=True)
-        except:
-            return jsonify({'error': 'Invalid data format.'})
-
-        # Add mapping of imported file into load_2_demo_map.csv
-        add_to_load_2_demo_map(file_name)
-
-        # Add import load files to database
-        feather.write_dataframe(load_data, 'data/load/' + file_name + '.feather')
-        feather.write_dataframe(demo_data, 'data/demographics/' + 'demo_' + file_name + '.feather')
-        return jsonify({'message': "Successfully imported file."})
-
-    elif import_file_type == 'network':
-        # read file and load into dataframe
-        network_data = generic_data_to_dataframe(file_path)
-
-        # Check if the file format is in the correct format
-        try:
-            network_data.rename(columns={network_data.columns[0]: 'Datetime'}, inplace=True)
-        except:
-            return jsonify({'error': 'Invalid data format.'})
-
-        feather.write_dataframe(network_data, 'data/network_loads/' + file_name + '.feather')
-        return jsonify({'message': "Successfully imported file."})
-
-    elif import_file_type == 'solar':
-        solar_data = generic_data_to_dataframe(file_path)
-
-        # Check if the file format is in the correct format
-        try:
-            solar_data.rename(columns={solar_data.columns[0]: 'Datetime'}, inplace=True)
-        except:
-            return jsonify({'error': 'Invalid data format.'})
-
-        feather.write_dataframe(solar_data, 'data/network_loads/' + file_name + '.feather')
-        return jsonify({'message': "Successfully imported file."})
-
-
-
+        os.remove(solar_file_path)
+        return jsonify({'message': "File has been deleted."})
 
 @app.route('/delete_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
@@ -775,8 +797,7 @@ def delete_load_data():
                 new_load_2_demo_map = new_load_2_demo_map.drop(index, axis=0)
                 os.remove(load_path)
                 os.remove(demo_path)
-            else:
-                pass
+
         new_load_2_demo_map.to_csv('data/load_2_demo_map.csv', index=False)
 
         return jsonify({'message': "File has been deleted."})
@@ -790,18 +811,25 @@ def restore_original_data_set():
     files_restored = []
 
     with open('data/load_2_demo_map.csv', 'r') as current_file:
-        files = [loaded_files.split(',', 1)[0] for loaded_files in current_file]
+        files = [loaded_files.split(',', 1)[0] for loaded_files in current_file][1:]
     current_file.close()
 
-    with open('data/load_2_demo_map.csv', 'a') as future_file:
-        if all(file_name in files for file_name in current_session.project_data.original_data):  # Check if file already exists
-            return jsonify({'message': "All original files are restored already."})
-        else:
-            for file_name in current_session.project_data.original_data:
-                if file_name not in files:
-                    files_restored.append(file_name)
-                    writer = csv.writer(future_file)
-                    writer.writerow([file_name, file_name + '.csv'])
+    original_data = sorted(current_session.project_data.original_data)
+    files_loaded = sorted(files)
+    if files_loaded == original_data:
+        return jsonify({'message': "All original files are already restored."})
+
+    with open('data/load_2_demo_map.csv', 'w') as future_file:
+        for file in files:
+            if file not in current_session.project_data.original_data:
+                os.remove('data/load/' + file + '.feather')
+                os.remove('data/demographics/demo_' + file + '.feather')
+
+        writer = csv.writer(future_file)
+        writer.writerow(['load', 'demo'])
+        for file in current_session.project_data.original_data:
+            files_restored.append(file)
+            writer.writerow([file, 'demo_' + file])
     future_file.close()
 
     # @todo: Need message to display file name that has been restored which is held in future_file as a list.
@@ -825,13 +853,6 @@ def open_tariff_info():
     return jsonify({'message': "No python code for opening tariff info yet!"})
 
 
-@app.route('/import_load', methods=['POST'])
-def import_load():
-    message = "No python code for creating synthetic network load yet! But we have returned a dummy name to add!"
-    dummy_name_to_add_as_option_in_ui = "not real option"
-    return jsonify({'message': message, 'name': dummy_name_to_add_as_option_in_ui})
-
-
 @app.route('/open_sample', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def open_sample():
@@ -842,71 +863,77 @@ def open_sample():
 @app.route('/load_project', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def load_project():
-    file_path = helper_functions.get_file_to_load_from_user('TDA results file', '.tda_results')
-    with open(file_path, "rb") as f:
+    file = request.files['file']
+    file.save('data/temp/temp.pkl')
+    with open('data/temp/temp.pkl', "rb") as f:
         current_session.project_data = pickle.load(f)
     message = "Done!"
-    current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
     also_return_a_list_of_cases_loaded = list(current_session.project_data.load_file_name_by_case.keys())
-    return jsonify({'message': message, 'name': current_session.project_data.name, 'cases': also_return_a_list_of_cases_loaded})
+    return jsonify({'message': message, 'name': current_session.project_data.name,
+                    'cases': also_return_a_list_of_cases_loaded})
 
 
-@app.route('/save_project', methods=['POST'])
+@app.route('/save_project/<path:filename>')
 @errors.parse_to_user_and_log(logger)
-def save_project():
-    if current_session.project_data.name == '':
-        file_path = helper_functions.get_save_name_from_user()
-        file_path = helper_functions.add_file_extension_if_needed(file_path)
-    else:
-        file_path = current_session.project_data.name + '.tda_results'
-    with open(file_path, "wb") as f:
+def save_project(filename):
+    current_session.project_data.name = filename
+    for the_file in os.listdir('data/temp'):
+        file_path = os.path.join('data/temp', the_file)
+        os.unlink(file_path)
+    with open('data/temp/{}.tda_results'.format(filename), "wb") as f:
         pickle.dump(current_session.project_data, f)
-    return jsonify({'message': "Done!"})
+    return send_from_directory('data/temp/', filename+'.tda_results', as_attachment=True)
 
 
-@app.route('/save_project_as', methods=['POST'])
+@app.route('/current_project_name', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def save_project_as():
-    file_path = helper_functions.get_save_name_from_user('TDA results file', '.tda_results')
-    file_path = helper_functions.add_file_extension_if_needed(file_path, '.tda_results')
-    current_session.project_data.name = helper_functions.get_project_name_from_file_path(file_path)
-    with open(file_path, "wb") as f:
-        pickle.dump(current_session.project_data, f)
-    return jsonify({'message': 'Done!', 'name': current_session.project_data.name})
+def current_project_name():
+    return jsonify({'message': "Done!", 'name': current_session.project_data.name})
 
 
-@app.route('/delete_project', methods=['POST'])
+@app.route('/prepare_export_results', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
-def delete_project():
-    return jsonify({'message': "No python code for deleting projects as yet!"})
-
-
-@app.route('/export_results', methods=['POST'])
-@errors.parse_to_user_and_log(logger)
-def export_results():
-    file_path = helper_functions.get_save_name_from_user('excel file', '.xlsx')
-    file_path = helper_functions.add_file_extension_if_needed(file_path, '.xlsx')
+def prepare_export_results():
+    for the_file in os.listdir('data/temp'):
+        file_path = os.path.join('data/temp', the_file)
+        os.unlink(file_path)
     wb = Workbook()
     for case_name in current_session.project_data.load_file_name_by_case.keys():
         data_to_export = format_case_for_export.process_case(case_name, current_session.project_data)
         ws = wb.create_sheet(case_name)
         for row in data_to_export:
             ws.append(row,)
-    wb.save(file_path)
-    return jsonify({'message': "Done!"})
+    wb.save('data/temp/results.xlsx')
+    return jsonify({'message': "Done!", 'name': current_session.project_data.name})
 
 
-@app.route('/export_chart_data', methods=['POST'])
+@app.route('/export_results')
 @errors.parse_to_user_and_log(logger)
-def export_chart_data():
+def export_results():
+    return send_from_directory('data/temp/', 'results.xlsx', as_attachment=True)
+
+
+@app.route('/prepare_export_chart_data_to_csv', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def prepare_export_chart_data_to_csv():
     request_details = request.get_json()
     export_data = format_chart_data_for_export.plot_ly_to_pandas(request_details)
-    if request_details['export_type'] == 'csv':
-        file_path = helper_functions.get_save_name_from_user('csv file', '.csv')
-        file_path = helper_functions.add_file_extension_if_needed(file_path, '.csv')
-        export_data.to_csv(file_path, index=False)
-    elif request_details['export_type'] == 'clipboard':
-        export_data.to_clipboard(index=False)
+    export_data.to_csv('data/temp/chart_data.csv', index=False)
+    return jsonify({'message': "Your export is done!"})
+
+
+@app.route('/export_chart_data_to_csv')
+@errors.parse_to_user_and_log(logger)
+def export_chart_data_to_csv():
+    return send_from_directory('data/temp/', 'chart_data.csv', as_attachment=True)
+
+
+@app.route('/export_chart_data_to_clipboard', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def export_chart_data_to_clipboard():
+    request_details = request.get_json()
+    export_data = format_chart_data_for_export.plot_ly_to_pandas(request_details)
+    export_data.to_clipboard(index=False)
     return jsonify({'message': "Your export is done!"})
 
 
@@ -938,18 +965,18 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    #shutdown_server()
+    # shutdown_server()
     return 'Server shutting down...'
 
 
 @errors.log(logger)
 def on_start_up():
-    start_up_procedures.update_nemosis_cache()
-    start_up_procedures.update_tariffs()
+    # start_up_procedures.update_nemosis_cache()
+    # start_up_procedures.update_tariffs()
     check_load_2_demo_map() # Fix load_2_demo_map if corrupted
     return None
 
 
 if __name__ == '__main__':
     on_start_up()
-    app.run()
+    app.run(debug=True)
