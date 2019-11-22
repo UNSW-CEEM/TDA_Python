@@ -454,9 +454,9 @@ def get_single_case_chart():
     else:
         results_to_plot = results_to_plot[case_name]
 
-    load_and_results_to_plot = {'results': results_to_plot, 'load': current_session.load_by_case[case_name]}
+    single_case_results_to_plot = {'results': results_to_plot}
 
-    return single_case_chart(chart_name, load_and_results_to_plot)
+    return single_case_chart(chart_name, single_case_results_to_plot)
 
 
 @app.route('/get_demo_options/<name>')

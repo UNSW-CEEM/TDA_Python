@@ -773,7 +773,7 @@ def is_component(suffixes, name_to_check):
     return False
 
 
-def _get_bill_components(data, load_to_plot):
+def _get_bill_components(data):
 
     Xaxis = "Users (sorted by total bill)"
     Yaxis = "Bill (AUD)"
@@ -830,7 +830,7 @@ def _get_bill_components(data, load_to_plot):
         traces.append(trace)
     return {'data':traces, 'layout': layout}
 
-def _get_bill_components_pie_chart(data, load_by_case):
+def _get_bill_components_pie_chart(data):
 
     Xaxis = ""
     Yaxis = ""
@@ -896,10 +896,9 @@ _single_case_chart_methods = {'bill_components': _get_bill_components,
 
 def single_case_chart(chart_name, load_and_results_to_plot):
     results_to_plot = load_and_results_to_plot['results']
-    load_to_plot = load_and_results_to_plot['load']
 
     if results_to_plot is not None:
-        chart_data = _single_case_chart_methods[chart_name](results_to_plot, load_to_plot)
+        chart_data = _single_case_chart_methods[chart_name](results_to_plot)
     else:
         chart_data = []
     chart_data = json.dumps(chart_data, cls=plotly.utils.PlotlyJSONEncoder)
