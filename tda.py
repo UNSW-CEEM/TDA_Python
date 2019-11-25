@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory
 import os
+import subprocess
+import platform
 import sys
 import pandas as pd
 import helper_functions
@@ -7,15 +9,16 @@ import plotly
 import json
 from make_load_charts import chart_methods
 from make_results_charts import singe_variable_chart, dual_variable_chart, single_case_chart
-from import_delete_data import check_valid_filetype, check_file_exists, check_load_2_demo_map, check_data_is_not_default, \
-    add_to_load_2_demo_map, load_data_to_dataframe, generic_data_to_dataframe
+from import_delete_data import check_valid_filetype, check_file_exists, check_load_2_demo_map, \
+                               check_data_is_not_default, add_to_load_2_demo_map, \
+                               load_data_to_dataframe, generic_data_to_dataframe
 import data_interface
 import Bill_Calc
 import format_case_for_export
 import format_chart_data_for_export
 import start_up_procedures
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
-    get_options_from_tariff_set, _make_dict
+                              get_options_from_tariff_set, _make_dict
 from make_price_charts import get_price_chart
 from wholesale_energy import get_wholesale_prices, calc_wholesale_energy_costs
 import pickle
@@ -29,9 +32,7 @@ import end_user_tech
 import math
 import feather
 import csv
-
-# please delete packages imported below this line.
-import time
+import webbrowser
 
 enable_logging = False
 
@@ -531,10 +532,11 @@ def get_wholesale_price_info():
 def create_end_user_tech_from_sample_from_gui():
     details = request.json
     current_session.end_user_tech_sample = end_user_tech.create_sample(details, current_session.filtered_data)
-    current_session.end_user_tech_data = \
-        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load, current_session.end_user_tech_sample)
-
+    current_session.end_user_tech_data = end_user_tech.calc_net_profiles(current_session.filtered_data,
+                                                                         current_session.network_load,
+                                                                         current_session.end_user_tech_sample)
     current_session.end_user_tech_sample_applied = True
+    current_session.end_user_tech_details = details
     return jsonify({'message': 'Done!'})
 
 
@@ -754,6 +756,7 @@ def import_solar_data():
     feather.write_dataframe(solar_data, 'data/solar_profiles/' + file_name + '.feather')
     return jsonify({'message': "Successfully imported file."})
 
+
 @app.route('/delete_solar_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def delete_solar_data():
@@ -767,6 +770,7 @@ def delete_solar_data():
     else:
         os.remove(solar_file_path)
         return jsonify({'message': "File has been deleted."})
+
 
 @app.route('/delete_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
@@ -851,14 +855,26 @@ def update_tariffs():
 @app.route('/open_tariff_info', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def open_tariff_info():
-    return jsonify({'message': "No python code for opening tariff info yet!"})
+    request_details = request.get_json()
+    tariff_id = data_interface.get_tariff('{}_tariff_selection_panel'.format(request_details['tariff_type']),
+                                          request_details['name'])['Tariff ID']
+    webbrowser.open('http://api.ceem.org.au/tariff-source/{}'.format(tariff_id), new=2)
+    message = "If you have an active internet connection the relevant information should be displayed in a new tab"
+    return jsonify({'message': message})
 
 
 @app.route('/open_sample', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def open_sample():
-    print('open sample for data: {}'.format(request.get_json()))
-    return jsonify({'message': "No python code for opening sample {} data yet!".format(request.get_json())})
+    request_details = request.get_json()
+    file_path = os.getcwd() + '\data\sample\{}.xlsx'.format(request_details['file_type'])
+    if platform.system() == 'Darwin':  # macOS
+        subprocess.call(('open', file_path))
+    elif platform.system() == 'Windows':  # Windows
+        os.startfile(file_path)
+    else:  # linux variants
+        subprocess.call(('xdg-open', file_path))
+    return jsonify({'message': "Done!".format(request.get_json())})
 
 
 @app.route('/load_project', methods=['POST'])
@@ -972,8 +988,8 @@ def shutdown():
 
 @errors.log(logger)
 def on_start_up():
-    # start_up_procedures.update_nemosis_cache()
-    # start_up_procedures.update_tariffs()
+    start_up_procedures.update_nemosis_cache()
+    start_up_procedures.update_tariffs()
     check_load_2_demo_map() # Fix load_2_demo_map if corrupted
     return None
 

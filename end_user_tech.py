@@ -11,6 +11,7 @@ import time
 pd.set_option('display.max_rows', 100)
 pd.set_option('display.max_columns', 100)
 
+
 def create_sample(gui_inputs, filtered_data):
     # Goal of this function is to create a record of end user tech by customer, should be data frame like. . .
     # CUSTOMER_KEY, HAS_SOLAR, solar_kw, solar_profile_id, HAS_BATTERY, etc

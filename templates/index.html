@@ -534,7 +534,7 @@
           </li>
           <li><div>Load</div>
               <ul class="sub_menu">
-                  <li><div onclick="import_data('/import_load_data', add_load_names)">Import Load Data</div></li>
+                  <li><div onclick="import_data('import_load_data', add_load_names)">Import Load Data</div></li>
                   <li><div onclick="choose_data_to_delete()">Delete Load Data</div></li>
                   <li><div onclick="restore_original_data_set()">Restore Original Load Data</div></li>
                   <hr>
@@ -637,7 +637,7 @@
                         </li>
                         <hr>
                         <li>
-                            <div onclick="import_data('/import_network_data', build_network_load_options)">Create New Synthetic Network Load</div>
+                            <div onclick="import_data('import_network_data', build_network_load_options)">Create New Synthetic Network Load</div>
                         </li>
                     </ul>
                   </li>
@@ -646,16 +646,15 @@
           <li>
               <div>Solar</div>
               <ul class="sub_menu">
-                  <li><div onclick="import_data('/import_solar_data', add_solar_names)">Import Solar Data</div></li>
+                  <li><div onclick="import_data('import_solar_data', add_solar_names)">Import Solar Data</div></li>
                   <li><div onclick="choose_solar_data_to_delete()">Delete Solar Data</div></li>
               </ul>
           </li>
-
           <li>
               <div>Tariff</div>
               <ul class="sub_menu">
                   <li><div onclick="launch_tariff_creator()">Create New Tariff</div></li>
-                  <!--<li><div onclick="open_tariff_info()">Tariff Info</div></li>-->
+                  <li><div onclick="open_tariff_info()">Tariff Info</div></li>
                   <li><div>Reset Network Tariffs</div>
                       <ul class="sub_menu" id="network_tariff_sets"></ul>
                   </li>
