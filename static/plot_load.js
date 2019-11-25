@@ -25,6 +25,7 @@ var add_demo_selectors = function(response){
         // Update menu bat status indicator
         $('#tech_status_not_set').show()
         $('#tech_status_set').hide()
+        $.ajax({url: '/deactivate_tech'});
     });
 
     plot_filtered_load();
@@ -183,6 +184,7 @@ $('#select').on('change', function() {
     // Update menu bat status indicator
     $('#tech_status_not_set').show()
     $('#tech_status_set').hide()
+    $.ajax({url: '/deactivate_tech'});
 });
 
 $('.down_sample_option').on('change', function() {
@@ -191,6 +193,7 @@ $('.down_sample_option').on('change', function() {
     // Update menu bat status indicator
     $('#tech_status_not_set').show()
     $('#tech_status_set').hide()
+    $.ajax({url: '/deactivate_tech'});
 });
 
 $('.missing_data_limit').on('change', function() {
@@ -199,6 +202,7 @@ $('.missing_data_limit').on('change', function() {
     // Update menu bat status indicator
     $('#tech_status_not_set').show()
     $('#tech_status_set').hide()
+    $.ajax({url: '/deactivate_tech'});
 });
 
 $('#select_graph').on('change', function() {

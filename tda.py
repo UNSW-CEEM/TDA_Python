@@ -319,7 +319,8 @@ def add_case():
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
-        network_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data['final_net_profiles'], network_tariff)
+        network_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data['final_net_profiles'],
+                                                    network_tariff)
         network_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         network_results['LoadInfo'] = network_results['LoadInfo'].reset_index()
 
@@ -589,6 +590,13 @@ def save_end_user_tech_sample():
     else:
         message = 'nothing saved'
     return jsonify({'message': message})
+
+
+@app.route('/deactivate_tech')
+@errors.parse_to_user_and_log(logger)
+def deactivate_tech():
+    current_session.end_user_tech_sample_applied = False
+    return jsonify({'message': 'Done!'})
 
 
 @app.route('/tariff_options', methods=['POST'])

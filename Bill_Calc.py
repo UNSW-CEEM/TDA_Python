@@ -162,6 +162,23 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
             results[TarComp]['Charge_BlockMonthly'] = results[TarComp][['C_m' + str(Q) for Q in range(1, 13)]].sum(
                 axis=1)
 
+    # Block Daily:
+    for TarComp, TarCompVal in tariff['Parameters'].items():
+        if 'BlockDaily' in TarCompVal.keys():
+            DailykWh = load_profile.resample('D').sum()
+            block_use_temp_charge = DailykWh.copy()
+            block_use_temp_charge.iloc[:, :] = 0
+            lim = 0
+            for k, v in TarCompVal['BlockDaily'].items():
+                block_use_temp = DailykWh.copy()
+                block_use_temp[block_use_temp > v['HighBound']] = v['HighBound']
+                block_use_temp = block_use_temp - lim
+                block_use_temp[block_use_temp < 0] = 0
+                lim = v['HighBound']
+                block_use_temp_charge = block_use_temp_charge + block_use_temp * v['Value']
+            results[TarComp]['Charge_BlockDaily'] = block_use_temp_charge.sum(axis=0)
+
+
     # TOU energy
     for TarComp, TarCompVal in tariff['Parameters'].items():
         if 'TOU' in TarCompVal.keys():
@@ -186,7 +203,6 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
     # Demand charge:
     for TarComp, TarCompVal in tariff['Parameters'].items():
         if 'Demand' in TarCompVal.keys():
-
             for DemCharComp, DemCharCompVal in TarCompVal['Demand'].items():
                 ts_num = DemCharCompVal['Demand Window Length']  # number of timestamp
                 num_of_peaks = DemCharCompVal['Number of Peaks']
@@ -261,7 +277,7 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
     for k, v in results.items():
         if k != 'LoadInfo':
             results[k]['Bill'] = results[k][[col for col in results[k].columns if col.startswith('Charge')]].sum(axis=1)
-    energy_comp_list = ['BlockAnnual', 'BlockMonthly', 'BlockQuarterly', 'FlatRate', 'TOU']
+    energy_comp_list = ['BlockAnnual', 'BlockQuarterly', 'BlockMonthly', 'BlockDaily', 'FlatRate', 'TOU']
     tariff_comp_list = []
     for TarComp, TarCompVal in tariff['Parameters'].items():
         for TarComp2, TarCompVal2 in tariff['Parameters'][TarComp].items():
@@ -270,8 +286,8 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
     energy_lst = [value for value in tariff_comp_list if value in energy_comp_list]
 
     if len(energy_lst) < 1:
-        return "No Energy component!"
+        raise ValueError("There is no energy charge component. Please fix the tariff and try again!")
     elif len(energy_lst) > 1:
-        return "More than one Energy component!"
+        raise ValueError( "There are more than one energy charge component. Please fix the tariff and try again!")
     else:
         return results

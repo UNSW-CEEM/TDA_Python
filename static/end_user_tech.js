@@ -133,6 +133,7 @@ $('.sample_parameter').on('change', function(){
                     'tech_from_file'])
     $('#calc_net_profiles').prop('disabled', true)
     $('#save_tech_sample').prop('disabled', true)
+    $.ajax({url: '/deactivate_tech'});
 });
 
 $('#select_net_graph').on('change', function(){
