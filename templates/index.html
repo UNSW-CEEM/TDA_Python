@@ -939,7 +939,6 @@
                                 <option value="Bill Distribution TUOS">Bill distribution (TUOS)</option>
                                 <option value="Bill Distribution Retailer">Bill distribution (Retailer)</option>
                                 <option value="Bill Distribution Wholesale">Bill distribution (Wholesale)</option>
-
                                 <option value="Bill Box Plot Total">Bill box plot (Total)</option>
                                 <option value="Bill Box Plot NUOS">Bill box plot (NUOS)</option>
                                 <option value="Bill Box Plot DUOS">Bill box plot (DUOS)</option>
@@ -1041,8 +1040,6 @@
                             </div>
                         </div>
                         <script src="static/plot_results.js"></script>
-
-                        
                         <div id="select_seasons" class="col" style="width: 24%; float: left; min-width: 200px; display: none;">
                             <div class="col" style="width: 50%;">
                                 <div class="col">
@@ -1067,7 +1064,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <script src="static/plot_results.js"></script>
                     </div>
                 </div>
@@ -1109,6 +1105,8 @@
                                 onclick="displayCaseInfoType(event, 'retail_tariff_info')">Retail tariff info</button>
                         <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'network_tariff_info')">Network tariff info</button>
+                        <button class="case_tab_links"
+                                onclick="displayCaseInfoType(event, 'tech_info')">End user tech info</button>
                     </div>
                     <div class="case_info_tab_content" id="load_info">
                         <div id="info_load_summary_labels" class="col" style="width: 100%; display: none;">
@@ -1197,6 +1195,72 @@
                         <div id="retail_info" style="width:100%;"></div>
                     </div>
                     <div class="case_info_tab_content" id="demog_info"></div>
+                    <div class="case_info_tab_content" id="tech_info">
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Solar</h4>
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%">
+                                <div class="label_stacked">Penetration (%):</div>
+                                <div class="label_stacked">Mean system size (kW):</div>
+                                <div class="label_stacked">Standard deviation (kW):</div>
+                                <div class="label_stacked">Solar profiles :</div>
+                            </div>
+                            <div class="col solar_details" style="width: 20%">
+                                <div class="label_stacked" name="penetration"></div>
+                                <div class="label_stacked" name="mean_size"></div>
+                                <div class="label_stacked" name="standard_dev"></div>
+                                <div class="label_stacked" name="solar_data"></div>
+                            </div>
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Batteries</h4>
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%">
+                                <div class="label_stacked">Penetration (%):</div>
+                                <div class="label_stacked">Mean power size (kW):</div>
+                                <div class="label_stacked">Standard deviation (kW):</div>
+                                <div class="label_stacked">Mean power/energy ratio:</div>
+                                <div class="label_stacked">Standard deviation:</div>
+                                <div class="label_stacked">Restriction:</div>
+                                <div class="label_stacked">Operational strategy:</div>
+                            </div>
+                            <div class="col battery_details" style="width: 20%">
+                                <div class="label_stacked" name="penetration"></div>
+                                <div class="label_stacked" name="mean_size"></div>
+                                <div class="label_stacked" name="standard_dev"></div>
+                                <div class="label_stacked" name="mean_power_to_energy"></div>
+                                <div class="label_stacked" name="power_to_energy_standard_dev"></div>
+                                <div class="label_stacked" name="restriction"></div>
+                                <div class="label_stacked" name="strategy"></div>
+                            </div>
+                        </div>
+                        <div class="row" style="overflow: hidden">
+                            <h4 style="margin: 0;">Demand response</h4>
+                            <hr style="width: 80%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%;">
+                                <div class="label_stacked">Penetration (%):</div>
+                                <div class="label_stacked">Mean Load Reduction (%):</div>
+                                <div class="label_stacked">Standard deviation (%):</div>
+                                <div class="label_stacked">Mean response time (hours):</div>
+                                <div class="label_stacked">Network Peak Limit for Event (kW):</div>
+                                <div class="label_stacked">Energy conservation:</div>
+                            </div>
+                            <div class="col demand_response_details" style="width: 20%;"></div>
+                                <div class="label_stacked" name="penetration"></div>
+                                <div class="label_stacked" name="mean_load_reduction"></div>
+                                <div class="label_stacked" name="standard_dev"></div>
+                                <div class="label_stacked" name="mean_response_time"></div>
+                                <div class="label_stacked" name="network_kw_events_limit"></div>
+                                <div class="label_stacked" name="energy_conservation"></div>
+                            </div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <script>document.getElementById("default_results_tab").click();</script>

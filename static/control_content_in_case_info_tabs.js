@@ -65,6 +65,37 @@ var get_and_display_case_demo_info = function(case_name){
     });
 }
 
+var insert_tech_info_into_tab = function(type, input_set){
+    $.each(input_set, function(name, input){
+        $('.{a}_details [name=\"{b}\"]'.replace('{a}', type).replace('{b}', name)).val(input);
+    });
+}
+
+var display_case_tech_info = function(case_name, details_by_tech_type){
+        $("#tech_info").empty();
+        $('#tech_info').append($('<div class="label_close_stacked">').text("Case: " + case_name));
+        $.each(details_by_tech_type, function(tech_type, details){
+               insert_tech_info_into_tab(tech_type, details);
+        });
+}
+
+var get_and_display_case_tech_info = function(case_name){
+    // Get tariff info for case.
+    $.ajax({
+        url: '/get_case_tech_options',
+        data: JSON.stringify(case_name),
+        contentType: 'application/json;charset=UTF-8',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        // Call the function to display the selected tariffs info
+        success: function(data){
+            alert_user_if_error(data);
+            display_case_tech_info(case_name, data);
+            }
+    });
+}
+
 var display_case_demo_info = function(case_name, demo_options){
         $("#demog_info").empty();
         $('#demog_info').append($('<div class="label_close_stacked">').text("Case: " + case_name));
