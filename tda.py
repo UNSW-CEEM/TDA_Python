@@ -305,7 +305,7 @@ def add_case():
     case_details = request.get_json()
     case_name = case_details['case_name']
     load_file_name = current_session.raw_data_name
-    filter_options = current_session.filter_state
+    filter_options = current_session.filter_state['filter_options']
     retail_tariff_name = case_details['retail_tariff_name']
     network_tariff_name = case_details['network_tariff_name']
     wholesale_year = case_details['wholesale_price_details']['year']
@@ -571,7 +571,8 @@ def load_end_user_tech_from_sample_from_file():
         filtered_data = raw_data.loc[:, current_session.end_user_tech_sample['customer_keys']]
         current_session.end_user_tech_data = end_user_tech.calc_net_profiles(filtered_data, current_session.network_load,
                                                                         current_session.end_user_tech_sample)
-        current_session.filter_state = current_session.end_user_tech_sample['load_details']['filter_options']
+        current_session.filter_state['filter_options'] = \
+            current_session.end_user_tech_sample['load_details']['filter_options']
         return_data = jsonify({'message': 'Done!', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
 
         current_session.end_user_tech_sample_applied = True
