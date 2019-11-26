@@ -66,14 +66,14 @@ var get_and_display_case_demo_info = function(case_name){
 }
 
 var insert_tech_info_into_tab = function(type, input_set){
+    $('.{a}_details .label_stacked'.replace('{a}', type)).empty()
     $.each(input_set, function(name, input){
-        $('.{a}_details [name=\"{b}\"]'.replace('{a}', type).replace('{b}', name)).val(input);
+        $('.{a}_details [name=\"{b}\"]'.replace('{a}', type).replace('{b}', name)).text(input);
     });
 }
 
 var display_case_tech_info = function(case_name, details_by_tech_type){
-        $("#tech_info").empty();
-        $('#tech_info').append($('<div class="label_close_stacked">').text("Case: " + case_name));
+        $('#tech_info .case_name').text("Case: " + case_name);
         $.each(details_by_tech_type, function(tech_type, details){
                insert_tech_info_into_tab(tech_type, details);
         });
@@ -155,6 +155,7 @@ var reset_case_info = function(case_name){
     get_and_display_case_load_info(case_name);
     get_and_display_case_demo_info(case_name);
     get_and_display_case_wholesale_price_info(case_name);
+    get_and_display_case_tech_info(case_name);
 }
 
 var get_and_display_case_tariff_info = function(case_name, tariff_type){

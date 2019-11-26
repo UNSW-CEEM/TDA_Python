@@ -393,7 +393,11 @@ def get_case_demo_options():
 def get_case_tech_options():
     # Get the demographic filtering options associated with a particular case.
     case_name = request.get_json()
-    return jsonify(current_session.project_data.end_user_tech_details_by_case[case_name]['tech_details'])
+    if case_name in current_session.project_data.end_user_tech_details_by_case.keys():
+        tech_details = current_session.project_data.end_user_tech_details_by_case[case_name]['tech_inputs']
+    else:
+        tech_details = {'solar': {}, 'battery': {}, 'demand_response': {}}
+    return jsonify(tech_details)
 
 
 @app.route('/delete_case', methods=['POST'])
