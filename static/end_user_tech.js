@@ -25,6 +25,7 @@ var create_end_user_tech_from_sample_from_gui = function(){
                 status_not_set(['tech_from_file', 'tech_sample_saved'])
                 $('#calc_net_profiles').prop('disabled', false)
                 $('#save_tech_sample').prop('disabled', false)
+                $('#toggle_tech').prop('disabled', false)
                 $("#message_dialog p").text(data['message'])
             }
         });
@@ -68,6 +69,7 @@ var calc_sample_net_load_profiles = function(){
             alert_user_if_error(data);
             get_net_load_chart();
             status_set(['tech', 'net_load_profiles'])
+            $('#toggle_tech').prop('disabled', false)
             $("#message_dialog p").text(data['message'])
         }
     });
@@ -126,6 +128,8 @@ var plot_net_load = function(response){
 
 $('.operational_parameter').on('change', function(){
     status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved'])
+    $('#toggle_tech').prop('disabled', true)
+    $.ajax({url: '/deactivate_tech'});
 });
 
 $('.sample_parameter').on('change', function(){
@@ -133,6 +137,7 @@ $('.sample_parameter').on('change', function(){
                     'tech_from_file'])
     $('#calc_net_profiles').prop('disabled', true)
     $('#save_tech_sample').prop('disabled', true)
+    $('#toggle_tech').prop('disabled', true)
     $.ajax({url: '/deactivate_tech'});
 });
 
@@ -142,6 +147,7 @@ $('#select_net_graph').on('change', function(){
 
 $('#calc_net_profiles').prop('disabled', true)
 $('#save_tech_sample').prop('disabled', true)
+$('#toggle_tech').prop('disabled', true)
 
 var get_all_tech_inputs = function(){
     var tech_inputs = {}
@@ -180,3 +186,20 @@ var status_not_set = function(base_ids){
     });
 }
 
+var toggle_end_user_tech = function(){
+    $.ajax({
+        url: '/toggle_end_user_tech',
+        contentType: 'application/json;',
+        type : 'POST',
+        async: 'false',
+        dataType:"json",
+        success: function(data){
+            alert_user_if_error(data)
+            if (data['toggled'] == 'on'){
+                status_set(['tech'])
+            } else {
+                status_not_set(['tech'])
+            }
+        }
+    });
+}

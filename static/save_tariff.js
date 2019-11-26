@@ -95,8 +95,10 @@ var save_tariff = function(current_tariff, tariff_type_tab_id){
         // Update tariff options so the user can select the new tariff.
         success: function(data){
             alert_user_if_error(data);
-            set_save_button_to_normal_state(tariff_type_tab_id);
-            get_tariff_options(tariff_type_tab_id, current_tariff['Name']);
+            if ('message' in data){
+                set_save_button_to_normal_state(tariff_type_tab_id);
+                get_tariff_options(tariff_type_tab_id, current_tariff['Name']);
+            }
         }
         });
 

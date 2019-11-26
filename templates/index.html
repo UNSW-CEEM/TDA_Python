@@ -421,6 +421,10 @@
         <p></p>
     </div>
 
+    <div id="tariff_info_dialog" title="Update" style="display: none">
+        <p></p>
+    </div>
+
     <div id="export_dialog" title="Show me the data!" style="display: none">
         <p></p>
     </div>
@@ -465,27 +469,27 @@
     <div id="tariff_meta_details_editor" title="Set tariff details" style="display: none;">
         <label class="label_close_stacked">Name</label>
         <br/>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all name">
-        <br/>
+        <input type="text" value="" class="name" style="width: 70%">
+        <div style="height: 1vh; display: block"></div>
         <label class="label_close_stacked">Provider</label>
         <br/>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all provider">
-        <br/>
+        <input type="text" value="" class="provider" style="width: 70%">
+        <div style="height: 1vh; display: block"></div>
         <label class="label_close_stacked">Type</label>
         <br/>
-        <input type="text"  value="" class="text ui-widget-content ui-corner-all type">
-        <br/>
+        <input type="text"  value="" class="type" style="width: 70%">
+        <div style="height: 1vh; display: block"></div>
         <label class="label_close_stacked">State</label>
         <br/>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all state">
-        <br/>
+        <input type="text" value="" class="state" style="width: 70%">
+        <div style="height: 1vh; display: block"></div>
         <label class="label_close_stacked">Year</label>
         <br/>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all year ">
-        <br/>
+        <input type="text" value="" class="year" style="width: 70%">
+        <div style="height: 1vh; display: block"></div>
         <label class="label_close_stacked">Info</label>
         <br/>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all info">
+        <input type="text" value="" class="info" style="width: 70%">
     </div>
 
     <div id="case_namer" title="Case name" style="display: none">
@@ -888,6 +892,10 @@
                                         <font id="tech_sample_saved_status_not_set" color="black" style="display: inline;">&#9675;</font>
                                         <font id="tech_sample_saved_status_set" color="green" style="display: none;">&#9679;</font>
                                         Save current sample to file
+                                </button>
+                                <button id="toggle_tech" style="width: 100%; text-align: left; height: 3.25vh;"
+                                        onclick="toggle_end_user_tech()">
+                                        Toggle end user tech
                                 </button>
                             </div>
                         </div>

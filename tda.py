@@ -34,7 +34,7 @@ import feather
 import csv
 import webbrowser
 
-enable_logging = False
+enable_logging = True
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
@@ -616,6 +616,18 @@ def deactivate_tech():
     return jsonify({'message': 'Done!'})
 
 
+@app.route('/toggle_end_user_tech', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def toggle_end_user_tech():
+    if current_session.end_user_tech_sample_applied:
+        current_session.end_user_tech_sample_applied = False
+        toggled = 'off'
+    else:
+        current_session.end_user_tech_sample_applied = True
+        toggled = 'on'
+    return jsonify({'toggled': toggled})
+
+
 @app.route('/tariff_options', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def tariff_options():
@@ -643,21 +655,38 @@ def tariff_json():
 @errors.parse_to_user_and_log(logger)
 def save_tariff():
     tariff_to_save = format_tariff_data_for_storage(request.get_json())
-    # Open the tariff data set.
-    if tariff_to_save['ProviderType'] == 'Network':
-        with open('data/UserDefinedNetworkTariffs.json', 'rt') as json_file:
-            tariffs = json.load(json_file)
-        tariffs.append(tariff_to_save)
-        with open('data/UserDefinedNetworkTariffs.json', 'wt') as json_file:
-            json.dump(tariffs, json_file)
-    else:
-        with open('data/UserDefinedRetailTariffs.json', 'rt') as json_file:
-            tariffs = json.load(json_file)
-        tariffs.append(tariff_to_save)
-        with open('data/UserDefinedRetailTariffs.json', 'wt') as json_file:
-            json.dump(tariffs, json_file)
-    return jsonify({'message': 'done'})
-
+    # Test the tariff before saving
+    test_load_data = data_interface.get_load_table('data/test/', 'test_data')
+    try:
+        Bill_Calc.bill_calculator(test_load_data, tariff_to_save)
+        # Open the tariff data set.
+        if tariff_to_save['ProviderType'] == 'Network':
+            with open('data/UserDefinedNetworkTariffs.json', 'rt') as json_file:
+                tariffs = json.load(json_file)
+            with open('data/NetworkTariffs.json', 'rt') as json_file:
+                tariff_data_base = json.load(json_file)[0]['Tariffs']
+            if tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariffs] and \
+                    tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariff_data_base]:
+                tariffs.append(tariff_to_save)
+            else:
+                return jsonify({'error': "Please pick a tariff name not in use and try again."})
+            with open('data/UserDefinedNetworkTariffs.json', 'wt') as json_file:
+                json.dump(tariffs, json_file)
+        else:
+            with open('data/UserDefinedRetailTariffs.json', 'rt') as json_file:
+                tariffs = json.load(json_file)
+            with open('data/RetailTariffs.json', 'rt') as json_file:
+                tariff_data_base = json.load(json_file)[0]['Tariffs']
+            if tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariffs] and \
+                    tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariff_data_base]:
+                tariffs.append(tariff_to_save)
+            else:
+                return jsonify({'error': "Please pick a tariff name not in use and try again."})
+            with open('data/UserDefinedRetailTariffs.json', 'wt') as json_file:
+                json.dump(tariffs, json_file)
+        return jsonify({'message': 'Done!'})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 @app.route('/get_active_tariff_version', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
@@ -1007,7 +1036,7 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    # shutdown_server()
+    shutdown_server()
     return 'Server shutting down...'
 
 
