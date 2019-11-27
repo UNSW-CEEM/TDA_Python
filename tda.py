@@ -33,8 +33,9 @@ import math
 import feather
 import csv
 import webbrowser
+from time import time
 
-enable_logging = True
+enable_logging = False
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
@@ -585,11 +586,13 @@ def load_end_user_tech_from_sample_from_file():
 @errors.parse_to_user_and_log(logger)
 def calc_sample_net_load_profiles():
     details = request.json
+    t0 = time()
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
     current_session.end_user_tech_data = \
         end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load, current_session.end_user_tech_sample)
 
     current_session.end_user_tech_sample_applied = True
+    print('Time to make sample and calc loads {}'.format(time() - t0))
     return jsonify({'message': 'done'})
 
 
@@ -1027,7 +1030,6 @@ def restart_tool():
 
 
 def shutdown_server():
-    print('called shutdown')
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
         raise RuntimeError('Not running with the Werkzeug Server')

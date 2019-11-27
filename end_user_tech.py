@@ -75,8 +75,8 @@ def create_sample(gui_inputs, filtered_data):
         sampled_solar_profile_id = random.sample(solar_profile_ids, number_solar_customers)
     elif number_solar_profiles < number_solar_customers:
         sampled_solar_profile_id = random.sample(solar_profile_ids, number_solar_profiles)
-        diff = number_solar_profiles - number_solar_customers
-        sampled_solar_profile_id.append(random.choices(solar_profile_ids, k=diff))
+        diff = number_solar_customers - number_solar_profiles
+        sampled_solar_profile_id += random.choices(solar_profile_ids, k=diff)
 
 
     # calculate distribution of solar/battery/demand_response sizes
@@ -208,19 +208,21 @@ def calc_net_profile_after_battery(net_load_profile, end_user_tech_sample):
 
         if batt_strategy == 'Maximise self consumption' and battery_capacity > 0:
             # start2 = time.time()
-            for i in range(1, number_of_steps):
-                net_profile = net_load_after_batt[key][i]
-                if net_profile < 0:
-                    # maximum charging rate is batt_kw/2.0 since we are using 30min timestamps
-                    chargeable_amount = min((usable_batt_capacity - current_batt_charge), max_batt_charge_rate, abs(net_profile))
-                    net_load_after_batt[key][i] = net_profile + chargeable_amount
-                    current_batt_charge += chargeable_amount / single_trip_batt_eff
-                elif net_profile > 0:
-                    dischargeable_amount = min(current_batt_charge, max_batt_charge_rate, net_profile)
-                    net_load_after_batt[key][i] = net_profile - dischargeable_amount
-                    current_batt_charge -= dischargeable_amount / single_trip_batt_eff
-                else:
-                    pass
+            profile = net_load_after_batt[key].to_numpy()
+            with np.nditer(profile, op_flags=['readwrite']) as profile_mod:
+                for net_profile in profile_mod:
+                    if net_profile < 0:
+                        # maximum charging rate is batt_kw/2.0 since we are using 30min timestamps
+                        chargeable_amount = min((usable_batt_capacity - current_batt_charge), max_batt_charge_rate, abs(net_profile))
+                        net_profile[...] = net_profile + chargeable_amount
+                        current_batt_charge += chargeable_amount / single_trip_batt_eff
+                    elif net_profile > 0:
+                        dischargeable_amount = min(current_batt_charge, max_batt_charge_rate, net_profile)
+                        net_profile[...] = net_profile - dischargeable_amount
+                        current_batt_charge -= dischargeable_amount / single_trip_batt_eff
+                    else:
+                        pass
+            net_load_after_batt[key] = profile
             # end2 = time.time()
             # print('time to calc one battery customer: ', end2-start2)
 
@@ -228,25 +230,24 @@ def calc_net_profile_after_battery(net_load_profile, end_user_tech_sample):
 
 
 def calc_solar_profiles(end_user_tech_sample):
-
     end_user_tech_details = end_user_tech_sample['end_user_tech_details']
     solar_profiles = end_user_tech_sample['solar_profiles'].clip(0)
     customer_key = end_user_tech_sample['customer_keys']
 
-    solar_kwh_profiles = pd.DataFrame([])
+    solar_kwh_profiles = []
+    zero_profile = np.zeros((len(solar_profiles), 1))
     for key in customer_key:
         solar_details = end_user_tech_details.loc[end_user_tech_details['CUSTOMER_KEY'] == key]
         solar_profile_id = solar_details['solar_profile_id'].values[0]
         solar_kw = solar_details['solar_kw'].values[0]
-
         if solar_profile_id:
-            solar_kwh_profiles = pd.concat([solar_kwh_profiles, solar_profiles[[solar_profile_id]].rename(columns={solar_profile_id: key}) * solar_kw], axis=1)
+            solar_kwh_profiles.append(
+                solar_profiles[[solar_profile_id]].rename(columns={solar_profile_id: key}) * solar_kw)
         else:
-            solar_kwh_profiles = pd.concat(
-                [solar_kwh_profiles, pd.DataFrame(np.zeros((len(solar_profiles), 1)), index=solar_profiles.index, columns=[key])], axis=1)
-
+            solar_kwh_profiles.append(
+                pd.DataFrame(zero_profile, index=solar_profiles.index, columns=[key]))
+    solar_kwh_profiles = pd.concat(solar_kwh_profiles, axis=1)
     return solar_kwh_profiles
-
 
 
 def calc_net_profile_after_DR(load_profile, network_load, end_user_tech_sample):
