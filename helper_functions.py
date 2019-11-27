@@ -42,9 +42,6 @@ def add_missing_customer_keys_to_demo_file_with_nan_values(raw_data, demo_info):
 
 def filter_demo_info(demo_info, filter_options):
     filtered = False
-
-    print(demo_info)
-    print('filter_options: ', filter_options)
     for column_name, selected_options in filter_options.items():
         if 'All' not in selected_options:
             demo_info = demo_info[demo_info[column_name].isin([selected_options])]
