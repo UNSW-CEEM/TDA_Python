@@ -35,7 +35,7 @@ import csv
 import webbrowser
 from time import time
 
-enable_logging = False
+enable_logging = True
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
@@ -549,10 +549,14 @@ def get_wholesale_price_info():
 @errors.parse_to_user_and_log(logger)
 def create_end_user_tech_from_sample_from_gui():
     details = request.json
+    t0 = time()
     current_session.end_user_tech_sample = end_user_tech.create_sample(details, current_session.filtered_data)
+    print('Time to create samples {}'.format(time() - t0))
+    t0 = time()
     current_session.end_user_tech_data = end_user_tech.calc_net_profiles(current_session.filtered_data,
                                                                          current_session.network_load,
                                                                          current_session.end_user_tech_sample)
+    print('Time to calc profiles {}'.format(time() - t0))
     current_session.end_user_tech_sample_applied = True
     current_session.end_user_tech_details = details
     return jsonify({'message': 'Done!'})

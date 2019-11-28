@@ -112,7 +112,4 @@ def add_file_extension_if_needed(file_path, extension):
     return file_path
 
 
-def sort_from_middle(arr, n):
-    arr1 = sorted(arr[:n // 2])
-    arr2 = sorted(arr[n // 2:], reverse=True)
-    return arr1 + arr2
+
