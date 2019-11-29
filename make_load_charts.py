@@ -89,7 +89,10 @@ def get_daily_kWh_hist(load, load_filtered, series_name):
 
 
 def get_daily_average_profile(x):
-    x_array = np.array(x).reshape((-1,48))
+    try:
+        x_array = np.array(x).reshape((-1,48))
+    except:
+        x=1
     return np.nanmean(x_array,axis=0)
 
 

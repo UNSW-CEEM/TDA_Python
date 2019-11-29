@@ -847,7 +847,7 @@
                                 <div class="label_stacked">Mean Load Reduction (%):</div>
                                 <div class="label_stacked">Standard deviation (%):</div>
                                 <div class="label_stacked">Mean response time (hours):</div>
-                                <div class="label_stacked">Network Peak Limit for Event (kW):</div>
+                                <div class="label_stacked">Network Peak Limit for Event (%):</div>
                                 <div class="label_stacked">Energy conservation:</div>
                             </div>
                             <div class="col demand_response_inputs" style="width: 20%;">
@@ -855,7 +855,7 @@
                                 <input class="sample_parameter" name="mean_load_reduction" type="number" min="0" max="100" value="0">
                                 <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
                                 <input class="operational_parameter" name="mean_response_time" type="number" min="0" value="0">
-                                <input class="operational_parameter" name="network_kw_events_limit" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="network_percentage_events_limit" type="number" min="0" max="100" value="0">
                                 <select class="operational_parameter" name="energy_conservation">
                                     <option>Yes</option>
                                     <option>No</option>
@@ -1278,9 +1278,16 @@
                                 <div class="label_stacked case_detail" name="mean_load_reduction"></div>
                                 <div class="label_stacked case_detail" name="standard_dev"></div>
                                 <div class="label_stacked case_detail" name="mean_response_time"></div>
-                                <div class="label_stacked case_detail" name="network_kw_events_limit"></div>
+                                <div class="label_stacked case_detail" name="network_percentage_events_limit"></div>
                                 <div class="label_stacked case_detail" name="energy_conservation"></div>
                             </div>
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin: 0;">Additional information</h4>
+                            <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="col additional_info_details" style="width: 90%;">
+                            <div class="label_stacked case_detail" name="message"></div>
                         </div>
                     </div>
                 </div>

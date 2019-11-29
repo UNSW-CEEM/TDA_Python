@@ -51,7 +51,7 @@ def create_sample(gui_inputs, filtered_data):
     dr_percent_reduction = float(dr_inputs['mean_load_reduction'])/100.0
     dr_percent_stdev = float(dr_inputs['standard_dev'])/100.0
     dr_mean_response_time = float(dr_inputs['mean_response_time'])
-    dr_network_kw_limit = float(dr_inputs['network_kw_events_limit'])
+    network_percentage_events_limit = float(dr_inputs['network_percentage_events_limit'])/100
     dr_energy_conservation = dr_inputs['energy_conservation']
     number_dr_customers = math.ceil(dr_pen * len(filtered_data.columns))
 
@@ -101,7 +101,7 @@ def create_sample(gui_inputs, filtered_data):
         [],
         columns=['CUSTOMER_KEY', 'HAS_SOLAR', 'solar_kw', 'solar_profile_id',
                  'HAS_BATTERY', 'battery_sizes_kW', 'battery_sizes_kW_to_kWh', 'battery_restriction', 'battery_strategy',
-                 'HAS_DR', 'dr_percent_reductions', 'dr_mean_response_time', 'dr_network_kw_limit', 'dr_energy_conservation',
+                 'HAS_DR', 'dr_percent_reductions', 'dr_mean_response_time', 'network_percentage_events_limit', 'dr_energy_conservation',
                  ],
         index=filtered_data.columns,
     )
@@ -143,7 +143,7 @@ def create_sample(gui_inputs, filtered_data):
     end_user_tech_details['battery_restriction'] = end_user_tech_details['battery_restriction'].fillna(battery_restriction)
     end_user_tech_details['battery_strategy'] = end_user_tech_details['battery_strategy'].fillna(battery_strategy)
     end_user_tech_details['dr_mean_response_time'] = end_user_tech_details['dr_mean_response_time'].fillna(dr_mean_response_time)
-    end_user_tech_details['dr_network_kw_limit'] = end_user_tech_details['dr_network_kw_limit'].fillna(dr_network_kw_limit)
+    end_user_tech_details['network_percentage_events_limit'] = end_user_tech_details['network_percentage_events_limit'].fillna(network_percentage_events_limit)
     end_user_tech_details['dr_energy_conservation'] = end_user_tech_details['dr_energy_conservation'].fillna(dr_energy_conservation)
     end_user_tech_details = end_user_tech_details.fillna(0)
 
@@ -408,14 +408,14 @@ def calc_net_profile_after_DR_v2(load_profile, network_load, end_user_tech_sampl
 
     end_user_tech_details = end_user_tech_sample['end_user_tech_details']
     customer_key = end_user_tech_sample['customer_keys']
-    dr_network_kw_limit = end_user_tech_details['dr_network_kw_limit'][0]
+    network_percentage_events_limit = end_user_tech_details['network_percentage_events_limit'][0]
     dr_mean_response_time = end_user_tech_details['dr_mean_response_time'][0]
     dr_energy_conservation = end_user_tech_details['dr_energy_conservation'][0]
 
     net_load_after_dr = load_profile.copy()
     ##########################################
     # Check for valid inputs
-    if dr_network_kw_limit <= 0 or dr_mean_response_time <= 0:
+    if network_percentage_events_limit <= 0 or dr_mean_response_time <= 0:
         return net_load_after_dr
 
     ##########################################
@@ -424,11 +424,15 @@ def calc_net_profile_after_DR_v2(load_profile, network_load, end_user_tech_sampl
     start_time_diff = (dr_response_time / 2).floor('30min')
     end_time_diff = (dr_response_time / 2).ceil('30min')
 
+    #####################################
+    # Find event limit in kw
+    dr_network_kwh_limit = network_percentage_events_limit * network_load['load'].max()
+
 
     ###############################
     # Currently assumes one demand response event per day over the dr_network_kw_limit
     daily_peak_demand = network_load.loc[network_load.groupby(pd.Grouper(freq='D')).idxmax().iloc[:, 0]]
-    dr_event_days = daily_peak_demand[daily_peak_demand['load'] > dr_network_kw_limit]
+    dr_event_days = daily_peak_demand[daily_peak_demand['load'] > dr_network_kwh_limit]
     t0 = time()
     rebound_hours = 6
     response_time_indexes_by_day = []
@@ -467,7 +471,7 @@ def do_demand_response(current_profile, response_time_indexes_by_day,  rebound_t
     for i in range(n):
         energy_offset = max(max(current_profile[response_time_indexes_by_day[i]]) * dr_percent_load_reduction, 0)
         current_profile[response_time_indexes_by_day[i]] = \
-            current_profile[response_time_indexes_by_day[i]] - energy_offset / 2
+            current_profile[response_time_indexes_by_day[i]] - energy_offset
         total_energy_offset = energy_offset * dr_mean_response_time
         if dr_energy_conservation == 'Yes':
             if len(rebound_distribution) != len(rebound_time_indexes_by_day[i]):

@@ -559,6 +559,12 @@ def create_end_user_tech_from_sample_from_gui():
     print('Time to calc profiles {}'.format(time() - t0))
     current_session.end_user_tech_sample_applied = True
     current_session.end_user_tech_details = details
+    current_session.end_user_tech_details['tech_inputs']['additional_info'] = {}
+    if current_session.end_user_tech_sample['message'] != 'Done!':
+        current_session.end_user_tech_details['tech_inputs']['additional_info']['message'] = \
+            current_session.end_user_tech_sample['message']
+    else:
+        current_session.end_user_tech_details['tech_inputs']['additional_info']['message'] = ''
     return jsonify({'message': current_session.end_user_tech_sample['message']})
 
 
@@ -590,14 +596,11 @@ def load_end_user_tech_from_sample_from_file():
 @errors.parse_to_user_and_log(logger)
 def calc_sample_net_load_profiles():
     details = request.json
-    t0 = time()
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
     current_session.end_user_tech_data = \
         end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load,
                                         current_session.end_user_tech_sample)
-
     current_session.end_user_tech_sample_applied = True
-    print('Time to make sample and calc loads {}'.format(time() - t0))
     return jsonify({'message': 'done'})
 
 
@@ -611,9 +614,9 @@ def save_end_user_tech_sample():
         file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_tech_sample')
         with open(file_path, "wb") as f:
             pickle.dump(current_session.end_user_tech_sample, f)
-        message = 'saved'
+        message = 'Saved'
     else:
-        message = 'nothing saved'
+        message = 'Not saved'
     return jsonify({'message': message})
 
 
