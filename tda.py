@@ -35,7 +35,7 @@ import csv
 import webbrowser
 from time import time
 
-enable_logging = True
+enable_logging = False
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
@@ -559,7 +559,7 @@ def create_end_user_tech_from_sample_from_gui():
     print('Time to calc profiles {}'.format(time() - t0))
     current_session.end_user_tech_sample_applied = True
     current_session.end_user_tech_details = details
-    return jsonify({'message': 'Done!'})
+    return jsonify({'message': current_session.end_user_tech_sample['message']})
 
 
 @app.route('/load_end_user_tech_from_sample_from_file', methods=['POST'])
@@ -593,7 +593,8 @@ def calc_sample_net_load_profiles():
     t0 = time()
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
     current_session.end_user_tech_data = \
-        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load, current_session.end_user_tech_sample)
+        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load,
+                                        current_session.end_user_tech_sample)
 
     current_session.end_user_tech_sample_applied = True
     print('Time to make sample and calc loads {}'.format(time() - t0))
@@ -694,6 +695,7 @@ def save_tariff():
         return jsonify({'message': 'Done!'})
     except Exception as e:
         return jsonify({'error': str(e)})
+
 
 @app.route('/get_active_tariff_version', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
@@ -1042,7 +1044,7 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    shutdown_server()
+    # shutdown_server()
     return 'Server shutting down...'
 
 

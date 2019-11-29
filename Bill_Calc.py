@@ -42,14 +42,20 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
 
     # Calculate imports and exports
     results = {}
-    imports = [np.nansum(load_profile[col].values[load_profile[col].values > 0])
-               for col in load_profile.columns]
+
+    Temp_imp = load_profile.values
+    Temp_exp = Temp_imp.copy()
+    Temp_imp[Temp_imp < 0] = 0
+    Temp_exp[Temp_exp > 0] = 0
+    load_profile_import = pd.DataFrame(Temp_imp, columns=load_profile.columns, index=load_profile.index)
+    load_profile_export = pd.DataFrame(Temp_exp, columns=load_profile.columns, index=load_profile.index)
+
     results['LoadInfo'] = pd.DataFrame(index=[col for col in load_profile.columns],
-                                       data=imports, columns=['Annual_kWh'])
+                                       data=np.sum(load_profile_import.values, axis=0), columns=['Annual_kWh'])
     if fit:
-        exports = [np.nansum(load_profile[col].values[load_profile[col].values < 0])
-                   for col in load_profile.columns]
-        results['LoadInfo']['Annual_kWh_exp'] = [x for x in exports]
+
+        results['LoadInfo']['Annual_kWh_exp'] = -1 * np.sum(load_profile_export.values, axis=0)
+
 
     # If it is retailer put retailer as a component to make it similar to network tariffs
     if tariff['ProviderType'] == 'Retailer':
@@ -64,7 +70,25 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
     # Calculate the FiT
     for TarComp, TarCompVal in tariff['Parameters'].items():
         if 'FiT' in TarCompVal.keys():
-            results[TarComp]['Charge_FiT_Rebate'] = results['LoadInfo']['Annual_kWh_exp'] * TarCompVal['FiT']['Value']
+            results[TarComp]['Charge_FiT_Rebate'] = -1 * results['LoadInfo']['Annual_kWh_exp'] * TarCompVal['FiT']['Value']
+        elif 'FiT_TOU' in TarCompVal.keys():
+            load_profile_ti_exp = pd.DataFrame()
+            load_profile_ti_exp_charge = pd.DataFrame()
+            for k, v in TarCompVal['FiT_TOU'].items():
+                this_part = v.copy()
+                if 'Weekday' not in this_part:
+                    this_part['Weekday'] = True
+                    this_part['Weekend'] = True
+                if 'TimeIntervals' not in this_part:
+                    this_part['TimeIntervals'] = {'T1': ['00:00', '00:00']}
+                if 'Month' not in this_part:
+                    this_part['Month'] = list(range(1, 13))
+                load_profile_t_a = time_select(load_profile_export, this_part)
+                load_profile_ti_exp[k] = load_profile_t_a.sum()
+                results[TarComp]['kWh_Exp' + k] = load_profile_ti_exp[k].copy()
+                load_profile_ti_exp_charge[k] = this_part['Value'] * load_profile_ti_exp[k]
+                results[TarComp]['FiT_C_TOU' + k] = load_profile_ti_exp_charge[k].copy()
+            results[TarComp]['Charge_FiT_Rebate'] = load_profile_ti_exp_charge.sum(axis=1)
 
     # Check if daily exists and calculate the charge
     for TarComp, TarCompVal in tariff['Parameters'].items():
@@ -106,8 +130,8 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
     for TarComp, TarCompVal in tariff['Parameters'].items():
         if 'BlockQuarterly' in TarCompVal.keys():
             for Q in range(1, 5):
-                load_profile_q = load_profile.loc[
-                                 load_profile.index.month.isin(list(range((Q - 1) * 3 + 1, Q * 3 + 1))), :]
+                load_profile_q = load_profile_import.loc[
+                                 load_profile_import.index.month.isin(list(range((Q - 1) * 3 + 1, Q * 3 + 1))), :]
                 results['LoadInfo']['kWh_Q' + str(Q)] = [
                     np.nansum(load_profile_q[col].values[load_profile_q[col].values > 0])
                     for col in load_profile_q.columns]
@@ -137,7 +161,7 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
     for TarComp, TarCompVal in tariff['Parameters'].items():
         if 'BlockMonthly' in TarCompVal.keys():
             for m in range(1, 13):
-                load_profile_m = load_profile.loc[load_profile.index.month == m, :]
+                load_profile_m = load_profile_import.loc[load_profile_import.index.month == m, :]
                 results['LoadInfo']['kWh_m' + str(m)] = [
                     np.nansum(load_profile_m[col].values[load_profile_m[col].values > 0])
                     for col in load_profile_m.columns]
@@ -165,7 +189,7 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
     # Block Daily:
     for TarComp, TarCompVal in tariff['Parameters'].items():
         if 'BlockDaily' in TarCompVal.keys():
-            DailykWh = load_profile.resample('D').sum()
+            DailykWh = load_profile_import.resample('D').sum()
             block_use_temp_charge = DailykWh.copy()
             block_use_temp_charge.iloc[:, :] = 0
             lim = 0
@@ -192,12 +216,12 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
                 if 'TimeIntervals' not in this_part:
                     this_part['TimeIntervals'] = {'T1': ['00:00', '00:00']}
                 if 'Month' not in this_part:
-                    this_part['TimeIntervals'] = list(range(1, 13))
-                load_profile_t_a = time_select(load_profile, this_part)
+                    this_part['Month'] = list(range(1, 13))
+                load_profile_t_a = time_select(load_profile_import, this_part)
                 load_profile_ti[k] = load_profile_t_a.sum()
-                results[TarComp]['kWh_' + k] = load_profile_ti[k]
+                results[TarComp]['kWh_' + k] = load_profile_ti[k].copy()
                 load_profile_ti_charge[k] = this_part['Value'] * load_profile_ti[k]
-                results[TarComp]['C_' + k] = load_profile_ti_charge[k]
+                results[TarComp]['C_' + k] = load_profile_ti_charge[k].copy()
             results[TarComp]['Charge_TOU'] = load_profile_ti_charge.sum(axis=1)
 
     # Demand charge:
@@ -207,9 +231,9 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
                 ts_num = DemCharCompVal['Demand Window Length']  # number of timestamp
                 num_of_peaks = DemCharCompVal['Number of Peaks']
                 if ts_num > 1:
-                    load_profile_r = load_profile.rolling(ts_num, min_periods=1).mean()
+                    load_profile_r = load_profile_import.rolling(ts_num, min_periods=1).mean()
                 else:
-                    load_profile_r = load_profile.copy()
+                    load_profile_r = load_profile_import.copy()
                 load_profile_f = time_select(load_profile_r, DemCharCompVal)
 
                 # if capacity charge is applied meaning the charge only applies when you exceed the capacity for

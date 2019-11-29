@@ -23,8 +23,11 @@ var add_demo_selectors = function(response){
         $('#dialog').dialog({modal: true});
         plot_filtered_load();
         // Update menu bat status indicator
-        $('#tech_status_not_set').show()
-        $('#tech_status_set').hide()
+        status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved', 'tech_from_gui',
+                        'tech_from_file'])
+        $('#calc_net_profiles').prop('disabled', true)
+        $('#save_tech_sample').prop('disabled', true)
+        $('#toggle_tech').prop('disabled', true)
         $.ajax({url: '/deactivate_tech'});
     });
 
@@ -182,8 +185,11 @@ $('#select').on('change', function() {
     $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
-    $('#tech_status_not_set').show()
-    $('#tech_status_set').hide()
+        status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved', 'tech_from_gui',
+                        'tech_from_file'])
+        $('#calc_net_profiles').prop('disabled', true)
+        $('#save_tech_sample').prop('disabled', true)
+        $('#toggle_tech').prop('disabled', true)
     $.ajax({url: '/deactivate_tech'});
 });
 

@@ -1,4 +1,6 @@
 
+var add_resize = function(){
+
 var window_resize_events = []
 
 var setup_vertical_resizing_pair = function(active_element_id, compensating_element_id, plot_to_resize, listener){
@@ -61,4 +63,6 @@ window.onresize = function(event){
       for (i = 0; i < window_resize_events.length; i++) {
       window_resize_events[i]();
   }
+}
+
 }

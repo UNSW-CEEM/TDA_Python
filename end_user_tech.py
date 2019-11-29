@@ -25,10 +25,22 @@ def create_sample(gui_inputs, filtered_data):
     number_solar_customers = math.ceil(solar_pen * len(filtered_data.columns))
 
     # @todo: add link to select solar data from solar_profiles folder
+    needed_dates = filtered_data.copy()
+    needed_dates['Datetime'] = needed_dates.index
+    needed_dates = needed_dates.loc[:, ['Datetime']]
     solar_data = solar_inputs['solar_data']
     solar_profiles = feather.read_dataframe('data/solar_profiles/' + solar_data + '.feather')
     solar_profiles = solar_profiles.set_index('Datetime')
     solar_profiles.index = pd.to_datetime(solar_profiles.index)
+    solar_orginal_dates = solar_profiles.index
+    original_cols = solar_profiles.columns
+    solar_profiles = pd.merge(solar_profiles, needed_dates, how='inner',
+                              left_on=[solar_profiles.index.month, solar_profiles.index.day,
+                                       solar_profiles.index.hour, solar_profiles.index.minute],
+                              right_on=[needed_dates.index.month, needed_dates.index.day,
+                                        needed_dates.index.hour, needed_dates.index.minute])
+    solar_profiles = solar_profiles.set_index('Datetime')
+    solar_profiles = solar_profiles.loc[:, original_cols]
     number_solar_profiles = len(solar_profiles.columns)
     solar_profile_ids = solar_profiles.columns.tolist()
 
@@ -141,6 +153,9 @@ def create_sample(gui_inputs, filtered_data):
                       'end_user_tech_details': end_user_tech_details,
                       'solar_profiles': solar_profiles, # @todo: can delete if we store solar profiles already in gui_inputs['tech_inputs']['solar']['profiles']
                       }
+
+    sample_details['message'] = create_message_for_user(solar_orginal_dates, solar_profiles.index)
+
     return sample_details
 
 
@@ -468,3 +483,21 @@ def sort_from_middle(arr, n):
     arr1 = sorted(arr[:n // 2])
     arr2 = sorted(arr[n // 2:], reverse=True)
     return arr1 + arr2
+
+
+def create_message_for_user(original_solar_dates, new_solar_dates):
+    start_solar = np.min(original_solar_dates)
+    end_solar = np.max(original_solar_dates)
+    start_load = np.min(new_solar_dates)
+    end_load = np.max(new_solar_dates)
+    overlapping_dates = np.intersect1d(original_solar_dates, new_solar_dates)
+    overlap_percentage = round(((1 - len(overlapping_dates)/len(new_solar_dates))) * 100, 0)
+    if overlap_percentage != 0.0:
+        message = '''Please note a {}% of the solar data used is drawn from a different calender year to the load data.
+                  The load data comes from between {} to {}, 
+                  and the solar data from {} to {}. The two data sets have 
+                  been merged on a month, day, hour and minute basis.'''.format(overlap_percentage, start_load, end_load,
+                                                                                start_solar, end_solar)
+    else:
+        message = 'Done!'
+    return message
