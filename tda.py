@@ -561,20 +561,15 @@ def calc_sample_net_load_profiles():
     return jsonify({'message': 'done'})
 
 
-@app.route('/save_end_user_tech_sample', methods=['POST'])
+@app.route('/save_end_user_tech_sample/<path:filename>')
 @errors.parse_to_user_and_log(logger)
-def save_end_user_tech_sample():
-    details = request.json
-    current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
-    file_path = helper_functions.get_save_name_from_user('TDA tech sample', '.tda_tech_sample')
-    if file_path != '':
-        file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_tech_sample')
-        with open(file_path, "wb") as f:
-            pickle.dump(current_session.end_user_tech_sample, f)
-        message = 'saved'
-    else:
-        message = 'nothing saved'
-    return jsonify({'message': message})
+def save_end_user_tech_sample(filename):
+    for the_file in os.listdir('data/temp'):
+        file_path = os.path.join('data/temp', the_file)
+        os.unlink(file_path)
+    with open('data/temp/{}.tda_tech_sample'.format(filename), "wb") as f:
+        pickle.dump(current_session.end_user_tech_sample, f)
+    return send_from_directory('data/temp/', filename+'.tda_tech_sample', as_attachment=True)
 
 
 @app.route('/tariff_options', methods=['POST'])
