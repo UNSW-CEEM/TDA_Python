@@ -23,7 +23,7 @@ var add_demo_selectors = function(response){
         $('#dialog').dialog({modal: true});
         plot_filtered_load();
         // Update menu bat status indicator
-        status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved', 'tech_from_gui',
+        status_not_set(['tech', 'net_load_profiles', 'tech_from_gui',
                         'tech_from_file'])
         $('#calc_net_profiles').prop('disabled', true)
         $('#save_tech_sample').prop('disabled', true)
@@ -185,7 +185,7 @@ $('#select').on('change', function() {
     $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
-        status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved', 'tech_from_gui',
+        status_not_set(['tech', 'net_load_profiles', 'tech_from_gui',
                         'tech_from_file'])
     $('#calc_net_profiles').prop('disabled', true)
     $('#save_tech_sample').prop('disabled', true)
@@ -197,7 +197,7 @@ $('.down_sample_option').on('change', function() {
     $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
-    status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved', 'tech_from_gui',
+    status_not_set(['tech', 'net_load_profiles', 'tech_from_gui',
                     'tech_from_file'])
     $('#calc_net_profiles').prop('disabled', true)
     $('#save_tech_sample').prop('disabled', true)
@@ -209,7 +209,7 @@ $('.missing_data_limit').on('change', function() {
     $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
-    status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved', 'tech_from_gui',
+    status_not_set(['tech', 'net_load_profiles', 'tech_from_gui',
                     'tech_from_file'])
     $('#calc_net_profiles').prop('disabled', true)
     $('#save_tech_sample').prop('disabled', true)
@@ -221,7 +221,7 @@ $('.network_load_option').on('change', function() {
     $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
-    status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved', 'tech_from_gui',
+    status_not_set(['tech', 'net_load_profiles', 'tech_from_gui',
                     'tech_from_file'])
     $('#calc_net_profiles').prop('disabled', true)
     $('#save_tech_sample').prop('disabled', true)
@@ -233,7 +233,7 @@ $('.synthetic_network_load_option').on('change', function() {
     $('#dialog').dialog({modal: true});
     perform_plot_load_actions();
     // Update menu bat status indicator
-    status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved', 'tech_from_gui',
+    status_not_set(['tech', 'net_load_profiles', 'tech_from_gui',
                     'tech_from_file'])
     $('#calc_net_profiles').prop('disabled', true)
     $('#save_tech_sample').prop('disabled', true)

@@ -22,7 +22,7 @@ var create_end_user_tech_from_sample_from_gui = function(){
                 alert_user_if_error(data);
                 get_net_load_chart();
                 status_set(['tech', 'tech_from_gui', 'net_load_profiles'])
-                status_not_set(['tech_from_file', 'tech_sample_saved'])
+                status_not_set(['tech_from_file'])
                 $('#calc_net_profiles').prop('disabled', false)
                 $('#save_tech_sample').prop('disabled', false)
                 $('#toggle_tech').prop('disabled', false)
@@ -42,7 +42,7 @@ var update_gui_after_loading_tech_file = function(data){
         insert_input_set_into_gui('battery', data['tech_inputs']['battery']);
         insert_input_set_into_gui('demand_response', data['tech_inputs']['demand_response']);
         get_net_load_chart();
-        status_set(['tech', 'tech_from_file', 'net_load_profiles', 'tech_sample_saved'])
+        status_set(['tech', 'tech_from_file', 'net_load_profiles'])
         status_not_set(['tech_from_gui'])
         $('#calc_net_profiles').prop('disabled', false)
         $('#save_tech_sample').prop('disabled', false)
@@ -76,26 +76,7 @@ var calc_sample_net_load_profiles = function(){
 }
 
 var save_end_user_tech_sample = function(){
-    var message = "Saving end user tech sample."
-    $("#message_dialog").dialog({ modal: true});
-    $("#message_dialog p").text(message)
-    var tech_details = {'tech_inputs': get_all_tech_inputs()}
-    // Get chart data
-    $.ajax({
-        url: '/save_end_user_tech_sample',
-        data: JSON.stringify(tech_details),
-        contentType: 'application/json',
-        type : 'POST',
-        async: 'false',
-        dataType:"json",
-        success: function(data){
-            alert_user_if_error(data);
-            if (data['message'] == 'saved'){
-                status_set(['tech_sample_saved'])
-                $("#message_dialog p").text(data['message'])
-            }
-        }
-    });
+    saveAs('/save_end_user_tech_sample', 'new_sample.tda_tech_sample');
 }
 
 var get_net_load_chart =  function(){
@@ -127,13 +108,14 @@ var plot_net_load = function(response){
 }
 
 $('.operational_parameter').on('change', function(){
-    status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved'])
+    status_not_set(['tech', 'net_load_profiles'])
+    $('#save_tech_sample').prop('disabled', true)
     $('#toggle_tech').prop('disabled', true)
     $.ajax({url: '/deactivate_tech'});
 });
 
 $('.sample_parameter').on('change', function(){
-    status_not_set(['tech', 'net_load_profiles', 'tech_sample_saved', 'tech_from_gui',
+    status_not_set(['tech', 'net_load_profiles', 'tech_from_gui',
                     'tech_from_file'])
     $('#calc_net_profiles').prop('disabled', true)
     $('#save_tech_sample').prop('disabled', true)

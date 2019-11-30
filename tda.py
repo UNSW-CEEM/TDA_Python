@@ -35,7 +35,7 @@ import csv
 import webbrowser
 from time import time
 
-enable_logging = False
+enable_logging = True
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
@@ -579,13 +579,12 @@ def load_end_user_tech_from_sample_from_file():
         current_session.raw_data_name = current_session.end_user_tech_sample['load_details']['file_name']
         raw_data = data_interface.get_load_table('data/load/', current_session.raw_data_name)
         current_session.raw_data[current_session.raw_data_name] = raw_data
-        filtered_data = raw_data.loc[:, current_session.end_user_tech_sample['customer_keys']]
-        current_session.end_user_tech_data = end_user_tech.calc_net_profiles(filtered_data, current_session.network_load,
-                                                                        current_session.end_user_tech_sample)
-        current_session.filter_state['filter_options'] = \
-            current_session.end_user_tech_sample['load_details']['filter_options']
+        current_session.filtered_data = raw_data.loc[:, current_session.end_user_tech_sample['customer_keys']]
+        current_session.end_user_tech_data = end_user_tech.calc_net_profiles(current_session.filtered_data,
+                                                                             current_session.network_load,
+                                                                             current_session.end_user_tech_sample)
+        #current_session.filter_state = current_session.end_user_tech_sample['load_details']
         return_data = jsonify({'message': 'Done!', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
-
         current_session.end_user_tech_sample_applied = True
     else:
         return_data = jsonify({'error': 'You do not have the required load data to use this tech sample.'})
@@ -604,15 +603,15 @@ def calc_sample_net_load_profiles():
     return jsonify({'message': 'done'})
 
 
-@app.route('/save_end_user_tech_sample/<path:filename>')
+@app.route('/save_end_user_tech_sample')
 @errors.parse_to_user_and_log(logger)
-def save_end_user_tech_sample(filename):
+def save_end_user_tech_sample():
     for the_file in os.listdir('data/temp'):
         file_path = os.path.join('data/temp', the_file)
         os.unlink(file_path)
-    with open('data/temp/{}.tda_tech_sample'.format(filename), "wb") as f:
+    with open('data/temp/new_sample.tda_tech_sample', "wb") as f:
         pickle.dump(current_session.end_user_tech_sample, f)
-    return send_from_directory('data/temp/', filename+'.tda_tech_sample', as_attachment=True)
+    return send_from_directory('data/temp/', 'new_sample.tda_tech_sample', as_attachment=True)
 
 
 @app.route('/deactivate_tech')
@@ -1042,7 +1041,7 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    #shutdown_server()
+    shutdown_server()
     return 'Server shutting down...'
 
 
