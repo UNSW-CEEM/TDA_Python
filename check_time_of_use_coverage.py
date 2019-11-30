@@ -34,7 +34,6 @@ def _overlapping_components(tariff_component, month, hour, minute, week_time):
             comp_time_parameters['Weekday'] = True
         if 'Weekend' not in comp_time_parameters:
             comp_time_parameters['Weekend'] = True
-        comp_time_parameters['Month'] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
         right_month = month in comp_time_parameters['Month']
         right_week_time = comp_time_parameters[week_time]
         for interval_name, interval in comp_time_parameters['TimeIntervals'].items():
