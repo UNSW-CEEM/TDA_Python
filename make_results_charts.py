@@ -194,8 +194,8 @@ def _monthly_average_kWh(load_and_results_by_case):
 
     load_by_case = load_and_results_by_case['load']
 
-    Xaxis = "Daily Electricity (kWh)"
-    Yaxis = "Load (kW)"
+    Xaxis = "Month"
+    Yaxis = "Average Daily Consumption (kWh)"
     layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
@@ -207,7 +207,7 @@ def _monthly_average_kWh(load_and_results_by_case):
 
         # find mean for each month
         monthly_mean = load_average.resample('M').mean()
-        monthly_mean = monthly_mean*24
+        monthly_mean = monthly_mean * 48
         month_name = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
         trace.append(go.Bar(x=month_name,y=monthly_mean.values, name=case_name))

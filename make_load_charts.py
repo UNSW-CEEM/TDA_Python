@@ -89,10 +89,7 @@ def get_daily_kWh_hist(load, load_filtered, series_name):
 
 
 def get_daily_average_profile(x):
-    try:
-        x_array = np.array(x).reshape((-1,48))
-    except:
-        x=1
+    x_array = np.array(x).reshape((-1,48))
     return np.nanmean(x_array,axis=0)
 
 
@@ -219,8 +216,8 @@ def get_average_peak_day_profile(load):
 
 def get_monthly_average_kWh(load):
 
-    Xaxis = "Daily Electricity (kWh)"
-    Yaxis = "Load (kW)"
+    Xaxis = "Month"
+    Yaxis = "Average Daily Consumption (kWh)"
     layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=False)
@@ -237,7 +234,7 @@ def get_monthly_average_kWh(load):
         # find mean for each month
         monthly_mean = load_average.resample('M').mean()
 
-        monthly_mean = monthly_mean*24
+        monthly_mean = monthly_mean * 48
 
         month_name = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 

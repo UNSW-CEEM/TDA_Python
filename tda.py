@@ -273,9 +273,9 @@ def net_load_chart_data():
     load_request = request.get_json()
     chart_type = load_request['chart_type']
     if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
-        chart_data = chart_methods[chart_type](current_session.downsample_data,
+        chart_data = chart_methods[chart_type](current_session.filtered_data,
                                                current_session.end_user_tech_data['final_net_profiles'],
-                                               series_name=['All', 'Selected'])
+                                               series_name=['Gross', 'Net'])
     elif chart_type == 'Annual Average Energy Flow Profile':
         chart_data = chart_methods[chart_type](current_session.end_user_tech_data)
     else:
@@ -1047,7 +1047,7 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    # shutdown_server()
+    #shutdown_server()
     return 'Server shutting down...'
 
 
