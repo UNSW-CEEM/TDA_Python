@@ -194,8 +194,8 @@ def _monthly_average_kWh(load_and_results_by_case):
 
     load_by_case = load_and_results_by_case['load']
 
-    Xaxis = "Daily Electricity (kWh)"
-    Yaxis = "Load (kW)"
+    Xaxis = "Month"
+    Yaxis = "Average Daily Consumption (kWh)"
     layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12)),
                        yaxis=dict(showgrid=False, title=Yaxis,rangemode='tozero',title_font=dict(size=12),tickfont=dict(size=12)),
                        showlegend=True)
@@ -207,7 +207,7 @@ def _monthly_average_kWh(load_and_results_by_case):
 
         # find mean for each month
         monthly_mean = load_average.resample('M').mean()
-        monthly_mean = monthly_mean*24
+        monthly_mean = monthly_mean * 48
         month_name = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
 
         trace.append(go.Bar(x=month_name,y=monthly_mean.values, name=case_name))
@@ -374,7 +374,7 @@ def _get_avg_demand_n_peaks(results, load, network_load, details, axis):
 
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
 
-    if not bool(load):
+    if load is None:
         return {'axis_name':axis_name, 'axis_data':[]}
 
     else:
@@ -451,7 +451,7 @@ def _get_avg_demand_n_monthly_peaks(results, load, network_load, details, axis):
 
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
 
-    if not bool(load):
+    if load is None:
         return {'axis_name':axis_name, 'axis_data':[]}
 
     else:
@@ -531,7 +531,7 @@ def _get_avg_demand_top_n_peaks(results, load, network_load, details, axis):
 
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
 
-    if not bool(load):
+    if load is None:
         return {'axis_name':axis_name, 'axis_data':[]}
 
     else:
@@ -595,7 +595,7 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details, ax
     axis_name = "Average Demand at " + str(N_peaks) + " Network Peaks"
 
 
-    if not bool(load):
+    if load is None:
         return {'axis_name':axis_name, 'axis_data':[]}
 
     else:
@@ -658,7 +658,7 @@ def _get_avg_demand_top_n_monthly_peaks(results, load, network_load, details, ax
 def _get_avg_daily_kWh(results, load, network_load, details, axis):
     axis_name = "Average Daily kWh"
 
-    if not bool(load):
+    if load is None:
         return {'axis_name':axis_name, 'axis_data':[]}
 
     else:
@@ -678,7 +678,7 @@ def _get_avg_daily_kWh(results, load, network_load, details, axis):
 def _get_avg_daily_peak(results, load, network_load, details, axis):
     axis_name = "Average Daily Peaks"
 
-    if not bool(load):
+    if load is None:
         return {'axis_name':axis_name, 'axis_data':[]}
 
     else:
@@ -782,13 +782,13 @@ def dual_variable_chart(load_and_results_by_case, details):
         if bool(load_by_case):
             x_axis_data = _dual_variable_axis_methods[details['x_axis']](results, load_by_case[case_name], network_load, details, axis = 'x_axis')
         else:
-            x_axis_data = _dual_variable_axis_methods[details['x_axis']](results, {}, None, details, axis = 'x_axis')
+            x_axis_data = _dual_variable_axis_methods[details['x_axis']](results, None, None, details, axis = 'x_axis')
 
         
         if bool(load_by_case):
             y_axis_data = _dual_variable_axis_methods[details['y_axis']](results, load_by_case[case_name], network_load, details, axis = 'y_axis')
         else:
-            y_axis_data = _dual_variable_axis_methods[details['y_axis']](results, {}, None, details, axis = 'y_axis')
+            y_axis_data = _dual_variable_axis_methods[details['y_axis']](results, None, None, details, axis = 'y_axis')
             
                     
 

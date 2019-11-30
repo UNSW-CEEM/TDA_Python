@@ -10,7 +10,7 @@ def get_default_layout():
                        margin=dict(l=80, r=35, b=40, t=20, pad=0),
                        paper_bgcolor='#EEEEEE',
                        plot_bgcolor='#c7c7c7',
-                       showlegend=True)
+                       showlegend=False)
     return layout
 
 

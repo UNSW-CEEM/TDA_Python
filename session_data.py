@@ -28,6 +28,9 @@ class ProjectData():
         # Wholesale price info
         self.wholesale_price_info_by_case = {}
 
+        # End user tech info
+        self.end_user_tech_details_by_case = {}
+
         # Add original data that cannot be deleted (this allows for us to restore to original load data)
         self.original_data = [
             'test_data',
@@ -85,6 +88,7 @@ class InMemoryData:
         self.end_user_tech_sample = None
         self.end_user_tech_sample_applied = False
         self.end_user_tech_profiles = None
+        self.end_user_tech_details = None
 
         # Filtering options applied to get the current filtered data.
         self.filter_state = None

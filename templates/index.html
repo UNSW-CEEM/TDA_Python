@@ -421,6 +421,10 @@
         <p></p>
     </div>
 
+    <div id="tariff_info_dialog" title="Update" style="display: none">
+        <p></p>
+    </div>
+
     <div id="export_dialog" title="Show me the data!" style="display: none">
         <p></p>
     </div>
@@ -465,27 +469,27 @@
     <div id="tariff_meta_details_editor" title="Set tariff details" style="display: none;">
         <label class="label_close_stacked">Name</label>
         <br/>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all name">
-        <br/>
+        <input type="text" value="" class="name" style="width: 70%">
+        <div style="height: 1vh; display: block"></div>
         <label class="label_close_stacked">Provider</label>
         <br/>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all provider">
-        <br/>
+        <input type="text" value="" class="provider" style="width: 70%">
+        <div style="height: 1vh; display: block"></div>
         <label class="label_close_stacked">Type</label>
         <br/>
-        <input type="text"  value="" class="text ui-widget-content ui-corner-all type">
-        <br/>
+        <input type="text"  value="" class="type" style="width: 70%">
+        <div style="height: 1vh; display: block"></div>
         <label class="label_close_stacked">State</label>
         <br/>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all state">
-        <br/>
+        <input type="text" value="" class="state" style="width: 70%">
+        <div style="height: 1vh; display: block"></div>
         <label class="label_close_stacked">Year</label>
         <br/>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all year ">
-        <br/>
+        <input type="text" value="" class="year" style="width: 70%">
+        <div style="height: 1vh; display: block"></div>
         <label class="label_close_stacked">Info</label>
         <br/>
-        <input type="text" value="" class="text ui-widget-content ui-corner-all info">
+        <input type="text" value="" class="info" style="width: 70%">
     </div>
 
     <div id="case_namer" title="Case name" style="display: none">
@@ -534,14 +538,14 @@
           </li>
           <li><div>Load</div>
               <ul class="sub_menu">
-                  <li><div onclick="import_data('/import_load_data', add_load_names)">Import Load Data</div></li>
+                  <li><div onclick="import_data('import_load_data', add_load_names)">Import Load Data</div></li>
                   <li><div onclick="choose_data_to_delete()">Delete Load Data</div></li>
                   <li><div onclick="restore_original_data_set()">Restore Original Load Data</div></li>
                   <hr>
                   <li><div>Maximum Allowed Missing Data (%)</div>
                       <ul class="sub_menu">
                           <li>
-                              <input class="missing_data_limit menu_check_list" type="checkbox" checked value="0"
+                              <input class="missing_data_limit menu_check_list" type="checkbox" value="0"
                               onclick="update_check_list(event, this)">
                               <div class="menu_check_list_label">0%</div>
                           </li>
@@ -556,7 +560,7 @@
                               <div class="menu_check_list_label">2%</div>
                           </li>
                           <li>
-                              <input class="missing_data_limit menu_check_list" type="checkbox" value="0.05"
+                              <input class="missing_data_limit menu_check_list" type="checkbox" checked value="0.05"
                               onclick="update_check_list(event, this)">
                               <div class="menu_check_list_label">5%</div>
                           </li>
@@ -637,7 +641,7 @@
                         </li>
                         <hr>
                         <li>
-                            <div onclick="import_data('/import_network_data', build_network_load_options)">Create New Synthetic Network Load</div>
+                            <div onclick="import_data('import_network_data', build_network_load_options)">Create New Synthetic Network Load</div>
                         </li>
                     </ul>
                   </li>
@@ -646,16 +650,15 @@
           <li>
               <div>Solar</div>
               <ul class="sub_menu">
-                  <li><div onclick="import_data('/import_solar_data', add_solar_names)">Import Solar Data</div></li>
+                  <li><div onclick="import_data('import_solar_data', add_solar_names)">Import Solar Data</div></li>
                   <li><div onclick="choose_solar_data_to_delete()">Delete Solar Data</div></li>
               </ul>
           </li>
-
           <li>
               <div>Tariff</div>
               <ul class="sub_menu">
                   <li><div onclick="launch_tariff_creator()">Create New Tariff</div></li>
-                  <!--<li><div onclick="open_tariff_info()">Tariff Info</div></li>-->
+                  <li><div onclick="open_tariff_info()">Tariff Info</div></li>
                   <li><div>Reset Network Tariffs</div>
                       <ul class="sub_menu" id="network_tariff_sets"></ul>
                   </li>
@@ -800,7 +803,6 @@
                                 <input class="sample_parameter" name="mean_size" type="number" min="0" value="0">
                                 <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
                                 <select class="sample_parameter" id="solar_data" name="solar_data">
-                                    <option selected="selected_solar">None</option>
                                 </select>
                             </div>
                         </div>
@@ -845,7 +847,7 @@
                                 <div class="label_stacked">Mean Load Reduction (%):</div>
                                 <div class="label_stacked">Standard deviation (%):</div>
                                 <div class="label_stacked">Mean response time (hours):</div>
-                                <div class="label_stacked">Network Peak Limit for Event (kW):</div>
+                                <div class="label_stacked">Network Peak Limit for Event (%):</div>
                                 <div class="label_stacked">Energy conservation:</div>
                             </div>
                             <div class="col demand_response_inputs" style="width: 20%;">
@@ -853,7 +855,7 @@
                                 <input class="sample_parameter" name="mean_load_reduction" type="number" min="0" max="100" value="0">
                                 <input class="sample_parameter" name="standard_dev" type="number" min="0" value="0">
                                 <input class="operational_parameter" name="mean_response_time" type="number" min="0" value="0">
-                                <input class="operational_parameter" name="network_kw_events_limit" type="number" min="0" value="0">
+                                <input class="operational_parameter" name="network_percentage_events_limit" type="number" min="0" max="100" value="0">
                                 <select class="operational_parameter" name="energy_conservation">
                                     <option>Yes</option>
                                     <option>No</option>
@@ -889,6 +891,10 @@
                                         <font id="tech_sample_saved_status_not_set" color="black" style="display: inline;">&#9675;</font>
                                         <font id="tech_sample_saved_status_set" color="green" style="display: none;">&#9679;</font>
                                         Save current sample to file
+                                </button>
+                                <button id="toggle_tech" style="width: 100%; text-align: left; height: 3.25vh;"
+                                        onclick="toggle_end_user_tech()">
+                                        Toggle end user tech
                                 </button>
                             </div>
                         </div>
@@ -940,7 +946,6 @@
                                 <option value="Bill Distribution TUOS">Bill distribution (TUOS)</option>
                                 <option value="Bill Distribution Retailer">Bill distribution (Retailer)</option>
                                 <option value="Bill Distribution Wholesale">Bill distribution (Wholesale)</option>
-
                                 <option value="Bill Box Plot Total">Bill box plot (Total)</option>
                                 <option value="Bill Box Plot NUOS">Bill box plot (NUOS)</option>
                                 <option value="Bill Box Plot DUOS">Bill box plot (DUOS)</option>
@@ -1042,8 +1047,6 @@
                             </div>
                         </div>
                         <script src="static/plot_results.js"></script>
-
-                        
                         <div id="select_seasons" class="col" style="width: 24%; float: left; min-width: 200px; display: none;">
                             <div class="col" style="width: 50%;">
                                 <div class="col">
@@ -1068,7 +1071,6 @@
                                 </div>
                             </div>
                         </div>
-                        
                         <script src="static/plot_results.js"></script>
                     </div>
                 </div>
@@ -1110,94 +1112,184 @@
                                 onclick="displayCaseInfoType(event, 'retail_tariff_info')">Retail tariff info</button>
                         <button class="case_tab_links"
                                 onclick="displayCaseInfoType(event, 'network_tariff_info')">Network tariff info</button>
+                        <button class="case_tab_links"
+                                onclick="displayCaseInfoType(event, 'tech_info')">End user tech info</button>
                     </div>
                     <div class="case_info_tab_content" id="load_info">
-                        <div id="info_load_summary_labels" class="col" style="width: 100%; display: none;">
-                            <div class="row" style="height: 2.5vh;">
-                                <div class="label_line">Case:&nbsp</div>
-                                <div id="load_info_case" class="label_line"></div>
+                        <div class="case_name label_stacked case_detail">Case:&nbsp</div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Summary</h4>
+                            <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 30%">
+                                <div class="label_stacked">No. of users:&nbsp</div>
+                                <div class="label_stacked">Database:&nbsp</div>
                             </div>
-                            <div class="row" style="height: 2.5vh;">
-                                <div class="label_line">No. of users:&nbsp</div>
-                                <div id="load_info_n_users" class="label_line"></div>
-                            </div>
-                            <div class="row" style="height: 2.5vh;">
-                                <div class="label_line">Database:&nbsp</div>
-                                <div id="load_info_database" class="label_line"></div>
+                            <div class="col" style="width: 70%">
+                                <div id="load_info_n_users" class="label_stacked"></div>
+                                <div id="load_info_database" class="label_stacked"></div>
                             </div>
                         </div>
                     </div>
                     <div class="case_info_tab_content" id="wholesale_price_info">
-                        <div id="info_wholesale_price_summary_labels" class="col" style="width: 100%; display: none;">
-                            <div class="row" style="height: 2.5vh;">
-                                <div class="label_line">Case:&nbsp</div>
-                                <div id="wholesale_price_case" class="label_line"></div>
+                        <div class="case_name label_stacked case_detail">Case:&nbsp</div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Summary</h4>
+                            <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 30%">
+                                <div class="label_stacked">Year:&nbsp</div>
+                                <div class="label_stacked">State:&nbsp</div>
                             </div>
-                            <div class="row" style="height: 2.5vh;">
-                                <div class="label_line">Year:&nbsp</div>
-                                <div id="wholesale_price_state" class="label_line"></div>
-                            </div>
-                            <div class="row" style="height: 2.5vh;">
-                                <div class="label_line">State:&nbsp</div>
-                                <div id="wholesale_price_year" class="label_line"></div>
+                            <div class="col" style="width: 70%">
+                                <div id="wholesale_price_state" class="label_stacked"></div>
+                                <div id="wholesale_price_year" class="label_stacked"></div>
                             </div>
                         </div>
                     </div>
                     <div class="case_info_tab_content" id="network_tariff_info">
                         <div class="info_tariff_summary row">
-                            <div class="info_tariff_summary_labels col" style="width: 100%; display: none;">
-                                <div class="row" style="height: 2.5vh;">
-                                    <div class="label_line">Case:&nbsp</div>
-                                    <div class="tariff_info_case label_line"></div>
+                            <div class="case_name label_stacked case_detail">Case:&nbsp</div>
+                            <div class="row" style="overflow: hidden;">
+                                <h4 style="margin-bottom: 0;">Summary</h4>
+                                <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
+                            </div>
+                            <div class="row" style="overflow: hidden;">
+                                <div class="col" style="width: 30%">
+                                    <div class="label_stacked">Name:&nbsp</div>
+                                    <div class="label_stacked">Type:&nbsp</div>
+                                    <div class="label_stacked">State:&nbsp</div>
+                                    <div class="label_stacked">Tariff Component:&nbsp</div>
                                 </div>
-                                <div class="row" style="height: 2.5vh;">
-                                    <div class="label_line">Name:&nbsp</div>
-                                    <div class="tariff_info_name label_line"></div>
-                                </div>
-                                <div class="row" style="height: 2.5vh;">
-                                    <div class="label_line">Type:&nbsp</div>
-                                    <div class="tariff_info_type label_line"></div>
-                                </div>
-                                <div class="row" style="height: 2.5vh;">
-                                    <div class="label_line">State:&nbsp</div>
-                                    <div class="tariff_info_state label_line"></div>
-                                </div>
-                                <div class="row" style="height: 2.5vh;">
-                                    <div class="label_line">Tariff Component:&nbsp</div>
-                                    <div class="tariff_info_component label_line"></div>
+                                <div class="col" style="width: 70%">
+                                    <div class="tariff_info_name label_stacked case_detail"></div>
+                                    <div class="tariff_info_type label_stacked case_detail"></div>
+                                    <div class="tariff_info_state label_stacked case_detail"></div>
+                                    <div class="tariff_info_component label_stacked case_detail"></div>
                                 </div>
                             </div>
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Components</h4>
+                            <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
                         </div>
                         <div id="network_info" style="width:100%;"></div>
                     </div>
                     <div class="case_info_tab_content" id="retail_tariff_info">
                         <div class="info_tariff_summary row">
-                            <div class="info_tariff_summary_labels col" style="width: 100%; display: none;">
-                                <div class="row" style="height: 2.5vh;">
-                                    <div class="label_line">Case:&nbsp</div>
-                                    <div class="tariff_info_case label_line"></div>
+                            <div class="case_name label_stacked case_detail">Case:&nbsp</div>
+                            <div class="row" style="overflow: hidden;">
+                                <h4 style="margin-bottom: 0;">Summary</h4>
+                                <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
+                            </div>
+                            <div class="row" style="overflow: hidden;">
+                                <div class="col" style="width: 30%">
+                                    <div class="label_stacked">Name:&nbsp</div>
+                                    <div class="label_stacked">Type:&nbsp</div>
+                                    <div class="label_stacked">State:&nbsp</div>
+                                    <div class="label_stacked">Tariff Component:&nbsp</div>
                                 </div>
-                                <div class="row" style="height: 2.5vh;">
-                                    <div class="label_line">Name:&nbsp</div>
-                                    <div class="tariff_info_name label_line"></div>
-                                </div>
-                                <div class="row" style="height: 2.5vh;">
-                                    <div class="label_line">Type:&nbsp</div>
-                                    <div class="tariff_info_type label_line"></div>
-                                </div>
-                                <div class="row" style="height: 2.5vh;">
-                                    <div class="label_line">State:&nbsp</div>
-                                    <div class="tariff_info_state label_line"></div>
-                                </div>
-                                <div class="row" style="height: 2.5vh;">
-                                    <div class="label_line">Tariff Component:&nbsp</div>
-                                    <div class="tariff_info_component label_line"></div>
+                                <div class="col" style="width: 70%">
+                                    <div class="tariff_info_name label_stacked case_detail"></div>
+                                    <div class="tariff_info_type label_stacked case_detail"></div>
+                                    <div class="tariff_info_state label_stacked case_detail"></div>
+                                    <div class="tariff_info_component label_stacked case_detail"></div>
                                 </div>
                             </div>
                         </div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Components</h4>
+                            <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
+                        </div>
                         <div id="retail_info" style="width:100%;"></div>
                     </div>
-                    <div class="case_info_tab_content" id="demog_info"></div>
+                    <div class="case_info_tab_content" id="demog_info">
+                        <div class="case_name label_stacked case_detail">Case:&nbsp</div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Summary</h4>
+                            <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col case_detail demo_labels" style="width: 70%"></div>
+                            <div class="col case_detail demo_values" style="width: 30%"></div>
+                        </div>
+                    </div>
+                    <div class="case_info_tab_content" id="tech_info">
+                        <div class="case_name label_stacked case_detail">Case:</div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Solar</h4>
+                            <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%">
+                                <div class="label_stacked">Penetration (%):</div>
+                                <div class="label_stacked">Mean system size (kW):</div>
+                                <div class="label_stacked">Standard deviation (kW):</div>
+                                <div class="label_stacked">Solar profiles :</div>
+                            </div>
+                            <div class="col solar_details" style="width: 20%">
+                                <div class="label_stacked case_detail" name="penetration"></div>
+                                <div class="label_stacked case_detail" name="mean_size"></div>
+                                <div class="label_stacked case_detail" name="standard_dev"></div>
+                                <div class="label_stacked case_detail" name="solar_data"></div>
+                            </div>
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin-bottom: 0;">Batteries</h4>
+                            <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%">
+                                <div class="label_stacked">Penetration (%):</div>
+                                <div class="label_stacked">Mean power size (kW):</div>
+                                <div class="label_stacked">Standard deviation (kW):</div>
+                                <div class="label_stacked">Mean power/energy ratio:</div>
+                                <div class="label_stacked">Standard deviation:</div>
+                                <div class="label_stacked">Restriction:</div>
+                                <div class="label_stacked">Operational strategy:</div>
+                            </div>
+                            <div class="col battery_details" style="width: 20%">
+                                <div class="label_stacked case_detail" name="penetration"></div>
+                                <div class="label_stacked case_detail" name="mean_size"></div>
+                                <div class="label_stacked case_detail" name="standard_dev"></div>
+                                <div class="label_stacked case_detail" name="mean_power_to_energy"></div>
+                                <div class="label_stacked case_detail" name="power_to_energy_standard_dev"></div>
+                                <div class="label_stacked case_detail" name="restriction"></div>
+                                <div class="label_stacked case_detail" name="strategy"></div>
+                            </div>
+                        </div>
+                        <div class="row" style="overflow: hidden">
+                            <h4 style="margin: 0;">Demand response</h4>
+                            <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <div class="col" style="width: 60%;">
+                                <div class="label_stacked">Penetration (%):</div>
+                                <div class="label_stacked">Mean Load Reduction (%):</div>
+                                <div class="label_stacked">Standard deviation (%):</div>
+                                <div class="label_stacked">Mean response time (hours):</div>
+                                <div class="label_stacked">Network Peak Limit for Event (kW):</div>
+                                <div class="label_stacked">Energy conservation:</div>
+                            </div>
+                            <div class="col demand_response_details" style="width: 20%;">
+                                <div class="label_stacked case_detail" name="penetration"></div>
+                                <div class="label_stacked case_detail" name="mean_load_reduction"></div>
+                                <div class="label_stacked case_detail" name="standard_dev"></div>
+                                <div class="label_stacked case_detail" name="mean_response_time"></div>
+                                <div class="label_stacked case_detail" name="network_percentage_events_limit"></div>
+                                <div class="label_stacked case_detail" name="energy_conservation"></div>
+                            </div>
+                        </div>
+                        <div class="row" style="overflow: hidden;">
+                            <h4 style="margin: 0;">Additional information</h4>
+                            <hr style="width: 90%; float: left; margin-bottom: 1.5vh;">
+                        </div>
+                        <div class="col additional_info_details" style="width: 90%;">
+                            <div class="label_stacked case_detail" name="message"></div>
+                        </div>
+                    </div>
                 </div>
             </div>
             <script>document.getElementById("default_results_tab").click();</script>
@@ -1330,6 +1422,7 @@
     <script>document.getElementById("default_tariff_type_tab").click();</script>
     <script>document.getElementById("default_panel").click();</script>
     <script src="static/resize_plots.js"></script>
+    <script>$(function(){add_resize()})</script>
     <script src="static/export_chart_data.js"></script>
     <script src="static/end_user_tech.js"></script>
     <script src="static/network_load_options.js"></script>

@@ -144,7 +144,7 @@ var display_tables = function(tariff_type_panel, parameter_type, data_of_tables,
                 }
             } else {
                 // Spacer to keep layout consistent even if there is no button.
-                $("<div class='{}' style='width: 100%; height: 3vh%'></div>".replace(/{}/g, table_name)).appendTo($("#" + parameter_type))
+                $("<div class='{}' style='width: 100%; height: 3vh'></div>".replace(/{}/g, table_name)).appendTo($("#" + parameter_type))
             }
 
         }

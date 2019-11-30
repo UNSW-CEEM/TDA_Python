@@ -28,6 +28,7 @@ var get_tariff_options =  function(parent_id, selected_tariff){
     var current_options = {'.select_tariff_state': {},
                            '.select_tariff_provider': {},
                            '.select_tariff_type': {},
+                           '.select_tariff_year': {},
                            '.select_tariff': {}};
 
     for (var key in current_options) {
@@ -59,6 +60,7 @@ var reset_tariff_options = function(parent_id){
     $('#' + parent_id + ' .select_tariff_provider').val('Any');
     $('#' + parent_id + ' .select_tariff_state').val('Any');
     $('#' + parent_id + ' .select_tariff_type').val('Any');
+    $('#' + parent_id + ' .select_tariff_year').val('Any');
     $('#' + parent_id + ' .select_tariff').val('None');
     $('#' + parent_id + ' .name_value').html('N/A');
     $('#' + parent_id + ' .type_value').html('N/A');

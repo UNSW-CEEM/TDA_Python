@@ -1,8 +1,6 @@
 var add_solar_names = function(data){
     $.getJSON("/solar_names", function(json){
-
         $('#solar_data').empty();
-        $('#solar_data').append($('<option>').text("Select one"));
         $.each(json, function(i, obj){
             $('#solar_data').append($('<option>').text(obj));
         });

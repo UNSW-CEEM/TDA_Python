@@ -13,19 +13,18 @@ def update_nemosis_cache():
 
 
 def update_tariffs():
-    network_verison = update_tariff_set('network')
-    #update_tariff_set('retail')
-    retail_version = None
-    return network_verison, retail_version
+    network_version = update_tariff_set('network')
+    retail_version = update_tariff_set('retail')
+    return network_version, retail_version
 
 
 def update_tariff_set(type):
     try:
-        response = requests.get('http://api.ceem.org.au/elec-tariffs/{}'.format(type))
+        response = requests.get('http://api.ceem.org.au/electricity-tariffs/{}'.format(type))
         if response.status_code != 404:
             tariffs = response.json()
             version = tariffs[0]['Version']
-            folder_and_name = 'data/{}_tariff_set_versions/NetworkTariffs_{}.json'.format(type.title(),version)
+            folder_and_name = 'data/{a}_tariff_set_versions/{a}Tariffs_{b}.json'.format(a=type.title(), b=version)
             # Write contents to the file in the 'data' folder that acts as the active tariff data set.
             with open(folder_and_name, 'wt') as json_file:
                 json.dump(tariffs, json_file)

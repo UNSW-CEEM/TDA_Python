@@ -1,1 +1,1 @@
-pyinstaller -F --add-data "templates;templates" --add-data "static;static" --onefile --noconsole tda.py
+pyinstaller -F --add-data "templates;templates" --add-data "static;static" --onefile tda.py

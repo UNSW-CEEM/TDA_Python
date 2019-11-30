@@ -28,6 +28,12 @@ def compile_set_of_overlapping_components_on_yearly_basis(tariff_component):
 def _overlapping_components(tariff_component, month, hour, minute, week_time):
     active_components = []
     for comp_name, comp_time_parameters in tariff_component.items():
+        if 'Month' not in comp_time_parameters:
+            comp_time_parameters['Month'] = [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12]
+        if 'Weekday' not in comp_time_parameters:
+            comp_time_parameters['Weekday'] = True
+        if 'Weekend' not in comp_time_parameters:
+            comp_time_parameters['Weekend'] = True
         right_month = month in comp_time_parameters['Month']
         right_week_time = comp_time_parameters[week_time]
         for interval_name, interval in comp_time_parameters['TimeIntervals'].items():

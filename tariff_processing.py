@@ -34,10 +34,12 @@ def get_options_from_tariff_set(tariffs, tariff_filter_state):
     option_types = {'.select_tariff_state': 'State',
                     '.select_tariff_provider': 'Provider',
                     '.select_tariff_type': 'Type',
+                    '.select_tariff_year': 'Year',
                     '.select_tariff': 'Name'}
     options = {'.select_tariff_state': [],
                '.select_tariff_provider': [],
                '.select_tariff_type': [],
+               '.select_tariff_year': [],
                '.select_tariff': []}
 
     # Look at each tariff build up a set of possible options for each option type.

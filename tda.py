@@ -1,5 +1,7 @@
 from flask import Flask, render_template, request, jsonify, send_from_directory
 import os
+import subprocess
+import platform
 import sys
 import pandas as pd
 import helper_functions
@@ -7,15 +9,16 @@ import plotly
 import json
 from make_load_charts import chart_methods
 from make_results_charts import singe_variable_chart, dual_variable_chart, single_case_chart
-from import_delete_data import check_valid_filetype, check_file_exists, check_load_2_demo_map, check_data_is_not_default, \
-    add_to_load_2_demo_map, load_data_to_dataframe, generic_data_to_dataframe
+from import_delete_data import check_valid_filetype, check_file_exists, check_load_2_demo_map, \
+                               check_data_is_not_default, add_to_load_2_demo_map, \
+                               load_data_to_dataframe, generic_data_to_dataframe
 import data_interface
 import Bill_Calc
 import format_case_for_export
 import format_chart_data_for_export
 import start_up_procedures
 from tariff_processing import format_tariff_data_for_display, format_tariff_data_for_storage, \
-    get_options_from_tariff_set, _make_dict
+                              get_options_from_tariff_set, _make_dict
 from make_price_charts import get_price_chart
 from wholesale_energy import get_wholesale_prices, calc_wholesale_energy_costs
 import pickle
@@ -29,9 +32,8 @@ import end_user_tech
 import math
 import feather
 import csv
-
-# please delete packages imported below this line.
-import time
+import webbrowser
+from time import time
 
 enable_logging = False
 
@@ -271,9 +273,9 @@ def net_load_chart_data():
     load_request = request.get_json()
     chart_type = load_request['chart_type']
     if chart_type in ['Annual Average Profile', 'Daily kWh Histogram']:
-        chart_data = chart_methods[chart_type](current_session.downsample_data,
+        chart_data = chart_methods[chart_type](current_session.filtered_data,
                                                current_session.end_user_tech_data['final_net_profiles'],
-                                               series_name=['All', 'Selected'])
+                                               series_name=['Gross', 'Net'])
     elif chart_type == 'Annual Average Energy Flow Profile':
         chart_data = chart_methods[chart_type](current_session.end_user_tech_data)
     else:
@@ -304,7 +306,7 @@ def add_case():
     case_details = request.get_json()
     case_name = case_details['case_name']
     load_file_name = current_session.raw_data_name
-    filter_options = current_session.filter_state
+    filter_options = current_session.filter_state['filter_options']
     retail_tariff_name = case_details['retail_tariff_name']
     network_tariff_name = case_details['network_tariff_name']
     wholesale_year = case_details['wholesale_price_details']['year']
@@ -312,13 +314,16 @@ def add_case():
 
     if current_session.end_user_tech_sample_applied == False:
         current_session.end_user_tech_data['final_net_profiles'] = current_session.filtered_data
+    else:
+        current_session.project_data.end_user_tech_details_by_case[case_name] = current_session.end_user_tech_details
 
     # Save demographic info for case
     current_session.project_data.demographic_info_by_case[case_name] = current_session.filtered_demo_info
 
     if network_tariff_name != 'None':
         network_tariff = data_interface.get_tariff('network_tariff_selection_panel', network_tariff_name)
-        network_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data['final_net_profiles'], network_tariff)
+        network_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data['final_net_profiles'],
+                                                    network_tariff)
         network_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         network_results['LoadInfo'] = network_results['LoadInfo'].reset_index()
 
@@ -384,6 +389,18 @@ def get_case_demo_options():
     return jsonify(current_session.project_data.filter_options_by_case[case_name])
 
 
+@app.route('/get_case_tech_options', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def get_case_tech_options():
+    # Get the demographic filtering options associated with a particular case.
+    case_name = request.get_json()
+    if case_name in current_session.project_data.end_user_tech_details_by_case.keys():
+        tech_details = current_session.project_data.end_user_tech_details_by_case[case_name]['tech_inputs']
+    else:
+        tech_details = {'solar': {}, 'battery': {}, 'demand_response': {}}
+    return jsonify(tech_details)
+
+
 @app.route('/delete_case', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def delete_case():
@@ -403,6 +420,8 @@ def delete_case():
         current_session.project_data.load_file_name_by_case.pop(case_name)
     if case_name in current_session.project_data.load_n_users_by_case.keys():
         current_session.project_data.load_n_users_by_case.pop(case_name)
+    if case_name in current_session.project_data.end_user_tech_details_by_case.keys():
+        current_session.project_data.end_user_tech_details_by_case.pop(case_name)
     return jsonify({'message': 'done'})
 
 
@@ -530,12 +549,23 @@ def get_wholesale_price_info():
 @errors.parse_to_user_and_log(logger)
 def create_end_user_tech_from_sample_from_gui():
     details = request.json
+    t0 = time()
     current_session.end_user_tech_sample = end_user_tech.create_sample(details, current_session.filtered_data)
-    current_session.end_user_tech_data = \
-        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load, current_session.end_user_tech_sample)
-
+    print('Time to create samples {}'.format(time() - t0))
+    t0 = time()
+    current_session.end_user_tech_data = end_user_tech.calc_net_profiles(current_session.filtered_data,
+                                                                         current_session.network_load,
+                                                                         current_session.end_user_tech_sample)
+    print('Time to calc profiles {}'.format(time() - t0))
     current_session.end_user_tech_sample_applied = True
-    return jsonify({'message': 'Done!'})
+    current_session.end_user_tech_details = details
+    current_session.end_user_tech_details['tech_inputs']['additional_info'] = {}
+    if current_session.end_user_tech_sample['message'] != 'Done!':
+        current_session.end_user_tech_details['tech_inputs']['additional_info']['message'] = \
+            current_session.end_user_tech_sample['message']
+    else:
+        current_session.end_user_tech_details['tech_inputs']['additional_info']['message'] = ''
+    return jsonify({'message': current_session.end_user_tech_sample['message']})
 
 
 @app.route('/load_end_user_tech_from_sample_from_file', methods=['POST'])
@@ -552,7 +582,8 @@ def load_end_user_tech_from_sample_from_file():
         filtered_data = raw_data.loc[:, current_session.end_user_tech_sample['customer_keys']]
         current_session.end_user_tech_data = end_user_tech.calc_net_profiles(filtered_data, current_session.network_load,
                                                                         current_session.end_user_tech_sample)
-        current_session.filter_state = current_session.end_user_tech_sample['load_details']['filter_options']
+        current_session.filter_state['filter_options'] = \
+            current_session.end_user_tech_sample['load_details']['filter_options']
         return_data = jsonify({'message': 'Done!', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
 
         current_session.end_user_tech_sample_applied = True
@@ -567,8 +598,8 @@ def calc_sample_net_load_profiles():
     details = request.json
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
     current_session.end_user_tech_data = \
-        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load, current_session.end_user_tech_sample)
-
+        end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load,
+                                        current_session.end_user_tech_sample)
     current_session.end_user_tech_sample_applied = True
     return jsonify({'message': 'done'})
 
@@ -583,10 +614,29 @@ def save_end_user_tech_sample():
         file_path = helper_functions.add_file_extension_if_needed(file_path, 'tda_tech_sample')
         with open(file_path, "wb") as f:
             pickle.dump(current_session.end_user_tech_sample, f)
-        message = 'saved'
+        message = 'Saved'
     else:
-        message = 'nothing saved'
+        message = 'Not saved'
     return jsonify({'message': message})
+
+
+@app.route('/deactivate_tech')
+@errors.parse_to_user_and_log(logger)
+def deactivate_tech():
+    current_session.end_user_tech_sample_applied = False
+    return jsonify({'message': 'Done!'})
+
+
+@app.route('/toggle_end_user_tech', methods=['POST'])
+@errors.parse_to_user_and_log(logger)
+def toggle_end_user_tech():
+    if current_session.end_user_tech_sample_applied:
+        current_session.end_user_tech_sample_applied = False
+        toggled = 'off'
+    else:
+        current_session.end_user_tech_sample_applied = True
+        toggled = 'on'
+    return jsonify({'toggled': toggled})
 
 
 @app.route('/tariff_options', methods=['POST'])
@@ -616,20 +666,38 @@ def tariff_json():
 @errors.parse_to_user_and_log(logger)
 def save_tariff():
     tariff_to_save = format_tariff_data_for_storage(request.get_json())
-    # Open the tariff data set.
-    if tariff_to_save['ProviderType'] == 'Network':
-        with open('data/UserDefinedNetworkTariffs.json', 'rt') as json_file:
-            tariffs = json.load(json_file)
-        tariffs.append(tariff_to_save)
-        with open('data/UserDefinedNetworkTariffs.json', 'wt') as json_file:
-            json.dump(tariffs, json_file)
-    else:
-        with open('data/UserDefinedRetailTariffs.json', 'rt') as json_file:
-            tariffs = json.load(json_file)
-        tariffs.append(tariff_to_save)
-        with open('data/UserDefinedRetailTariffs.json', 'wt') as json_file:
-            json.dump(tariffs, json_file)
-    return jsonify({'message': 'done'})
+    # Test the tariff before saving
+    test_load_data = data_interface.get_load_table('data/test/', 'test_data')
+    try:
+        Bill_Calc.bill_calculator(test_load_data, tariff_to_save)
+        # Open the tariff data set.
+        if tariff_to_save['ProviderType'] == 'Network':
+            with open('data/UserDefinedNetworkTariffs.json', 'rt') as json_file:
+                tariffs = json.load(json_file)
+            with open('data/NetworkTariffs.json', 'rt') as json_file:
+                tariff_data_base = json.load(json_file)[0]['Tariffs']
+            if tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariffs] and \
+                    tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariff_data_base]:
+                tariffs.append(tariff_to_save)
+            else:
+                return jsonify({'error': "Please pick a tariff name not in use and try again."})
+            with open('data/UserDefinedNetworkTariffs.json', 'wt') as json_file:
+                json.dump(tariffs, json_file)
+        else:
+            with open('data/UserDefinedRetailTariffs.json', 'rt') as json_file:
+                tariffs = json.load(json_file)
+            with open('data/RetailTariffs.json', 'rt') as json_file:
+                tariff_data_base = json.load(json_file)[0]['Tariffs']
+            if tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariffs] and \
+                    tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariff_data_base]:
+                tariffs.append(tariff_to_save)
+            else:
+                return jsonify({'error': "Please pick a tariff name not in use and try again."})
+            with open('data/UserDefinedRetailTariffs.json', 'wt') as json_file:
+                json.dump(tariffs, json_file)
+        return jsonify({'message': 'Done!'})
+    except Exception as e:
+        return jsonify({'error': str(e)})
 
 
 @app.route('/get_active_tariff_version', methods=['POST'])
@@ -754,6 +822,7 @@ def import_solar_data():
     feather.write_dataframe(solar_data, 'data/solar_profiles/' + file_name + '.feather')
     return jsonify({'message': "Successfully imported file."})
 
+
 @app.route('/delete_solar_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def delete_solar_data():
@@ -767,6 +836,7 @@ def delete_solar_data():
     else:
         os.remove(solar_file_path)
         return jsonify({'message': "File has been deleted."})
+
 
 @app.route('/delete_load_data', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
@@ -851,14 +921,26 @@ def update_tariffs():
 @app.route('/open_tariff_info', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def open_tariff_info():
-    return jsonify({'message': "No python code for opening tariff info yet!"})
+    request_details = request.get_json()
+    tariff_id = data_interface.get_tariff('{}_tariff_selection_panel'.format(request_details['tariff_type']),
+                                          request_details['name'])['Tariff ID']
+    webbrowser.open('http://api.ceem.org.au/tariff-source/{}'.format(tariff_id), new=2)
+    message = "If you have an active internet connection the relevant information should be displayed in a new tab"
+    return jsonify({'message': message})
 
 
 @app.route('/open_sample', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def open_sample():
-    print('open sample for data: {}'.format(request.get_json()))
-    return jsonify({'message': "No python code for opening sample {} data yet!".format(request.get_json())})
+    request_details = request.get_json()
+    file_path = os.getcwd() + '\data\sample\{}.xlsx'.format(request_details['file_type'])
+    if platform.system() == 'Darwin':  # macOS
+        subprocess.call(('open', file_path))
+    elif platform.system() == 'Windows':  # Windows
+        os.startfile(file_path)
+    else:  # linux variants
+        subprocess.call(('xdg-open', file_path))
+    return jsonify({'message': "Done!".format(request.get_json())})
 
 
 @app.route('/load_project', methods=['POST'])
@@ -957,7 +1039,6 @@ def restart_tool():
 
 
 def shutdown_server():
-    print('called shutdown')
     func = request.environ.get('werkzeug.server.shutdown')
     if func is None:
         raise RuntimeError('Not running with the Werkzeug Server')
@@ -966,14 +1047,14 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    # shutdown_server()
+    #shutdown_server()
     return 'Server shutting down...'
 
 
 @errors.log(logger)
 def on_start_up():
-    # start_up_procedures.update_nemosis_cache()
-    # start_up_procedures.update_tariffs()
+    start_up_procedures.update_nemosis_cache()
+    start_up_procedures.update_tariffs()
     check_load_2_demo_map() # Fix load_2_demo_map if corrupted
     return None
 
