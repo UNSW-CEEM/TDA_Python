@@ -549,14 +549,10 @@ def get_wholesale_price_info():
 @errors.parse_to_user_and_log(logger)
 def create_end_user_tech_from_sample_from_gui():
     details = request.json
-    t0 = time()
     current_session.end_user_tech_sample = end_user_tech.create_sample(details, current_session.filtered_data)
-    print('Time to create samples {}'.format(time() - t0))
-    t0 = time()
     current_session.end_user_tech_data = end_user_tech.calc_net_profiles(current_session.filtered_data,
                                                                          current_session.network_load,
                                                                          current_session.end_user_tech_sample)
-    print('Time to calc profiles {}'.format(time() - t0))
     current_session.end_user_tech_sample_applied = True
     current_session.end_user_tech_details = details
     current_session.end_user_tech_details['tech_inputs']['additional_info'] = {}
@@ -921,6 +917,13 @@ def open_tariff_info():
     webbrowser.open('http://api.ceem.org.au/tariff-source/{}'.format(tariff_id), new=2)
     message = "If you have an active internet connection the relevant information should be displayed in a new tab"
     return jsonify({'message': message})
+
+
+@app.route('/open_ceem_webpage')
+@errors.parse_to_user_and_log(logger)
+def open_ceem_webpage():
+    webbrowser.open('http://ceem.unsw.edu.au/cost-reflective-tariff-design', new=2)
+    return jsonify({'message': 'Done!'})
 
 
 @app.route('/open_sample', methods=['POST'])

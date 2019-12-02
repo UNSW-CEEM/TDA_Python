@@ -39,6 +39,7 @@
     <script src="static/export.js"></script>
     <script src="static/errors.js"></script>
     <script src="static/tou_analysis.js"></script>
+    <script src="static/info.js"></script>
     <script src="static/FileSaver.js-master/FileSaver.js-master/src/FileSaver.js"></script>
 
 
@@ -421,6 +422,15 @@
         <p></p>
     </div>
 
+    <div id="info_dialog" title="Info" style="display: none">
+        <div>
+            More information about this tool can be found on the
+            <span style='text-decoration: underline;' onclick=open_ceem_webpage()>CEEM webpage.</span>
+        </div>
+        <br>
+        <div>Feedback can be provided to tariffapp@gmail.com.</div>
+    </div>
+
     <div id="tariff_info_dialog" title="Update" style="display: none">
         <p></p>
     </div>
@@ -674,6 +684,7 @@
                   <li><div onclick="export_results()">Export Results</div></li>
               </ul>
           </li>
+          <li><div onclick="show_info()">Info</div></li>
       </ul>
       <script src="static/tariff_set_options.js"></script>
       <script src="static/shut_down.js"></script>
