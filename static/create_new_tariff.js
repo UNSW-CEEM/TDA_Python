@@ -64,8 +64,12 @@ var component_templates = function(){
                         'table_rows': [['Summer', '1000', '$/kWh', '1.0']]}
     var block_quarterly = {'table_header': ['Name', 'HighBound', 'Unit' ,'Value'],
                            'table_rows': [['Summer', '1000', '$/kWh', '1.0']]}
+    var fit = {'table_header': ['Unit', 'Value'], 'table_rows': [['$/kWh', '1.0']]}
+    var fit_tou = {'table_header': ['Name', 'TimeIntervals', 'Unit' ,'Value'],
+               'table_rows': [['Peak', '{\'T1\': [\'15:00\', \'23:00\']}', '$/kWh', '0.10']]}
     var templates = {'Daily': daily, 'FlatRate': flat_rate, 'FlatRateSeasonal': seasonal_tou, 'TOU': tou,
-                     'Demand': demand, 'BlockAnnual': block_annual, 'BlockQuarterly': block_quarterly}
+                     'Demand': demand, 'BlockAnnual': block_annual, 'BlockQuarterly': block_quarterly,
+                     'FiT': fit, 'FiT_TOU': fit_tou}
     return templates
 }
 
