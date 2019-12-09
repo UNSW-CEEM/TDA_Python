@@ -22,6 +22,9 @@ class ProjectData():
         # The filtering used for a given case, stored on a case name basis.
         self.filter_options_by_case = {}
 
+        # The filtering used for a given case, stored on a case name basis.
+        self.customer_keys_by_case = {}
+
         # Demographic info of load profiles used.
         self.demographic_info_by_case = {}
 
@@ -80,6 +83,9 @@ class InMemoryData:
 
         # Load profiles after any filtering, for a given case, stored on a case name basis.
         self.load_by_case = {}
+
+        # Load message by case name
+        self.load_message_name_by_case = {}
 
         # Current demographic info after filter.
         self.filtered_demo_info = None

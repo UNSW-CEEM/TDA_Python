@@ -19,7 +19,7 @@ var display_case_load_info = function(case_name, load_info){
     $('#load_info_case').text(case_name);
     $('#load_info_n_users').text(load_info['n_users'].toString());
     $('#load_info_database').text(load_info['database']);
-    $("#info_load_summary_labels").css("display", "block");
+    $('#load_info_message').text(load_info['message']);
 }
 
 var get_and_display_case_wholesale_price_info = function(case_name){

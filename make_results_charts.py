@@ -185,7 +185,7 @@ def _average_load_duration_curve(load_and_results_by_case):
         load_average_sort = load_average.sort_values(ascending=False, inplace = False, na_position ='last')
         load_average_sort = load_average_sort.reset_index(drop=True)
 
-        trace.append(go.Scatter(x=load_average_sort.index,y=load_average_sort.values, name=case_name))
+        trace.append(go.Scattergl(x=load_average_sort.index,y=load_average_sort.values, name=case_name))
 
     return {'data': trace, 'layout':layout}
 
@@ -244,13 +244,13 @@ def _seasonal_daily_pattern(load_and_results_by_case):
         load_summer = load_average[load_average['Month_Number'].isin([1,11,12])]
         load_summer_reshape = np.array(load_summer['power']).reshape(-1,48)
         load_summer_daily = np.nanmean(load_summer_reshape,axis=0)
-        trace.append(go.Scatter(x=list(range(0,48)), y=load_summer_daily, name= case_name + ' Summer', mode='lines'))
+        trace.append(go.Scattergl(x=list(range(0,48)), y=load_summer_daily, name= case_name + ' Summer', mode='lines'))
 
         # winter
         load_winter = load_average[load_average['Month_Number'].isin([6,7,8])]
         load_winter_reshape = np.array(load_winter['power']).reshape(-1,48)
         load_winter_daily = np.nanmean(load_winter_reshape,axis=0)
-        trace.append(go.Scatter(x=list(range(0,48)), y=load_winter_daily, name= case_name + ' Winter', mode='lines'))
+        trace.append(go.Scattergl(x=list(range(0,48)), y=load_winter_daily, name= case_name + ' Winter', mode='lines'))
 
     return {'data': trace, 'layout':layout}
 
@@ -284,7 +284,7 @@ def _monthly_peak_time(load_and_results_by_case):
             peak_hour_month.append(load_by_month.loc[peak_index,'Hour_Number'] + load_by_month.loc[peak_index,'Minute_Number']/60)
 
         month_name = ['Jan','Feb','Mar','Apr','May','Jun','Jul','Aug','Sep','Oct','Nov','Dec']
-        trace.append(go.Scatter(x=month_name, y=peak_hour_month, name= case_name, mode='markers', marker=dict(size=20)))       
+        trace.append(go.Scattergl(x=month_name, y=peak_hour_month, name= case_name, mode='markers', marker=dict(size=20)))
 
     return {'data': trace, 'layout':layout}
 
@@ -311,9 +311,9 @@ def _get_daily_profile_interquartile_range(load_and_results_by_case):
         qr2 = np.nanpercentile(np.array(load_daily_average), 50, interpolation='midpoint',axis=1)
         qr3 = np.nanpercentile(np.array(load_daily_average), 25, interpolation='midpoint',axis=1)
 
-        trace.append(go.Scatter(x=list(range(0,48)),y=list(qr3),fill=None, name = case_name + ' 25%'))
-        trace.append(go.Scatter(x=list(range(0,48)),y=list(qr2),fill='tonexty', name = case_name + ' 50%'))
-        trace.append(go.Scatter(x=list(range(0,48)),y=list(qr1),fill='tonexty', name = case_name + ' 75%'))
+        trace.append(go.Scattergl(x=list(range(0,48)),y=list(qr3),fill=None, name = case_name + ' 25%'))
+        trace.append(go.Scattergl(x=list(range(0,48)),y=list(qr2),fill='tonexty', name = case_name + ' 50%'))
+        trace.append(go.Scattergl(x=list(range(0,48)),y=list(qr1),fill='tonexty', name = case_name + ' 75%'))
 
     return {'data': trace, 'layout':layout}
 

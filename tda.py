@@ -35,7 +35,7 @@ import csv
 import webbrowser
 from time import time
 
-enable_logging = True
+enable_logging = False
 
 # Initialise object for holding the current session/project's data.
 current_session = InMemoryData()
@@ -350,6 +350,9 @@ def add_case():
 
     # Save input data and settings associated with the case.
     current_session.load_by_case[case_name] = current_session.end_user_tech_data['final_net_profiles']
+    current_session.project_data.customer_keys_by_case[case_name] = \
+        [col for col in current_session.end_user_tech_data['final_net_profiles'] if col != 'Datetime']
+    current_session.load_message_name_by_case[case_name] = ''
     current_session.project_data.load_file_name_by_case[case_name] = load_file_name
     current_session.project_data.load_n_users_by_case[case_name] = \
         helper_functions.n_users(current_session.end_user_tech_data['final_net_profiles'])
@@ -377,8 +380,10 @@ def get_case_tariff():
 def get_case_load():
     # Get the set of load profiles associated with a particular case.
     case_name = request.get_json()
+
     return jsonify({'n_users': current_session.project_data.load_n_users_by_case[case_name],
-                    'database': current_session.project_data.load_file_name_by_case[case_name]})
+                    'database': current_session.project_data.load_file_name_by_case[case_name],
+                    'message': current_session.load_message_name_by_case[case_name]})
 
 
 @app.route('/get_case_demo_options', methods=['POST'])
@@ -408,6 +413,8 @@ def delete_case():
     case_name = request.get_json()
     if case_name in current_session.load_by_case.keys():
         current_session.load_by_case.pop(case_name)
+    if case_name in current_session.load_message_name_by_case.keys():
+        current_session.load_message_name_by_case.pop(case_name)
     if case_name in current_session.project_data.network_results_by_case.keys():
         current_session.project_data.network_results_by_case.pop(case_name)
     if case_name in current_session.project_data.retail_results_by_case.keys():
@@ -422,6 +429,8 @@ def delete_case():
         current_session.project_data.load_n_users_by_case.pop(case_name)
     if case_name in current_session.project_data.end_user_tech_details_by_case.keys():
         current_session.project_data.end_user_tech_details_by_case.pop(case_name)
+    if case_name in current_session.project_data.customer_keys_by_case.keys():
+        current_session.project_data.customer_keys_by_case.pop(case_name)
     return jsonify({'message': 'done'})
 
 
@@ -655,39 +664,51 @@ def tariff_json():
 @app.route('/save_tariff', methods=['POST'])
 @errors.parse_to_user_and_log(logger)
 def save_tariff():
-    tariff_to_save = format_tariff_data_for_storage(request.get_json())
-    # Test the tariff before saving
-    test_load_data = data_interface.get_load_table('data/test/', 'test_data')
-    try:
-        Bill_Calc.bill_calculator(test_load_data, tariff_to_save)
-        # Open the tariff data set.
-        if tariff_to_save['ProviderType'] == 'Network':
-            with open('data/UserDefinedNetworkTariffs.json', 'rt') as json_file:
-                tariffs = json.load(json_file)
-            with open('data/NetworkTariffs.json', 'rt') as json_file:
-                tariff_data_base = json.load(json_file)[0]['Tariffs']
-            if tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariffs] and \
-                    tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariff_data_base]:
-                tariffs.append(tariff_to_save)
+    tariff = request.get_json()
+    repeats = False
+    for tariff_type in ['Retail', 'NUOS']:
+        if tariff_type in tariff['Parameters'].keys():
+            for table_name, table in tariff['Parameters'][tariff_type].items():
+                row_names = [row[0] for row in table['table_rows']]
+                if len(set(row_names)) != len(row_names):
+                    repeats = True
+
+    if not repeats:
+        tariff_to_save = format_tariff_data_for_storage(tariff)
+        # Test the tariff before saving
+        test_load_data = data_interface.get_load_table('data/test/', 'test_data')
+        try:
+            Bill_Calc.bill_calculator(test_load_data, tariff_to_save)
+            # Open the tariff data set.
+            if tariff_to_save['ProviderType'] == 'Network':
+                with open('data/UserDefinedNetworkTariffs.json', 'rt') as json_file:
+                    tariffs = json.load(json_file)
+                with open('data/NetworkTariffs.json', 'rt') as json_file:
+                    tariff_data_base = json.load(json_file)[0]['Tariffs']
+                if tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariffs] and \
+                        tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariff_data_base]:
+                    tariffs.append(tariff_to_save)
+                else:
+                    return jsonify({'error': "Please pick a tariff name not in use and try again."})
+                with open('data/UserDefinedNetworkTariffs.json', 'wt') as json_file:
+                    json.dump(tariffs, json_file)
             else:
-                return jsonify({'error': "Please pick a tariff name not in use and try again."})
-            with open('data/UserDefinedNetworkTariffs.json', 'wt') as json_file:
-                json.dump(tariffs, json_file)
-        else:
-            with open('data/UserDefinedRetailTariffs.json', 'rt') as json_file:
-                tariffs = json.load(json_file)
-            with open('data/RetailTariffs.json', 'rt') as json_file:
-                tariff_data_base = json.load(json_file)[0]['Tariffs']
-            if tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariffs] and \
-                    tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariff_data_base]:
-                tariffs.append(tariff_to_save)
-            else:
-                return jsonify({'error': "Please pick a tariff name not in use and try again."})
-            with open('data/UserDefinedRetailTariffs.json', 'wt') as json_file:
-                json.dump(tariffs, json_file)
-        return jsonify({'message': 'Done!'})
-    except Exception as e:
-        return jsonify({'error': str(e)})
+                with open('data/UserDefinedRetailTariffs.json', 'rt') as json_file:
+                    tariffs = json.load(json_file)
+                with open('data/RetailTariffs.json', 'rt') as json_file:
+                    tariff_data_base = json.load(json_file)[0]['Tariffs']
+                if tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariffs] and \
+                        tariff_to_save['Name'] not in [tariff['Name'] for tariff in tariff_data_base]:
+                    tariffs.append(tariff_to_save)
+                else:
+                    return jsonify({'error': "Please pick a tariff name not in use and try again."})
+                with open('data/UserDefinedRetailTariffs.json', 'wt') as json_file:
+                    json.dump(tariffs, json_file)
+            return jsonify({'message': 'Done!'})
+        except Exception as e:
+            return jsonify({'error': str(e)})
+    else:
+        return jsonify({'error': 'Tariff could not be saved because there are duplicate row names.'})
 
 
 @app.route('/get_active_tariff_version', methods=['POST'])
@@ -710,9 +731,13 @@ def get_active_tariff_version():
 @errors.parse_to_user_and_log(logger)
 def get_tou_analysis():
     tariff_table_data = request.get_json()
-    tariff_table_data = _make_dict(tariff_table_data)
-    analysis_result = check_time_of_use_coverage.compile_set_of_overlapping_components_on_yearly_basis(tariff_table_data)
-    return jsonify({'message': analysis_result})
+    row_names = [row[0] for row in tariff_table_data['table_rows']]
+    if len(set(row_names)) == len(row_names):
+        tariff_table_data = _make_dict(tariff_table_data)
+        analysis_result = check_time_of_use_coverage.compile_set_of_overlapping_components_on_yearly_basis(tariff_table_data)
+        return jsonify({'message': analysis_result})
+    else:
+        return jsonify({'message': 'Analysis could not be completed because there are duplicate row names.'})
 
 
 @app.route('/delete_tariff', methods=['POST'])
@@ -947,7 +972,22 @@ def load_project():
     file.save('data/temp/temp.pkl')
     with open('data/temp/temp.pkl', "rb") as f:
         current_session.project_data = pickle.load(f)
-    message = "Done!"
+    message = "We have attempted to load the case's associated load data using the file name provided in the" + \
+              " project. If this project comes from another machine or version of the tool please check they are" + \
+              " using the same file names."
+    additional_message = 'The files we couldn\'t locate where '
+    for case_name, file_name in current_session.project_data.load_file_name_by_case.items():
+        if file_name + '.feather' in os.listdir('data/load/'):
+            load_data = feather.read_dataframe('data/load/' + file_name + '.feather')
+            customer_keys_to_use = current_session.project_data.customer_keys_by_case[case_name]
+            current_session.load_by_case[case_name] = load_data.loc[:, customer_keys_to_use]
+        else:
+            additional_message += ', ' + file_name
+    if additional_message != 'The files we couldn\'t locate where ':
+        additional_message += '. This means some result charts may not display properly.'
+        message += additional_message
+    for case_name, file_name in current_session.project_data.load_file_name_by_case.items():
+        current_session.load_message_name_by_case[case_name] = message
     also_return_a_list_of_cases_loaded = list(current_session.project_data.load_file_name_by_case.keys())
     return jsonify({'message': message, 'name': current_session.project_data.name,
                     'cases': also_return_a_list_of_cases_loaded})
@@ -1044,7 +1084,7 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    shutdown_server()
+    #shutdown_server()
     return 'Server shutting down...'
 
 
