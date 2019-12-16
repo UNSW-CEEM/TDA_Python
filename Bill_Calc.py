@@ -116,10 +116,10 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
             lim = 0
             for k, v in TarCompVal['BlockAnnual'].items():
                 block_use[k] = block_use['Annual_kWh']
-                block_use[k][block_use[k] > v['HighBound']] = v['HighBound']
+                block_use[k][block_use[k] > float(v['HighBound'])] = float(v['HighBound'])
                 block_use[k] = block_use[k] - lim
                 block_use[k][block_use[k] < 0] = 0
-                lim = v['HighBound']
+                lim = float(v['HighBound'])
                 block_use_charge[k] = block_use[k] * v['Value']
             del block_use['Annual_kWh']
             del block_use_charge['Annual_kWh']
@@ -145,10 +145,10 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
                 lim = 0
                 for k, v in TarCompVal['BlockQuarterly'].items():
                     block_use[k] = block_use['kWh_Q' + str(Q)]
-                    block_use[k][block_use[k] > v['HighBound']] = v['HighBound']
+                    block_use[k][block_use[k] > float(v['HighBound'])] = float(v['HighBound'])
                     block_use[k] = block_use[k] - lim
                     block_use[k][block_use[k] < 0] = 0
-                    lim = v['HighBound']
+                    lim = float(v['HighBound'])
                     block_use_charge[k] = block_use[k] * v['Value']
                 del block_use['kWh_Q' + str(Q)]
                 del block_use_charge['kWh_Q' + str(Q)]
@@ -175,10 +175,10 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
                 lim = 0
                 for k, v in TarCompVal['BlockMonthly'].items():
                     block_use[k] = block_use['kWh_m' + str(Q)]
-                    block_use[k][block_use[k] > v['HighBound']] = v['HighBound']
+                    block_use[k][block_use[k] > float(v['HighBound'])] = float(v['HighBound'])
                     block_use[k] = block_use[k] - lim
                     block_use[k][block_use[k] < 0] = 0
-                    lim = v['HighBound']
+                    lim = float(v['HighBound'])
                     block_use_charge[k] = block_use[k] * v['Value']
                 del block_use['kWh_m' + str(Q)]
                 del block_use_charge['kWh_m' + str(Q)]
@@ -195,10 +195,10 @@ def bill_calculator(load_profile, tariff, network_load=None, fit=True):
             lim = 0
             for k, v in TarCompVal['BlockDaily'].items():
                 block_use_temp = DailykWh.copy()
-                block_use_temp[block_use_temp > v['HighBound']] = v['HighBound']
+                block_use_temp[block_use_temp > float(v['HighBound'])] = float(v['HighBound'])
                 block_use_temp = block_use_temp - lim
                 block_use_temp[block_use_temp < 0] = 0
-                lim = v['HighBound']
+                lim = float(v['HighBound'])
                 block_use_temp_charge = block_use_temp_charge + block_use_temp * v['Value']
             results[TarComp]['Charge_BlockDaily'] = block_use_temp_charge.sum(axis=0)
 
