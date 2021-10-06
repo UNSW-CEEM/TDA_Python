@@ -178,11 +178,12 @@ def set_filtered_data_to_match_saved_sample(end_user_tech_sample):
     return pd.DataFrame()
 
 
-def calc_net_profiles(gross_load_profiles, network_load, end_user_tech, selected_tariff):
+def calc_net_profiles(gross_load_profiles, network_load, end_user_tech, selected_tariff, tech_details):
     solar_profiles = calc_solar_profiles(end_user_tech)
     net_profile_after_solar = gross_load_profiles - solar_profiles
     net_profile_after_dr = calc_net_profile_after_DR(net_profile_after_solar, network_load, end_user_tech)
-    net_profile_after_batt = calc_net_profile_after_battery(net_profile_after_dr, end_user_tech, selected_tariff)
+    net_profile_after_batt = calc_net_profile_after_battery(net_profile_after_dr, end_user_tech, selected_tariff,
+                                                            tech_details)
     dr_energy_offset = net_profile_after_solar - net_profile_after_dr
     batt_energy_offset = net_profile_after_dr - net_profile_after_batt
     net_profiles = {'load_profiles': gross_load_profiles,
@@ -195,7 +196,7 @@ def calc_net_profiles(gross_load_profiles, network_load, end_user_tech, selected
     return net_profiles
 
 
-def calc_net_profile_after_battery(net_load_profile, end_user_tech_sample, selected_tariff):
+def calc_net_profile_after_battery(net_load_profile, end_user_tech_sample, selected_tariff, tech_details):
     end_user_tech_details = end_user_tech_sample['end_user_tech_details']
     customer_key = end_user_tech_sample['customer_keys']
     
@@ -213,7 +214,8 @@ def calc_net_profile_after_battery(net_load_profile, end_user_tech_sample, selec
         print("Net load profile: ---------", type(net_load_profile))#, net_load_profile)
         all_TOU_periods = generate_TOU_periods(selected_tariff, net_load_profile)
         print("generate_TOU_periods run ------------")
-        
+
+        # Now you can read from tech_details['battery']
         peak_assignment = 'Discharge to home'
         shoulder_assignment = 'Charge from grid'
         off_peak_assignment = 'Neither'

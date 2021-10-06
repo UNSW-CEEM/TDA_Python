@@ -565,7 +565,8 @@ def create_end_user_tech_from_sample_from_gui():
     current_session.end_user_tech_data = end_user_tech.calc_net_profiles(current_session.filtered_data,
                                                                          current_session.network_load,
                                                                          current_session.end_user_tech_sample,
-                                                                         current_session.selected_tariff)
+                                                                         current_session.selected_tariff,
+                                                                         details['tech_inputs'])
     current_session.end_user_tech_sample_applied = True
     current_session.end_user_tech_details = details
     current_session.end_user_tech_details['tech_inputs']['additional_info'] = {}
