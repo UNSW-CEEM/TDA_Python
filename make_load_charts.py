@@ -27,7 +27,10 @@ def get_average_annual_profile(load, load_filtered, series_name):
         data = {'data':[trace1],'layout':layout}
         return data
     else:
-        if load_filtered.shape[1] < 1:
+        # print("printing load_filtered------------------", type(load_filtered))
+        # if load_filtered.shape[1] < 1:
+        # HEC Fix list
+        if type(load_filtered) is list:
 
             data = {'data':[],'layout':layout}
             return data
@@ -94,7 +97,7 @@ def get_daily_average_profile(x):
 
 
 def get_daily_profiles(load):
-
+    print("load type------", type(load))
     Xaxis = "Time"
     Yaxis = "Average Load (kW)"
     layout = go.Layout(xaxis=dict(showgrid=False, title=Xaxis,title_font=dict(size=12),tickfont=dict(size=12),

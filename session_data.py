@@ -12,7 +12,7 @@ class ProjectData():
         self.network_tariffs_by_case = {}
         self.retail_tariffs_by_case = {}
 
-        # The source file name which describes were the load data came from for a given case, stored on a case name
+        # The source file name which describes where the load data came from for a given case, stored on a case name
         # basis.
         self.load_file_name_by_case = {}
 
@@ -102,6 +102,8 @@ class InMemoryData:
         self.solar_profile_data = {} # Data as loaded from feather files, stored in dict on a file name basis
 
         self.network_load = None
+
+        self.selected_tariff = None
 
         # Data subset to save/load.
         self.project_data = ProjectData()

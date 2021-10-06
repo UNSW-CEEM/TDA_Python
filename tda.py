@@ -331,12 +331,14 @@ def add_case():
         current_session.project_data.network_tariffs_by_case[case_name] = network_tariff
 
     if retail_tariff_name != 'None':
+        # MAC When get_tariff is called
         retail_tariff = data_interface.get_tariff('retail_tariff_selection_panel', retail_tariff_name)
         retail_results = Bill_Calc.bill_calculator(current_session.end_user_tech_data['final_net_profiles'], retail_tariff)
         retail_results['LoadInfo'].index.name = 'CUSTOMER_KEY'
         retail_results['LoadInfo'] = retail_results['LoadInfo'].reset_index()
         current_session.project_data.retail_results_by_case[case_name] = retail_results
         current_session.project_data.retail_tariffs_by_case[case_name] = retail_tariff
+        # current_session.selected_retail_tariff = retail_tariff_name
 
     if (wholesale_year != 'None') & (wholesale_state != 'None'):
         price_data = get_wholesale_prices(wholesale_year, wholesale_state)
@@ -559,9 +561,11 @@ def get_wholesale_price_info():
 def create_end_user_tech_from_sample_from_gui():
     details = request.json
     current_session.end_user_tech_sample = end_user_tech.create_sample(details, current_session.filtered_data)
+    print("up to calc_net_profiles------------------")
     current_session.end_user_tech_data = end_user_tech.calc_net_profiles(current_session.filtered_data,
                                                                          current_session.network_load,
-                                                                         current_session.end_user_tech_sample)
+                                                                         current_session.end_user_tech_sample,
+                                                                         current_session.selected_tariff)
     current_session.end_user_tech_sample_applied = True
     current_session.end_user_tech_details = details
     current_session.end_user_tech_details['tech_inputs']['additional_info'] = {}
@@ -587,7 +591,8 @@ def load_end_user_tech_from_sample_from_file():
         current_session.filtered_data = raw_data.loc[:, current_session.end_user_tech_sample['customer_keys']]
         current_session.end_user_tech_data = end_user_tech.calc_net_profiles(current_session.filtered_data,
                                                                              current_session.network_load,
-                                                                             current_session.end_user_tech_sample)
+                                                                             current_session.end_user_tech_sample,
+                                                                             current_session.selected_tariff)
         #current_session.filter_state = current_session.end_user_tech_sample['load_details']
         return_data = jsonify({'message': 'Done!', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
         current_session.end_user_tech_sample_applied = True
@@ -603,7 +608,7 @@ def calc_sample_net_load_profiles():
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
     current_session.end_user_tech_data = \
         end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load,
-                                        current_session.end_user_tech_sample)
+                                        current_session.end_user_tech_sample, current_session.selected_tariff)
     current_session.end_user_tech_sample_applied = True
     return jsonify({'message': 'done'})
 
@@ -657,7 +662,9 @@ def tariff_json():
     request_details = request.get_json()
     selected_tariff = data_interface.get_tariff(request_details['tariff_panel'],
                                                 request_details['tariff_name'])
+    current_session.selected_tariff = selected_tariff
     selected_tariff = format_tariff_data_for_display(selected_tariff)
+    print("Running get_tariff for formatting purposes")
     return jsonify(selected_tariff)
 
 

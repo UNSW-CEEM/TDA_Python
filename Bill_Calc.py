@@ -12,6 +12,7 @@ import time
 
 def bill_calculator(load_profile, tariff, network_load=None, fit=True):
 
+    # print("Load profile in bill calc--------------------", type(load_profile), load_profile)
     # Treating load profile
 
     load_profile = load_profile.fillna(0)

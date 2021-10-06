@@ -16,6 +16,8 @@ def get_load_table(folder_path, load_file):
 
 
 def get_tariff(tariff_type, requested_tariff):
+    # print("tariff_type in get_tariff ------------", type(tariff_type), tariff_type)
+    # print("requested_tariff in get_tariff ------------", type(requested_tariff), requested_tariff)
     tariffs = get_tariffs(tariff_type)
     # Look at each tariff and find the first one that matches the requested name.
     for tariff in tariffs:

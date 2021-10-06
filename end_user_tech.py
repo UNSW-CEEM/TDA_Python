@@ -6,6 +6,12 @@ import random
 import feather
 from time import time
 import numba
+# MAC Added these two below - TODO should they both be using either time or datetime?
+# MAC Why do I need to import json, why is it not imported already?
+from datetime import datetime
+import json
+# MAC Added this line below - to get tariff from UI
+from data_interface import get_tariff
 # Packages below this line can be deleted, used for testing purposes only.
 pd.set_option('display.max_rows', 100)
 pd.set_option('display.max_columns', 100)
@@ -17,6 +23,7 @@ def create_sample(gui_inputs, filtered_data):
     # ...           ...        ...       ...               ...
 
     # This function takes ~2.5secs to execute
+    # print("Running create_sample--------------------")
 
     solar_inputs = gui_inputs['tech_inputs']['solar']
     solar_pen = float(solar_inputs['penetration'])/100.0
@@ -171,11 +178,11 @@ def set_filtered_data_to_match_saved_sample(end_user_tech_sample):
     return pd.DataFrame()
 
 
-def calc_net_profiles(gross_load_profiles, network_load, end_user_tech):
+def calc_net_profiles(gross_load_profiles, network_load, end_user_tech, selected_tariff):
     solar_profiles = calc_solar_profiles(end_user_tech)
     net_profile_after_solar = gross_load_profiles - solar_profiles
     net_profile_after_dr = calc_net_profile_after_DR(net_profile_after_solar, network_load, end_user_tech)
-    net_profile_after_batt = calc_net_profile_after_battery(net_profile_after_dr, end_user_tech)
+    net_profile_after_batt = calc_net_profile_after_battery(net_profile_after_dr, end_user_tech, selected_tariff)
     dr_energy_offset = net_profile_after_solar - net_profile_after_dr
     batt_energy_offset = net_profile_after_dr - net_profile_after_batt
     net_profiles = {'load_profiles': gross_load_profiles,
@@ -188,10 +195,10 @@ def calc_net_profiles(gross_load_profiles, network_load, end_user_tech):
     return net_profiles
 
 
-def calc_net_profile_after_battery(net_load_profile, end_user_tech_sample):
+def calc_net_profile_after_battery(net_load_profile, end_user_tech_sample, selected_tariff):
     end_user_tech_details = end_user_tech_sample['end_user_tech_details']
     customer_key = end_user_tech_sample['customer_keys']
-
+    
     net_load_after_batt = net_load_profile.copy()
     number_of_steps = len(net_load_after_batt)
 
@@ -200,8 +207,24 @@ def calc_net_profile_after_battery(net_load_profile, end_user_tech_sample):
     round_trip_batt_eff = 0.85
     single_trip_batt_eff = math.sqrt(round_trip_batt_eff)
 
-
     # @todo: check if assumption that batteries charge and discharge at same rate is valid
+    if selected_tariff:
+        print("MAC selected tariff inside batt_strategy: ------------", type(selected_tariff), selected_tariff)
+        print("Net load profile: ---------", type(net_load_profile))#, net_load_profile)
+        all_TOU_periods = generate_TOU_periods(selected_tariff, net_load_profile)
+        print("generate_TOU_periods run ------------")
+        
+        peak_assignment = 'Discharge to home'
+        shoulder_assignment = 'Charge from grid'
+        off_peak_assignment = 'Neither'
+        tariff_assignments = {'Peak': peak_assignment, 
+                            'Shoulder': shoulder_assignment, 
+                            'Off-Peak': off_peak_assignment }
+        charging_states = charging_discharging(all_TOU_periods["TOU"], tariff_assignments)
+        print("charging_discharging run ------------")
+    else:
+        print("No tariff selected")
+    
     for key in customer_key:
         battery_details = end_user_tech_details.loc[end_user_tech_details['CUSTOMER_KEY'] == key]
         batt_kw = battery_details['battery_sizes_kW'].values[0]
@@ -223,11 +246,20 @@ def calc_net_profile_after_battery(net_load_profile, end_user_tech_sample):
             net_load_after_batt[key] = new_profile
             # end2 = time.time()
             # print('time to calc one battery customer: ', end2-start2)
+        elif batt_strategy == 'Minimise costs' and battery_capacity > 0:
+            print("MAC going into battery_loop_Miri")
+            current_profile = net_load_after_batt[key].to_numpy()
+            print("Current profile:-----------", current_profile)
+            
+            new_profile = battery_loop_Miri(current_profile, usable_batt_capacity, current_batt_charge, max_batt_charge_rate,
+                                       single_trip_batt_eff, charging_states)
+            print("all_TOU_periods run for 1 house ------------")
+            net_load_after_batt[key] = new_profile
     return net_load_after_batt
-
 
 @numba.jit
 def battery_loop(current_profile, usable_batt_capacity, current_batt_charge, max_batt_charge_rate, single_trip_batt_eff):
+    print("Regular battery loop is now running-------------")
     n = len(current_profile)
     new_profile = np.empty(n, dtype=np.float64)
     for i in range(n):
@@ -246,6 +278,146 @@ def battery_loop(current_profile, usable_batt_capacity, current_batt_charge, max
             new_profile[i] = 0
     return new_profile
 
+def generate_TOU_period(selected_tariff, timestamp):
+    """
+    Looks at individual timestamps, compares them to a TOU tariff to determine 
+    if that period is Peak, Off-Peak, or Shoulder
+    Args:
+        selected_tariff (dictionary): details/rates/times of selected tariff 
+        timestamp (datetime): single half-hourly timestamp in datetime format
+    Returns:
+        TOU_value (string): either Peak, Off-Peak, or Shoulder
+    """
+    # print("got inside generat_tou-------------weeee")
+    TOU = selected_tariff['Parameters']['TOU']
+    for key, value in TOU.items():
+        # work out if it is peak/off peak/shoulder
+        name = key.replace("-", "").replace(" ", "").lower()
+        if ('offpeak' in name):
+            TOU_value = "Off-Peak"
+        elif ('shoulder' in name):
+            TOU_value = "Shoulder"
+        else:
+            TOU_value = "Peak"
+        
+        # print("got further in generate_tou-------------weeee")
+        # work out time
+        for k, v in value['TimeIntervals'].items():
+            beginning = v[0]
+            beg_hour = datetime.strptime(beginning, '%H:%M').time()
+            end = v[1]
+            # end = '20:00'
+            end_hour =  datetime.strptime(end, '%H:%M').time()
+            if beg_hour == end_hour and beg_hour == datetime.strptime("00:00", '%H:%M').time():
+                beg_hour = datetime.strptime("00:01", '%H:%M').time()
+                # print("new end_hour")
+
+            weekday = timestamp.weekday()
+            # print("weekday", weekday)
+            # print("almost end of generat_tou-------------weeee")
+            if beg_hour <= end_hour:
+                if (timestamp.time() > beg_hour and timestamp.time() <= end_hour) and (((weekday <= 5 and weekday >=1) and value['Weekday']) or ((weekday == 6 or weekday == 0) and value['Weekend'])):
+                    # print("Here:------", TOU_value)
+                    return TOU_value
+            else:
+                if (timestamp.time() > beg_hour or timestamp.time() <= end_hour) and (((weekday <= 5 and weekday >=1) and value['Weekday']) or ((weekday == 6 or weekday == 0) and value['Weekend'])):
+                    # print("Here:------", TOU_value)
+                    return TOU_value
+
+def generate_TOU_periods(selected_tariff, df):
+    """
+    Compiles all Peak/Off-Peak/Shoulder values into longer array for every half-hourly period in the year
+    Args:
+        selected_tariff (dictionary): details/rates/times of selected tariff 
+        df (dataframe): dataframe of entire load profiles including timestamp
+    Returns:
+        TOU_values (array): a list of strings of Peak, Off-Peak, or Shoulder, likely 17520 length
+    """
+    print("net_load_profile.shape:---------", df.shape)
+    df = df.reset_index()
+    df = df.rename(columns={'index': 'Datetime'})
+    df['Datetime'] = pd.to_datetime(df['Datetime'])
+
+    # Generate new df
+    df['TOU'] = "Off Peak"
+    TOU_periods = df[['Datetime', 'TOU']].copy()
+    TOU_periods['TOU'] = df.apply(lambda x: generate_TOU_period(selected_tariff, x['Datetime']),axis=1)
+    return TOU_periods
+
+def charging_discharging(TOU_periods,tariff_assignments):
+    """
+    Depending on user-determined charging/discharging, assigns Peak/Off-Peak/Shoulder periods to a charging state
+    Args:
+        TOU_values (array): a list of strings of Peak, Off-Peak, or Shoulder, likely 17520 length (from generate_TOU_periods)
+        tariff_assignments (dictionary): assigns Peak/Off-Peak/Shoulder to charging or discharging (direct user input)
+    Returns:
+        charging_states (array): list of "Discharge to home"/"Charging from grid"/"Neither", 17520 length
+    """
+    # MAC TOU_periods = array of length 17520 listing period as peak, off peak, or shoulder
+    n = len(TOU_periods)
+    charging_states = []
+    for i in range(n):     
+        TOU_period = TOU_periods[i]
+        charging_states.append(tariff_assignments[TOU_period])
+    return charging_states
+
+def battery_loop_Miri(current_profile, usable_batt_capacity, current_batt_charge, max_batt_charge_rate, 
+                        single_trip_batt_eff, charging_states):
+    # need to add 'charging_state' vector of length n defined CH/DCH for each i, for now adding in below:
+    """
+    Runs battery loop depending on charging/discharging state determined by user
+    Args:
+        current_profile (array): single home's half-hourly energy profile
+        usable_batt_capacity (float): useable battery capacity in kWh (eg. 13.5 kWh for Powerwall 2)
+        current_batt_charge (float): battery starting value in kWh, likely 0 (defined somewhere in TDA)
+        max_batt_charge_rate (float): maximum power rating in kW (eg. 5 kW for Powerwall 2)
+        single_trip_batt_eff (float): battery's single trip efficiency, square root of round trip efficiency
+        charging_states (array): list of "Discharge to home"/"Charging from grid"/"Neither", 17520 length
+    Returns:
+        new_profile (array): single home's half-hourly energy profile after battery loop runs
+    """
+    print("Miri battery loop is now running------------------")
+    n = len(current_profile)
+    new_profile = np.empty(n, dtype=np.float64)  
+    for i in range(n):
+        current_power = current_profile[i]
+        # WANT current_time = times[i]
+        # print("Iteration:", i+1)
+        # print("Half-hourly demand:", current_power)
+        # Initialise relevant values:
+        PV_chargeable_amount = 0
+        grid_chargeable_amount = 0
+        dischargeable_amount = 0
+        charging_state = charging_states[i]
+        # When there is excess solar, battery charges:
+        if current_power < 0: # that is, there is excess solar
+            # maximum charging rate is batt_kw/2.0 since we are using 30min timestamps
+            PV_chargeable_amount = min((usable_batt_capacity - current_batt_charge), max_batt_charge_rate,
+                                    abs(current_power))
+                                    # battery adds whatever can a) fit b) charge c) is available
+            current_batt_charge += PV_chargeable_amount * single_trip_batt_eff #updates battery aggregate
+            # print("PV chargeable amount:", PV_chargeable_amount)
+            # print("Battery charge after PV:", current_batt_charge)
+        # If in CH, charges from grid, if in DCH, discharges to house:
+        if charging_state == 'Charge from grid':
+            grid_chargeable_amount = min((usable_batt_capacity - current_batt_charge), 
+                                        (max_batt_charge_rate - PV_chargeable_amount))
+                                    # battery charges from grid whatever can a) fit b) charge
+            current_batt_charge += grid_chargeable_amount * single_trip_batt_eff #updates battery aggregate
+            # print("Grid chargeable amount:", grid_chargeable_amount)
+            # print("Battery charge after grid:", current_batt_charge)
+        elif charging_state == 'Discharge to home' and current_power >= 0:
+            dischargeable_amount = min(current_batt_charge, max_batt_charge_rate, current_power)
+                                    #MAC: need to specify not in current_power is neg; then doesn't discharge at all
+                                    # battery discharges whatever a) is left b) can discharge c) is needed
+            current_batt_charge -= dischargeable_amount / single_trip_batt_eff #updates battery aggregate
+                    #MAC does this mean that it can take out more than is actually in the battery?
+            # print("Dischargeable amount:", dischargeable_amount)
+            # print("Battery charge after home:", current_batt_charge)
+        # Aggregate profile after all processes:
+        new_profile[i] = current_power + PV_chargeable_amount + grid_chargeable_amount - dischargeable_amount
+        # print("New profile:", new_profile[i])
+    return new_profile
 
 def calc_solar_profiles(end_user_tech_sample):
     end_user_tech_details = end_user_tech_sample['end_user_tech_details']
