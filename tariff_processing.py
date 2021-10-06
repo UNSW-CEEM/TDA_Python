@@ -89,7 +89,10 @@ def _add_row(component, initial_row, table_data):
     for column_name, column_value in component.items():
         if column_name not in table_data['table_header']:
             table_data['table_header'].append(str(column_name))
-        initial_row.append(str(column_value))
+        if str(column_value) == "Infinity":
+            initial_row.append(str(float(column_value)))
+        else:
+            initial_row.append(str(column_value))
     table_data['table_rows'].append(initial_row)
     return table_data
 
@@ -126,7 +129,7 @@ def _try_convert_to_object(string):
         obj = literal_eval(string)
     except:
         if string == 'inf':
-            obj = float('inf')
+            obj = "Infinity"
         else:
             obj = string
     return obj
