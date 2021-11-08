@@ -594,7 +594,9 @@ def load_end_user_tech_from_sample_from_file():
         current_session.end_user_tech_data = end_user_tech.calc_net_profiles(current_session.filtered_data,
                                                                              current_session.network_load,
                                                                              current_session.end_user_tech_sample,
-                                                                             current_session.selected_tariff)
+                                                                             current_session.selected_tariff,
+                                                                             current_session.end_user_tech_sample['tech_inputs'])
+        current_session.end_user_tech_details = current_session.end_user_tech_sample['tech_inputs']
         #current_session.filter_state = current_session.end_user_tech_sample['load_details']
         return_data = jsonify({'message': 'Done!', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
         current_session.end_user_tech_sample_applied = True
@@ -610,7 +612,9 @@ def calc_sample_net_load_profiles():
     current_session.end_user_tech_sample = end_user_tech.update_sample(current_session.end_user_tech_sample, details)
     current_session.end_user_tech_data = \
         end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load,
-                                        current_session.end_user_tech_sample, current_session.selected_tariff)
+                                        current_session.end_user_tech_sample, current_session.selected_tariff,
+                                        current_session.end_user_tech_sample['tech_inputs'])
+    current_session.end_user_tech_details = current_session.end_user_tech_sample['tech_inputs']
     current_session.end_user_tech_sample_applied = True
     return jsonify({'message': 'done'})
 
@@ -1093,7 +1097,7 @@ def shutdown_server():
 
 @app.route('/shutdown', methods=['POST'])
 def shutdown():
-    shutdown_server()
+    #shutdown_server()
     return 'Server shutting down...'
 
 
