@@ -1,5 +1,8 @@
 
 var get_file_and_pass_to_python = function(extension, url, call_back){
+    document.getElementById("file_form").reset()
+    $('#file1').on('change', function(){})
+    document.getElementById('file1').value = null;
     $('#file1').on('change', function(){
         var xhr = new XMLHttpRequest();
         xhr.open("POST", url);
