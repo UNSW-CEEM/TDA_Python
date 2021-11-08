@@ -584,8 +584,9 @@ def load_end_user_tech_from_sample_from_file():
     file = request.files['file']
     file.save('data/temp/temp.pkl')
     with open('data/temp/temp.pkl', "rb") as f:
-        current_session.end_user_tech_sample = pickle.load(f)
-    if current_session.end_user_tech_sample['load_details']['file_name'] + '.feather' in os.listdir('data/load/'):
+        sample_to_load = pickle.load(f)
+    if sample_to_load['load_details']['file_name'] + '.feather' in os.listdir('data/load/'):
+        current_session.end_user_tech_sample = sample_to_load
         current_session.raw_data_name = current_session.end_user_tech_sample['load_details']['file_name']
         raw_data = data_interface.get_load_table('data/load/', current_session.raw_data_name)
         current_session.raw_data[current_session.raw_data_name] = raw_data
