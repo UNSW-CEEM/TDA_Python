@@ -70,6 +70,7 @@ var calc_sample_net_load_profiles = function(){
             get_net_load_chart();
             status_set(['tech', 'net_load_profiles'])
             $('#toggle_tech').prop('disabled', false)
+            $('#save_tech_sample').prop('disabled', false)
             $("#message_dialog p").text(data['message'])
         }
     });

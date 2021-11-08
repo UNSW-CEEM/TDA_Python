@@ -596,7 +596,15 @@ def load_end_user_tech_from_sample_from_file():
                                                                              current_session.end_user_tech_sample,
                                                                              current_session.selected_tariff,
                                                                              current_session.end_user_tech_sample['tech_inputs'])
-        current_session.end_user_tech_details = current_session.end_user_tech_sample['tech_inputs']
+        current_session.end_user_tech_details = dict((k, current_session.end_user_tech_sample[k]) for k in
+                                                     ['tech_inputs', 'load_details'] if k in
+                                                     current_session.end_user_tech_sample)
+        current_session.end_user_tech_details['tech_inputs']['additional_info'] = {}
+        if current_session.end_user_tech_sample['message'] != 'Done!':
+            current_session.end_user_tech_details['tech_inputs']['additional_info']['message'] = \
+                current_session.end_user_tech_sample['message']
+        else:
+            current_session.end_user_tech_details['tech_inputs']['additional_info']['message'] = ''
         #current_session.filter_state = current_session.end_user_tech_sample['load_details']
         return_data = jsonify({'message': 'Done!', 'tech_inputs': current_session.end_user_tech_sample['tech_inputs']})
         current_session.end_user_tech_sample_applied = True
@@ -614,9 +622,17 @@ def calc_sample_net_load_profiles():
         end_user_tech.calc_net_profiles(current_session.filtered_data, current_session.network_load,
                                         current_session.end_user_tech_sample, current_session.selected_tariff,
                                         current_session.end_user_tech_sample['tech_inputs'])
-    current_session.end_user_tech_details = current_session.end_user_tech_sample['tech_inputs']
+    current_session.end_user_tech_details = dict((k, current_session.end_user_tech_sample[k]) for k in
+                                                 ['tech_inputs', 'load_details'] if k in
+                                                 current_session.end_user_tech_sample)
+    current_session.end_user_tech_details['tech_inputs']['additional_info'] = {}
+    if current_session.end_user_tech_sample['message'] != 'Done!':
+        current_session.end_user_tech_details['tech_inputs']['additional_info']['message'] = \
+            current_session.end_user_tech_sample['message']
+    else:
+        current_session.end_user_tech_details['tech_inputs']['additional_info']['message'] = ''
     current_session.end_user_tech_sample_applied = True
-    return jsonify({'message': 'done'})
+    return jsonify({'message': 'Done!'})
 
 
 @app.route('/save_end_user_tech_sample')
