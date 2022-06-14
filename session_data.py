@@ -43,7 +43,7 @@ class ProjectData():
             'AG300_N_2010',
             'AG300_N_2011',
             'AG300_N_2012',
-            'SGSC',
+            'SGSC2013',
         ]
 
         self.original_solar_data = [
