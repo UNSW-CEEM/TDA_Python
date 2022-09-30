@@ -16,7 +16,7 @@ ipython-genutils==0.2.0
 itsdangerous==2.0.1
 jdcal==1.4.1
 Jinja2==3.0.2
-joblib==1.1.0
+joblib==1.2.0
 jsonschema==4.1.0
 jupyter-core==4.8.1
 llvmlite==0.37.0
